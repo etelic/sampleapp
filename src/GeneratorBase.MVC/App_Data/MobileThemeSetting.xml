@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Administrator>
+  <Settings>
+    <!--red Theme-->
+    <Id>1</Id>
+    <Name>red</Name>
+    <CssName>red</CssName>
+    <IsActive>true</IsActive>
+  </Settings>
+  <Settings>
+    <!--orange Theme-->
+    <Id>2</Id>
+    <Name>orange</Name>
+    <CssName>orange</CssName>
+    <IsActive>false</IsActive>
+  </Settings>
+  <Settings>
+    <!--skyblue Theme-->
+    <Id>3</Id>
+    <Name>skyblue</Name>
+    <CssName>skyblue</CssName>
+    <IsActive>false</IsActive>
+  </Settings>
+  <Settings>
+    <Id>4</Id>
+    <!--ashblue Theme-->
+    <Name>ashblue</Name>
+    <CssName>ash_blue</CssName>
+    <IsActive>false</IsActive>
+  </Settings>
+</Administrator>

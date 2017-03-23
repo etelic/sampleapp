@@ -1,0 +1,61 @@
+﻿@model GeneratorBase.MVC.Models.ActionType
+@{
+    ViewBag.Title = "Create Action Type";
+    Layout = null;
+}
+<link href="@Url.Content("~/Content/chosen.css")" rel="stylesheet" type="text/css" />
+@using (Html.BeginForm("CreateQuick", "ActionType", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="panel panel-default AppForm">
+                <div class="panel-body">
+                    <div class="row">
+                        <div class='col-sm-6'>
+                            <div class='form-group'>
+                                <label>@Html.LabelFor(model => model.TypeNo) </label>
+                                @Html.TextBoxFor(model => model.TypeNo, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.TypeNo)
+                            </div>
+                        </div>
+                        <div class='col-sm-6'>
+                            <div class='form-group'>
+                                <label>@Html.LabelFor(model => model.ActionTypeName) <span class="text-danger-reg">*</span></label>
+                                @Html.TextBoxFor(model => model.ActionTypeName, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.ActionTypeName)
+                            </div>
+                        </div>
+                        <div class='col-sm-6'>
+                            <div class='form-group'>
+                                <label>@Html.LabelFor(model => model.Description) </label>
+                                @Html.TextBoxFor(model => model.Description, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.Description)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <button type="button" class="btn btn-default btn-sm" data-dismiss="modal" aria-hidden="true">Cancel</button>
+    @*@Html.ActionLink("Cancel", "Cancel", new { UrlReferrer = ViewData["ActionTypeParentUrl"] }, new { @onclick = "", @class = "btn btn-default btn-sm" })*@
+    <input type="submit" value="Create" class="btn btn-primary btn-sm" />
+}
+@Scripts.Render("~/bundles/jqueryval")
+<script src="@Url.Content("~/Scripts/Common3/chosen.jquery.js")">
+</script>
+<script type="text/javascript">
+    var config = {
+        '.chosen-select': {},
+        '.chosen-select-deselect': { allow_single_deselect: true },
+        '.chosen-select-no-single': { disable_search_threshold: 10 },
+        '.chosen-select-no-results': { no_results_text: 'Oops, nothing found!' },
+        '.chosen-select-width': { width: "95%" }
+    }
+    for (var selector in config) {
+        $(selector).chosen(config[selector]);
+    }
+</script>
+

@@ -1,0 +1,41 @@
+﻿@model GeneratorBase.MVC.Models.AppSettingGroup
+@{
+    ViewBag.Title = "Edit Application Setting Group";
+    Layout = null;
+}
+@using (Html.BeginForm("EditGroup", "AppSetting", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken();
+    Html.ValidationSummary(true);
+    Html.EnableClientValidation();
+    @Html.HiddenFor(model => model.Id)
+    @Html.HiddenFor(model => model.ConcurrencyKey)
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="panel panel-default AppForm">
+                <div class="panel-body">
+                    <div class="row">
+                        <div class='col-sm-6'>
+                            <div class='form-group'>
+                                <label>@Html.LabelFor(model => model.Name) <span class="text-danger-reg">*</span></label>
+                                @Html.TextBoxFor(model => model.Name, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.Name)
+                            </div>
+                        </div>
+                        @Html.HiddenFor(model => model.IsDefault)
+                        @*<div class='col-sm-6'>
+                            <div class='form-group'>
+                                <label>@Html.LabelFor(model => model.IsDefault) <span class="text-danger-reg">*</span></label>
+                                @Html.CheckBoxFor(model => model.IsDefault, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.IsDefault)
+                            </div>
+                        </div>*@
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <button id="CancelQuickAdd" type="button" class="btn btn-default btn-sm" data-dismiss="modal" aria-hidden="true">Cancel</button>
+    <input type="submit" value="Save" class="btn btn-primary btn-sm" onclick="QuickAddFromIndex(event,true,'AppSetting','null','null',0);" />
+}
+@Scripts.Render("~/bundles/jqueryval")

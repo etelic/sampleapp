@@ -1,0 +1,158 @@
+﻿@model GeneratorBase.MVC.Models.DynamicRoleMapping
+@{
+    ViewBag.Title = "Create DynamicRoleMapping";
+    Layout = null;
+}
+<script language="JavaScript">
+    function FillRelations() {
+        var SelectedText = $('#EntityName').val();
+        var url = $('#EntityName').attr("dataurl");
+        $.ajax({
+            url: '@Url.Action("GetUserAssociation","BusinessRule")' + '?Entity=' + SelectedText,
+            type: "GET",
+            cache: false,
+            success: function (result) {
+                var optionDOM = "";
+                for (i = 0; i < result.length; i++) {
+                    if (result[i].Key == "Owner") continue;
+                    optionDOM += '<option value="' + result[i].Key + '">' + result[i].Value + '</option>';
+                }
+                $("#" + "UserRelation").html(optionDOM);
+                //$("#" + "cmbNotifyTo").multiselect('rebuild');
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                alert("error");
+            }
+        })
+        $.ajax({
+            url: '@Url.Action("GetPropertiesofEntity", "BusinessRule")' + '?Entity=' + SelectedText,
+            type: "GET",
+            cache: false,
+            success: function (result) {
+                var optionDOM = "";
+                for (i = 0; i < result.length; i++) {
+                    optionDOM += '<option value="' + result[i].Name + '">' + result[i].DisplayName + '</option>';
+                }
+                $("#" + "Condition").html(optionDOM);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                alert("error");
+            }
+        })
+    }
+</script>
+<script>
+    $(document).ready(function () {
+        try {
+            var hostingEntityName = "";
+            if ('@Convert.ToString(ViewData["AssociatedType"])' != null) {
+                hostingEntityName = '@Convert.ToString(ViewData["AssociatedType"])';
+                $("#dv" + hostingEntityName + "ID").hide();
+            }
+        }
+        catch (ex) { }
+    });
+</script>
+<link href="~/Content/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+<link href="@Url.Content("~/Content/chosen.css")" rel="stylesheet" type="text/css" />
+@using (Html.BeginForm("CreateQuick", "DynamicRoleMapping", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken();
+    Html.ValidationSummary(true);
+    Html.EnableClientValidation();
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="panel panel-default AppForm">
+                <div class="panel-body">
+                    <div class="row">
+                        <div class='col-sm-6'>
+                            <div class='form-group'>
+                                <label>@Html.LabelFor(model => model.EntityName) <span class="text-danger-reg">*</span></label>
+                                @*@Html.TextBoxFor(model => model.EntityName, new { @class = "form-control" })*@
+                                @Html.DropDownList("EntityName", null, "-- Select --", new { @onchange = "FillRelations();",@dataurl = Url.Action("UserBasedSecurity", "Permission", null) , @required = "required", @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.EntityName)
+                            </div>
+                        </div>
+                        <div class='col-sm-6'>
+                            <div class='form-group'>
+                                <label>Map To Role<span class="text-danger-reg">*</span></label>
+                                @*@Html.TextBoxFor(model => model.RoleId, new { @class = "form-control" })*@
+                                @Html.DropDownList("RoleId", null, "-- Select --", new { @required = "required", @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.RoleId)
+                            </div>
+                        </div>
+                        <div class="col-md-12 col-sm-12 col-xs-12">
+                            <div class="row">
+                                <div class='col-sm-6'>
+                                    <div class='form-group'>
+                                        <label>Entity Column<span class="text-danger-reg">*</span></label>
+                                        @*@Html.TextBoxFor(model => model.Condition, new { @class = "form-control" })*@
+                                        @Html.DropDownList("Condition", null, new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(model => model.Condition)
+                                    </div>
+                                </div>
+                                <div class='col-sm-6'>
+                                    <div class='form-group'>
+                                        @Html.LabelFor(model => model.Value) <span class="text-danger-reg">*</span>
+                                        @Html.TextBoxFor(model => model.Value, new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(model => model.Value)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class='col-sm-6'>
+                            <div class='form-group'>
+                               @Html.LabelFor(model => model.UserRelation) <span class="text-danger-reg">*</span>
+                                @*@Html.TextBoxFor(model => model.UserRelation, new { @class = "form-control" })*@
+                                @Html.DropDownList("UserRelation", null, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.UserRelation)
+                            </div>
+                        </div>
+                        @*<div class='col-sm-6'>
+                            <div class='form-group'>
+                                <label>@Html.LabelFor(model => model.Other) </label>
+                                @Html.TextBoxFor(model => model.Other, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.Other)
+                            </div>
+                        </div>
+                        <div class='col-sm-6'>
+                            <label>
+                                @Html.LabelFor(model => model.Flag)
+                            </label>
+                            <div class="form-group">
+                                @Html.CheckBox("Flag", false)
+                                @Html.ValidationMessageFor(model => model.Flag)
+                            </div>
+                        </div>*@
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <button id="CancelQuickAdd" type="button" class="btn btn-default btn-sm" data-dismiss="modal" aria-hidden="true">Cancel</button>
+    var busineesrule = User.businessrules.Where(p => p.EntityName == "DynamicRoleMapping").ToList();
+    if (ViewBag.IsAddPop != null)
+    {
+        <input type="submit" value="Create" class="btn btn-primary btn-sm" onclick="QuickAdd(event,'@busineesrule',@busineesrule.Count);" />
+    }
+    else
+    {
+        <input type="submit" value="Create" class="btn btn-primary btn-sm" onclick="QuickAddFromIndex(event,true,'DynamicRoleMapping','@ViewData["AssociatedType"]','@busineesrule',@busineesrule.Count);" />
+    }
+}
+@Scripts.Render("~/bundles/jqueryval")
+<script src="~/Scripts/Common3/chosen.jquery.js" type="text/javascript"></script>
+<script type="text/javascript">
+    var config = {
+        '.chosen-select': {},
+        '.chosen-select-deselect': { allow_single_deselect: true },
+        '.chosen-select-no-single': { disable_search_threshold: 10 },
+        '.chosen-select-no-results': { no_results_text: 'Oops, nothing found!' },
+        '.chosen-select-width': { width: "95%" }
+    }
+    for (var selector in config) {
+        $(selector).chosen(config[selector]);
+    }
+</script>
+
+

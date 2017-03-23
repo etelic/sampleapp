@@ -1,0 +1,51 @@
+﻿@model GeneratorBase.MVC.Models.Permission
+@{
+    ViewBag.Title = "Details";
+}
+<h2>Details</h2>
+<div>
+    <h4>Permission</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.EntityName)
+        </dt>
+        <dd class="clearfix">
+            @Html.DisplayFor(model => model.EntityName)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.RoleName)
+        </dt>
+        <dd class="clearfix">
+            @Html.DisplayFor(model => model.RoleName)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.CanEdit)
+        </dt>
+        <dd class="clearfix">
+            @Html.DisplayFor(model => model.CanEdit)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.CanDelete)
+        </dt>
+        <dd class="clearfix">
+            @Html.DisplayFor(model => model.CanDelete)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.CanView)
+        </dt>
+        <dd class="clearfix">
+            @Html.DisplayFor(model => model.CanView)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.CanAdd)
+        </dt>
+        <dd class="clearfix">
+            @Html.DisplayFor(model => model.CanAdd)
+        </dd>
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

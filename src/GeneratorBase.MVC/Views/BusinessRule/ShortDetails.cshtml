@@ -1,0 +1,63 @@
+﻿@model GeneratorBase.MVC.Models.BusinessRule
+@using PagedList;
+@{
+    ViewBag.Title = "View Business Rule";
+    Layout = null;
+}
+<script>
+    $("#shortdetails").on("mouseleave", function () {
+        $("#closeshortdetails").click();
+    })
+</script>
+<div class="panel panel-default AppForm">
+    <div class="panel-body">
+        Roles : @Model.Roles<br />
+        @foreach (var cond in Model.ruleconditions)
+        {
+            <span>Condition : </span><b>@cond.PropertyName  @cond.Operator  @cond.Value  </b><br />
+        }
+        <br />
+        @if (Model.ruleaction != null)
+        {
+            foreach (var act in Model.ruleaction)
+            {
+                if (act.associatedactiontype != null)
+                {
+                    <b><span>Action : </span>@act.associatedactiontype.DisplayValue </b>
+                }
+                if (act.actionarguments != null && act.actionarguments.Count() > 0)
+                {
+                    <div id="Des_Table" class="table-responsive" style="overflow-x:auto;">
+                        <table class="table table-striped table-bordered table-hover table-condensed">
+                            <thead>
+                                <tr>
+                                    <th class="col1">Parameter Name</th>
+                                    <th class="col1">Value</th>
+                                </tr>
+                            </thead>
+                            @foreach (var args in act.actionarguments)
+                            {
+                                <tr>
+                                    <td>
+                                        @args.ParameterName
+                                    </td>
+                                    <td>
+                                        @if (args.ParameterName == "NotifyToRole")
+                                        {
+                                            @act.getRolesNameById(args.ParameterValue);
+                                        }
+                                        else
+                                        {
+                                            @args.ParameterValue
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </table>
+                    </div>
+                    <br />
+                }
+            }
+        }
+    </div>
+</div>

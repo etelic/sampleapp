@@ -1,0 +1,177 @@
+﻿@model PagedList.IPagedList<GeneratorBase.MVC.Models.ApplicationFeedback>
+@using PagedList.Mvc;
+@{
+    ViewBag.Title = "Index";
+    Layout = null;
+    Response.ContentType = "application/vnd.ms-excel";
+    Response.AddHeader("Content-Disposition", "attachment; filename=ApplicationFeedback.xls");
+}
+                    <table>
+                            <tr>
+@if(User.CanView("ApplicationFeedback","EntityName"))
+{
+		<th>Entity Name</th>
+}
+@if(User.CanView("ApplicationFeedback","PropertyName"))
+{
+		<th>Property Name</th>
+}
+@if(User.CanView("ApplicationFeedback","PageName"))
+{
+		<th>Page Name</th>
+}
+@if(User.CanView("ApplicationFeedback","PageUrlTitle"))
+{
+		<th>Page Url Title</th>
+}
+@if(User.CanView("ApplicationFeedback","UIControlName"))
+{
+		<th>UI Control Name</th>
+}
+@if(User.CanView("ApplicationFeedback","PageUrl"))
+{
+		<th>Page Url</th>
+}
+@if(User.CanView("ApplicationFeedback","CommentId"))
+{
+		<th>Comment Id</th>
+}
+@if(User.CanView("ApplicationFeedback","AssociatedApplicationFeedbackTypeID"))
+{
+		<th  @(Convert.ToString(ViewData["HostingEntity"]) == "ApplicationFeedbackType"?"hidden":"")>Type</th>
+}
+@if(User.CanView("ApplicationFeedback","AssociatedApplicationFeedbackStatusID"))
+{
+		<th  @(Convert.ToString(ViewData["HostingEntity"]) == "ApplicationFeedbackStatus"?"hidden":"")>Status</th>
+}
+@if(User.CanView("ApplicationFeedback","ApplicationFeedbackPriorityID"))
+{
+		<th  @(Convert.ToString(ViewData["HostingEntity"]) == "FeedbackPriority"?"hidden":"")>Priority</th>
+}
+@if(User.CanView("ApplicationFeedback","ApplicationFeedbackSeverityID"))
+{
+		<th  @(Convert.ToString(ViewData["HostingEntity"]) == "FeedbackSeverity"?"hidden":"")>Severity</th>
+}
+@if(User.CanView("ApplicationFeedback","ApplicationFeedbackResourceID"))
+{
+		<th  @(Convert.ToString(ViewData["HostingEntity"]) == "FeedbackResource"?"hidden":"")>Assigned To</th>
+}
+@if(User.CanView("ApplicationFeedback","ReportedBy"))
+{
+		<th>Reported By</th>
+}
+@if(User.CanView("ApplicationFeedback","ReportedByUser"))
+{
+		<th>Reported ByUser</th>
+}
+@if(User.CanView("ApplicationFeedback","Summary"))
+{
+		<th>Summary</th>
+}
+@if(User.CanView("ApplicationFeedback","Description"))
+{
+		<th>Description</th>
+}
+    </tr>
+@foreach (var item in Model) {
+    <tr>
+	@if(User.CanView("ApplicationFeedback","EntityName"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.EntityName)
+        </td>
+}
+@if(User.CanView("ApplicationFeedback","PropertyName"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.PropertyName)
+        </td>
+}
+@if(User.CanView("ApplicationFeedback","PageName"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.PageName)
+        </td>
+}
+@if(User.CanView("ApplicationFeedback","PageUrlTitle"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.PageUrlTitle)
+        </td>
+}
+@if(User.CanView("ApplicationFeedback","UIControlName"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.UIControlName)
+        </td>
+}
+@if(User.CanView("ApplicationFeedback","PageUrl"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.PageUrl)
+        </td>
+}
+@if(User.CanView("ApplicationFeedback","CommentId"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.CommentId)
+        </td>
+}
+@if(User.CanView("ApplicationFeedback","AssociatedApplicationFeedbackTypeID"))
+{
+		<td @(Convert.ToString(ViewData["HostingEntity"]) == "ApplicationFeedbackType"?"hidden":"")>
+            @Html.DisplayFor(modelItem => item.associatedapplicationfeedbacktype.DisplayValue)
+        </td>
+}
+@if(User.CanView("ApplicationFeedback","AssociatedApplicationFeedbackStatusID"))
+{
+		<td @(Convert.ToString(ViewData["HostingEntity"]) == "ApplicationFeedbackStatus"?"hidden":"")>
+            @Html.DisplayFor(modelItem => item.associatedapplicationfeedbackstatus.DisplayValue)
+        </td>
+}
+@if(User.CanView("ApplicationFeedback","ApplicationFeedbackPriorityID"))
+{
+		<td @(Convert.ToString(ViewData["HostingEntity"]) == "FeedbackPriority"?"hidden":"")>
+            @Html.DisplayFor(modelItem => item.applicationfeedbackpriority.DisplayValue)
+        </td>
+}
+@if(User.CanView("ApplicationFeedback","ApplicationFeedbackSeverityID"))
+{
+		<td @(Convert.ToString(ViewData["HostingEntity"]) == "FeedbackSeverity"?"hidden":"")>
+            @Html.DisplayFor(modelItem => item.applicationfeedbackseverity.DisplayValue)
+        </td>
+}
+@if(User.CanView("ApplicationFeedback","ApplicationFeedbackResourceID"))
+{
+		<td @(Convert.ToString(ViewData["HostingEntity"]) == "FeedbackResource"?"hidden":"")>
+            @Html.DisplayFor(modelItem => item.applicationfeedbackresource.DisplayValue)
+        </td>
+}
+@if(User.CanView("ApplicationFeedback","ReportedBy"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.ReportedBy)
+        </td>
+}
+@if(User.CanView("ApplicationFeedback","ReportedByUser"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.ReportedByUser)
+        </td>
+}
+@if(User.CanView("ApplicationFeedback","Summary"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.Summary)
+        </td>
+}
+@if(User.CanView("ApplicationFeedback","Description"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.Description)
+        </td>
+}
+                                </tr>
+                            }
+</table>
+               

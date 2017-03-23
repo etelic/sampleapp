@@ -1,0 +1,36 @@
+﻿@using GeneratorBase.MVC.Models
+@model ExternalLoginListViewModel
+@using Microsoft.Owin.Security
+@{
+    var loginProviders = Context.GetOwinContext().Authentication.GetExternalAuthenticationTypes();
+    string action = Model.Action;
+    string returnUrl = Model.ReturnUrl;
+    string provider = "";
+    string name = "";
+    string authType = "";
+    foreach (AuthenticationDescription p in loginProviders)
+    {
+        provider = p.AuthenticationType;
+        name = p.Caption.Contains("Google") ? "google" : p.Caption.ToLower();
+        authType = p.AuthenticationType.Contains("Google") ? "Google" : p.AuthenticationType;
+        using (Html.BeginForm(action, "Account", new { provider = provider, ReturnUrl = returnUrl }))
+        {
+            @Html.AntiForgeryToken()
+            @*<div class="col-md-4" style="margin:0px; padding:0px 5px 0px 0px">
+                    <button type="submit" id="@p.AuthenticationType" class="button @name" name="provider" value="@p.AuthenticationType">
+                        <span><i class="fa fa-@name"></i></span><p>@authType</p>
+                    </button>
+                </div>*@
+
+
+            <div class="col-xs-4 col-sm-4">
+                <button type="submit" class="btn btn-lg btn-block ThirdParty_btn-@name">
+                    <i class="fa fa-@name visible-xs"></i>
+                    <span class="hidden-xs">@authType</span>
+                </button>
+
+            </div>
+
+        }
+    }
+}

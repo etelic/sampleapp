@@ -1,0 +1,170 @@
+﻿@model IEnumerable<GeneratorBase.MVC.Models.EmailTemplate>
+@{
+    var _list = Model.ToList();
+}
+<div id="EmailTemplate">
+    <button id="EmailTemplateSearchCancel" type="button" hidden onclick="CancelSearch('EmailTemplate','@Html.Raw(Url.Action("Index", "EmailTemplate", new { ClearSearchTimeStamp = DateTime.Now }))','@User.JavaScriptEncodedName')" style="padding:3px 5px;"></button>
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="panel-group" id="accordion">
+                @{  int cnt = 1; }
+                @foreach (var emailTemplate in ViewBag.EmailTemplateType)
+                {
+                    var groupName = emailTemplate.Name;
+                    var itemSetting = _list.Where(app => app.associatedemailtemplatetype != null && app.associatedemailtemplatetype.DisplayValue == groupName).FirstOrDefault();
+                    var divID = "emailT" + emailTemplate.Id;
+                    var divClass = "panel-collapse " + ((cnt == 1) ? "in" : "collapse");
+                    <div @(!User.CanView("EmailTemplate") ? "style=display:none;" : "") class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title" style="display:block; float:none;">
+                                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#@divID">
+                                    @emailTemplate.Name
+                                </a>
+                                <div class="btn-group pull-right" style="position:absolute; right:30px">
+                                    @if (!emailTemplate.IsDefault)
+                                    {
+                                        <button class="btn dropdown-toggle btn-default btn-xs" data-original-title="Edit Template Type" data-placement="top" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Edit Email Template Type','dvPopup','" + Url.Action("EditEmailTemplateType", "EmailTemplate", new { id = emailTemplate.Id, UrlReferrer = Request.Url, TS = DateTime.Now }) + "')")">
+                                            <span class="caret"></span>  Edit Type
+                                        </button>
+                                    }
+                                    @if (itemSetting != null)
+                                    {
+                                    <button class="btn dropdown-toggle btn-default btn-xs" data-original-title="Edit Template" data-placement="top" onclick="@Html.Raw("NavigateToUrl('" + Url.Action("Edit", "EmailTemplate", new { id = itemSetting.Id, UrlReferrer = Request.Url, TS = DateTime.Now }, null) + "');")">
+                                        <span class="caret"></span>  Edit Template
+                                    </button>
+                                    }
+                                    @if (!emailTemplate.IsDefault)
+                                    {
+                                        <button class="btn dropdown-toggle btn-default btn-xs" data-original-title="Delete Template Type" data-placement="top" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Delete Email Template Type','dvPopup','" + Url.Action("DeleteEmailTemplateType", "EmailTemplate", new { id = emailTemplate.Id, UrlReferrer = Request.Url, TS = DateTime.Now }) + "')")">
+                                            <span class="caret"></span>  Delete Type
+                                        </button>
+                                    }
+                                    @if (itemSetting != null)
+                                    {
+                                        <button class="btn dropdown-toggle btn-default btn-xs" data-original-title="Delete Template" data-placement="top" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Delete Email Template','dvPopup','" + Url.Action("DeleteEmailTemplate", "EmailTemplate", new { id = itemSetting.Id, UrlReferrer = Request.Url, TS = DateTime.Now }) + "')")">
+                                            <span class="caret"></span>  Delete Template
+                                        </button>
+                                    }
+                                    @*<button data-toggle="dropdown" class="btn dropdown-toggle btn-default btn-xs">
+                                            Action
+                                            <span class="caret"></span>
+                                        </button>
+                                        <ul class="dropdown-menu pull-left">
+                                            @if (!emailTemplate.IsDefault)
+                                            {
+                                                <li>
+                                                    <a data-placement="top" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Edit Email Template Type','dvPopup','" + Url.Action("EditEmailTemplateType", "EmailTemplate", new { id = emailTemplate.Id, UrlReferrer = Request.Url, TS = DateTime.Now }) + "')")"><i class="glyphicon glyphicon-edit pull-left" style="margin-right:5px;"></i>  Edit Type</a>
+                                                </li>
+                                            }
+                                            @if (itemSetting != null)
+                                            {
+                                                <li>
+                                                    <a href="@Url.Action("EditEmailTemplate", "EmailTemplate", new { id = itemSetting.Id, UrlReferrer = Request.Url, TS = DateTime.Now })"><i class="glyphicon glyphicon-edit pull-left" style="margin-right:5px;"></i>  Edit Template</a>
+                                                </li>
+                                            }
+                                            @if (!emailTemplate.IsDefault)
+                                            {
+                                                <li>
+                                                    <a data-placement="top" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Delete Email Template Type','dvPopup','" + Url.Action("DeleteEmailTemplateType", "EmailTemplate", new { id = emailTemplate.Id, UrlReferrer = Request.Url, TS = DateTime.Now }) + "')")"><i class="glyphicon glyphicon-remove-sign pull-left" style="margin-right:5px;"></i>  Delete Type</a>
+                                                </li>
+                                            }
+                                        </ul>*@
+                                </div>
+                            </h4>
+                        </div>
+                        <div id="@divID" class="@divClass">
+                            <div class="panel-body">
+                                @if (User.Identity.IsAuthenticated && User != null && User.CanView("EmailTemplate"))
+                                {
+                                    if (itemSetting != null)
+                                    {
+                                        @Html.Raw(HttpUtility.HtmlDecode(itemSetting.EmailContent))
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                                cnt++;
+                }
+            </div>
+            @*@foreach (var emailTemplate in ViewBag.EmailTemplateType)
+                {
+                    <div class="panel panel-default AppForm">
+                        @if (!emailTemplate.IsDefault)
+                        {
+                        <div class="panel-heading clearfix" style="padding:5px 0px 5px 5px !important;">
+                            <div class="panel-title">
+                                <div class="btn-group">
+                                    <button data-toggle="dropdown" class="btn dropdown-toggle btn-default" style="border: 0px solid #c3ddec !important; font-size:16px;">
+                                        @emailTemplate.Name
+                                        <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu pull-left">
+                                        <li>
+                                            <a data-placement="top" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Edit Email Template Type','dvPopup','" + Url.Action("EditEmailTemplateType", "EmailTemplate", new { id = emailTemplate.Id, UrlReferrer = Request.Url, TS = DateTime.Now }) + "')")"><i class="glyphicon glyphicon-edit pull-left" style="margin-right:5px;"></i>  Edit</a>
+                                        </li>
+                                        <li>
+                                            <a data-placement="top" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Delete Email Template Type','dvPopup','" + Url.Action("DeleteEmailTemplateType", "EmailTemplate", new { id = emailTemplate.Id, UrlReferrer = Request.Url, TS = DateTime.Now }) + "')")"><i class="glyphicon glyphicon-remove-sign pull-left" style="margin-right:5px;"></i>  Delete</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        }
+                        else
+                        {
+                        <div class="panel-heading clearfix">
+                            <h3 class="panel-title">@emailTemplate.Name</h3>
+                        </div>
+                        }
+                        <div class="panel-body">
+                            @{
+                        var groupName = emailTemplate.Name;
+                        var itemSetting = _list.Where(app => app.associatedemailtemplatetype != null && app.associatedemailtemplatetype.DisplayValue == groupName);
+                            }
+                            <div id="Des_Table" class="table-responsive" style="overflow-x:auto;">
+                                <table class="table table-bordered table-hover table-condensed">
+                                    <thead>
+                                        <tr>
+                                            <th class="col1" style="width:70px;">Actions</th>
+                                            <th style="width:auto">Email Content</th>
+                                        </tr>
+                                    </thead>
+                                    @foreach (var item in itemSetting)
+                                    {
+                                    <tr>
+                                        <td>
+                                            <div style="width:60px; margin-top:-2px;">
+                                                <div class="btn-group" style="position:absolute;">
+                                                    <button data-toggle="dropdown" class="btn btn-xs dropdown-toggle btn-default">
+                                                        Action
+                                                        <span class="caret"></span>
+                                                    </button>
+                                                    <ul class="dropdown-menu pull-left">
+                                                        <li>
+                                                            @if (User.Identity.IsAuthenticated && User != null && User.CanEdit("EmailTemplate"))
+                                                                {
+                                                                <a data-placement="top" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Edit Application Setting','dvPopup','" + Url.Action("EditSetting", "AppSetting", new { id = item.Id, UrlReferrer = Request.Url, TS = DateTime.Now }) + "')")"><i class="glyphicon glyphicon-edit"></i>  Edit</a>
+                                                                }
+                                                        </li>
+                                                        <li>
+                                                            @if (User.Identity.IsAuthenticated && User != null && User.CanDelete("EmailTemplate"))
+                                                                {
+                                                                <a data-placement="top" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Delete Application Setting','dvPopup','" + Url.Action("DeleteSetting", "AppSetting", new { id = item.Id, UrlReferrer = Request.Url, TS = DateTime.Now }) + "')")"><i class="glyphicon glyphicon-remove-sign"></i>  Delete</a>
+                                                                }
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>@Html.Raw(Html.DisplayFor(modelItem => item.Content))</td>
+                                    </tr>
+                                    }
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                }*@
+        </div>
+    </div>
+</div>

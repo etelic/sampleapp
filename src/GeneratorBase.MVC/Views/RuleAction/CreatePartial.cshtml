@@ -1,0 +1,85 @@
+﻿@model GeneratorBase.MVC.Models.RuleAction
+@using (Html.BeginForm("Create", "RuleAction", new { UrlReferrer = Convert.ToString(ViewData["RuleActionParentUrl"]) }, FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="panel panel-default AppForm">
+                <div class="panel-body">
+                    <div class="row">
+                        <div class='col-sm-6 col-md-6 col-xs-12'>
+                            <div class='form-group'>
+                                <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.ActionName) <span class="text-danger-reg">*</span></label>
+                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                    @Html.TextBoxFor(model => model.ActionName, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.ActionName)
+                                </div>
+                            </div>
+                        </div>
+                        <div class='col-sm-6 col-md-6 col-xs-12'>
+                            <div class='form-group'>
+                                <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.ErrorMessage) </label>
+                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                    @Html.TextAreaFor(model => model.ErrorMessage, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.ErrorMessage)
+                                </div>
+                            </div>
+                        </div>
+                        <div class='col-sm-6 col-md-6 col-xs-12'>
+                            <div class='form-group'>
+                                <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.RuleActionID) </label>
+                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                    <div class="input-group">
+                                        @Html.DropDownList("RuleActionID", null, "-- Select --", new { @class = "chosen-select form-control", @HostingName = "BusinessRule", @dataurl = Url.Action("GetAllValue", "BusinessRule", null) })
+                                        @*@Html.DropDownList("RuleActionID", null, "--Select Business Rule--", new { @class = "chosen-select form-control", @HostingName = "BusinessRule", @dataurl = Url.Action("GetAllValue", "BusinessRule",null) })*@
+                                        @Html.ValidationMessageFor(model => model.RuleActionID)
+                                        @if (User.Identity.IsAuthenticated && User != null && User.CanAdd("BusinessRule"))
+                                        {
+                                            <div class="input-group-btn">
+                                                <a class="btn btn-default btn ie8fix" href="@Url.Action("Create", "BusinessRule", new {UrlReferrer = Request.Url, HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) })">
+                                                    <span class="glyphicon glyphicon-plus-sign"></span>
+                                                </a>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class='col-sm-6 col-md-6 col-xs-12'>
+                            <div class='form-group'>
+                                <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.AssociatedActionTypeID) </label>
+                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                    <div class="input-group">
+                                        @Html.DropDownList("AssociatedActionTypeID", null, "-- Select --", new { @class = "chosen-select form-control", @HostingName = "ActionType", @dataurl = Url.Action("GetAllValue", "ActionType", null) })
+                                        @*@Html.DropDownList("AssociatedActionTypeID", null, "--Select Action Type--", new { @class = "chosen-select form-control", @HostingName = "ActionType", @dataurl = Url.Action("GetAllValue", "ActionType",null) })*@
+                                        @Html.ValidationMessageFor(model => model.AssociatedActionTypeID)
+                                        @if (User.Identity.IsAuthenticated && User != null && User.CanAdd("ActionType"))
+                                        {
+                                            <div class="input-group-btn">
+                                                <a class="btn btn-default btn ie8fix" href="@Url.Action("Create", "ActionType", new {UrlReferrer = Request.Url, HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) })">
+                                                    <span class="glyphicon glyphicon-plus-sign"></span>
+                                                </a>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @Html.ActionLink("Cancel", "Cancel", new { UrlReferrer = ViewData["RuleActionParentUrl"] }, new { @onclick = "", @class = "btn btn-default btn-sm" })
+    <input type="submit" value="Create" class="btn btn-primary btn-sm" /><br /><br />
+}
+<script>
+    $("form").submit(function () {
+        if ($(this).find('.input-validation-error').length == 0) {
+            $(this).find(':submit').attr('disabled', 'disabled');
+        }
+    });
+</script>
+
+

@@ -1,0 +1,237 @@
+﻿@model IEnumerable<GeneratorBase.MVC.Models.ApplicationFeedback>
+@{
+    ViewBag.Title = "Set Search Criteria";
+	var parentUrl = HttpUtility.ParseQueryString(Request.UrlReferrer.Query);
+}
+<script>
+    function keypressHandler(e) {
+        if (e.which == 13) {
+            $(this).blur();
+            $('#fSearchApplicationFeedback').focus().click();
+        }
+    }
+ $(document).keypress(keypressHandler);
+ $(document).ready(function () {
+  if ("@parentUrl".length > 0) {
+			 document.getElementById("FSearch").value = "@parentUrl["search"]";
+			document.getElementById("CommentIdTo").value = "@parentUrl["CommentIdTo"]";
+			 document.getElementById("CommentIdFrom").value = "@parentUrl["CommentIdFrom"]";
+			document.getElementById("ReportedByTo").value = "@parentUrl["ReportedByTo"]";
+			 document.getElementById("ReportedByFrom").value = "@parentUrl["ReportedByFrom"]";
+ if ("@parentUrl["associatedapplicationfeedbacktype"]" != null && "@parentUrl["associatedapplicationfeedbacktype"]".length > 0) {
+            var resAssociatedApplicationFeedbackType = "@parentUrl["associatedapplicationfeedbacktype"]".split(",");
+            var eleAssociatedApplicationFeedbackType = document.getElementById("associatedapplicationfeedbacktype");
+            for (i = 0; i < resAssociatedApplicationFeedbackType.length; i++) {
+                for (var o = 0; o < eleAssociatedApplicationFeedbackType.options.length; o++) {
+                    if (eleAssociatedApplicationFeedbackType.options[o].value == resAssociatedApplicationFeedbackType[i])
+                        eleAssociatedApplicationFeedbackType.options[o].selected = true;
+                }
+            }
+	}
+ if ("@parentUrl["associatedapplicationfeedbackstatus"]" != null && "@parentUrl["associatedapplicationfeedbackstatus"]".length > 0) {
+            var resAssociatedApplicationFeedbackStatus = "@parentUrl["associatedapplicationfeedbackstatus"]".split(",");
+            var eleAssociatedApplicationFeedbackStatus = document.getElementById("associatedapplicationfeedbackstatus");
+            for (i = 0; i < resAssociatedApplicationFeedbackStatus.length; i++) {
+                for (var o = 0; o < eleAssociatedApplicationFeedbackStatus.options.length; o++) {
+                    if (eleAssociatedApplicationFeedbackStatus.options[o].value == resAssociatedApplicationFeedbackStatus[i])
+                        eleAssociatedApplicationFeedbackStatus.options[o].selected = true;
+                }
+            }
+	}
+ if ("@parentUrl["applicationfeedbackpriority"]" != null && "@parentUrl["applicationfeedbackpriority"]".length > 0) {
+            var resApplicationFeedbackPriority = "@parentUrl["applicationfeedbackpriority"]".split(",");
+            var eleApplicationFeedbackPriority = document.getElementById("applicationfeedbackpriority");
+            for (i = 0; i < resApplicationFeedbackPriority.length; i++) {
+                for (var o = 0; o < eleApplicationFeedbackPriority.options.length; o++) {
+                    if (eleApplicationFeedbackPriority.options[o].value == resApplicationFeedbackPriority[i])
+                        eleApplicationFeedbackPriority.options[o].selected = true;
+                }
+            }
+	}
+ if ("@parentUrl["applicationfeedbackseverity"]" != null && "@parentUrl["applicationfeedbackseverity"]".length > 0) {
+            var resApplicationFeedbackSeverity = "@parentUrl["applicationfeedbackseverity"]".split(",");
+            var eleApplicationFeedbackSeverity = document.getElementById("applicationfeedbackseverity");
+            for (i = 0; i < resApplicationFeedbackSeverity.length; i++) {
+                for (var o = 0; o < eleApplicationFeedbackSeverity.options.length; o++) {
+                    if (eleApplicationFeedbackSeverity.options[o].value == resApplicationFeedbackSeverity[i])
+                        eleApplicationFeedbackSeverity.options[o].selected = true;
+                }
+            }
+	}
+ if ("@parentUrl["applicationfeedbackresource"]" != null && "@parentUrl["applicationfeedbackresource"]".length > 0) {
+            var resApplicationFeedbackResource = "@parentUrl["applicationfeedbackresource"]".split(",");
+            var eleApplicationFeedbackResource = document.getElementById("applicationfeedbackresource");
+            for (i = 0; i < resApplicationFeedbackResource.length; i++) {
+                for (var o = 0; o < eleApplicationFeedbackResource.options.length; o++) {
+                    if (eleApplicationFeedbackResource.options[o].value == resApplicationFeedbackResource[i])
+                        eleApplicationFeedbackResource.options[o].selected = true;
+                }
+            }
+	}
+ }
+    });
+</script>
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-title">
+            <i class="glyphicon glyphicon-search text-primary"></i> Application Feedback <i class="glyphicon glyphicon-chevron-right small"></i> <span>Faceted Search</span>
+        </h1>
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+			 <div class="fsearch">
+				<div class="panel panel-default">
+						   <div class="panel-body fsearchbg">
+                            <div class='col-sm-9 small'>
+							<div class='col-sm-4'>
+                                    <label class='col-sm-12'> General Criteria </label>
+									@{
+									var txtGenCriteria = String.IsNullOrEmpty(Convert.ToString(ViewBag.CurrentFilter)) ? "" : Convert.ToString(ViewBag.CurrentFilter);
+									}
+									<input type="text" id="FSearch" class="form-control" placeholder="General Criteria" value="@txtGenCriteria" />
+                             </div>
+                                <div class='col-sm-4'>
+                                    <label class='col-sm-12'> Comment Id</label>
+									<div class='input-group'>
+                                    <input type="text" id="CommentIdFrom" class="form-control"  placeholder="From"/>
+                                <span class="input-group-addon datefiled">
+                                    <input type="text" id="CommentIdTo" class="form-control" placeholder="To" style=" border-radius:0px 4px 4px 0px; border-left:0px"/>
+ </span>
+                                </div></div>
+                                <div class='col-sm-4'>
+                                    <label class='col-sm-12'> Reported By</label>
+									<div class='input-group'>
+                                    <input type="text" id="ReportedByFrom" class="form-control"  placeholder="From"/>
+                                    <script type="text/javascript">
+                                        $(function () {
+                                            $('#ReportedByFrom').datetimepicker({ pickTime: false });
+                                        });
+                                    </script>
+                                <span class="input-group-addon datefiled">
+                                    <input type="text" id="ReportedByTo" class="form-control" placeholder="To" style=" border-radius:0px 4px 4px 0px; border-left:0px"/>
+                                    <script type="text/javascript">
+                                        $(function () {
+                                            $('#ReportedByTo').datetimepicker({ pickTime: false });
+                                        });
+                                    </script>
+ </span>
+                                </div></div>
+    @if (ViewBag.associatedapplicationfeedbacktype!=null)
+	{ 
+							<div class='col-sm-4' style="height:55px;" >
+                                    <label class='col-sm-12' for="associatedapplicationfeedbacktype"> Type</label>
+	 @Html.DropDownList("associatedapplicationfeedbacktype", null, new {   @multiple = "multiple", @HostingName = "ApplicationFeedbackType", @dataurl = Url.Action("GetAllMultiSelectValue", "ApplicationFeedbackType",null) })
+							</div>
+	}
+    @if (ViewBag.associatedapplicationfeedbackstatus!=null)
+	{ 
+							<div class='col-sm-4' style="height:55px;" >
+                                    <label class='col-sm-12' for="associatedapplicationfeedbackstatus"> Status</label>
+	 @Html.DropDownList("associatedapplicationfeedbackstatus", null, new {   @multiple = "multiple", @HostingName = "ApplicationFeedbackStatus", @dataurl = Url.Action("GetAllMultiSelectValue", "ApplicationFeedbackStatus",null) })
+							</div>
+	}
+    @if (ViewBag.applicationfeedbackpriority!=null)
+	{ 
+							<div class='col-sm-4' style="height:55px;" >
+                                    <label class='col-sm-12' for="applicationfeedbackpriority"> Priority</label>
+	 @Html.DropDownList("applicationfeedbackpriority", null, new {   @multiple = "multiple", @HostingName = "FeedbackPriority", @dataurl = Url.Action("GetAllMultiSelectValue", "FeedbackPriority",null) })
+							</div>
+	}
+    @if (ViewBag.applicationfeedbackseverity!=null)
+	{ 
+							<div class='col-sm-4' style="height:55px;" >
+                                    <label class='col-sm-12' for="applicationfeedbackseverity"> Severity</label>
+	 @Html.DropDownList("applicationfeedbackseverity", null, new {   @multiple = "multiple", @HostingName = "FeedbackSeverity", @dataurl = Url.Action("GetAllMultiSelectValue", "FeedbackSeverity",null) })
+							</div>
+	}
+    @if (ViewBag.applicationfeedbackresource!=null)
+	{ 
+							<div class='col-sm-4' style="height:55px;" >
+                                    <label class='col-sm-12' for="applicationfeedbackresource"> Assigned To</label>
+	 @Html.DropDownList("applicationfeedbackresource", null, new {   @multiple = "multiple", @HostingName = "FeedbackResource", @dataurl = Url.Action("GetAllMultiSelectValue", "FeedbackResource",null) })
+							</div>
+	}
+					 </div>
+		<div class='col-sm-3' style="padding:10px; background:white; border:1px solid #c3ddec !important">
+                @if (User.Identity.IsAuthenticated && User != null && User.CanView("ApplicationFeedback"))
+                { 
+					<button class="btn btn-xs  btn-default tip-top pull-right" type="button" data-original-title="Full Add" data-placement="top" onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Index", "ApplicationFeedback") + "');") style="padding:4px 10px 7px 10px; height:30px !important; margin-bottom:5px; width:100%; text-align:left;">
+						<span class="glyphicon glyphicon-list"></span> List
+					</button>
+				}
+				@if (User.Identity.IsAuthenticated && User != null && User.CanAdd("ApplicationFeedback"))
+                {
+                    <button class="btn btn-xs  btn-default tip-top" type="button" data-original-title="Create New" data-placement="top" onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Create", "ApplicationFeedback", new { UrlReferrer = Request.Url, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null) + "');") style="padding:4px 10px 7px 10px; height:30px !important; margin-bottom:5px; width:100%; text-align:left;">
+                        <span class="fam-world-add"></span> Create New
+                    </button>
+				<button style="padding:4px 10px 7px 10px; height:30px !important; margin-bottom:5px; width:100%; text-align:left;" class="btn btn-xs  btn-default tip-top" type="button" data-original-title="Add Wizard" data-placement="top" style="padding:4px 5px;" onclick=@Html.Raw("NavigateToUrl('" + Url.Action("CreateWizard", "ApplicationFeedback", new { UrlReferrer = Request.Url, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null) + "');")>
+					<span class="fam-chart-organisation-add"></span> Create Wizard
+				</button>		
+                }
+				 <button class="btn btn-default tip-top" data-placement="top" data-original-title="Show Graph" style="padding:4px 10px 7px 10px; height:30px !important; margin-bottom:5px; width:100%; text-align:left;" data-toggle="modal" data-target="#ShowGraphApplicationFeedback" onclick=@Html.Raw("OpenDashBoard('dvShowGraphApplicationFeedback');")>
+                                <span class="fam-chart-bar"></span> Dashboard
+                 </button>
+		@if (ViewBag.FavoriteItem != null)
+        {
+				<div class="col-lg-12 col-sm-12 col-sx-12" style="padding:0px; ">
+                    <table class="table table-striped table-bordered table-hover table-condensed ">
+                        <thead>
+                            <tr>
+                                <th colspan="2">Favorite Items</th>
+                            </tr>
+                        </thead>
+                        @foreach (GeneratorBase.MVC.Models.FavoriteItem fItem in ViewBag.FavoriteItem)
+                        {
+						<tr>
+                            <td>
+                                <a href='/@GeneratorBase.MVC.Models.CommonFunction.Instance.AppURL().ToString()@fItem.LinkAddress' style="color:black">@fItem.Name</a>
+                            </td>
+                        </tr>                           
+                        }
+                </table>
+            </div>
+        }
+            </div>
+					  </div>
+                                        </div>
+                                    </div>
+   <a href="@Url.Action("Index")" class="btn btn-default btn-sm"> Cancel</a>
+<button id="fSearchApplicationFeedback" class="btn btn-primary btn-sm" type="button" dataurl="@(Url.Action("FSearch", "ApplicationFeedback", null) )"
+        onclick="@(Html.Raw("FacetedSearch('ApplicationFeedback','associatedapplicationfeedbacktype,associatedapplicationfeedbackstatus,applicationfeedbackpriority,applicationfeedbackseverity,applicationfeedbackresource','CommentIdFrom,CommentIdTo,ReportedByFrom,ReportedByTo','"
+    +  Convert.ToString(Request.QueryString["sortBy"]) +"','"
+     + Convert.ToString(Request.QueryString["isAsc"]) + "','" + "'); "))">
+    Search
+</button>
+<script>
+    $(document).ready(function () {
+	 $('#associatedapplicationfeedbacktype').multiselect({
+            buttonWidth: '100%'
+        });
+	 $('#associatedapplicationfeedbackstatus').multiselect({
+            buttonWidth: '100%'
+        });
+	 $('#applicationfeedbackpriority').multiselect({
+            buttonWidth: '100%'
+        });
+	 $('#applicationfeedbackseverity').multiselect({
+            buttonWidth: '100%'
+        });
+	 $('#applicationfeedbackresource').multiselect({
+            buttonWidth: '100%'
+        });
+		    });
+</script>
+    <div class="modal fade" id="ShowGraphApplicationFeedback" tabindex="-1" role="dialog" aria-labelledby="ShowGraphApplicationFeedbackLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="ShowGraphApplicationFeedbackLabel">Dashboard Application Feedback</h4>
+                </div>
+                <div id="dvShowGraphApplicationFeedback" class="modal-body" data-url="@Url.Action("ShowGraph", "ApplicationFeedback")">
+                </div>
+            </div>
+        </div>
+    </div>
+
+

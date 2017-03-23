@@ -1,0 +1,473 @@
+﻿@model PagedList.IPagedList<GeneratorBase.MVC.Models.T_StudentPerformance>
+@using PagedList.Mvc;
+@{
+    var ActionNameUrl = "Index";
+    if (HttpContext.Current.Request.RequestContext.RouteData.Values["action"].ToString().ToUpper() == "FSEARCH")
+    {
+        ActionNameUrl = "FSearch";
+    }
+	var BackUrl =  Request.Url;
+	if (ViewData["HostingEntity"]!=null && Request.QueryString["TabToken"]!=null)
+	{
+		BackUrl =  Request.UrlReferrer;
+	}
+}
+<div id="T_StudentPerformance">
+<style>
+    .table-responsive > .fixed-column {
+        position: absolute;
+        display: block;
+        width: auto;
+        border: 0px solid transparent;
+        border-top: 1px solid #c3ddec;
+    }
+    .fixed-column th {
+        background: #fff;
+    }
+    .fixed-column td {
+        background: #fff;
+    }
+</style>
+<script type="text/javascript">
+    $(document).ready(function () {
+	 $(".pagination a").click(function (e) {
+            //PaginationClick(e,'T_StudentPerformance')
+			PaginationClick(e, 'T_StudentPerformance','@User.JavaScriptEncodedName')
+        })
+	    if("@HttpContext.Current.Request.RequestContext.RouteData.Values["action"].ToString().ToUpper()" == "FSEARCH")
+        {
+            $("#fsearchT_StudentPerformance").addClass('in');
+			if('@ViewData["HostingEntity"]'.length>0)
+	        {
+                $("#" + "@ViewData["HostingEntity"]" + "_T_StudentPerformance").hide();
+	        }
+        }
+	    $("#SearchStringT_StudentPerformance").keypress(function (e) {
+			if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
+				 $("#T_StudentPerformanceSearch").bind("click", (function () {
+                        }));
+                $('#T_StudentPerformanceSearch').trigger("click");
+                return false;
+			}
+        })
+        $("#btnShowHideT_StudentPerformance").mouseup(function () {
+            if (document.getElementById('ColumnShowHideT_StudentPerformance').className == 'collapse') {
+				 $('#lblT_StudentPerformance').css('display', 'none');
+            }
+        })
+    });
+</script>
+@functions {
+    object getSortHtmlAttributes(string sortby, bool IsPaging, int? page, bool? IsExport)
+    {
+        if (IsPaging)
+        {
+            return new
+            {
+                page,
+                sortBy = ViewBag.CurrentSort,
+                isAsc = ViewBag.IsAsc,
+                currentFilter = ViewBag.CurrentFilter,
+                HostingEntity = @Convert.ToString(ViewData["HostingEntity"]),
+                AssociatedType = @Convert.ToString(ViewData["AssociatedType"]),
+                HostingEntityID = ViewData["HostingEntityID"],
+				IsExport = IsExport,
+				FSFilter = ViewBag.FSFilter == null ? "Fsearch" : ViewBag.FSFilter,
+				IsFilter = @Convert.ToBoolean(ViewData["IsFilter"]),
+                
+ t_studentcode = Request.QueryString["t_studentcode"],
+  T_Mark1From = Request.QueryString["T_Mark1From"],
+  T_Mark1To = Request.QueryString["T_Mark1To"],
+  T_Mark2From = Request.QueryString["T_Mark2From"],
+  T_Mark2To = Request.QueryString["T_Mark2To"],
+  T_TotalMarksFrom = Request.QueryString["T_TotalMarksFrom"],
+  T_TotalMarksTo = Request.QueryString["T_TotalMarksTo"],
+				search=Request.QueryString["search"],
+            };
+        }
+        else
+        {
+            return new
+            {
+                sortBy = sortby,
+                currentFilter = Request.QueryString["currentFilter"],
+                searchString = Request.QueryString["searchString"],
+                isAsc = (ViewBag.IsAsc == "ASC" ? "DESC" : ""),
+                page = ViewBag.Pages,
+                HostingEntity = @Convert.ToString(ViewData["HostingEntity"]),
+                HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),
+                AssociatedType = @Convert.ToString(ViewData["AssociatedType"]),
+				IsExport = IsExport,
+				FSFilter = ViewBag.FSFilter == null ? "Fsearch" : ViewBag.FSFilter,
+				IsFilter = @Convert.ToBoolean(ViewData["IsFilter"]),
+ t_studentcode = Request.QueryString["t_studentcode"],
+  T_Mark1From = Request.QueryString["T_Mark1From"],
+  T_Mark1To = Request.QueryString["T_Mark1To"],
+  T_Mark2From = Request.QueryString["T_Mark2From"],
+  T_Mark2To = Request.QueryString["T_Mark2To"],
+  T_TotalMarksFrom = Request.QueryString["T_TotalMarksFrom"],
+  T_TotalMarksTo = Request.QueryString["T_TotalMarksTo"],
+		search=Request.QueryString["search"],
+            };
+        }
+    }
+}
+<div class="row">
+    <div class="col-md-12 col-sm-12 col-sx-12">
+        <div class="panel panel-default">
+            <div class="panel-heading clearfix" style="margin:0px; padding:8px;">
+                 <div class="btn-group" id='@ViewData["HostingEntity"]_T_StudentPerformance'>
+				  @if (User.Identity.IsAuthenticated && User != null && User.CanAdd("T_StudentPerformance"))
+				  {
+						
+					<button class="btn btn-default tip-top" data-placement="top" data-original-title="Quick Add" style="padding:3px 5px;" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','StudentPerformance','dvPopup','" + Url.Action("CreateQuick", "T_StudentPerformance", new { UrlReferrer = BackUrl, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), TS=DateTime.Now }) + "')")">
+						<span class="fam-add"></span>
+                    </button>
+					<button class="btn btn-xs  btn-default tip-top" type="button" data-original-title="Full Add" data-placement="top" style="padding:4px 5px;" onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Create", "T_StudentPerformance", new { UrlReferrer = BackUrl, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null) + "');")>
+						<span class="fam-world-add"></span> Add
+					</button>
+			}
+			@if (ViewData["HostingEntity"] != null && User.CanEdit(ViewData["HostingEntity"].ToString()))
+			{
+				<button class="btn btn-default tip-top" data-placement="top" data-original-title="Associate StudentPerformance with @GeneratorBase.MVC.Models.ModelConversion.GetDisplayNameOfEntity(ViewData["HostingEntity"].ToString())" style="padding:3px 5px;" data-toggle="modal" data-target="#dvPopupBulkOperation" onclick="@Html.Raw("OpenPopUpEntity1M(this,'PopupBulkOperation','StudentPerformance','dvPopupBulkOperation','" + Url.Action("Index", "T_StudentPerformance", new { BulkOperation = "multiple", BulkAssociate = true, UrlReferrer = BackUrl, AssociatedType = ViewData["AssociatedType"], HostingEntity = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), TS = DateTime.Now }) + "')")">
+					<span class="fam-chart-organisation"></span>
+				</button>
+			}
+                </div>
+				<div class="btn-group">
+			@if (User.Identity.IsAuthenticated && User != null && User.CanAdd("T_StudentPerformance"))
+			{
+				if (ViewData["HostingEntity"]==null)
+				{ 
+				 <button type="button" class="btn btn-default btn-default tip-top" data-original-title="Import Excel" data-placement="top" style="padding:3px 5px;" onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Upload", "T_StudentPerformance") + "');")>
+                        <span class="fam-page-excel"></span>               
+                 </button>
+				}
+			}
+				 <div class="btn btn-default  btn-default tip-top" data-original-title="Export Excel" data-placement="top" style="padding:3px 5px;" onclick=@Html.Raw("NavigateToUrl('" + Url.Action(ActionNameUrl,"T_StudentPerformance",getSortHtmlAttributes(null, false, null, true), null) + "');")>
+				    <span class="fam-page-white-put"></span>
+                </div>
+		 </div>
+		<div class="btn-group">
+                            <button class="btn btn-default tip-top" data-placement="top" data-original-title="Show Graph" style="padding:3px 5px;" data-toggle="modal" data-target="#ShowGraphT_StudentPerformance" onclick=@Html.Raw("OpenDashBoard('dvShowGraphT_StudentPerformance');")>
+                                <span class="fam-chart-bar"></span>
+                            </button>
+             <button type="button" class="btn btn-default btn-default collapse-data-btn tip-top" id="btnShowHideT_StudentPerformance" data-original-title="Show/Hide Column" data-placement="top" style="padding:3px 5px;" onclick=@Html.Raw("showhideColumns(event,'T_StudentPerformance');")>
+                        <span class="fam-table-row-delete"></span>
+                    </button>
+	@if (ViewData["HostingEntity"] == null || Convert.ToBoolean(ViewData["IsFilter"]) == true)
+	{
+		<div class="btn-group">
+		<a class="btn btn-default btn-default dropdown-toggle tip-top" data-original-title="Filter-Groupby" style="padding:3px 5px;" data-toggle="dropdown" href="#">
+		<span class="glyphicon glyphicon-filter"></span>
+		</a>
+		<ul class="dropdown-menu" role="menu">
+            <li>
+                <a id="fltT_Student" data-placement="top" onclick=@Html.Raw("EntityFilter('T_StudentPerformance','" + Url.Action("GetAllValueForFilter", "T_Student") + "','" + Html.Raw(Url.Action("Index", "T_StudentPerformance", new {FirstCall=true,FilterHostingEntityID = ViewData["HostingEntityID"], IsFilter = true, HostingEntity = "T_Student", AssociatedType = "T_StudentCode", ClearSearchTimeStamp = DateTime.Now })) + "','" + User.JavaScriptEncodedName + "');")>
+                    <span>Student</span>
+                </a>
+            </li>
+       <li><span class="label label-primary pull-left filterLabel" style="margin-left:20px;">@Html.ActionLink("Clear", "Index")</span></li>
+		</ul>
+		</div>
+	}
+                </div>
+ <div class="btn-group">
+    <a class="btn btn-default dropdown-toggle tip-top" data-original-title="Bulk Actions" style="padding:3px 5px;" data-toggle="dropdown" href="#">
+           <span class="fa fa-wrench"></span> Bulk
+        </a>
+        <ul class="dropdown-menu" role="menu">
+	<li>
+	@if (User.Identity.IsAuthenticated && User != null &&  !User.CanUseVerb("BulkUpdate","T_StudentPerformance"))
+	{
+		<a data-placement="top" data-toggle="modal" data-target="#dvPopup"
+			onclick="@Html.Raw("OpenPopUpBulKUpdate('addPopup','Bulk Update StudentPerformance','dvPopup','" + Url.Action("BulkUpdate", "T_StudentPerformance", new { UrlReferrer = BackUrl, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), TS = DateTime.Now }) + "')")">Update</a>
+	}
+	</li>
+ <li>
+	 @if (User.Identity.IsAuthenticated && User != null && !User.CanUseVerb("BulkDelete","T_StudentPerformance"))
+     {
+		<a onclick="PerformBulkOperation(this,'T_StudentPerformance','Bulk Delete','@Url.Action("DeleteBulk", "T_StudentPerformance")');">Delete</a>
+	 } </li>
+                        </ul>
+                    </div>
+				<div class="pull-right" style="width:250px;">
+                        <div class="input-group">
+                            @Html.TextBox("SearchStringT_StudentPerformance", ViewBag.CurrentFilter as string, null, new { @class = "form-control fixsearchbox", @value = ViewBag.Homeval, @placeholder = "Search" })
+                            <div class="input-group-btn">
+                              <a id="T_StudentPerformanceSearch" onclick="SearchClick(event, 'T_StudentPerformance', '@Html.Raw(Url.Action("Index", "T_StudentPerformance", new { IsFilter = ViewData["IsFilter"], IsDeepSearch = false, searchString = "_SearchString", HostingEntity = Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]), SearchTimeStamp = DateTime.Now }))','@User.JavaScriptEncodedName');" data-original-title="Grid Search" class="btn btn-default btn-default tip-top" style="padding:3px 5px;"><span class="fam-zoom"></span></a>
+ @if (ViewData["HostingEntity"]==null)
+	{ 
+			 <a href="@(Url.Action("SetFSearch", "T_StudentPerformance")+Request.Url.Query)" data-original-title="Faceted Search" class="btn btn-default btn-default tip-top" style="padding:3px 5px;"><span class="fam-page-find"></span></a>
+	}
+								<button id="T_StudentPerformanceCancel" type="button" class="btn btn-default btn-default collapse-data-btn tip-top" onclick="CancelSearch('T_StudentPerformance','@Html.Raw(Url.Action("Index", "T_StudentPerformance", new {IsFilter=ViewData["IsFilter"], HostingEntity = Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]), ClearSearchTimeStamp = DateTime.Now }))','@User.JavaScriptEncodedName')" data-original-title="Clear Search" data-placement="top" style="padding:3px 5px;">
+                                    <span class="fam-delete"></span>
+                                </button>
+                                <button id="T_StudentPerformanceSearchCancel" type="button" class="btn btn-default btn-default collapse-data-btn tip-top" onclick="CancelSearch('T_StudentPerformance','@Html.Raw(Url.Action("Index", "T_StudentPerformance", new {IsFilter=ViewData["IsFilter"], HostingEntity = Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]), ClearSearchTimeStamp = DateTime.Now }))','@User.JavaScriptEncodedName')" data-original-title="Refresh Grid" data-placement="top" style="padding:3px 5px;">
+                                    <span class="fam-arrow-refresh"></span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+            </div>
+            <div class="panel-body" style="margin:0px; padding:8px;">
+ @if (ViewData["HostingEntity"]==null)
+	{ 
+	if (ViewBag.SearchResult != "" )
+                            {
+			<div id="fsearchT_StudentPerformance" class="collapse MessageFSearch">
+                        @Html.Raw(Html.Encode(ViewBag.SearchResult).Replace(Environment.NewLine, "<br/>"))
+						 <a href="@Url.Action("Index", "T_StudentPerformance")" style="margin-left:5px;float:right"><span class="glyphicon glyphicon-remove-sign"></span> Clear</a>
+						  <a href="@(Url.Action("SetFSearch", "T_StudentPerformance")+Request.Url.Query)" style="float:right" ><span class="glyphicon glyphicon-edit"></span> Modify</a>
+            </div>
+	}
+}
+	@Html.Partial("~/Views/T_StudentPerformance/ShowHideColumns.cshtml") 
+    <div id="Des_Table" class="table-responsive" style="overflow-x:auto;">
+        <table class="table table-striped table-bordered table-hover table-condensed">
+            <thead>
+                <tr>
+	 <th class="col0" style="width:20px;">
+		<input type="checkbox" class="tip-top" data-placement="top" data-original-title="Select All" onclick="SelectAllRows(this);" />
+        @Html.Hidden("SelectedItems")
+	</th>
+					<th class="col1" style="width:70px;">Actions</th>
+@if(User.CanView("T_StudentPerformance","T_StudentCodeID"))
+{
+			<th class="col2" @(Convert.ToString(ViewData["HostingEntity"]) == "T_Student" && Convert.ToString(ViewData["AssociatedType"]) == "T_StudentCode"?"hidden":"")>
+				@Html.ActionLink("Student", ActionNameUrl, "T_StudentPerformance",getSortHtmlAttributes("T_StudentCodeID", false, null, false),new {  @onclick = "SortLinkClick(event,'T_StudentPerformance');" })
+				@if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "T_StudentCodeID")
+				{<i class="fa fa-sort-desc"></i>}
+				@if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "T_StudentCodeID")
+				{<i class="fa fa-sort-asc"></i>}
+			 </th>
+}
+@if(User.CanView("T_StudentPerformance","T_Mark1") )
+{	
+			<th class="col3">@Html.ActionLink("Mark1", ActionNameUrl, "T_StudentPerformance",getSortHtmlAttributes("T_Mark1", false, null, false),new {  @onclick = "SortLinkClick(event,'T_StudentPerformance');" }) 
+				@if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "T_Mark1")
+                {<i class="fa fa-sort-desc"></i>}
+                @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "T_Mark1")
+                {<i class="fa fa-sort-asc"></i>}
+			</th>
+}
+@if(User.CanView("T_StudentPerformance","T_Mark2") )
+{	
+			<th class="col4">@Html.ActionLink("Mark2", ActionNameUrl, "T_StudentPerformance",getSortHtmlAttributes("T_Mark2", false, null, false),new {  @onclick = "SortLinkClick(event,'T_StudentPerformance');" }) 
+				@if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "T_Mark2")
+                {<i class="fa fa-sort-desc"></i>}
+                @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "T_Mark2")
+                {<i class="fa fa-sort-asc"></i>}
+			</th>
+}
+@if(User.CanView("T_StudentPerformance","T_TotalMarks") )
+{	
+			<th class="col5">@Html.ActionLink("Total Marks", ActionNameUrl, "T_StudentPerformance",getSortHtmlAttributes("T_TotalMarks", false, null, false),new {  @onclick = "SortLinkClick(event,'T_StudentPerformance');" }) 
+				@if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "T_TotalMarks")
+                {<i class="fa fa-sort-desc"></i>}
+                @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "T_TotalMarks")
+                {<i class="fa fa-sort-asc"></i>}
+			</th>
+}
+@if(User.CanView("T_StudentPerformance","T_Grade") )
+{	
+			<th class="col6">@Html.ActionLink("Grade", ActionNameUrl, "T_StudentPerformance",getSortHtmlAttributes("T_Grade", false, null, false),new {  @onclick = "SortLinkClick(event,'T_StudentPerformance');" }) 
+				@if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "T_Grade")
+                {<i class="fa fa-sort-desc"></i>}
+                @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "T_Grade")
+                {<i class="fa fa-sort-asc"></i>}
+			</th>
+}
+@if(User.CanView("T_StudentPerformance","T_Remarks") )
+{	
+			<th class="col7">@Html.ActionLink("Remarks", ActionNameUrl, "T_StudentPerformance",getSortHtmlAttributes("T_Remarks", false, null, false),new {  @onclick = "SortLinkClick(event,'T_StudentPerformance');" }) 
+				@if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "T_Remarks")
+                {<i class="fa fa-sort-desc"></i>}
+                @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "T_Remarks")
+                {<i class="fa fa-sort-asc"></i>}
+			</th>
+}
+       </tr>
+@foreach (var item in Model) {
+      <tr ondblclick="DoubleClickRow(@item.Id,'@Url.Action("Details", "T_StudentPerformance", new { id = item.Id, UrlReferrer = BackUrl, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null)');">
+	 <td>
+			 <input type="checkbox" id="@item.Id" onclick="SelectForBulkOperation(this,'@item.Id');" />
+	</td>
+		   <td>
+	   <div style="width:60px; margin-top:-2px;">
+		<div class="btn-group" style="position:absolute;">
+                                                <button data-toggle="dropdown" class="btn btn-xs dropdown-toggle btn-default">
+                                                    Action
+                                                    <span class="caret">    </span>
+                                                </button>
+			<ul class="dropdown-menu pull-left">
+				<li>
+                    <a href="@Url.Action("Details", "T_StudentPerformance", new { id = item.Id, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"])  }, null)"><i class="glyphicon glyphicon-eye-open"></i>  View</a>
+                </li>
+				 <li>
+					@if (User.CanEditItem("T_StudentPerformance", item, User))
+					{
+						<a data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Edit StudentPerformance','dvPopup','" + Url.Action("EditQuick", "T_StudentPerformance", new
+																			{
+																				id = item.Id,
+																				UrlReferrer = Request.Url,
+																				AssociatedType = ViewData["AssociatedType"],
+																				HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]),
+																				HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),
+																				TS = DateTime.Now
+																			}) + "')")"> <i class="glyphicon glyphicon-edit"></i> Quick Edit</a>
+					}
+				</li>
+				<li>
+                    @if (User.CanEditItem("T_StudentPerformance", item, User))
+                    {
+                        <a href="@Url.Action("Edit","T_StudentPerformance", new { id = item.Id,  UrlReferrer = BackUrl, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) },null)"><i class="glyphicon glyphicon-edit"></i>  Edit</a>
+                    }
+                </li>             
+				<li>
+                    @if (User.CanDeleteItem("T_StudentPerformance", item, User))
+                    {
+                        <a href="@Url.Action("Delete", "T_StudentPerformance", new { id = item.Id, UrlReferrer = BackUrl, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null)"><i class="glyphicon glyphicon-remove-sign"></i>  Delete</a>
+                    }
+                </li>
+			</ul>
+		</div>
+		</div>
+	</td>
+	@if(User.CanView("T_StudentPerformance","T_StudentCodeID"))
+{
+		<td @(Convert.ToString(ViewData["HostingEntity"]) == "T_Student" && Convert.ToString(ViewData["AssociatedType"]) == "T_StudentCode"?"hidden":"")>
+		            @Html.DisplayFor(modelItem => item.t_studentcode.DisplayValue)
+			        </td>
+}
+@if(User.CanView("T_StudentPerformance","T_Mark1"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.T_Mark1)
+        </td>
+}
+@if(User.CanView("T_StudentPerformance","T_Mark2"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.T_Mark2)
+        </td>
+}
+@if(User.CanView("T_StudentPerformance","T_TotalMarks"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.T_TotalMarks)
+        </td>
+}
+@if(User.CanView("T_StudentPerformance","T_Grade"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.T_Grade)
+        </td>
+}
+@if(User.CanView("T_StudentPerformance","T_Remarks"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.T_Remarks)
+        </td>
+}
+                                </tr>
+                            }
+                    </table>
+                </div>
+				 <ul id="Mob_List" class="list-group">
+                    @foreach (var item in Model)
+                    {
+                        <li class="list-group-item">
+@if(User.CanView("T_StudentPerformance","T_StudentCodeID"))
+{
+		<p @(Convert.ToString(ViewData["HostingEntity"]) == "T_Student" && Convert.ToString(ViewData["AssociatedType"]) == "T_StudentCode"?"hidden":"")>
+		<span class="text-primary"> StudentCode </span> : <span>
+		            @Html.DisplayFor(modelItem => item.t_studentcode.DisplayValue)
+			         </span> </p>
+		 }
+@if(User.CanView("T_StudentPerformance","T_Mark1"))
+{
+		<p><span class="text-primary"> Mark1 </span> : <span>
+            @Html.DisplayFor(modelItem => item.T_Mark1)
+         </span> </p>	
+		 }
+@if(User.CanView("T_StudentPerformance","T_Mark2"))
+{
+		<p><span class="text-primary"> Mark2 </span> : <span>
+            @Html.DisplayFor(modelItem => item.T_Mark2)
+         </span> </p>	
+		 }
+@if(User.CanView("T_StudentPerformance","T_TotalMarks"))
+{
+		<p><span class="text-primary"> Total Marks </span> : <span>
+            @Html.DisplayFor(modelItem => item.T_TotalMarks)
+         </span> </p>	
+		 }
+@if(User.CanView("T_StudentPerformance","T_Grade"))
+{
+		<p><span class="text-primary"> Grade </span> : <span>
+            @Html.DisplayFor(modelItem => item.T_Grade)
+         </span> </p>	
+		 }
+@if(User.CanView("T_StudentPerformance","T_Remarks"))
+{
+		<p><span class="text-primary"> Remarks </span> : <span>
+            @Html.DisplayFor(modelItem => item.T_Remarks)
+         </span> </p>	
+		 }
+<span class="label label-primary text-linkwhite"> 
+@Html.ActionLink("View", "Details","T_StudentPerformance", new { id = item.Id },null)
+</span>
+<span class="label label-warning text-linkwhite"> 
+@if (User.CanEditItem("T_StudentPerformance", item, User))
+				 {
+					@Html.ActionLink("Edit", "Edit","T_StudentPerformance", new { id = item.Id, UrlReferrer = BackUrl, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) },null)  
+				 }
+				 </span>
+				<span class="label label-danger text-linkwhite"> 
+				@if (User.CanDeleteItem("T_StudentPerformance", item, User))
+				 {
+					@Html.ActionLink("Delete", "Delete", "T_StudentPerformance", new { id = item.Id, UrlReferrer = BackUrl, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null)    
+				 }
+				 </span>
+				   </li>
+                    }
+                </ul>
+  			   @if (Model.Count > 0)
+                {
+                    <div id="pagination">
+                        @Html.PagedListPager(Model, page => Url.Action(ActionNameUrl, "T_StudentPerformance", getSortHtmlAttributes(null, true, page, false)))
+                        <div class="fixPageSize">
+                            Page Size :
+                            @Html.DropDownList("PageSize", new SelectList(new Dictionary<string, int> { { "10", 10 }, { "20", 20 }, { "50", 50 }, { "100", 100 } }, "Key", "Value")
+							, new { @id = "pagesizelistT_StudentPerformance",
+							 @onchange = @Html.Raw("pagesizelistChange(event,'T_StudentPerformance','"
+							  + @User.JavaScriptEncodedName + "')"),
+							 @Url = Html.Raw(@Url.Action(ActionNameUrl, "T_StudentPerformance",
+							 getSortHtmlAttributes(ViewBag.CurrentSort, ViewBag.Pages == 1 ? false : true,
+							 null, false), null)) })
+							<span style="text-align:right;"> Total Count: @(Model.TotalItemCount)</span>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div> 
+ </div>
+    <div class="modal fade" id="ShowGraphT_StudentPerformance" tabindex="-1" role="dialog" aria-labelledby="ShowGraphT_StudentPerformanceLabel" aria-hidden="true">
+        <div class="modal-dialog" style="width:80%">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="ShowGraphT_StudentPerformanceLabel">Dashboard StudentPerformance</h4>
+                </div>
+				 <div  class="modal-body" >
+						<div id="dvShowGraphT_StudentPerformance" data-url="@Url.Action("ShowGraph", "T_StudentPerformance")">
+						</div>
+						<div style="clear:both"></div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,57 @@
+﻿@{
+    ViewBag.Title = "Application Guides";
+}
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-title">
+            <i class="glyphicon glyphicon-home text-primary" style="margin-bottom:-20px;"></i> Application Guides
+        </h1>
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+<div class="row">
+    @if (ViewBag.FileList != null)
+    {
+        var icon = string.Empty;
+        foreach (dynamic docs in ViewBag.FileList)
+        {
+            string docName = ((docs.GetType()).GetProperty("Name")).GetValue(docs, null);
+            int id = ((docs.GetType()).GetProperty("id")).GetValue(docs, null);
+            if (id == 1)
+            {
+                icon = "fa-user";
+            }
+            else if (id == 2)
+            {
+                icon = "fa-gears";
+            }
+            else if (id == 3)
+            {
+                icon = "fa-lock";
+            }
+            else if (id == 4)
+            {
+                icon = "fa-briefcase";
+            }
+            else if (id == 5)
+            {
+                icon = "fa-table";
+            }
+            else if (id == 9)
+            {
+                icon = "fa-exclamation-triangle";
+            }
+            <div class="col-sm-4">
+                <div class="card">
+                    <div class="avatar">
+                        <i class="fa @icon"></i>
+                    </div>
+                    <div class="content">
+                        <h5 style="font-size:14px; font-weight:bold; color:#428bca; margin:0px; text-transform:capitalize;">@docName</h5>
+                        <p style="margin-top:5px;"><a href="@Url.Action("GenerateDocument", "Template", new {id = @id})" class="btn btn-primary btn-sm">Download</a></p>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+</div>

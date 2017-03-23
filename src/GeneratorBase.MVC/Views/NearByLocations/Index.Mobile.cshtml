@@ -1,0 +1,111 @@
+﻿@model PagedList.IPagedList<GeneratorBase.MVC.Models.NearByLocations>
+@using PagedList.Mvc;
+@{
+    string entityName = Request.QueryString["EntityName"].ToString();
+    var jsonModel = Newtonsoft.Json.JsonConvert.SerializeObject(Model);
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title></title>
+    <style>
+        #mapView img {
+            max-width: none;
+        }
+    </style>
+    <script>
+        function OpenPopUpImage(e, pop, pic) {
+            e.preventDefault();
+            var maxHeight = $(window).height() + "px";
+            $("#" + pop + " img").css("max-height", maxHeight);
+            $("#" + pic).modal('show');
+        }
+        function ClosePopUpImage(e, pic) {
+            e.preventDefault();
+            $("#" + pic).modal('hide');
+        }
+    </script>
+</head>
+<body>
+    <div class="bs-example">
+        <div class="page-header">
+            <h1>
+                <a href="@Url.Action("Index", entityName)">
+                    @entityName
+                </a> > <small>List View</small> <div class="pull-right">
+                </div>
+                <a id="btnMapView" style="float:right" onclick="MapView(@jsonModel);">Map</a>
+                <a id="btnListView" style="float:right;display:none" onclick="ListView();">List</a>
+            </h1>
+        </div>
+        <div class="list-group">
+            <div class="divcanvas">
+                <label>
+                    Near By Location
+                </label>
+                @Html.TextBox("SearchStringAddress", "", null, new { @class = "form-control", @placeholder = "Enter Address" })
+                @Html.TextBox("SearchStringRange", "", null, new { @class = "form-control", @placeholder = "Enter range (by default 10 miles)" })
+                <a onclick="editSearchURL(this);" href='@Url.Action("Index", "NearByLocations", new { })' , class="btn btn-search" style="width:49%; margin-top:5px">Find Near By</a>
+                <a onclick="editCancelURL(this);" href='@Url.Action("Index", "NearByLocations", new { })' , class="btn btn-search pull-right" style="width:49%; margin-top:5px">Cancel</a>
+            </div>
+        </div>
+        <div id="ListView">
+            @foreach (var item in Model)
+            {
+                <a href='@Url.Action("Details", entityName, new { id = item.ID, UrlReferrer = Request.Url }, null)' class="list-group-item">
+                    <table class="list-table" width="100%">
+                        <tr>
+                            <td>
+                                @if (!string.IsNullOrEmpty(Html.DisplayFor(modelItem => item.Picture).ToString()))
+                                {
+                                    <a data-target="#dvPopup_Pic_@item.ID" onclick="OpenPopUpImage(event, 'dvPopup_Pic_@item.ID','Pic_pop_@item.ID');">
+                                        @if (item.ImageFileType == "File")
+                                        {
+                                            <img src="@(Url.Content("~/Files/") + Url.Content(Html.DisplayFor(modelItem => item.Picture).ToString()))" width="50" height="50" alt="MyPic" style="margin: 0px; padding: 0px;" />
+                                        }
+                                        else if (item.ImageFileType == "Byte")
+                                        {
+                                            <img src="@Url.Action("DisplayImage", "Document", new { id = item.Picture,maxSize=50  })" width="50" height="50" alt="MyPic" style="margin: 0px; padding: 0px;" />
+                                        }
+                                    </a>
+                                    <div class="modal fade" id="Pic_pop_@item.ID" tabindex="-1" role="dialog" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div id="dvPopup_Pic_@item.ID" class="modal-body">
+                                                <button type="button" id="close_Pic_@item.ID" style="float:right;" onclick="ClosePopUpImage(event,'Pic_pop_@item.ID')" class="btn btn-listbar" data-dismiss="modal" aria-hidden="true"><i class="glyphicon glyphicon-remove"></i></button>
+                                                @if (item.ImageFileType == "File")
+                                                {
+                                                    <img src="@(Url.Content("~/Files/") + Url.Content(Html.DisplayFor(modelItem => item.Picture).ToString()))" style="min-width: 100%;height: 190px;">
+                                                }
+                                                else if (item.ImageFileType == "Byte")
+                                                {
+                                                    <img src="@Url.Action("DisplayImage", "Document", new { id = item.Picture, maxSize = 50 })" style="min-width: 100%;height: 190px;" />
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <img src="assets/images/listicon.png" />
+                                }
+                            </td>
+                            <td>
+                                <p>
+                                    (
+                                    @Html.DisplayFor(modelItem => item.Distance)
+                                    )
+                                </p>
+                                <p>
+                                    @Html.DisplayFor(modelItem => item.DisplayValue)
+                                </p>
+                            </td>
+                        </tr>
+                    </table>
+                </a>
+            }
+        </div>
+    </div>
+    <div id="MapView" style="display:none"> </div>
+</body>
+</html>

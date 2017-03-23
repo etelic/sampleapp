@@ -1,0 +1,185 @@
+﻿@model PagedList.IPagedList<GeneratorBase.MVC.Models.Condition>
+@using PagedList.Mvc;
+<div id="Claims">
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-sx-12">
+            <div>
+                <div>
+                    <div id="Des_Table" class="table-responsive" style="overflow-x:auto;">
+                        <table id="tblConditionList" class="table table-striped table-bordered table-hover table-condensed">
+                            <thead>
+                                <tr>
+                                    @if (User.CanView("Condition", "PropertyName"))
+                                    {
+                                        <th class="col1">
+                                            Property
+                                        </th>
+                                    }
+                                    @if (User.CanView("Condition", "Operator"))
+                                    {
+                                        <th class="col1">
+                                            Operator
+                                        </th>
+                                    }
+                                    @if (User.CanView("Condition", "Value"))
+                                    {
+                                        <th class="col1">
+                                            Value
+                                        </th>
+                                    }
+                                    @if (User.CanView("Condition", "LogicalConnector"))
+                                    {
+                                        @*<th class="col5">
+                                @Html.ActionLink("Logical Connector", ActionNameUrl, "Condition", getSortHtmlAttributes("LogicalConnector", false, null, false), new { @class = "SortLink" })
+                            @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "LogicalConnector")
+                            {<i class="fa fa-sort-desc"></i>}
+                            @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "LogicalConnector")
+                            {<i class="fa fa-sort-asc"></i>}
+                        </th>*@
+                                    }
+                                    @if (User.CanView("Condition", "RuleConditionsID"))
+                                    {
+                                        @*<th class="col1" @(Convert.ToString(ViewData["HostingEntity"]) == "BusinessRule" ? "hidden" : "")>
+                            Business Rule
+                        </th>*@
+                                    }
+                                    <th class="col1">Remove</th>
+                                </tr>
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        @if (User.CanView("Condition", "PropertyName"))
+                                        {
+                                            if (((List<ModelReflector.Property>)(ViewBag.PropertyList)).FirstOrDefault(p => p.Name == item.PropertyName) != null)
+                                            {
+                                                <td>
+                                                    @(((List<ModelReflector.Property>)(ViewBag.PropertyList)).FirstOrDefault(p => p.Name == item.PropertyName).DisplayName)
+                                                </td>
+                                            }
+                                        }
+                                        @if (User.CanView("Condition", "Operator"))
+                                        {
+                                            <td>
+                                                @if (item.Operator == ">")
+                                                {
+                                                    <label> Greater than</label>
+                                                }
+                                                @if (item.Operator == "<")
+                                                {
+                                                    <label> Less than</label>
+                                                }
+                                                @if (item.Operator == "<=")
+                                                {
+                                                    <label> Less than Or Equals to</label>
+                                                }
+                                                @if (item.Operator == ">=")
+                                                {
+                                                    <label> Greater than Or Equals to</label>
+                                                }
+                                                @if (item.Operator == "=")
+                                                {
+                                                    <label>Equals to</label>
+                                                }
+                                                @if (item.Operator == "Contains")
+                                                {
+                                                    <label>Contains</label>
+                                                }
+                                                @if (item.Operator == "!=")
+                                                {
+                                                    <label>Not Equals to</label>
+                                                }
+                                            </td>
+                                        }
+                                        @if (User.CanView("Condition", "Value"))
+                                        {
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.Value)
+                                            </td>
+                                        }
+                                        @if (User.CanView("Condition", "LogicalConnector"))
+                                        {
+                                            @*<td>
+                                @Html.DisplayFor(modelItem => item.LogicalConnector)
+                            </td>*@
+                                        }
+                                        @if (User.CanView("Condition", "RuleConditionsID"))
+                                        {
+                                            @*<td @(Convert.ToString(ViewData["HostingEntity"]) == "BusinessRule" ? "hidden" : "")>
+                                @Html.DisplayFor(modelItem => item.ruleconditions.DisplayValue)
+                            </td>*@
+                                        }
+                                        <td>
+                                            <a href="@Url.Action("Delete", "Condition", new { id = item.Id }, null)"><i class="fam-delete"></i> </a>
+                                        </td>
+                                    </tr>
+                                }
+                        </table>
+                    </div>
+                    <ul id="Mob_List" class="list-group">
+                        @foreach (var item in Model)
+                        {
+                            <li class="list-group-item">
+                                @if (User.CanView("Condition", "PropertyName"))
+                                {
+                                    <p>
+                                        <span class="text-primary"> Property Name </span> : <span>
+                                            @Html.DisplayFor(modelItem => item.PropertyName)
+                                        </span>
+                                    </p>
+                                }
+                                @if (User.CanView("Condition", "Operator"))
+                                {
+                                    <p>
+                                        <span class="text-primary"> Operator </span> : <span>
+                                            @Html.DisplayFor(modelItem => item.Operator)
+                                        </span>
+                                    </p>
+                                }
+                                @if (User.CanView("Condition", "Value"))
+                                {
+                                    <p>
+                                        <span class="text-primary"> Value </span> : <span>
+                                            @Html.DisplayFor(modelItem => item.Value)
+                                        </span>
+                                    </p>
+                                }
+                                @if (User.CanView("Condition", "LogicalConnector"))
+                                {
+                                    @*<p>
+                                            <span class="text-primary"> Logical Connector </span> : <span>
+                                                @Html.DisplayFor(modelItem => item.LogicalConnector)
+                                            </span>
+                                        </p>*@
+                                }
+                                @if (User.CanView("Condition", "RuleConditionsID"))
+                                {
+                                    <p @(Convert.ToString(ViewData["HostingEntity"]) == "BusinessRule" ? "hidden" : "")>
+                                        <span class="text-primary"> Rule Conditions </span> : <span>
+                                            @Html.DisplayFor(modelItem => item.ruleconditions.DisplayValue)
+                                        </span>
+                                    </p>
+                                }
+                                <span class="label label-primary text-linkwhite">
+                                    @Html.ActionLink("View", "Details", "Condition", new { id = item.Id }, null)
+                                </span>
+                                <span class="label label-warning text-linkwhite">
+                                    @if (User.Identity.IsAuthenticated && User != null && User.CanEdit("Condition"))
+                                    {
+                                        @Html.ActionLink("Edit", "Edit", "Condition", new { id = item.Id }, null)
+                                    }
+                                </span>
+                                <span class="label label-danger text-linkwhite">
+                                    @if (User.Identity.IsAuthenticated && User != null && User.CanDelete("Condition"))
+                                    {
+                                        @Html.ActionLink("Delete", "Delete", "Condition", new { id = item.Id }, null)
+                                    }
+                                </span>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

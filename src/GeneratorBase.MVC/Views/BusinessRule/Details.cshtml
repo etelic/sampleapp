@@ -1,0 +1,142 @@
+﻿@model GeneratorBase.MVC.Models.BusinessRule
+@using PagedList;
+@{
+    ViewBag.Title = "View Business Rule";
+}
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-title">
+
+            <i class="glyphicon glyphicon-hand-down text-primary"></i> Business Rule  <i class="glyphicon glyphicon-chevron-right small"></i> <span>View</span>
+        </h1>
+        @{ var Entity = ModelReflector.Entities.FirstOrDefault(p => p.Name == Model.EntityName);
+         var EntityDisplayName = Model.EntityName;
+         if (Entity != null)
+         {
+             EntityDisplayName = Entity.DisplayName;
+         }
+         var ShortDetails = "#" + Model.Id + "-" + EntityDisplayName + "-" + Model.RuleName;
+        }
+        <h2 class="text-primary">@ShortDetails</h2>
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+<div class="tabbable responsive">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="#Details" data-toggle="tab">Details</a></li>
+        <li @(!User.CanView("Condition") ? "style=display:none;" : "")><a href="#RuleConditions" data-toggle="tab">Conditions</a></li>
+        <li @(!User.CanView("RuleAction") ? "style=display:none;" : "")><a href="#RuleAction" data-toggle="tab">Actions</a></li>
+        <li @(!User.CanView("JournalEntry") ? "style=display:none;" : "")><a href="#JournalEntryToBusinessRuleRelation" data-toggle="tab">Business Rule Journal</a></li>
+    </ul>
+    <div class="tab-content">
+        <div class="tab-pane fade in active" id="Details">
+            <div class="panel panel-default AppForm">
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-sm-12 col-md-12 col-xs-12">
+                            <div class="row">
+                                @if (User.CanView("BusinessRule", "RuleName"))
+                                {
+                                    <div class='col-sm-6'>
+                                        <div class='form-group'>
+                                            <label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.RuleName)</label>
+                                            <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                <p class="viewlabel">@Model.RuleName</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                                @if (User.CanView("BusinessRule", "EntityName"))
+                                {
+                                    <div class='col-sm-6'>
+                                        <div class='form-group'>
+                                            <label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.EntityName)</label>
+                                            <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                <p class="viewlabel">@Model.EntityName</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                                @if (User.CanView("BusinessRule", "Roles"))
+                                {
+                                    <div class='col-sm-6'>
+                                        <div class='form-group'>
+                                            <label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.Roles)</label>
+                                            <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                <p class="viewlabel">@Model.Roles</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                                @if (User.CanView("BusinessRule", "DateCreated1"))
+                                {
+                                    <div class='col-sm-6'>
+                                        <div class='form-group'>
+                                            <label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.DateCreated1)</label>
+                                            <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                <p class="viewlabel">@Model.DateCreated1</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                                @if (User.CanView("BusinessRule", "AssociatedBusinessRuleTypeID"))
+                                {
+                                    <div class='col-sm-6'>
+                                        <div class='form-group'>
+                                            <label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.AssociatedBusinessRuleTypeID)</label>
+                                            <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                @if (@Model.AssociatedBusinessRuleTypeID == 0 || @Model.AssociatedBusinessRuleTypeID == null || @Model.associatedbusinessruletype == null)
+                                                {
+                                                    <p class="viewlabel"></p>
+                                                }
+                                                else
+                                                {
+                                                    <p class="viewlabel">@Model.associatedbusinessruletype.DisplayValue</p>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                                @if (User.CanView("BusinessRule", "EntitySubscribe"))
+                                {
+                                    <div class='col-sm-6'>
+                                        <div class='form-group'>
+                                            <label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.EntitySubscribe)</label>
+                                            <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                <p class="viewlabel">@Model.EntitySubscribe</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 col-sm-12 col-xs-12">
+                    @Html.ActionLink("Back to List", "Index", null, new { @class = "btn btn-default btn-sm" })
+                    @if (User.Identity.IsAuthenticated && User != null && User.CanEdit("BusinessRule"))
+                    {
+                        @Html.ActionLink("Edit", "Edit", new { id = Model.Id }, new { @class = "btn btn-primary btn-sm" })
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="tab-pane fade in" id="JournalEntryToBusinessRuleRelation">
+            @{Html.RenderAction("Index", "JournalEntry", new { RenderPartial = true, HostingEntity = "BusinessRule", HostingEntityID = @Model.Id, AssociatedType = "JournalEntry" });}
+        </div>
+        <div class="tab-pane fade in" id="RuleConditions">
+            @if (User.Identity.IsAuthenticated && User != null && User.CanView("Condition"))
+            {
+                Html.RenderAction("Index", "Condition", new { RenderPartial = true, HostingEntity = "BusinessRule", HostingEntityID = @Model.Id, AssociatedType = "RuleConditions" });
+            }
+        </div>
+        <div class="tab-pane fade in" id="RuleAction">
+            @if (User.Identity.IsAuthenticated && User != null && User.CanView("RuleAction"))
+            {
+                Html.RenderAction("Index", "RuleAction", new { RenderPartial = true, HostingEntity = "BusinessRule", HostingEntityID = @Model.Id, AssociatedType = "RuleAction",EntityNameRuleAction=ViewBag.EntityNameRuleAction });
+            }
+        </div>
+    </div> <!-- /tab-content --><br />
+</div>

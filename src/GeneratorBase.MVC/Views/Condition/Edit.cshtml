@@ -1,0 +1,150 @@
+﻿@model GeneratorBase.MVC.Models.Condition
+@using PagedList;
+@{
+    ViewBag.Title = "Edit Condition";
+}
+@functions {
+    object getHtmlAttributes(string Property)
+    {
+        if (User.CanEdit("Condition", Property))
+        {
+            return new { @class = "form-control" };
+        } return new { @class = "form-control", @readonly = "readonly" };
+    }
+}
+<script type="text/javascript" language="javascript">
+    $(document).ready(function () {
+        $('#PropertyList').change(function () {
+            var SelectedText = $('#PropertyList :selected').val();
+            $('#PropertyName').val(SelectedText);
+        });
+        $('#OperatorList').change(function () {
+            var SelectedText = $('#OperatorList :selected').val();
+            $('#Operator').val(SelectedText);
+        });
+    });
+</script>
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-title">
+            <i class="glyphicon glyphicon-edit text-primary"></i> Condition  <i class="glyphicon glyphicon-chevron-right small"></i> <span>Edit</span>
+        </h1>
+        <h2 class="text-primary">@Html.DisplayFor(model => model.DisplayValue)</h2>
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+<div class="tabbable responsive">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="#Details" data-toggle="tab">Details</a></li>
+    </ul>
+    <div class="tab-content">
+        <div class="tab-pane fade in active" id="Details">
+            @using (Html.BeginForm("Edit", "Condition", new { UrlReferrer = Convert.ToString(ViewData["ConditionParentUrl"]) }, FormMethod.Post, new { enctype = "multipart/form-data" }))
+            {
+                @Html.ValidationSummary(true)
+                @Html.HiddenFor(model => model.Id)
+                <div class="col-md-12 col-sm-12 col-xs-12" style="padding:0px; margin:0px;">
+                    <div class="panel panel-default AppForm">
+                        <div class="panel-body">
+                            <div class="row">
+                                @if (User.CanView("Condition", "PropertyName"))
+                                {
+                                    <div class='col-sm-6 col-md-6 col-xs-12'>
+                                        <div class='form-group'>
+                                            <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.PropertyName) <span class="text-danger-reg">*</span> </label>
+                                            <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                @Html.DropDownList("PropertyList", null, new { @class = "form-control" })
+                                                @Html.TextBoxFor(model => model.PropertyName, new { @class = "form-control hidden" })
+                                                @Html.ValidationMessageFor(model => model.PropertyName)
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                { @Html.HiddenFor(model => model.PropertyName, new { @class = "form-control" })}
+                                @if (User.CanView("Condition", "Operator"))
+                                {
+                                    <div class='col-sm-6 col-md-6 col-xs-12'>
+                                        <div class='form-group'>
+                                            <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.Operator)  </label>
+                                            <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                <select class="form-control" id="OperatorList">
+                                                    <option value="=" @(Model.Operator == "=" ? "Selected=true" : "")>Equals to</option>
+                                                    <option value=">" @(Model.Operator == ">" ? "Selected=true" : "")>Greater than</option>
+                                                    <option value="<" @(Model.Operator == "<" ? "Selected=true" : "")>Less than</option>
+                                                    <option value="<=" @(Model.Operator == "<=" ? "Selected=true" : "")>Less than Or Equals to</option>
+                                                    <option value=">=" @(Model.Operator == ">=" ? "Selected=true" : "")>Greater than Or Equals to</option>
+                                                    <option value="Contains" @(Model.Operator == "Contains" ? "Selected=true" : "")>Contains</option>
+                                                </select>
+                                                @Html.TextBoxFor(model => model.Operator, new { @class = "form-control hidden" })
+                                                @Html.ValidationMessageFor(model => model.Operator)
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                { @Html.HiddenFor(model => model.Operator, new { @class = "form-control" })}
+                                @if (User.CanView("Condition", "Value"))
+                                {
+                                    <div class='col-sm-6 col-md-6 col-xs-12'>
+                                        <div class='form-group'>
+                                            <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.Value)  </label>
+                                            <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                @Html.TextBoxFor(model => model.Value, getHtmlAttributes("Value"))
+                                                @Html.ValidationMessageFor(model => model.Value)
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                { @Html.HiddenFor(model => model.Value, new { @class = "form-control" })}
+                                @if (User.CanView("Condition", "LogicalConnector"))
+                                {
+                                    <div class='col-sm-6 col-md-6 col-xs-12'>
+                                        <div class='form-group'>
+                                            <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.LogicalConnector)  </label>
+                                            <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                @Html.TextBoxFor(model => model.LogicalConnector, getHtmlAttributes("LogicalConnector"))
+                                                @Html.ValidationMessageFor(model => model.LogicalConnector)
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                { @Html.HiddenFor(model => model.LogicalConnector, new { @class = "form-control" })}
+                                @if (User.CanView("Condition", "RuleConditionsID"))
+                                {
+                                    <div class='col-sm-6 col-md-6 col-xs-12'>
+                                        <div class='form-group'>
+                                            <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.RuleConditionsID) </label>
+                                            <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                <div class="input-group">
+                                                    @Html.DropDownList("RuleConditionsID", null, "-- Select --", new { @class = "chosen-select form-control", @HostingName = "BusinessRule", @dataurl = Url.Action("GetAllValue", "BusinessRule", null) })
+                                                    @*@Html.DropDownList("RuleConditionsID", null, "--Select Business Rule--", new {@class = "chosen-select form-control", @HostingName = "BusinessRule", @dataurl = Url.Action("GetAllValue", "BusinessRule",null) })*@
+                                                    @Html.ValidationMessageFor(model => model.RuleConditionsID)
+                                                    @if (User.Identity.IsAuthenticated && User != null && User.CanAdd("BusinessRule"))
+                                                    {
+                                                        <div class="input-group-btn">
+                                                            <a class="btn btn-default btn ie8fix" href="@Url.Action("Create", "BusinessRule", new {UrlReferrer = Request.Url, HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) })">
+                                                                <span class="glyphicon glyphicon-plus-sign"></span>
+                                                            </a>
+                                                        </div>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                { @Html.HiddenFor(model => model.RuleConditionsID, new { @class = "form-control" })}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @Html.AntiForgeryToken()
+                @Html.ActionLink("Cancel", "Cancel", new { UrlReferrer = ViewData["ConditionParentUrl"] }, new { @onclick = "", @class = "btn btn-default btn-sm" })
+                <input type="submit" value="Save" class="btn btn-primary btn-sm" />
+            }
+        </div>
+    </div> <!-- /tab-content --><br />
+</div>

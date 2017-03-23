@@ -1,0 +1,67 @@
+﻿@model PagedList.IPagedList<GeneratorBase.MVC.Models.Condition>
+@using PagedList.Mvc;
+@{
+    ViewBag.Title = "Index";
+    Layout = null;
+    Response.ContentType = "application/vnd.ms-excel";
+    Response.AddHeader("Content-Disposition", "attachment; filename=Condition.xls");
+}
+<table>
+    <tr>
+        @if (User.CanView("Condition", "PropertyName"))
+        {
+            <th>Property Name</th>
+        }
+        @if (User.CanView("Condition", "Operator"))
+        {
+            <th>Operator</th>
+        }
+        @if (User.CanView("Condition", "Value"))
+        {
+            <th>Value</th>
+        }
+        @if (User.CanView("Condition", "LogicalConnector"))
+        {
+            <th>Logical Connector</th>
+        }
+        @if (User.CanView("Condition", "RuleConditionsID"))
+        {
+            <th @(Convert.ToString(ViewData["HostingEntity"]) == "BusinessRule" ? "hidden" : "")>Business Rule</th>
+        }
+    </tr>
+    @foreach (var item in Model)
+    {
+        <tr>
+            @if (User.CanView("Condition", "PropertyName"))
+            {
+                <td>
+                    @Html.DisplayFor(modelItem => item.PropertyName)
+                </td>
+            }
+            @if (User.CanView("Condition", "Operator"))
+            {
+                <td>
+                    @Html.DisplayFor(modelItem => item.Operator)
+                </td>
+            }
+            @if (User.CanView("Condition", "Value"))
+            {
+                <td>
+                    @Html.DisplayFor(modelItem => item.Value)
+                </td>
+            }
+            @if (User.CanView("Condition", "LogicalConnector"))
+            {
+                <td>
+                    @Html.DisplayFor(modelItem => item.LogicalConnector)
+                </td>
+            }
+            @if (User.CanView("Condition", "RuleConditionsID"))
+            {
+                <td @(Convert.ToString(ViewData["HostingEntity"]) == "BusinessRule" ? "hidden" : "")>
+                    @Html.DisplayFor(modelItem => item.ruleconditions.DisplayValue)
+                </td>
+            }
+        </tr>
+    }
+</table>

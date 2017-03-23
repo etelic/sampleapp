@@ -1,0 +1,177 @@
+﻿@model PagedList.IPagedList<GeneratorBase.MVC.Models.JournalEntry>
+@using PagedList.Mvc;
+@{
+    var ActionNameUrl = "Index";
+    if (HttpContext.Current.Request.RequestContext.RouteData.Values["action"].ToString().ToUpper() == "FSEARCH")
+    {
+        ActionNameUrl = "FSearch";
+    }
+}
+<div id="JournalEntry">
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".pagination a").click(function (e) {
+                PaginationClick(e, 'JournalEntry')
+            });
+            $("#SearchStringJournalEntry").keypress(function (e) {
+                if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
+                    $("#JournalEntrySearch").bind("click", (function () {
+                    }));
+                    $('#JournalEntrySearch').trigger("click");
+                    return false;
+                }
+            })
+        });
+    </script>
+    @functions {
+        object getSortHtmlAttributes(string sortby, bool IsPaging, int? page, bool? IsExport)
+        {
+            if (IsPaging)
+            {
+                return new
+                {
+                    page,
+                    sortBy = ViewBag.CurrentSort,
+                    isAsc = ViewBag.IsAsc,
+                    currentFilter = ViewBag.CurrentFilter,
+                    HostingEntity = @Convert.ToString(ViewData["HostingEntity"]),
+                    AssociatedType = @Convert.ToString(ViewData["AssociatedType"]),
+                    HostingEntityID = ViewData["HostingEntityID"],
+                    IsExport = IsExport,
+                    FSFilter = ViewBag.FSFilter == null ? "Fsearch" : ViewBag.FSFilter,
+                    IsFilter = @Convert.ToBoolean(ViewData["IsFilter"]),
+                    search = Request.QueryString["search"],
+                };
+            }
+            else
+            {
+                return new
+                {
+                    sortBy = sortby,
+                    currentFilter = Request.QueryString["currentFilter"],
+                    searchString = Request.QueryString["searchString"],
+                    isAsc = (ViewBag.IsAsc == "ASC" ? "DESC" : ""),
+                    page = ViewBag.Pages,
+                    HostingEntity = @Convert.ToString(ViewData["HostingEntity"]),
+                    HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),
+                    AssociatedType = @Convert.ToString(ViewData["AssociatedType"]),
+                    IsExport = IsExport,
+                    FSFilter = ViewBag.FSFilter == null ? "Fsearch" : ViewBag.FSFilter,
+                    IsFilter = @Convert.ToBoolean(ViewData["IsFilter"]),
+                    search = Request.QueryString["search"],
+                };
+            }
+        }
+    }
+
+    <div class="mob_subheaderinternal">
+        <label class="RecordName">Journal Entries<i class="fa fa-angle-right"></i> List</label>
+        <a data-toggle="collapse" id="searchAJournalEntries" data-parent="#searchIconJournalEntries" href="#searchIconJournalEntries" class="badge badgesearch pull-right"><i class="fa fa-search"></i></a>
+    </div>
+    <div id="searchIconJournalEntries" class="panel-collapse collapse ">
+        <div class="input-group">
+            @Html.TextBox("SearchStringJournalEntry", ViewBag.CurrentFilter as string, null, new { @class = "search-control", @placeholder = "Search" })
+            <div class="input-group-btn">
+                <a id="JournalEntrySearch" onclick="SearchClick(event, 'JournalEntry','@Html.Raw(Url.Action("Index", "JournalEntry", new { IsFilter = ViewData["IsFilter"],IsDeepSearch = false, searchString = "_SearchString",HostingEntity = Convert.ToString(ViewData["HostingEntity"]),HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]),AssociatedType = Convert.ToString(ViewData["AssociatedType"]),SearchTimeStamp = DateTime.Now }))' );" class="btn btn-search"><span class="glyphicon glyphicon-search"></span></a>
+                <button id="JournalEntryCancel" type="button" onclick="CancelSearch('JournalEntry','@Html.Raw(Url.Action("Index", "JournalEntry", new { IsFilter = ViewData["IsFilter"], HostingEntity = Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]), ClearSearchTimeStamp = DateTime.Now }))')" class="btn btn-search">
+                    <span class="glyphicon glyphicon-remove"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="list-group">
+        @foreach (var item in Model)
+        {<div class="list-group-item">
+
+            <table class="list-table" width="100%">
+                <tr>
+                    <td valign="top">
+                        @if (User.CanView("JournalEntry", "EntityName"))
+                        {
+
+                            <h4>
+                                @Html.DisplayFor(modelItem => item.EntityName);
+                            </h4>
+
+                        }
+
+                        @if (User.CanView("JournalEntry", "Type"))
+                        {
+
+                            <span class="badgeListIdcount brandcolor">
+                                Type:@Html.DisplayFor(modelItem => item.Type)
+                            </span>
+
+
+                        }@if (User.CanView("JournalEntry", "DateTimeOfEntry"))
+                        {
+
+                            <span class="badgeListIdcount brandSecondarycolor">
+                                Entry Time:@Html.DisplayFor(modelItem => item.DateTimeOfEntry)
+                            </span>
+
+
+                        }@if (User.CanView("JournalEntry", "RecordInfo"))
+                        {
+
+                            <span class="badgeListIdcount brandcolor">
+                                Record Info:@Html.Raw(HttpUtility.HtmlDecode(item.RecordInfo))
+                            </span>
+
+
+                        }@if (User.CanView("JournalEntry", "UserName"))
+                        {
+
+                            <span class="badgeListIdcount brandSecondarycolor">
+                                User Name:@Html.DisplayFor(modelItem => item.UserName)
+                            </span>
+
+
+                        }@if (User.CanView("JournalEntry", "PropertyName"))
+                        {
+                            if (@item.PropertyName != null && item.PropertyName != "")
+                            {
+
+                                <span class="badgeListIdcount brandcolor">
+                                    Property Name:@Html.DisplayFor(modelItem => item.PropertyName)
+                                </span>
+
+                            }
+
+                        }@if (User.CanView("JournalEntry", "OldValue"))
+                        {
+                            if (@item.OldValue != null && @item.OldValue != "")
+                            {
+
+                                <span class="badgeListIdcount brandSecondarycolor">
+                                    Old Value:@Html.DisplayFor(modelItem => item.OldValue)
+                                </span>
+
+                            }
+                        }@if (User.CanView("JournalEntry", "NewValue"))
+                        {
+                            if (@item.NewValue != null && @item.NewValue != "")
+                            {
+
+                                <span class="badgeListIdcount brandcolor">
+                                    New Value:@Html.DisplayFor(modelItem => item.NewValue)
+                                </span>
+
+                            }
+                        }
+                    </td>
+                </tr>
+            </table>
+        </div>
+        }
+
+        @if (Model.Count > 0)
+        {
+            <div id="pagination" style="margin: -15px 0px -5px 5px;">
+                @Html.PagedListPager(Model, page => Url.Action(ActionNameUrl, "JournalEntry", getSortHtmlAttributes(null, true, page, false)))
+            </div>
+        }
+    </div>
+
+</div>

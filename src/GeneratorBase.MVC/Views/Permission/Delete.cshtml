@@ -1,0 +1,56 @@
+﻿@model GeneratorBase.MVC.Models.Permission
+@{
+    ViewBag.Title = "Delete";
+}
+<h2>Delete</h2>
+<h3>Are you sure you want to delete this?</h3>
+<div>
+    <h4>Permission</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.EntityName)
+        </dt>
+        <dd class="clearfix">
+            @Html.DisplayFor(model => model.EntityName)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.RoleName)
+        </dt>
+        <dd class="clearfix">
+            @Html.DisplayFor(model => model.RoleName)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.CanEdit)
+        </dt>
+        <dd class="clearfix">
+            @Html.DisplayFor(model => model.CanEdit)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.CanDelete)
+        </dt>
+        <dd class="clearfix">
+            @Html.DisplayFor(model => model.CanDelete)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.CanView)
+        </dt>
+        <dd class="clearfix">
+            @Html.DisplayFor(model => model.CanView)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.CanAdd)
+        </dt>
+        <dd class="clearfix">
+            @Html.DisplayFor(model => model.CanAdd)
+        </dd>
+    </dl>
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+        <div class="form-actions no-color">
+            <input type="submit" value="Delete" class="btn btn-default" /> |
+            @Html.ActionLink("Back to List", "Index")
+        </div>
+    }
+</div>

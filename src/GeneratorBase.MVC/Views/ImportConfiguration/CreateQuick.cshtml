@@ -1,0 +1,101 @@
+﻿@model GeneratorBase.MVC.Models.ImportConfiguration
+@{
+    ViewBag.Title = "Create Import Configuration";
+    Layout = null;
+}
+<link href="~/Content/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+<link href="@Url.Content("~/Content/chosen.css")" rel="stylesheet" type="text/css" />
+@using (Html.BeginForm("CreateQuick", "ImportConfiguration", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken();
+    Html.ValidationSummary(true);
+    Html.EnableClientValidation();
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="panel panel-default AppForm">
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-12 col-sm-12 col-xs-12">
+                            <div class="panel panel-default">
+                                <div class="panel-heading clearfix">
+                                    <i class="icon-calendar"></i>
+                                    <h3 class="panel-title">General</h3>
+                                </div>
+                                <div class="panel-body">
+                                    <div class='col-sm-6'>
+                                        <div class='form-group'>
+                                            <label>@Html.LabelFor(model => model.TableColumn)  </label>
+                                            @Html.TextBoxFor(model => model.TableColumn, new { @class = "form-control" })
+                                            @Html.ValidationMessageFor(model => model.TableColumn)
+                                        </div>
+                                    </div>
+                                    <div class='col-sm-6'>
+                                        <div class='form-group'>
+                                            <label>@Html.LabelFor(model => model.SheetColumn)  </label>
+                                            @Html.TextBoxFor(model => model.SheetColumn, new { @class = "form-control" })
+                                            @Html.ValidationMessageFor(model => model.SheetColumn)
+                                        </div>
+                                    </div>
+                                    <div class='col-sm-6'>
+                                        <div class='form-group'>
+                                            <label>@Html.LabelFor(model => model.UniqueColumn)  </label>
+                                            @Html.TextBoxFor(model => model.UniqueColumn, new { @class = "form-control" })
+                                            @Html.ValidationMessageFor(model => model.UniqueColumn)
+                                        </div>
+                                    </div>
+                                    <div class='col-sm-6'>
+                                        <div class='form-group'>
+                                            <label>@Html.LabelFor(model => model.Name)  </label>
+                                            @Html.TextBoxFor(model => model.Name, new { @class = "form-control" })
+                                            @Html.ValidationMessageFor(model => model.Name)
+                                        </div>
+                                    </div>
+                                    <div class='col-sm-6'>
+                                        <div class='form-group'>
+                                            <label>@Html.LabelFor(model => model.MappingName)  </label>
+                                            @Html.TextBoxFor(model => model.MappingName, new { @class = "form-control" })
+                                            @Html.ValidationMessageFor(model => model.MappingName)
+                                        </div>
+                                    </div>
+                                    <div class='col-sm-6'>
+                                        <div class='form-group'>
+                                            <label>@Html.LabelFor(model => model.IsDefaultMapping)  </label>
+                                            @Html.CheckBoxFor(model => model.IsDefaultMapping)
+                                            @Html.ValidationMessageFor(model => model.IsDefaultMapping)
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <button id="CancelQuickAdd" type="button" class="btn btn-default btn-sm" data-dismiss="modal" aria-hidden="true">Cancel</button>
+    var busineesrule = User.businessrules.Where(p => p.EntityName == "ImportConfiguration").ToList();
+    if (ViewBag.IsAddPop != null)
+    {
+        <input type="submit" value="Create" class="btn btn-primary btn-sm" onclick="QuickAdd(event,'@busineesrule',@busineesrule.Count);" />
+    }
+    else
+    {
+        <input type="submit" value="Create" class="btn btn-primary btn-sm" onclick="QuickAddFromIndex(event,true,'ImportConfiguration','@ViewData["AssociatedType"]','@busineesrule',@busineesrule.Count);" />
+    }
+}
+@Scripts.Render("~/bundles/jqueryval")
+<script src="~/Scripts/Common3/chosen.jquery.js" type="text/javascript"></script>
+<script type="text/javascript">
+    var config = {
+        '.chosen-select': {},
+        '.chosen-select-deselect': { allow_single_deselect: true },
+        '.chosen-select-no-single': { disable_search_threshold: 10 },
+        '.chosen-select-no-results': { no_results_text: 'Oops, nothing found!' },
+        '.chosen-select-width': { width: "95%" }
+    }
+    for (var selector in config) {
+        $(selector).chosen(config[selector]);
+    }
+</script>
+
+

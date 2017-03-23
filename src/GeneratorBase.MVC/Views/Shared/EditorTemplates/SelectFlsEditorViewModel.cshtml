@@ -1,0 +1,19 @@
+﻿@model GeneratorBase.MVC.Models.SelectFlsEditorViewModel
+@{
+    var Entity = ModelReflector.Entities.FirstOrDefault(p => p.Name == Model.EntityName);
+    var PropDisplayName = Entity.Properties.FirstOrDefault(p => p.Name == Model.PropertyName).DisplayName;
+}
+<tr>
+    @Html.HiddenFor(model => model.EntityName)
+    @Html.HiddenFor(model => model.PropertyName)
+    <td>
+        @PropDisplayName
+    </td>
+    <td style="text-align:center">
+        @Html.CheckBoxFor(model => model.NoEdit, new { @class = "foo" })
+    </td>
+    <td style="text-align:center">
+        @Html.CheckBoxFor(model => model.NoView, new { @class = "foo" })
+    </td>
+</tr>
+

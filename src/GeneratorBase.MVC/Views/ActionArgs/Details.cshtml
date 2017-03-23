@@ -1,0 +1,82 @@
+﻿@model GeneratorBase.MVC.Models.ActionArgs
+@using PagedList;
+@{
+    ViewBag.Title = "View Action Args";
+}
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-title">
+            <i class="glyphicon glyphicon-hand-down text-primary"></i> Action Args  <i class="glyphicon glyphicon-chevron-right small"></i> <span>View</span>
+        </h1>
+        <h2 class="text-primary">@Html.DisplayFor(model => model.DisplayValue)</h2>
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+<div class="tabbable responsive">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="#Details" data-toggle="tab">Details</a></li>
+    </ul>
+    <div class="tab-content">
+        <div class="tab-pane fade in active" id="Details">
+            <div class="panel panel-default AppForm">
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-sm-12 col-md-12 col-xs-12">
+                            <div class="row">
+                                @if (User.CanView("ActionArgs", "ParameterName"))
+                                {
+                                    <div class='col-sm-6'>
+                                        <div class='form-group'>
+                                            <label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.ParameterName)</label>
+                                            <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                <p class="viewlabel">@Model.ParameterName</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                                @if (User.CanView("ActionArgs", "ParameterValue"))
+                                {
+                                    <div class='col-sm-6'>
+                                        <div class='form-group'>
+                                            <label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.ParameterValue)</label>
+                                            <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                <p class="viewlabel">@Model.ParameterValue</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                                @if (User.CanView("ActionArgs", "ActionArgumentsID"))
+                                {
+                                    <div class='col-sm-6'>
+                                        <div class='form-group'>
+                                            <label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.ActionArgumentsID)</label>
+                                            <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                @if (@Model.ActionArgumentsID == 0 || @Model.ActionArgumentsID == null || @Model.actionarguments == null)
+                                                {
+                                                    <p class="viewlabel"></p>
+                                                }
+                                                else
+                                                {
+                                                    <p class="viewlabel">@Model.actionarguments.DisplayValue</p>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 col-sm-12 col-xs-12">
+                    @Html.ActionLink("Back to List", "Index", null, new { @class = "btn btn-default btn-sm" })
+                    @if (User.Identity.IsAuthenticated && User != null && User.CanEdit("ActionArgs"))
+                    {
+                        @Html.ActionLink("Edit", "Edit", new { id = Model.Id }, new { @class = "btn btn-primary btn-sm" })
+                    }
+                </div>
+            </div>
+        </div>
+    </div> <!-- /tab-content --><br />
+</div>

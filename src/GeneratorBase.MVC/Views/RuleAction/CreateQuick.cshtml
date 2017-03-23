@@ -1,0 +1,152 @@
+﻿@model GeneratorBase.MVC.Models.RuleAction
+@{
+    ViewBag.Title = "Create Rule Action";
+    Layout = null;
+}
+<script>
+    $(document).ready(function () {
+        $('#ActionName').val($('#RuleActionID :selected').text());
+        $('#diverrormsg').hide();
+        $('#AssociatedActionTypeID').change(function () {
+            if ($('#AssociatedActionTypeID :selected').val() == "3") {
+                // Time based
+                var SelectedText = $('#EntityList :selected').val();
+                $.ajax({
+                    url: '@Url.Action("GetUserAssociation","BusinessRule")' + '?Entity=' + SelectedText,
+                    type: "GET",
+                    cache: false,
+                    success: function (result) {
+                        var optionDOM = "";
+                        for (i = 0; i < result.length; i++) {
+                            optionDOM += '<option value="' + result[i].Key + '">' + result[i].Value + '</option>';
+                        }
+                        $("#" + "cmbNotifyTo").html(optionDOM);
+                        $("#" + "cmbNotifyTo").multiselect('rebuild');
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        alert("error");
+                    }
+                })
+                //
+                $('#diverrormsg').show();
+            }
+            else
+                $('#diverrormsg').hide();
+        });
+    });
+</script>
+<link href="@Url.Content("~/Content/chosen.css")" rel="stylesheet" type="text/css" />
+@using (Html.BeginForm("CreateQuick", "RuleAction", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken();
+    Html.ValidationSummary(true);
+    Html.EnableClientValidation();
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="panel panel-default AppForm">
+                <div class="panel-body">
+                    <div class="row">
+                        <div class='col-sm-6 hidden'>
+                            <div class='form-group'>
+                                <label>@Html.LabelFor(model => model.ActionName) <span class="text-danger-reg">*</span></label>
+                                @Html.TextBoxFor(model => model.ActionName, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.ActionName)
+                            </div>
+                        </div>
+                        <div class='col-sm-6'>
+                            <div class='form-group'>
+                                <label>@Html.LabelFor(model => model.AssociatedActionTypeID) <span class="text-danger-reg">*</span> </label>
+                                <div class="input-group">
+                                    @Html.DropDownList("AssociatedActionTypeID", null, "--Select Action Type--", new { @required = "required", @class = "chosen-select form-control", @HostingName = "ActionType", @dataurl = Url.Action("GetAllValue", "ActionType", null) })
+                                    @Html.ValidationMessageFor(model => model.AssociatedActionTypeID)
+                                    <div class="input-group-btn" style="visibility: hidden">
+                                        <a class="btn btn-default btn ie8fix" href="#">
+                                            <span class="glyphicon glyphicon-plus-sign"></span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="diverrormsg" name="ruletype">
+                            <div style="clear:both;"></div>
+                            <div >
+                                <div class='col-sm-6'>
+                                    <div class='form-group'>
+                                        <label>Notify within days <span class="text-danger-reg">*</span></label>
+                                        @Html.TextBox("TimeValue", null, new { @placeholder = "Days within to notify, 0 for immediate", @required = "required", @class = "form-control" })
+                                    </div>
+                                </div>
+                                <div class='col-sm-6'>
+                                    <div class='form-group' name="dvNotifyTo" id="dvNotify">
+                                        <label>Notify to <span class="text-danger-reg">*</span></label>
+                                        <br />
+                                        @Html.TextBox("NotifyTo", null, new { style = "border:none !important;Width:0px !important;" })
+                                        @Html.DropDownList("cmbNotifyTo", null, new { @multiple = "multiple" })
+                                    </div>
+                                </div>
+                                <div class='col-sm-6'>
+                                    <div class='form-group'>
+                                        <label>Specify extra email-ids </label>
+                                        @Html.TextArea("NotifyToExtra", null, new { @placeholder = "Notify some these people also", @class = "form-control" })
+                                    </div>
+                                </div>
+                                <div class='col-sm-6'>
+                                    <div class='form-group'>
+                                        <label>Notification Message</label>
+                                        @Html.TextAreaFor(model => model.ErrorMessage, new { @class = "form-control", @placeholder = "Alert Message for notification" })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        @*<div class='col-sm-6' id="diverrormsg1">
+                            <div class='form-group'>
+                                <label>Alert Message</label>
+                                @Html.TextBoxFor(model => model.ErrorMessage, new { @class = "form-control", @placeholder = "Use if Action Type is Send Email" })
+                                @Html.ValidationMessageFor(model => model.ErrorMessage)
+                            </div>
+                        </div>*@
+                        <div class='col-sm-6' style="visibility: hidden">
+                            <div class='form-group'>
+                                <label>@Html.LabelFor(model => model.RuleActionID) </label>
+                                <div class="input-group">
+                                    @Html.DropDownList("RuleActionID", null, "--Select Business Rule--", new { @class = "chosen-select form-control", @HostingName = "BusinessRule", @dataurl = Url.Action("GetAllValue", "BusinessRule", null) })
+                                    @Html.ValidationMessageFor(model => model.RuleActionID)
+                                    <div class="input-group-btn">
+                                        <a class="btn btn-default btn ie8fix" href="#">
+                                            <span class="glyphicon glyphicon-plus-sign"></span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <button type="button" class="btn btn-default btn-sm" data-dismiss="modal" aria-hidden="true">Cancel</button>
+    @*@Html.ActionLink("Cancel", "Cancel", new { UrlReferrer = ViewData["RuleActionParentUrl"] }, new { @onclick = "", @class = "btn btn-default btn-sm" })*@
+    <input type="submit" value="Create" class="btn btn-primary btn-sm" />
+}
+@Scripts.Render("~/bundles/jqueryval")
+<script src="@Url.Content("~/Scripts/Common3/chosen.jquery.js")">
+</script>
+<script type="text/javascript">
+    var config = {
+        '.chosen-select': {},
+        '.chosen-select-deselect': { allow_single_deselect: true },
+        '.chosen-select-no-single': { disable_search_threshold: 10 },
+        '.chosen-select-no-results': { no_results_text: 'Oops, nothing found!' },
+        '.chosen-select-width': { width: "95%" }
+    }
+    for (var selector in config) {
+        $(selector).chosen(config[selector]);
+    }
+    $("form").submit(function () {
+        try {
+            $('#NotifyTo').val(($('#cmbNotifyTo').val()));
+        } catch (ex) { }
+    });
+</script>
+
+

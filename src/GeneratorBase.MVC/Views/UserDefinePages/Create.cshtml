@@ -1,0 +1,77 @@
+﻿@model GeneratorBase.MVC.Models.UserDefinePages
+@{
+    ViewBag.Title = "Create User Define Page";
+    Layout = null;
+}
+<link href="@Url.Content("~/Content/chosen.css")" rel="stylesheet" type="text/css" />
+<script type="text/javascript">
+    function bindForm() {
+        $.ajax({
+            url: '@Url.Action("Create", "UserDefinePages")',
+            data: $('#createUserForm').serialize(),
+            type: 'post',
+            success: function (data) {
+                if (data.success)
+                {
+                    var url = '@Url.Action("UserDefinePage", "UserDefinePages")';
+                    window.location.href = url + "?page=" + data.page;
+                }
+                else
+                {
+                    fillErrorList(data);
+                    showValidationErrors(true);
+                }
+            },
+            error: function (xhr, status) {
+                //Display error message
+            }
+        });
+        return false;
+    }
+    function showValidationErrors(isShown) {
+        if (isShown) {
+            $("#errorContainer").show();
+        } else {
+            $("#errorContainer").hide();
+        }
+    }
+    function fillErrorList(errors) {
+        $("#errors").html("");
+        var list = document.createElement('ul');
+        for (var i = 0; i < errors.length; i++) {
+            var item = document.createElement('li');
+            item.appendChild(document.createTextNode(errors[i]));
+            list.appendChild(item);
+        }
+        $("#errors").html(list);
+    }
+</script>
+@using (Html.BeginForm("Create", "UserDefinePages", FormMethod.Post, new { id = "createUserForm", enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <div id="errorContainer" class="alert alert-danger" style="display: none">
+        <div id="errors"></div>
+    </div>
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="panel panel-default AppForm">
+                <div class="panel-body">
+                    <div class="row">
+                        <div class='col-sm-6'>
+                            <div class='form-group'>
+                                <label>@Html.LabelFor(model => model.PageName) </label>
+                                @Html.TextBoxFor(model => model.PageName, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.PageName)
+                            </div>
+                            @Html.HiddenFor(model => model.PageContent)
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <button type="button" class="btn btn-default btn-sm" data-dismiss="modal" aria-hidden="true">Cancel</button>
+    <input type="submit" value="Create" onclick="return bindForm();" class="btn btn-primary btn-sm" />
+}
+

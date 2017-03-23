@@ -1,0 +1,87 @@
+﻿@model PagedList.IPagedList<GeneratorBase.MVC.Models.DynamicRoleMapping>
+@using PagedList.Mvc;
+@{
+    ViewBag.Title = "Index";
+    Layout = null;
+    Response.ContentType = "application/vnd.ms-excel";
+    Response.AddHeader("Content-Disposition", "attachment; filename=DynamicRoleMapping.xls");
+}
+                    <table>
+                            <tr>
+@if(User.CanView("DynamicRoleMapping","EntityName"))
+{
+		<th>Entity Name</th>
+}
+@if(User.CanView("DynamicRoleMapping","RoleId"))
+{
+		<th>RoleId</th>
+}
+@if(User.CanView("DynamicRoleMapping","Condition"))
+{
+		<th>Condition</th>
+}
+@if(User.CanView("DynamicRoleMapping","Value"))
+{
+		<th>Value</th>
+}
+@if(User.CanView("DynamicRoleMapping","UserRelation"))
+{
+		<th>User Relation</th>
+}
+@if(User.CanView("DynamicRoleMapping","Other"))
+{
+		<th>Other</th>
+}
+@if(User.CanView("DynamicRoleMapping","Flag"))
+{
+		<th>Flag</th>
+}
+    </tr>
+@foreach (var item in Model) {
+    <tr>
+	@if(User.CanView("DynamicRoleMapping","EntityName"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.EntityName)
+        </td>
+}
+@if(User.CanView("DynamicRoleMapping","RoleId"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.RoleId)
+        </td>
+}
+@if(User.CanView("DynamicRoleMapping","Condition"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.Condition)
+        </td>
+}
+@if(User.CanView("DynamicRoleMapping","Value"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.Value)
+        </td>
+}
+@if(User.CanView("DynamicRoleMapping","UserRelation"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.UserRelation)
+        </td>
+}
+@if(User.CanView("DynamicRoleMapping","Other"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.Other)
+        </td>
+}
+@if(User.CanView("DynamicRoleMapping","Flag"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.Flag)
+        </td>
+}
+                                </tr>
+                            }
+</table>
+               

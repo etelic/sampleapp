@@ -1,0 +1,37 @@
+﻿@model System.Web.Mvc.HandleErrorInfo
+@{
+    ViewBag.Title = "Application Exception";
+}
+<div class="row">
+    <h1 class="page-title">
+        <i class="glyphicon glyphicon-exclamation-sign text-primary"></i> Exception Alert
+    </h1>
+    <p class="text-primary">
+        Entity :<b> @Model.ControllerName </b><br>
+        Action:<b> @Model.ActionName </b><br>
+        Exception:  @(Model.Exception.Message == "Deleted" ? "Record already deleted by another user !" : Model.Exception.GetType().Name+" : "+Model.Exception.Message)
+    </p>
+    <hr />
+    <p class="text-primary">
+        @if (Model.Exception is System.Data.Entity.Infrastructure.DbUpdateConcurrencyException)
+        {
+            if (Model.ActionName == "Edit")
+            {
+                <label class="text-primary">
+                    The record you attempted to modify was modified/deleted by another user after you got the original values.Click below button to get updated record.
+                </label>
+            }
+            if (Model.ActionName == "Delete")
+            {
+                <label>
+                    The record you attempted to delete was modified/deleted by another user after you got the original values. Click below button to get updated record.
+                </label>
+            }
+            <a class="btn btn-default btn-sm" href="@Request.Url">Refresh</a>
+        }
+        else
+        {
+            <a class="btn btn-default btn-sm" href="@Request.Url">Go Back</a>
+        }
+    </p>
+</div>

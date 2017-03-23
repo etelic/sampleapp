@@ -1,0 +1,64 @@
+﻿@model IEnumerable<GeneratorBase.MVC.Models.DefaultEntityPage>
+@{
+    ViewBag.Title = "Set Search Criteria";
+	var parentUrl = HttpUtility.ParseQueryString(Request.UrlReferrer.Query);
+}
+<script>
+    function keypressHandler(e) {
+        if (e.which == 13) {
+            $(this).blur();
+            $('#fSearchDefaultEntityPage').focus().click();
+        }
+    }
+ $(document).keypress(keypressHandler);
+ $(document).ready(function () {
+  if ("@parentUrl".length > 0) {
+			 document.getElementById("FSearch").value = "@parentUrl["search"]";
+document.getElementById("Flag").value = "@parentUrl["Flag"]";
+ }
+    });
+</script>
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-title">
+            <i class="glyphicon glyphicon-search text-primary"></i> Default Entity Page <i class="glyphicon glyphicon-chevron-right small"></i> <span>Faceted Search</span>
+        </h1>
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+			 <div class="fsearch">
+				<div class="panel panel-default">
+						   <div class="panel-body fsearchbg">
+                            <div class='col-sm-12 small'>
+							<div class='col-sm-3'>
+                                    <label class='col-sm-12'> General Criteria </label>
+									@{
+									var txtGenCriteria = String.IsNullOrEmpty(Convert.ToString(ViewBag.CurrentFilter)) ? "" : Convert.ToString(ViewBag.CurrentFilter);
+									}
+									<input type="text" id="FSearch" class="form-control" placeholder="General Criteria" value="@txtGenCriteria" />
+                             </div>
+			<div class='col-sm-3' style="height:55px;">
+                                    <label class='col-sm-12'> Flag </label>
+                                       <select id="Flag" class="form-control">
+                                        <option value="All">All</option>
+                                        <option value="true">true</option>
+                                        <option value="false">false</option>
+                                    </select>
+			</div>
+					 </div>
+					  </div>
+                                        </div>
+                                    </div>
+   <a href="@Url.Action("Index")" class="btn btn-default btn-sm"> Cancel</a>
+<button id="fSearchDefaultEntityPage" class="btn btn-primary btn-sm" type="button" dataurl="@(Url.Action("FSearch", "DefaultEntityPage", null) )"
+        onclick="@(Html.Raw("FacetedSearch('DefaultEntityPage','','Flag','"
+    +  Convert.ToString(Request.QueryString["sortBy"]) +"','"
+     + Convert.ToString(Request.QueryString["isAsc"]) + "','" + "'); "))">
+    Search
+</button>
+<script>
+    $(document).ready(function () {
+    });
+</script>
+
+

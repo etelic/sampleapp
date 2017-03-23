@@ -1,0 +1,20 @@
+﻿@model IEnumerable<GeneratorBase.MVC.Models.JournalEntry>
+@foreach (var item in Model)
+{
+    <a href="@Url.Action("Edit", item.EntityName, new { id = item.RecordId})">
+        <div class="col-md-6">
+            <div class="JournalList">
+                <h2 style="margin-top: 0px; color: #4083a9;">@Html.DisplayFor(modelItem => item.EntityName)  <span class="pull-right" style="color: #555; font-size: 12px; margin-top: 5px;">@Html.DisplayFor(modelItem => item.DateTimeOfEntry)</span></h2>
+                <span class="label label-default" style="font-size:11px;">@Html.DisplayFor(modelItem => item.Type)</span>
+                <span>
+                    RecordInfo <span class="fontcolor">@Html.DisplayFor(modelItem => item.RecordInfo)</span>
+                    PropertyName - <span class="fontcolor">@Html.DisplayFor(modelItem => item.PropertyName)</span>
+                    Old Value <span class="fontcolor">@Html.DisplayFor(modelItem => item.OldValue)</span>
+                    New Value - <span class="fontcolor">@Html.DisplayFor(modelItem => item.NewValue)</span>
+                </span>
+            </div>
+            <!-- List group -->
+        </div>
+    </a>
+}
+

@@ -1,0 +1,57 @@
+﻿@model PagedList.IPagedList<GeneratorBase.MVC.Models.RuleAction>
+@using PagedList.Mvc;
+@{
+    ViewBag.Title = "Index";
+    Layout = null;
+    Response.ContentType = "application/vnd.ms-excel";
+    Response.AddHeader("Content-Disposition", "attachment; filename=RuleAction.xls");
+}
+<table>
+    <tr>
+        @if (User.CanView("RuleAction", "ActionName"))
+        {
+            <th>Action Name</th>
+        }
+        @if (User.CanView("RuleAction", "ErrorMessage"))
+        {
+            <th>Error Message</th>
+        }
+        @if (User.CanView("RuleAction", "RuleActionID"))
+        {
+            <th @(Convert.ToString(ViewData["HostingEntity"]) == "BusinessRule" ? "hidden" : "")>Business Rule</th>
+        }
+        @if (User.CanView("RuleAction", "AssociatedActionTypeID"))
+        {
+            <th @(Convert.ToString(ViewData["HostingEntity"]) == "ActionType" ? "hidden" : "")>Action Type</th>
+        }
+    </tr>
+    @foreach (var item in Model)
+    {
+        <tr>
+            @if (User.CanView("RuleAction", "ActionName"))
+            {
+                <td>
+                    @Html.DisplayFor(modelItem => item.ActionName)
+                </td>
+            }
+            @if (User.CanView("RuleAction", "ErrorMessage"))
+            {
+                <td>
+                    @Html.DisplayFor(modelItem => item.ErrorMessage)
+                </td>
+            }
+            @if (User.CanView("RuleAction", "RuleActionID"))
+            {
+                <td @(Convert.ToString(ViewData["HostingEntity"]) == "BusinessRule" ? "hidden" : "")>
+                    @Html.DisplayFor(modelItem => item.ruleaction.DisplayValue)
+                </td>
+            }
+            @if (User.CanView("RuleAction", "AssociatedActionTypeID"))
+            {
+                <td @(Convert.ToString(ViewData["HostingEntity"]) == "ActionType" ? "hidden" : "")>
+                    @Html.DisplayFor(modelItem => item.associatedactiontype.DisplayValue)
+                </td>
+            }
+        </tr>
+    }
+</table>

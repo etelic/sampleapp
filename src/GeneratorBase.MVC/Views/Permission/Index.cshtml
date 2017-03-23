@@ -1,0 +1,186 @@
+﻿@model GeneratorBase.MVC.Models.SelectEntityRolesViewModel
+@{
+    ViewBag.Title = "Permission Settings";
+}
+<script language="JavaScript">
+    function toggleAdd(source) {
+        $('.fooAdd').each(function () { this.checked = source.checked; });
+    }
+    function toggleEdit(source) {
+        $('.fooEdit').each(function () { this.checked = source.checked; });
+    }
+    function toggleDelete(source) {
+        $('.fooDelete').each(function () { this.checked = source.checked; });
+    }
+    function toggleView(source) {
+       // checkboxes = $('.fooView');
+        $('.fooView').each(function () { this.checked = source.checked; });
+    }
+</script>
+<script>
+    function CheckIsOwner(obj) {
+        var value = $(obj).val();
+        var entity = $(obj).attr("ent");
+        if (value != undefined && value.length > 0) {
+            $("#" + entity + "Owner").prop('checked', true);
+            $("#" + entity + "Ownertxt").val(value);
+        }
+        else
+        {
+            $("#" + entity + "Owner").prop('checked', false);
+            $("#" + entity + "Ownertxt").val("");
+        }
+    }
+    //code for verb action security
+    function CheckIsVerbs(obj) {
+        var value = $(obj).val();
+        var Verbentity = $(obj).attr("Verbent");
+        if (value != undefined && value.length > 0) {
+            $("#" + Verbentity + "Verbstxt").val(value);
+        }
+        else {
+            $("#" + Verbentity + "Verbstxt").val("");
+        }
+    }
+    //
+</script>
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-title">
+            <i class="glyphicon glyphicon-edit text-primary"></i> Admin  <i class="glyphicon glyphicon-chevron-right small"></i> <span>Permission</span> <i class="glyphicon glyphicon-chevron-right small"></i> <span> @Html.DisplayFor(model => model.RoleName)  </span>
+        </h1>
+    </div>
+</div>
+<div class="col-md-12 col-sm-12 col-xs-12" style="padding:0px; margin:0px;">
+    @using (Html.BeginForm("SavePermission", "Permission", FormMethod.Post, new { encType = "multipart/form-data", name = "myform" }))
+    {
+        @Html.AntiForgeryToken()
+        <div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading clearfix " style="margin:0px; padding:8px;">
+                        Set Permission for Role
+                    </div>
+                    <div class="panel-body  AppForm">
+                        <div class="form-horizontal">
+                            @Html.ValidationSummary(true)
+                            @*<span>Select All  <input type="checkbox" onclick="toggle(this)" /></span>*@
+                            <div class="tabbable responsive">
+                                @*<div class="form-group">
+                                    <div class="col-md-10">*@
+                                        @Html.HiddenFor(model => model.RoleName)
+                                    @*</div>
+                                </div>*@
+                                <div id="Des_Table" class="table-responsive" style="overflow-x:auto;">
+                                    <table class="table table-bordered table-hover table-condensed">
+                                        <tr style="background: #EDF5FA">
+                                            <th style="text-align:center">
+                                                Entity
+                                            </th>
+                                            <th style="text-align:center">
+                                                <input type="checkbox" onclick="toggleAdd(this)" />  Add
+                                            </th>
+                                            <th style="text-align:center">
+                                                <input type="checkbox" onclick="toggleEdit(this)" /> Edit
+                                            </th>
+                                            <th style="text-align:center">
+                                                <input type="checkbox" onclick="toggleDelete(this)" /> Delete
+                                            </th>
+                                            <th style="text-align:center">
+                                                <input type="checkbox" onclick="toggleView(this)" /> View
+                                            </th>
+                                            @*code for verb action security*@
+                                            <th style="text-align:center">
+                                                Disable Verbs
+                                            </th>
+                                            <th style="text-align:center">
+                                                Self Service Only
+                                            </th>
+                                            <th style="text-align:center">
+                                               Auto Registration
+                                            </th>
+                                        </tr>
+                                        @Html.EditorFor(model => model.Entities)
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row deletefix">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                @Html.ActionLink("Back to Role List", "RoleList", "Account", null, new { @class = "btn btn-default btn-sm", @id = "BackToRoleList" })
+                <input type="submit" value="Save" onclick="SetRolePermission(event);" class="btn btn-primary btn-sm" />
+            </div>
+        </div>
+    }
+</div>
+<div class="clearfix">
+    <br /><br />
+</div>
+<script>
+    function SetRolePermission(e) {
+        var target;
+        if (e.srcElement) target = e.srcElement;
+        e = $.event.fix(e);
+        if (e.currentTarget) target = e.currentTarget;
+        e.preventDefault();
+        var form = $(target).closest('form');
+        //if (!form.valid()) return;
+        var fd = $(target).closest('form').serialize();
+        var url = $(target).closest('form').attr("action");
+        try {
+            fd = new FormData(form[0]);
+            $.ajax({
+                url: url,
+                type: "POST",
+                cache: false,
+                data: fd,
+                dataType: "json",
+                processData: false,
+                contentType: false,
+                success: function (result) {
+                    if (result == "FROMPAGE") {
+                        $('a').each(function () {
+                            if (($(this)).attr('id') != undefined) {
+                                if (($(this)).attr('id') == "BackToRoleList") {
+                                    var href = ($(this)).attr('href');
+                                    window.location.href = href;
+                                }
+                            }
+                        });
+                    }
+                }
+            });
+        } catch (ex) {
+            fd = $(target).closest('form').serialize();
+            $.ajax({
+                url: url,
+                type: "POST",
+                cache: false,
+                data: fd,
+                success: function (result) {
+                    if (result == "FROMPAGE") {
+                        $('a').each(function () {
+                            if (($(this)).attr('id') != undefined) {
+                                if (($(this)).attr('id') == "BackToRoleList") {
+                                    var href = ($(this)).attr('href');
+                                    window.location.href = href;
+                                }
+                            }
+                        });
+                    }
+                }
+            });
+        }
+    }
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('select[multiple=multiple]').multiselect({
+            buttonWidth: '100%'
+        });
+    });
+</script>

@@ -1,0 +1,174 @@
+﻿@model IEnumerable<GeneratorBase.MVC.Models.AppSetting>
+@{
+    var _list = Model.ToList();
+}
+<div id="AppSetting">
+    <button id="AppSettingSearchCancel" type="button" hidden onclick="CancelSearch('AppSetting','@Html.Raw(Url.Action("Index", "AppSetting", new {ClearSearchTimeStamp = DateTime.Now }))','@User.JavaScriptEncodedName')" style="padding:3px 5px;"></button>
+
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            @foreach (var appgroup in ViewBag.AppSettingGroup)
+            {
+                <div class="panel panel-default AppForm">
+                    @if (!appgroup.IsDefault)
+                    {
+                        <div class="panel-heading clearfix" style="padding:5px 0px 5px 5px !important;">
+                            <div class="panel-title">
+                                <div class="btn-group">
+                                    <button data-toggle="dropdown" class="btn dropdown-toggle btn-default" style="border: 0px solid #c3ddec !important; font-size:16px;">
+                                        @appgroup.Name
+                                        <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu pull-left">
+                                        <li>
+                                            <a data-placement="top" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Edit Application Setting Group','dvPopup','" + Url.Action("EditGroup", "AppSetting", new { id = appgroup.Id, UrlReferrer = Request.Url, TS = DateTime.Now }) + "')")"><i class="glyphicon glyphicon-edit pull-left" style="margin-right:5px;"></i>  Edit</a>
+                                        </li>
+                                        <li>
+                                            <a data-placement="top" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Delete Application Setting Group','dvPopup','" + Url.Action("DeleteGroup", "AppSetting", new { id = appgroup.Id, UrlReferrer = Request.Url, TS = DateTime.Now }) + "')")"><i class="glyphicon glyphicon-remove-sign pull-left" style="margin-right:5px;"></i>  Delete</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="panel-heading clearfix">
+                            <h3 class="panel-title">@appgroup.Name</h3>
+                        </div>
+                    }
+
+                    <div class="panel-body">
+                        @{
+                    var groupName = appgroup.Name;
+                    var itemSetting = _list.Where(app => app.associatedappsettinggroup != null && app.associatedappsettinggroup.DisplayValue == groupName);
+                        }
+
+                        <div id="Des_Table" class="table-responsive" style="overflow-x:auto;">
+                            <table class="table table-bordered table-hover table-condensed">
+                                <thead>
+                                    <tr>
+                                        <th class="col1" style="width:70px;">Actions</th>
+                                        <th style="width:25%">Key</th>
+                                        <th style="width:35%">Value</th>
+                                        <th style="width:auto">Description</th>
+                                    </tr>
+                                </thead>
+
+                                @foreach (var item in itemSetting)
+                                {
+                                    <tr>
+                                        <td>
+                                            @if (item.Key != "DomainName" && item.Key != "UseActiveDirectory" && item.Key != "AdministratorRoles" && item.Key != "ReportFolder")
+                                            {
+                                                <div style="width:60px; margin-top:-2px;">
+                                                    <div class="btn-group" style="position:absolute;">
+                                                        <button data-toggle="dropdown" class="btn btn-xs dropdown-toggle btn-default">
+                                                            Action
+                                                            <span class="caret"></span>
+                                                        </button>
+                                                        <ul class="dropdown-menu pull-left">
+                                                            <li>
+                                                                @if (User.Identity.IsAuthenticated && User != null && User.CanEdit("AppSetting"))
+                                                                {
+                                                                    <a data-placement="top" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Edit Application Setting','dvPopup','" + Url.Action("EditSetting", "AppSetting", new { id = item.Id, UrlReferrer = Request.Url, TS = DateTime.Now }) + "')")"><i class="glyphicon glyphicon-edit"></i>  Edit</a>
+                                                                }
+                                                            </li>
+                                                            @if (!item.IsDefault)
+                                                            {
+                                                                <li>
+                                                                    @if (User.Identity.IsAuthenticated && User != null && User.CanDelete("AppSetting"))
+                                                                    {
+                                                                        <a data-placement="top" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Delete Application Setting','dvPopup','" + Url.Action("DeleteSetting", "AppSetting", new { id = item.Id, UrlReferrer = Request.Url, TS = DateTime.Now }) + "')")"><i class="glyphicon glyphicon-remove-sign"></i>  Delete</a>
+                                                                    }
+                                                                </li>
+                                                            }
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <div>web.config setting</div>
+                                            }
+                                        </td>
+
+                                        <td>@Html.DisplayFor(modelItem => item.Key)</td>
+                                        <td>@Html.DisplayFor(modelItem => item.Value)</td>
+                                        <td>@Html.DisplayFor(modelItem => item.Description)</td>
+                                    </tr>
+                                }
+
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            }
+            <div class="panel panel-default AppForm">
+                <div class="panel-heading clearfix">
+                    <h3 class="panel-title">Other Setting</h3>
+                </div>
+                <div class="panel-body">
+                    <div id="Des_Table" class="table-responsive">
+                        <table class="table table-bordered table-hover table-condensed">
+                            <thead>
+                                <tr>
+                                    <th class="col1" style="width:70px;">Actions</th>
+                                    <th style="width:25%">Key</th>
+                                    <th style="width:35%">Value</th>
+                                    <th style="width:auto">Description</th>
+                                </tr>
+                            </thead>
+                            @foreach (var item in Model.Where(app => app.associatedappsettinggroup == null))
+                            {
+                                <tr>
+                                    <td>
+                                        @if (item.Key != "AppName" && item.Key != "AppURL")
+                                        {
+                                            <div style="width:60px; margin-top:-2px;">
+                                                <div class="btn-group" style="position:absolute;">
+                                                    <button data-toggle="dropdown" class="btn btn-xs dropdown-toggle btn-default">
+                                                        Action
+                                                        <span class="caret"></span>
+                                                    </button>
+                                                    <ul class="dropdown-menu pull-left">
+                                                        <li>
+                                                            @if (User.Identity.IsAuthenticated && User != null && User.CanEdit("AppSetting"))
+                                                            {
+                                                                <a data-placement="top" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Edit Application Setting','dvPopup','" + Url.Action("EditSetting", "AppSetting", new { id = item.Id, UrlReferrer = Request.Url, TS = DateTime.Now }) + "')")"><i class="glyphicon glyphicon-edit"></i>  Edit</a>
+                                                            }
+                                                        </li>
+                                                        @if (!item.IsDefault)
+                                                        {
+                                                            <li>
+                                                                @if (User.Identity.IsAuthenticated && User != null && User.CanDelete("AppSetting"))
+                                                                {
+                                                                    <a data-placement="top" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Delete Application Setting','dvPopup','" + Url.Action("DeleteSetting", "AppSetting", new { id = item.Id, UrlReferrer = Request.Url, TS = DateTime.Now }) + "')")"><i class="glyphicon glyphicon-remove-sign"></i>  Delete</a>
+                                                                }
+                                                            </li>
+                                                        }
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div>web.config setting</div>}
+                                    </td>
+                                    <td>@Html.DisplayFor(modelItem => item.Key)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.Value)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.Description)</td>
+                                </tr>
+                            }
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <a href="@Url.Action("ApplySetting", "AppSetting")" class="btn btn-primary btn-sm">Apply Setting</a>
+            <br />
+            <br />
+
+        </div>
+    </div>
+</div>

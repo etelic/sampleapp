@@ -1,0 +1,158 @@
+﻿@model GeneratorBase.MVC.Models.DefaultEntityPage
+<script>
+    $(document).ready(function () {
+        try {
+            var hostingEntityName = "";
+            if ('@Convert.ToString(ViewData["AssociatedType"])' != null) {
+                hostingEntityName = '@Convert.ToString(ViewData["AssociatedType"])';
+                $("#dv" + hostingEntityName + "ID").hide();
+            }
+        }
+        catch (ex) { }
+    });
+</script>
+@using (Html.BeginForm("Create", "DefaultEntityPage",new {UrlReferrer = Convert.ToString(ViewData["DefaultEntityPageParentUrl"]), IsDDAdd = ViewBag.IsDDAdd }, FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+   @Html.AntiForgeryToken();
+    Html.ValidationSummary(true);
+    Html.EnableClientValidation();
+	<label id="ErrMsg" class="text-primary small pull-right" style="color:red; vertical-align:middle; font-weight:100;"></label>
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="panel panel-default AppForm">
+                <div class="panel-body">
+               <div class="row">         
+					<div class='col-sm-6 col-md-6 col-xs-12'>
+                                <div class='form-group'>
+                                   <label class="col-sm-5 col-md-5 col-xs-12" >@Html.LabelFor(model => model.EntityName) <span class="text-danger-reg">*</span></label>
+									<div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                    @Html.TextBoxFor(model => model.EntityName, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.EntityName)
+									</div>
+                                </div>
+					</div>
+						<div class='col-sm-6 col-md-6 col-xs-12'>
+                                <div class='form-group'>
+                                   <label class="col-sm-5 col-md-5 col-xs-12" >@Html.LabelFor(model => model.Roles) </label>
+									<div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                    @Html.TextAreaFor(model => model.Roles, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.Roles)
+									</div>
+                                </div>
+						</div>
+					<div class='col-sm-6 col-md-6 col-xs-12'>
+                                <div class='form-group'>
+                                   <label class="col-sm-5 col-md-5 col-xs-12" >@Html.LabelFor(model => model.PageType) </label>
+									<div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                    @Html.TextBoxFor(model => model.PageType, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.PageType)
+									</div>
+                                </div>
+					</div>
+						<div class='col-sm-6 col-md-6 col-xs-12'>
+                                <div class='form-group'>
+                                   <label class="col-sm-5 col-md-5 col-xs-12" >@Html.LabelFor(model => model.PageUrl) </label>
+									<div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                    @Html.TextAreaFor(model => model.PageUrl, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.PageUrl)
+									</div>
+                                </div>
+						</div>
+					<div class='col-sm-6 col-md-6 col-xs-12'>
+                                <div class='form-group'>
+                                   <label class="col-sm-5 col-md-5 col-xs-12" >@Html.LabelFor(model => model.Other) </label>
+									<div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                    @Html.TextBoxFor(model => model.Other, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.Other)
+									</div>
+                                </div>
+					</div>
+                            <div class='col-sm-6 col-md-6 col-xs-12'>
+							<div class="form-group">
+                                <label class="col-sm-5 col-md-5 col-xs-12" >
+                                    @Html.LabelFor(model => model.Flag) 
+                                </label>
+								<div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                    @*@Html.CheckBoxFor(model => model.Flag)*@
+									@Html.CheckBox("Flag", false)
+                                    @Html.ValidationMessageFor(model => model.Flag)		
+								</div>
+                                </div>
+                            </div>
+       </div>
+                        </div>
+                    </div>
+                </div>
+        </div>
+          @Html.ActionLink("Cancel", "Cancel", new { UrlReferrer = ViewData["DefaultEntityPageParentUrl"] }, new { @onclick = "", @class = "btn btn-default btn-sm" })
+	<input type="submit" name="command" value="Create" class="btn btn-primary btn-sm" />
+    if (ViewBag.IsDDAdd == null && User.CanEdit("DefaultEntityPage"))
+    {
+	<input type="submit" name="command" value="Create & Continue" class="btn btn-primary btn-sm" />
+	}
+	 <input type="hidden" name="hdncommand" value="" />
+	<br/><br/>
+}
+	<script>
+    $(function () {
+        var userAgent = navigator.userAgent.toLowerCase();
+        // Figure out what browser is being used
+        var browser = {
+            version: (userAgent.match(/.+(?:rv|it|ra|ie)[\/: ]([\d.]+)/) || [])[1],
+            safari: /webkit/.test(userAgent),
+            opera: /opera/.test(userAgent),
+            msie: /msie/.test(userAgent) && !/opera/.test(userAgent),
+            mozilla: /mozilla/.test(userAgent) && !/(compatible|webkit)/.test(userAgent)
+        };
+        if (!browser.msie) {
+            $('form').areYouSure();
+        }
+        else if (browser.version > 8.0) {
+            $('form').areYouSure();
+        }
+    });
+</script>
+	<script>
+            $("input[type='submit']").click(function () {
+                var $this = $(this);
+                $('input:hidden[name="hdncommand"]').val($this.val());
+            });
+	</script>
+@{
+    var busineesrule = User.businessrules.Where(p => p.EntityName == "DefaultEntityPage").ToList();
+    if ((busineesrule != null && busineesrule.Count > 0))
+    {
+        <script>
+            $("form").submit(function () {
+                    var flag = true;
+                    $.ajax({
+                        async: false,
+                        type: "GET",
+                        url: "@Url.Action("GetMandatoryProperties", "DefaultEntityPage")",
+                        data: $(this).serialize(),
+                        success: function (data) {
+						$('[businessrule="mandatory"]').each(function () {
+                                $(this).removeAttr('required');
+                            });
+                            document.getElementById('ErrMsg').innerHTML = "";
+                            for (var key in data) {
+                                if ($.trim($('#' + key).val()).length == 0) {
+                                    $('#' + key).attr('required', 'required');
+									$('#' + key).attr('businessrule', 'mandatory');
+                                    flag = false;
+                                    document.getElementById('ErrMsg').innerHTML += data[key] + " is Mandatory.<br/>";
+                                }
+                            }
+                        },
+                        error: function (jqXHR, textStatus, errorThrown) {
+                            //alert(JSON.stringify(jqXHR));
+                            //alert(errorThrown);
+                        }
+                    });
+                    return flag;
+            });
+        </script>
+    }
+}
+
+

@@ -1,0 +1,239 @@
+﻿@model PagedList.IPagedList<GeneratorBase.MVC.Models.ImportConfiguration>
+@using PagedList.Mvc;
+@{
+    var ActionNameUrl = "Index";
+    if (HttpContext.Current.Request.RequestContext.RouteData.Values["action"].ToString().ToUpper() == "FSEARCH")
+    {
+        ActionNameUrl = "FSearch";
+    }
+}
+<script>
+    function SetSingle(source, id, DisplayValue) {
+        var dropdown = ($('#PopupBulkOperationLabel').attr('class'));
+        if ($('#' + dropdown + ' option[value="' + id + '"]').length == 0) {
+            $('#' + dropdown).append($('<option selected=\'selected\'></option>').val(id).html(DisplayValue));
+            $("#" + dropdown).trigger('chosen:updated');
+        }
+        $("#" + dropdown).val(id);
+        $("#" + dropdown).trigger('chosen:updated');
+        $("#closePopupBulkOperation").click();
+    }
+    function Set(source, id,DisplayValue) {
+        var dropdown = ($('#PopupBulkOperationLabel').attr('class'));
+        if (source.checked) {
+            if ($('#' + dropdown).attr('multiple') == 'multiple') {
+			    var obj = document.getElementById(dropdown);
+			    var found = false;
+			    for (var o = 0; o < obj.options.length; o++) {
+			        if (obj.options[o].value == id) {
+			            found = true;
+			            obj.options[o].setAttribute('selected', "selected");
+			        }
+			    } 
+			    if (!found) {
+			        $('#' + dropdown).append($('<option selected=\'selected\'></option>').val(id).html(DisplayValue));
+			    }
+			    $('#' + dropdown).multiselect('rebuild');
+            }
+        }
+        else
+        {
+            if ($('#' + dropdown).attr('multiple') == 'multiple') {
+                var obj = document.getElementById(dropdown);
+                for (var o = 0; o < obj.options.length; o++) {
+                    if (obj.options[o].value == id) {
+                        obj.options[o].removeAttribute("selected");
+                        $('#' + dropdown).multiselect('deselect', id);
+                    }
+                }
+            }
+        }
+    }
+</script>
+<div id="ImportConfiguration">
+    @if (ViewBag.ColumnMapping == null && ViewBag.ImportError == null && ViewBag.ConfirmImportData == null)
+    {
+		<style>
+            .table-responsive > .fixed-column {
+                position: absolute;
+                display: block;
+                width: auto;
+                border: 0px solid transparent;
+                border-top: 1px solid #c3ddec;
+            }
+            .fixed-column th {
+                background: #fff;
+            }
+            .fixed-column td {
+                background: #fff;
+            }
+        </style>
+        <script type="text/javascript">
+            $(document).ready(function () {
+                $(".pagination a").click(function (e) {
+                    PaginationClick(e, 'ImportConfiguration');
+                })
+                $("#SearchStringImportConfiguration").keypress(function (e) {
+                    if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
+                        $("#ImportConfigurationSearch").bind("click", (function () {
+                        }));
+                        $('#ImportConfigurationSearch').trigger("click");
+                        return false;
+                    }
+                })
+            });
+        </script>
+        @functions {
+            object getSortHtmlAttributes(string sortby, bool IsPaging, int? page, bool? IsExport)
+            {
+                if (IsPaging)
+                {
+                    return new
+                    {
+                        page,
+                        sortBy = ViewBag.CurrentSort,
+                        isAsc = ViewBag.IsAsc,
+                        currentFilter = ViewBag.CurrentFilter,
+                        HostingEntity = @Convert.ToString(ViewData["HostingEntity"]),
+                        AssociatedType = @Convert.ToString(ViewData["AssociatedType"]),
+                        HostingEntityID = ViewData["HostingEntityID"],
+                        IsExport = IsExport,
+                        FSFilter = ViewBag.FSFilter == null ? "Fsearch" : ViewBag.FSFilter,
+                        IsFilter = @Convert.ToBoolean(ViewData["IsFilter"]),
+                        BulkOperation = ViewData["BulkOperation"],
+                        search = Request.QueryString["search"],
+                    };
+                }
+                else
+                {
+                    return new
+                    {
+                        sortBy = sortby,
+                        currentFilter = Request.QueryString["currentFilter"],
+                        searchString = Request.QueryString["searchString"],
+                        isAsc = (ViewBag.IsAsc == "ASC" ? "DESC" : ""),
+                        page = ViewBag.Pages,
+                        HostingEntity = @Convert.ToString(ViewData["HostingEntity"]),
+                        HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),
+                        AssociatedType = @Convert.ToString(ViewData["AssociatedType"]),
+                        IsExport = IsExport,
+                        FSFilter = ViewBag.FSFilter == null ? "Fsearch" : ViewBag.FSFilter,
+                        IsFilter = @Convert.ToBoolean(ViewData["IsFilter"]),
+                        BulkOperation = ViewData["BulkOperation"],
+                        search = Request.QueryString["search"],
+                    };
+                }
+            }
+        }
+        <div class="row">
+            <div class="col-md-12 col-sm-12 col-sx-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading clearfix" style="margin:0px; padding:8px;">
+                        <div class="pull-right" style="width:200px;">
+                            <div class="input-group">
+                                @Html.TextBox("SearchStringImportConfiguration", ViewBag.CurrentFilter as string, null, new { @class = "form-control fixsearchbox", @placeholder = "Search" })
+                                <div class="input-group-btn">
+                                    <a id="ImportConfigurationSearch" onclick="SearchClick(event, 'ImportConfiguration', '@Html.Raw(Url.Action("Index", "ImportConfiguration", new { IsFilter = ViewData["IsFilter"], IsDeepSearch = false, searchString = "_SearchString", HostingEntity = Convert.ToString(ViewData["HostingEntity"]), BulkOperation = ViewData["BulkOperation"], HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]), SearchTimeStamp = DateTime.Now }))');" data-original-title="Grid Search" class="btn btn-default btn-default tip-top" style="padding:3px 5px;"><span class="fam-zoom"></span></a>
+                                    <button id="ImportConfigurationCancel" type="button" class="btn btn-default btn-default collapse-data-btn tip-top" onclick="CancelSearch('ImportConfiguration','@Html.Raw(Url.Action("Index", "ImportConfiguration", new { BulkOperation = ViewData["BulkOperation"], IsFilter=ViewData["IsFilter"], HostingEntity = Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]), ClearSearchTimeStamp = DateTime.Now }))')" data-original-title="Clear Search" data-placement="top" style="padding:3px 5px;">
+                                        <span class="fam-delete"></span>
+                                    </button>
+                                    <button id="ImportConfigurationSearchCancel" type="button" class="btn btn-default btn-default collapse-data-btn tip-top" onclick="CancelSearch('ImportConfiguration','@Html.Raw(Url.Action("Index", "ImportConfiguration", new { BulkOperation = ViewData["BulkOperation"], IsFilter = ViewData["IsFilter"], HostingEntity = Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]), ClearSearchTimeStamp = DateTime.Now }))')" data-original-title="Refresh Grid" data-placement="top" style="padding:3px 5px;">
+                                        <span class="fam-arrow-refresh"></span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel-body" style="margin:0px; padding:8px;">
+                        <div id="Des_Table" class="table-responsive" style="overflow-x:auto;">
+                            <table class="table table-striped table-bordered table-hover table-condensed">
+                                <thead>
+                                    <tr>
+                                        <th class="col2">
+                                            Select
+                                        </th>
+                                        @if (User.CanView("ImportConfiguration"))
+                                        {
+                                            <th class="col2">
+                                                @Html.ActionLink("Display Value", ActionNameUrl, "ImportConfiguration", getSortHtmlAttributes("DisplayValue", false, null, false), new { @onclick = "SortLinkClick(event,'ImportConfiguration');" })
+                                                @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "DisplayValue")
+                                                {<i class="fa fa-sort-desc"></i>}
+                                                @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "DisplayValue")
+                                                {<i class="fa fa-sort-asc"></i>}
+                                            </th>
+                                        }
+                                    </tr>
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr>
+                                            @if(Convert.ToString(ViewData["BulkOperation"]) == "multiple")
+                                            {
+												<td>
+													<input type="checkbox" onclick="Set(this,'@item.Id','@item.DisplayValue');" />
+												</td>
+                                            }
+                                            else
+                                            {
+												<td>
+													<input type="button" value="Select" class="btn btn-primary btn-xs" onclick="SetSingle(this,'@item.Id','@item.DisplayValue');" />
+												</td> 
+                                            }
+                                            @if (User.CanView("ImportConfiguration"))
+                                            {
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => item.DisplayValue)
+                                                </td>
+                                            }
+                                        </tr>
+                                    }
+                            </table>
+                        </div>
+                        <ul id="Mob_List" class="list-group">
+                            @foreach (var item in Model)
+                            {
+                                <li class="list-group-item">
+                                    @if (User.CanView("ImportConfiguration"))
+                                    {
+										<p>
+                                            <span class="text-primary"> Select </span> : <span>
+                                            @if(Convert.ToString(ViewData["BulkOperation"]) == "multiple")
+                                            {
+												<input type="checkbox" onclick="Set(this,'@item.Id','@item.DisplayValue');" />
+                                            }
+                                            else
+                                            {
+												<input type="button" value="Select" class="btn btn-primary btn-xs" onclick="SetSingle(this,'@item.Id','@item.DisplayValue');" />
+                                            }
+                                            </span>
+                                        </p>
+                                        <p>
+                                            <span class="text-primary"> Display Value </span> : <span>
+                                                @Html.DisplayFor(modelItem => item.DisplayValue)
+                                            </span>
+                                        </p>
+                                    }
+                                </li>
+                            }
+                        </ul>
+                        @if (Model.Count > 0)
+                        {
+                            <div id="pagination">
+                                @Html.PagedListPager(Model, page => Url.Action(ActionNameUrl, "ImportConfiguration", getSortHtmlAttributes(null, true, page, false)))
+                                <div class="fixPageSize">
+                                    Page Size :
+                                    @Html.DropDownList("PageSize", new SelectList(new Dictionary<string, int> { { "10", 10 }, { "20", 20 }, { "50", 50 }, { "100", 100 } }, "Key", "Value"), new { @id = "pagesizelistImportConfiguration", 
+									@onchange = "pagesizelistChange(event,'ImportConfiguration')", 
+									@Url = Html.Raw(@Url.Action(ActionNameUrl, "ImportConfiguration", 
+									getSortHtmlAttributes(ViewBag.CurrentSort, ViewBag.Pages == 1 ? false : true,
+									null, false), null)) })
+                                    <span style="text-align:right;"> Total Count: @(Model.TotalItemCount)</span>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+  

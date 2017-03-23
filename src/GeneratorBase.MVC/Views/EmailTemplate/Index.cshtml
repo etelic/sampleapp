@@ -1,0 +1,21 @@
+﻿@model IEnumerable<GeneratorBase.MVC.Models.EmailTemplate>
+@{
+    ViewBag.Title = "Email Template";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-title">
+            <i class="glyphicon glyphicon-save text-primary"></i> Email Template
+            <div class="btn btn-default btn-sm dropdown pull-right" style="border: 0px solid #c3ddec !important; font-size:12px;">
+                <a href="#" data-toggle="dropdown" class="dropdown-toggle"> Add Email Template or Type <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                    <li><a data-placement="top" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Email Template Type','dvPopup','" + Url.Action("CreateEmailTemplateType", "EmailTemplate", new { UrlReferrer = Request.Url, TS = DateTime.Now }) + "')")"> Add Email Template Type</a></li>
+                    <li><a href="@Url.Action("Create", "EmailTemplate", new { UrlReferrer = Request.Url, TS = DateTime.Now })"> Add Email Template</a></li>
+                </ul>
+            </div>
+        </h1>
+    </div>
+</div>
+@Html.Partial("~/Views/EmailTemplate/IndexPartial.cshtml", Model)
+

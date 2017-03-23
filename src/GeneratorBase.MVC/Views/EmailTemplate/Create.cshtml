@@ -1,0 +1,64 @@
+﻿@model GeneratorBase.MVC.Models.EmailTemplate
+@{
+    ViewBag.Title = "Create Email Template";
+}
+<link href='@Url.Content("~/Scripts/summernote.css")' rel="stylesheet" type="text/css" />
+<script src="@Url.Content("~/Scripts/summernote.js")" type="text/javascript"></script>
+<script type="text/javascript">
+    function initHtmlEditor() {
+        $('#summernote').summernote();
+    }
+    $(document).ready(function () {
+        initHtmlEditor();
+    });
+</script>
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-title">
+            <i class="glyphicon glyphicon-save text-primary"></i> Email Template  <i class="glyphicon glyphicon-chevron-right small"></i> <span> Add </span>
+        </h1>
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+@using (Html.BeginForm("Create", "EmailTemplate", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken();
+    Html.ValidationSummary(true);
+    Html.EnableClientValidation();
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="panel panel-default AppForm">
+                <div class="panel-body">
+                    <div class="row">
+                        <div class='col-sm-3'>
+                            <div class='form-group'>
+                                <label>@Html.LabelFor(model => model.AssociatedEmailTemplateTypeID) <span class="text-danger-reg">*</span></label>
+                            </div>
+                        </div>
+                        <div class='col-sm-9'>
+                            <div class='form-group'>
+                                <div class="input-group" style="width: 35%;">
+                                    @Html.DropDownList("AssociatedEmailTemplateTypeID", null, "-- Select --", new { @required = "required", @class = "chosen-select form-control", @HostingName = "EmailTemplate", @dataurl = Url.Action("GetAllValue", "EmailTemplate", new { caller = "AssociatedEmailTemplateTypeID" }) })
+                                    @Html.ValidationMessageFor(model => model.AssociatedEmailTemplateTypeID)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12 col-sm-12 col-sx-12">
+                            <div class="panel panel-default">
+                                <div class="panel-heading clearfix" style="margin:0px; padding:8px;">
+                                    Email Content
+                                </div>
+                                <div class="panel-body" style="margin:0px; padding:8px;">
+                                    @Html.TextAreaFor(model => model.EmailContent, new { @id = "summernote" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <a href="@Url.Action("Index","EmailTemplate")" class="btn btn-default btn-sm">Cancel</a>
+    <input type="submit" value="Create" class="btn btn-primary btn-sm" />
+}
+<script src="@Url.Content("~/Scripts/summernote.js")" type="text/javascript"></script>

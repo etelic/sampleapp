@@ -1,0 +1,117 @@
+﻿@model GeneratorBase.MVC.Models.T_School
+@{
+    ViewBag.Title = "Create School";
+    Layout = null;
+}
+<script>
+    $(document).ready(function () {
+        try {
+            var hostingEntityName = "";
+            if ('@Convert.ToString(ViewData["AssociatedType"])' != null) {
+                hostingEntityName = '@Convert.ToString(ViewData["AssociatedType"])';
+                 $('#' + hostingEntityName + 'ID').attr("lock","true");
+				  $('#' + hostingEntityName + 'ID').trigger("change");
+            }
+        }
+        catch (ex) { }
+    });
+</script>
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_SchoolIsHiddenRule))
+    {
+        @Html.Raw(ViewBag.T_SchoolIsHiddenRule);
+    }
+}
+<link href="~/Content/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+<link href="@Url.Content("~/Content/chosen.css")" rel="stylesheet" type="text/css" />
+@using (Html.BeginForm("CreateQuick", "T_School",FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken();
+    Html.ValidationSummary(true);
+    Html.EnableClientValidation();
+	<label id="ErrMsgQuickAdd" class="text-primary small pull-right" style="color:red; vertical-align:middle; font-weight:100;"></label>
+    <div id="errorContainerQuickAdd" style="display: none">
+        <div id="errorsMsgQuickAdd"></div>
+        <div id="errorsQuickAdd"></div>
+    </div>
+    <div class="row">
+	@Html.Hidden("AssociatedEntity", Convert.ToString(ViewData["AssociatedType"]))
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="panel panel-default AppForm">
+                <div class="panel-body">
+               <div class="row">         
+					<div class='col-sm-6' id="dvT_Name">
+                                <div class='form-group'>
+                                    <label>@Html.LabelFor(model => model.T_Name) <span class="text-danger-reg">*</span></label>
+									 
+                                    @Html.TextBoxFor(model => model.T_Name, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.T_Name)
+									
+                                </div>
+					</div>
+					<div class='col-sm-6' id="dvT_Code">
+                                <div class='form-group'>
+                                    <label>@Html.LabelFor(model => model.T_Code) <span class="text-danger-reg">*</span></label>
+									 
+                                    @Html.TextBoxFor(model => model.T_Code, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.T_Code)
+									
+                                </div>
+					</div>
+							<div class='col-sm-6' id="dvT_Description">
+                                <div class='form-group'>
+                                    <label>@Html.LabelFor(model => model.T_Description) </label>
+                                    @Html.TextAreaFor(model => model.T_Description, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.T_Description)
+                                </div>
+							</div>
+					<div class='col-sm-6' id="dvT_Address">
+                                <div class='form-group'>
+                                    <label>@Html.LabelFor(model => model.T_Address) </label>
+									 
+                                    @Html.TextBoxFor(model => model.T_Address, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.T_Address)
+									
+                                </div>
+					</div>
+					<div class='col-sm-6' id="dvT_City">
+                                <div class='form-group'>
+                                    <label>@Html.LabelFor(model => model.T_City) </label>
+									 
+                                    @Html.TextBoxFor(model => model.T_City, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.T_City)
+									
+                                </div>
+					</div>
+       </div>
+                        </div>
+                    </div>
+                </div>
+        </div>
+		<button id="CancelQuickAdd" type="button" class="btn btn-default btn-sm" data-dismiss="modal" aria-hidden="true">Cancel</button>
+		var busineesrule = User.businessrules.Where(p => p.EntityName == "T_School").ToList();
+        if (ViewBag.IsAddPop != null)
+		{
+			<input type="submit" value="Create" class="btn btn-primary btn-sm" onclick="QuickAdd(event,'@busineesrule',@busineesrule.Count);" />
+		}
+		else
+		{
+			<input type="submit" value="Create" class="btn btn-primary btn-sm" onclick="QuickAddFromIndex(event,true,'T_School','@ViewData["AssociatedType"]','@busineesrule',@busineesrule.Count);" />
+		}
+}
+@Scripts.Render("~/bundles/jqueryval")
+<script src="~/Scripts/Common3/chosen.jquery.js" type="text/javascript"></script>
+<script type="text/javascript">
+    var config = {
+        '.chosen-select': {},
+        '.chosen-select-deselect': { allow_single_deselect: true },
+        '.chosen-select-no-single': { disable_search_threshold: 10 },
+        '.chosen-select-no-results': { no_results_text: 'Oops, nothing found!' },
+        '.chosen-select-width': { width: "95%" }
+    }
+    for (var selector in config) {
+        $(selector).chosen(config[selector]);
+    }
+</script>
+
+

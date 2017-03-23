@@ -1,0 +1,650 @@
+﻿@*Change Page For BizRule kamal*@
+@model PagedList.IPagedList<GeneratorBase.MVC.Models.BusinessRule>
+@using PagedList.Mvc;
+@{
+    var ActionNameUrl = "Index";
+    if (HttpContext.Current.Request.RequestContext.RouteData.Values["action"].ToString().ToUpper() == "FSEARCH")
+    {
+        ActionNameUrl = "FSearch";
+    }
+}
+<div id="BusinessRule">
+    <style>
+        .table-responsive > .fixed-column {
+            position: absolute;
+            display: block;
+            width: auto;
+            border: 0px solid transparent;
+            border-top: 1px solid #c3ddec;
+        }
+
+        .fixed-column th {
+            background: #fff;
+        }
+
+        .fixed-column td {
+            background: #fff;
+        }
+    </style>
+    <script>
+        function DoubleClickBusinessRule(RecordID) {
+            var url = "@Url.Action("Details", "BusinessRule", new { id = "_Id" }, null)".replace("_Id", RecordID);
+            window.location.replace(url);
+        }
+        $(document).ready(function () {
+            $(".pagination a").click(function (e) {
+                PaginationClick(e, 'BusinessRule', '@User.JavaScriptEncodedName')
+            })
+            if ("@HttpContext.Current.Request.RequestContext.RouteData.Values["action"].ToString().ToUpper()" == "FSEARCH") {
+                $("#fsearchBusinessRule").addClass('in');
+            }
+            $("#SearchStringT_Employee").keypress(function (e) {
+                if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
+                    $("#T_EmployeeSearch").bind("click", (function () {
+                    }));
+                    $('#T_EmployeeSearch').trigger("click");
+                    return false;
+                }
+            })
+            $("#SearchStringBusinessRule").keypress(function (e) {
+                if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
+                    $("#BusinessRuleSearch").bind("click", (function () {
+                    }));
+                    $('#BusinessRuleSearch').trigger("click");
+                    return false;
+                }
+            })
+
+            $("#btnShowHideBusinessRule").mouseup(function () {
+                if (document.getElementById('ColumnShowHideBusinessRule').className == 'collapse') {
+                    $('#lblBusinessRule').css('display', 'none');
+                }
+            })
+        });
+    </script>
+    @functions {
+        object getSortHtmlAttributes(string sortby, bool IsPaging, int? page, bool? IsExport)
+        {
+            if (IsPaging)
+            {
+                return new
+                {
+                    page,
+                    sortBy = ViewBag.CurrentSort,
+                    isAsc = ViewBag.IsAsc,
+                    currentFilter = ViewBag.CurrentFilter,
+                    HostingEntity = @Convert.ToString(ViewData["HostingEntity"]),
+                    HostingEntityName = @Convert.ToString(ViewData["HostingEntityName"]),
+                    IsDisable = @Convert.ToString(ViewData["IsDisable"]),
+                    AssociatedType = @Convert.ToString(ViewData["AssociatedType"]),
+                    HostingEntityID = ViewData["HostingEntityID"],
+                    IsExport = IsExport,
+                    FSFilter = ViewBag.FSFilter == null ? "Fsearch" : ViewBag.FSFilter,
+                    IsFilter = @Convert.ToBoolean(ViewData["IsFilter"]),
+                    associatedbusinessruletype = Request.QueryString["associatedbusinessruletype"],
+                    DateCreated1From = Request.QueryString["DateCreated1From"],
+                    DateCreated1To = Request.QueryString["DateCreated1To"],
+                    search = Request.QueryString["search"],
+                };
+            }
+            else
+            {
+                return new
+                {
+                    sortBy = sortby,
+                    currentFilter = Request.QueryString["currentFilter"],
+                    searchString = Request.QueryString["searchString"],
+                    isAsc = (ViewBag.IsAsc == "ASC" ? "DESC" : ""),
+                    page = ViewBag.Pages,
+                    HostingEntity = @Convert.ToString(ViewData["HostingEntity"]),
+
+                    HostingEntityName = @Convert.ToString(ViewData["HostingEntityName"]),
+                    IsDisable = @Convert.ToString(ViewData["IsDisable"]),
+                    HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),
+                    AssociatedType = @Convert.ToString(ViewData["AssociatedType"]),
+                    IsExport = IsExport,
+                    FSFilter = ViewBag.FSFilter == null ? "Fsearch" : ViewBag.FSFilter,
+                    associatedbusinessruletype = Request.QueryString["associatedbusinessruletype"],
+                    DateCreated1From = Request.QueryString["DateCreated1From"],
+                    DateCreated1To = Request.QueryString["DateCreated1To"],
+                    search = Request.QueryString["search"],
+                };
+            }
+        }
+    }
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".tip-top").tooltip({
+                placement: 'top'
+            });
+            $(".tip-right").tooltip({
+                placement: 'right'
+            });
+            $(".tip-bottom").tooltip({
+                placement: 'bottom'
+            });
+            $(".tip-left").tooltip({
+                placement: 'left'
+            });
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            $('input[type="checkbox"]').click(function () {
+                var index = $(this).attr('name').substr(3);
+                index--;
+                $('table tr').each(function () {
+                    $('td:eq(' + index + ')', this).toggle();
+                });
+                $('th.' + $(this).attr('name')).toggle();
+            });
+        });
+        $(document).ready(function () {
+            var usrName = "@HttpContext.Current.User.Identity.Name";
+            var myCookie = usrName + "BusinessRule";
+            if ($.cookie(myCookie) != null) {
+                var column = $.cookie(myCookie).split(',');
+                for (var i = 0; i < column.length; i++) {
+                    if (column[i] == "col1")
+                        continue;
+                    $('input[name=' + column[i] + ']').attr('checked', false);
+                    var index = column[i].substr(3)
+                    index--;
+                    $('table tr').each(function () {
+                        $('td:eq(' + index + ')', this).toggle();
+                    });
+                    $('th.' + column[i]).toggle();
+                }
+            }
+        });
+        function SaveCookiesBusinessRule() {
+            var usrName = "@HttpContext.Current.User.Identity.Name";
+            var myCookie = usrName + "BusinessRule";
+            if ($.cookie(myCookie) != null) {
+                $.removeCookie(myCookie);
+            }
+            var selected = [];
+            $('#ColumnShowHideBusinessRule input[type=checkbox]').each(function () {
+                if ($(this).prop('checked') == false) {
+                    selected.push($(this).attr('name'));
+                }
+            });
+            if (selected != "") {
+                $.cookie(myCookie, selected);
+                $('#lblBusinessRule').css('display', 'block');
+            }
+        }
+    </script>
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-sx-12">
+            <div class="panel panel-default">
+                <div class="panel-heading clearfix" style="margin:0px; padding:8px;">
+                    <div class="btn-group">
+                        @if (User.Identity.IsAuthenticated && User != null && User.CanAdd("BusinessRule"))
+                        {
+
+                            <button class="btn btn-xs  btn-default tip-top" type="button"
+                                    data-original-title="Full Add" data-placement="top"
+                                    style="padding:4px 5px;"
+                                    onclick=@Html.Raw("NavigateToUrl('" + Url.Action("CreateBusinessRule", "BusinessRule", new { UrlReferrer = Request.Url, HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null) + "');")>
+                                <span class="fam-world-add"></span>
+                            </button>
+                        }
+                        <div class="btn btn-default  btn-default tip-top" data-original-title="Export Excel" data-placement="top" style="padding:3px 5px;" onclick=@Html.Raw("NavigateToUrl('" + Url.Action(ActionNameUrl,"BusinessRule",getSortHtmlAttributes(null, false, null, true), null) + "');")>
+                            <span class="fam-page-white-put"></span>
+                        </div>
+                        @if (ViewData["HostingEntity"] == null)
+                        {
+                            <button class="btn btn-default  btn-default tip-top" style="display:none;" data-original-title="Faceted Search" data-placement="top" style="padding:3px 5px;" data-toggle="modal" data-target="#setFSearchBusinessRule" onclick=@Html.Raw("OpenQuickQddPopUp('dvsetFSearchBusinessRule');")>
+                                <span class="fam-zoom-in"></span>
+                            </button>
+                        }
+                        @if (ViewData["HostingEntity"] == null || Convert.ToBoolean(ViewData["IsFilter"]) == true)
+                        {
+                            <div class="btn-group">
+                                <a class="btn btn-default btn-default dropdown-toggle tip-top" data-original-title="Filter-Groupby" style="padding:3px 5px;" data-toggle="dropdown" href="#">
+                                    <span class="glyphicon glyphicon-filter"></span>
+                                </a>
+                                <ul class="dropdown-menu" role="menu">
+                                    <li>
+                                        <a id="fltBusinessRule" data-placement="top" onclick=@Html.Raw("EntityFilterBizRule('BusinessRule','" +
+                                        Url.Action("GetAllValueForFilter", "BusinessRule") + "','"
+                                        + Html.Raw(Url.Action("Index", "BusinessRule",
+                                        new
+                                        {
+                                            FirstCall = true,
+                                            FilterHostingEntityID = ViewData["HostingEntityID"],
+                                            IsFilter = true,
+                                            HostingEntity = @Convert.ToString(ViewData["HostingEntity"]),
+                                            ClearSearchTimeStamp = DateTime.Now
+                                        })) + "','" + User.JavaScriptEncodedName + "');")>
+                                            <span>Entity Name</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a id="fltBusinessRuleDisabled" data-placement="top" onclick=@Html.Raw("EntityFilterBizRuleDisable('BusinessRule','" + Html.Raw(Url.Action("Index", "BusinessRule",
+                                        new
+                                        {
+                                            FirstCall = true,
+                                            FilterHostingEntityID = ViewData["HostingEntityID"],
+                                            IsFilter = true,
+                                            ClearSearchTimeStamp = DateTime.Now
+                                        })) + "','" + User.JavaScriptEncodedName + "');")>
+                                            <span>Disabled/Enabled</span>
+                                        </a>
+                                    </li>
+                                    <li><span class="label label-primary pull-left filterLabel" style="margin-left:20px;">@Html.ActionLink("Clear", "Index")</span></li>
+                                </ul>
+                            </div>
+                        }
+                    </div>
+                    <div class="pull-right" style="width:200px;">
+                        <div class="input-group">
+                            @Html.TextBox("SearchStringBusinessRule", ViewBag.CurrentFilter as string, null, new { @class = "form-control fixsearchbox", @placeholder = "Search" })
+                            <div class="input-group-btn">
+                                <a id="BusinessRuleSearch" onclick="SearchClick(event, 'BusinessRule', '@Html.Raw(Url.Action("Index", "BusinessRule", new { IsFilter = ViewData["IsFilter"], HostingEntityName = ViewData["HostingEntityName"], IsDisable = @Convert.ToString(ViewData["IsDisable"]), searchString = "_SearchString", HostingEntity = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = @Convert.ToString(ViewData["AssociatedType"]) }))');" class=" btn btn-default" style="padding:3px 5px;"><span class="fam-zoom"></span></a>
+                                <button id="BusinessRuleSearchCancel" type="button" class="btn btn-default btn-default collapse-data-btn tip-top"
+                                        onclick="CancelSearch('BusinessRule','@Html.Raw(Url.Action("Index", "BusinessRule",
+                                           new
+                                           {
+                                            IsFilter = ViewData["IsFilter"],
+                                            HostingEntityName = ViewData["HostingEntityName"],
+                                            IsDisable = @Convert.ToString(ViewData["IsDisable"]),
+                                            HostingEntity = Convert.ToString(ViewData["HostingEntity"]),
+                                            HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]),
+                                            AssociatedType = Convert.ToString(ViewData["AssociatedType"]),
+                                            ClearSearchTimeStamp = DateTime.Now }))')"
+                                        data-original-title="Refresh Grid" data-placement="top"
+                                        style="padding:3px 5px;">
+                                    <span class="fam-arrow-refresh"></span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-body" style="margin:0px; padding:8px;">
+                    @if (ViewData["HostingEntity"] == null)
+                    {
+                        <div id="fsearchBusinessRule" class="collapse MessageFSearch">
+                            @Html.Raw(Html.Encode(ViewBag.SearchResult).Replace(Environment.NewLine, "<br/>"))
+                            <a href="@Url.Action("Index", "BusinessRule")" style="float:right"><span class="glyphicon glyphicon-remove-sign"></span> Clear</a>
+                        </div>
+                    }
+                    <div id="ColumnShowHideBusinessRule" class="collapse">
+                        <div class="row">
+                            <div class='col-sm-12'>
+                                <div class="panel panel-default">
+                                    <div class="panel-heading clearfix">
+                                        <h3 class="panel-title">Show / Hide Table  Column </h3>
+                                    </div>
+                                    <div class="panel-body">
+                                        <p id="lblBusinessRule" class="label label-success " style="display:none; width:100%; padding:5px; text-align:left; font-size:13px">Table display format successfully saved.</p>
+                                        <div class='form-group'>
+                                            <div class="input-group">
+                                                <input type="checkbox" name="col1" checked="checked" style="display:none;" />
+                                                <input type="checkbox" name="col2" checked="checked" /> Rule Name
+                                                <input type="checkbox" name="col3" checked="checked" /> Entity Name
+                                                <input type="checkbox" name="col4" checked="checked" /> Roles
+                                                <input type="checkbox" name="col5" checked="checked" /> Date Created
+                                                @*<input type="checkbox" name="col6" checked="checked" /> BusinessRule Type*@
+                                            </div>
+                                            <input type="button" id="btnSave" value="Set as Default" onclick="SaveCookiesBusinessRule();" class="btn btn-primary" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="ImportExcelBusinessRule" class="collapse">
+                        @using (Html.BeginForm("Upload", "BusinessRule", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                        {
+                            <div class="row">
+                                <div class='col-sm-12'>
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading clearfix">
+                                            <h3 class="panel-title">Upload data from excel</h3>
+                                        </div>
+                                        <div class="panel-body">
+                                            <div class='form-group'>
+                                                <div class="input-group">
+                                                    <div class='col-sm-12'>
+                                                        <div class='col-sm-6'>
+                                                            <input type="file" id="FileUpload" name="FileUpload" required data-val="true" data-val-required="please select a file" />
+                                                        </div>
+                                                        <div class='col-sm-4'>
+                                                            <input type="submit" id="impData" value="Upload" title="Click to upload file" onclick="return CheckFileName();" class="btn btn-primary" />
+                                                            <script type="text/javascript">
+                                                                function CheckFileName() {
+                                                                    var fileName = document.getElementById("FileUpload").value
+                                                                    if (fileName == "") {
+                                                                        alert("Browse to upload a valid File with xls / xlsx extension");
+                                                                        return false;
+                                                                    }
+                                                                    else if (fileName.split(".")[1].toUpperCase() == "XLS" || fileName.split(".")[1].toUpperCase() == "XLSX")
+                                                                        return true;
+                                                                    else {
+                                                                        alert("File with " + fileName.split(".")[1] + " is invalid. Upload a validfile with xls / xlsx extensions");
+                                                                        return false;
+                                                                    }
+                                                                    return true;
+                                                                }
+                                                            </script>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    <div id="Des_Table" class="table-responsive" style="overflow-x:auto;">
+                        <table class="table table-striped table-bordered table-hover table-condensed">
+                            <thead>
+                                <tr>
+                                    <th class="col1">Actions</th>
+                                    <th class="col1">Quick View</th>
+                                    @if (User.CanView("BusinessRule", "Id"))
+                                    {
+                                        <th class="col2">
+                                            @Html.ActionLink("Rule Id", ActionNameUrl, "BusinessRule", getSortHtmlAttributes("Id", false, null, false), new { @onclick = "SortLinkClick(event,'BusinessRule');" })
+                                            @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "Id")
+                                            {<i class="fa fa-sort-desc"></i>}
+                                            @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "Id")
+                                            {<i class="fa fa-sort-asc"></i>}
+                                        </th>
+                                    }
+                                    @if (User.CanView("BusinessRule", "RuleName"))
+                                    {
+                                        <th class="col3">
+                                            @Html.ActionLink("Rule Name", ActionNameUrl, "BusinessRule", getSortHtmlAttributes("RuleName", false, null, false), new { @onclick = "SortLinkClick(event,'BusinessRule');" })
+                                            @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "RuleName")
+                                            {<i class="fa fa-sort-desc"></i>}
+                                            @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "RuleName")
+                                            {<i class="fa fa-sort-asc"></i>}
+                                        </th>
+                                    }
+                                    @if (User.CanView("BusinessRule", "EntityName"))
+                                    {
+                                        <th class="col4">
+                                            @Html.ActionLink("Entity Name", ActionNameUrl, "BusinessRule", getSortHtmlAttributes("EntityName", false, null, false), new { @onclick = "SortLinkClick(event,'BusinessRule');" })
+                                            @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "EntityName")
+                                            {<i class="fa fa-sort-desc"></i>}
+                                            @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "EntityName")
+                                            {<i class="fa fa-sort-asc"></i>}
+                                        </th>
+                                    }
+                                    @if (User.CanView("BusinessRule", "Roles"))
+                                    {
+                                        <th class="col5">
+                                            @Html.ActionLink("Roles", ActionNameUrl, "BusinessRule", getSortHtmlAttributes("Roles", false, null, false), new { @onclick = "SortLinkClick(event,'BusinessRule');" })
+                                            @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "Roles")
+                                            {<i class="fa fa-sort-desc"></i>}
+                                            @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "Roles")
+                                            {<i class="fa fa-sort-asc"></i>}
+                                        </th>
+                                    }
+                                    @if (User.CanView("BusinessRule", "DateCreated1"))
+                                    {
+                                        <th class="col6">
+                                            @Html.ActionLink("Date Created", ActionNameUrl, "BusinessRule", getSortHtmlAttributes("DateCreated1", false, null, false), new { @onclick = "SortLinkClick(event,'BusinessRule');" })
+                                            @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "DateCreated1")
+                                            {<i class="fa fa-sort-desc"></i>}
+                                            @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "DateCreated1")
+                                            {<i class="fa fa-sort-asc"></i>}
+                                        </th>
+                                    }
+                                    @if (User.CanView("BusinessRule"))
+                                    {
+                                        <th class="col7">
+                                            Rule Actions
+                                        </th>
+                                        <th class="col8">
+                                            Disabled
+                                        </th>
+                                    }
+                                </tr>
+                                @foreach (var item in Model)
+                                {
+                                    var Entity = ModelReflector.Entities.FirstOrDefault(p => p.Name == item.EntityName);
+                                    var EntityDisplayName = item.EntityName;
+                                    if (Entity != null)
+                                    {
+                                        EntityDisplayName = Entity.DisplayName;
+                                    }
+                                    var ShortDetailsHeader = "#" + item.Id + "-" + EntityDisplayName + "-" + item.RuleName;
+                                    <tr ondblclick="DoubleClickBusinessRule(@item.Id);">
+                                        <td>
+                                            <div style="width:60px; margin-top:-2px;">
+                                                <div class="btn-group" style="position:absolute;">
+                                                    <button data-toggle="dropdown" class="btn btn-xs dropdown-toggle btn-default">
+                                                        Action
+                                                        <span class="caret">    </span>
+                                                    </button>
+                                                    <ul class="dropdown-menu pull-left">
+                                                        @if (!item.EntitySubscribe)
+                                                        {
+                                                            <li>
+                                                                <a href="@Url.Action("Details", "BusinessRule", new { id = item.Id }, null)"><i class="glyphicon glyphicon-eye-open"></i>  View</a>
+                                                            </li>
+                                                        }
+                                                        <li>
+                                                            @if (User.Identity.IsAuthenticated && User != null && User.CanEdit("BusinessRule"))
+                                                            {
+                                                                <a href="@Url.Action("Edit","BusinessRule", new { id = item.Id },null)"><i class="glyphicon glyphicon-edit"></i>  Edit</a>
+                                                            }
+                                                        </li>
+                                                        <li>
+                                                            @if (item.Disable)
+                                                            {
+                                                                <a href="@Url.Action("EnableDisableRule", "BusinessRule", new { id = item.Id }, null)"><i class="glyphicon glyphicon-circle-arrow-up"></i>  Enable</a>
+                                                            }
+                                                            else
+                                                            {
+                                                                <a href="@Url.Action("EnableDisableRule", "BusinessRule", new { id = item.Id }, null)"><i class="glyphicon glyphicon-circle-arrow-down"></i>  Disable</a>
+                                                            }
+                                                        </li>
+                                                        <li class="divider"></li>
+                                                        <li>
+                                                            @if (User.Identity.IsAuthenticated && User != null && User.CanDelete("BusinessRule"))
+                                                            {
+                                                                <a href="@Url.Action("Delete", "BusinessRule", new { id = item.Id }, null)"><i class="glyphicon glyphicon-remove-sign"></i>  Delete</a>
+                                                            }
+                                                        </li>
+
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <a class="tip-top" title="Quick View" onclick="@Html.Raw("OpenPopUpEntityBR('setFSearchBusinessRule','" + ShortDetailsHeader + "','dvsetFSearchBusinessRule','" + Url.Action("GetBRDetailsById", "BusinessRule", new { Id = item.Id, TS = DateTime.Now }) + "')")">
+                                                <i class="fam-application-form-magnify"></i>
+                                            </a>
+                                        </td>
+                                        @if (User.CanView("BusinessRule", "Id"))
+                                        {
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.Id)
+                                            </td>
+                                        }
+                                        @if (User.CanView("BusinessRule", "RuleName"))
+                                        {
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.RuleName)
+                                            </td>
+                                        }
+                                        @if (User.CanView("BusinessRule", "EntityName"))
+                                        {
+                                            if (Entity != null)
+                                            {
+                                                <td>
+                                                    @EntityDisplayName
+                                                </td>
+                                            }
+                                            else
+                                            {
+                                                <td style="color:#ff9500;">Probably Code-Prefix string changed since last launch.Either relaunch application with old code-prefix or delete & recreate rule again.</td>}
+                                        }
+                                        @if (User.CanView("BusinessRule", "Roles"))
+                                        {
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.Roles)
+                                            </td>
+                                        }
+                                        @if (User.CanView("BusinessRule", "DateCreated1"))
+                                        {
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.DateCreated1)
+                                            </td>
+                                        }
+                                        @if (User.CanView("BusinessRule"))
+                                        {
+                                            <td>
+                                                @String.Join(",", item.ruleaction.Where(q => q.associatedactiontype != null).Select(p => p.associatedactiontype.ActionTypeName))
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.Disable)
+                                            </td>
+                                        }
+                                    </tr>
+                                }
+                        </table>
+                    </div>
+                    <ul id="Mob_List" class="list-group">
+                        @foreach (var item in Model)
+                        {
+                            <li class="list-group-item">
+                                @if (User.CanView("BusinessRule", "Id"))
+                                {
+                                    <p>
+                                        <span class="text-primary"> Rule Id </span> : <span>
+                                            @Html.DisplayFor(modelItem => item.Id)
+                                        </span>
+                                    </p>
+                                }
+                                @if (User.CanView("BusinessRule", "RuleName"))
+                                {
+                                    <p>
+                                        <span class="text-primary"> Rule Name </span> : <span>
+                                            @Html.DisplayFor(modelItem => item.RuleName)
+                                        </span>
+                                    </p>
+                                }
+                                @if (User.CanView("BusinessRule", "EntityName"))
+                                {
+                                    <p>
+                                        <span class="text-primary"> Entity Name </span> : <span>
+                                            @Html.DisplayFor(modelItem => item.EntityName)
+                                        </span>
+                                    </p>
+                                }
+                                @if (User.CanView("BusinessRule", "Roles"))
+                                {
+                                    <p>
+                                        <span class="text-primary"> Roles </span> : <span>
+                                            @Html.DisplayFor(modelItem => item.Roles)
+                                        </span>
+                                    </p>
+                                }
+                                @if (User.CanView("BusinessRule", "DateCreated1"))
+                                {
+                                    <p>
+                                        <span class="text-primary"> Date Created </span> : <span>
+                                            @Html.DisplayFor(modelItem => item.DateCreated1)
+                                        </span>
+                                    </p>
+                                }
+                                @if (User.CanView("BusinessRule", "AssociatedBusinessRuleTypeID"))
+                                {
+                                    <p @(Convert.ToString(ViewData["HostingEntity"]) == "BusinessRuleType" ? "hidden" : "")>
+                                        <span class="text-primary"> Associated  BusinessRule Type </span> : <span>
+                                            @Html.DisplayFor(modelItem => item.associatedbusinessruletype.DisplayValue)
+                                        </span>
+                                    </p>
+                                }
+                                <span class="label label-primary text-linkwhite">
+                                    @if (!item.EntitySubscribe)
+                                    {
+                                        @Html.ActionLink("View", "Details", "BusinessRule", new { id = item.Id }, null)
+                                    }
+                                </span>
+                                <span class="label label-warning text-linkwhite">
+                                    @if (User.Identity.IsAuthenticated && User != null && User.CanEdit("BusinessRule"))
+                                    {
+                                        @Html.ActionLink("Edit", "Edit", "BusinessRule", new { id = item.Id }, null)
+                                    }
+                                </span>
+                                <span class="label label-danger text-linkwhite">
+                                    @if (User.Identity.IsAuthenticated && User != null && User.CanDelete("BusinessRule"))
+                                    {
+                                        @Html.ActionLink("Delete", "Delete", "BusinessRule", new { id = item.Id }, null)
+                                    }
+                                </span>
+                            </li>
+                        }
+                    </ul>
+                    @if (Model.Count > 0)
+                    {
+                        <div id="pagination">
+                            @Html.PagedListPager(Model, page => Url.Action(ActionNameUrl, "BusinessRule", getSortHtmlAttributes(null, true, page, false)))
+                            <div class="fixPageSize">
+                                Page Size :
+                                @Html.DropDownList("PageSize", new SelectList(new Dictionary<string, int> { { "10", 10 }, { "20", 20 }, { "50", 50 }, { "100", 100 } }, "Key", "Value")
+                            , new
+                            {
+                                @id = "pagesizelistBusinessRule",
+                                @onchange = @Html.Raw("pagesizelistChange(event,'BusinessRule','"
+                                 + @User.JavaScriptEncodedName + "')"),
+                                @Url = Html.Raw(@Url.Action(ActionNameUrl, "BusinessRule",
+                                getSortHtmlAttributes(ViewBag.CurrentSort, ViewBag.Pages == 1 ? false : true,
+                                null, false), null))
+                            })
+                                <span style="text-align:right;"> Total Count: @(Model.TotalItemCount)</span>
+                            </div>
+                        </div>
+                    }
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="quickaddBusinessRule" tabindex="-1" role="dialog" aria-labelledby="quickaddBusinessRuleLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="quickaddBusinessRuleLabel"> Create Business Rule</h4>
+            </div>
+            <div id="dvQAddquickaddBusinessRule" class="modal-body" data-url="@Url.Action("CreateQuick", "BusinessRule",new {UrlReferrer = Request.Url, HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) })">
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="quickaddTimeRule" tabindex="-1" role="dialog" aria-labelledby="quickaddTimeRuleLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="quickaddTimeRuleLabel"> Create Time Based Alert</h4>
+            </div>
+            <div id="dvQAddquickaddTimeRule" class="modal-body" data-url="@Url.Action("CreateQuickTimeRule", "BusinessRule",new {UrlReferrer = Request.Url, HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) })">
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="setFSearchBusinessRule" tabindex="-1" role="dialog" aria-labelledby="setFSearchBusinessRuleLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" id="shortdetails">
+            <div class="modal-header">
+                <button id="closeshortdetails" type="button" class="close hidden" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <b><p class="modal-title" id="setFSearchBusinessRuleLabel"></p></b>
+            </div>
+            <div id="dvsetFSearchBusinessRule" class="modal-body" data-url="@Url.Action("SetFSearch", "BusinessRule",new {searchString = ViewBag.CurrentFilter, UrlReferrer = Request.Url, HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) })">
+            </div>
+        </div>
+    </div>
+</div>
+

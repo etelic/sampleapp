@@ -1,0 +1,47 @@
+﻿@model PagedList.IPagedList<GeneratorBase.MVC.Models.ActionArgs>
+@using PagedList.Mvc;
+@{
+    ViewBag.Title = "Index";
+    Layout = null;
+    Response.ContentType = "application/vnd.ms-excel";
+    Response.AddHeader("Content-Disposition", "attachment; filename=ActionArgs.xls");
+}
+<table>
+    <tr>
+        @if (User.CanView("ActionArgs", "ParameterName"))
+        {
+            <th>Parameter Name</th>
+        }
+        @if (User.CanView("ActionArgs", "ParameterValue"))
+        {
+            <th>Parameter Value</th>
+        }
+        @if (User.CanView("ActionArgs", "ActionArgumentsID"))
+        {
+            <th @(Convert.ToString(ViewData["HostingEntity"]) == "RuleAction" ? "hidden" : "")>Action</th>
+        }
+    </tr>
+    @foreach (var item in Model)
+    {
+        <tr>
+            @if (User.CanView("ActionArgs", "ParameterName"))
+            {
+                <td>
+                    @Html.DisplayFor(modelItem => item.ParameterName)
+                </td>
+            }
+            @if (User.CanView("ActionArgs", "ParameterValue"))
+            {
+                <td>
+                    @Html.DisplayFor(modelItem => item.ParameterValue)
+                </td>
+            }
+            @if (User.CanView("ActionArgs", "ActionArgumentsID"))
+            {
+                <td @(Convert.ToString(ViewData["HostingEntity"]) == "RuleAction" ? "hidden" : "")>
+                    @Html.DisplayFor(modelItem => item.actionarguments.DisplayValue)
+                </td>
+            }
+        </tr>
+    }
+</table>

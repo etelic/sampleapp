@@ -1,0 +1,15 @@
+﻿@model IEnumerable<GeneratorBase.MVC.Models.ImportConfiguration>
+@{
+    ViewBag.Title = "Import Configuration List";
+	Layout ="~/Views/Shared/_Layout.cshtml";
+}
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-title">
+            <i class="glyphicon glyphicon-thumbs-up text-primary" style="margin-bottom:-20px;"></i> Import Configuration  <i class="glyphicon glyphicon-chevron-right small"></i>  <span>List</span>
+</h1>
+    </div>
+</div>
+<div id="dvImportConfigurationFilter"></div>
+@Html.Partial("~/Views/ImportConfiguration/IndexPartial.cshtml", Model)
+

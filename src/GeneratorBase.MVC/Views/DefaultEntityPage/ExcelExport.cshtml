@@ -1,0 +1,77 @@
+﻿@model PagedList.IPagedList<GeneratorBase.MVC.Models.DefaultEntityPage>
+@using PagedList.Mvc;
+@{
+    ViewBag.Title = "Index";
+    Layout = null;
+    Response.ContentType = "application/vnd.ms-excel";
+    Response.AddHeader("Content-Disposition", "attachment; filename=DefaultEntityPage.xls");
+}
+                    <table>
+                            <tr>
+@if(User.CanView("DefaultEntityPage","EntityName"))
+{
+		<th>Entity Name</th>
+}
+@if(User.CanView("DefaultEntityPage","Roles"))
+{
+		<th>Roles</th>
+}
+@if(User.CanView("DefaultEntityPage","PageType"))
+{
+		<th>Page Type</th>
+}
+@if(User.CanView("DefaultEntityPage","PageUrl"))
+{
+		<th>Page Url</th>
+}
+@if(User.CanView("DefaultEntityPage","Other"))
+{
+		<th>Other</th>
+}
+@if(User.CanView("DefaultEntityPage","Flag"))
+{
+		<th>Flag</th>
+}
+    </tr>
+@foreach (var item in Model) {
+    <tr>
+	@if(User.CanView("DefaultEntityPage","EntityName"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.EntityName)
+        </td>
+}
+@if(User.CanView("DefaultEntityPage","Roles"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.Roles)
+        </td>
+}
+@if(User.CanView("DefaultEntityPage","PageType"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.PageType)
+        </td>
+}
+@if(User.CanView("DefaultEntityPage","PageUrl"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.PageUrl)
+        </td>
+}
+@if(User.CanView("DefaultEntityPage","Other"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.Other)
+        </td>
+}
+@if(User.CanView("DefaultEntityPage","Flag"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.Flag)
+        </td>
+}
+                                </tr>
+                            }
+</table>
+               

@@ -1,0 +1,83 @@
+﻿@model GeneratorBase.MVC.Models.Condition
+@using (Html.BeginForm("Create", "Condition", new { UrlReferrer = Convert.ToString(ViewData["ConditionParentUrl"]) }, FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="panel panel-default AppForm">
+                <div class="panel-body">
+                    <div class="row">
+                        <div class='col-sm-6 col-md-6 col-xs-12'>
+                            <div class='form-group'>
+                                <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.PropertyName) <span class="text-danger-reg">*</span></label>
+                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                    @Html.TextBoxFor(model => model.PropertyName, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.PropertyName)
+                                </div>
+                            </div>
+                        </div>
+                        <div class='col-sm-6 col-md-6 col-xs-12'>
+                            <div class='form-group'>
+                                <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.Operator) </label>
+                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                    @Html.TextBoxFor(model => model.Operator, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.Operator)
+                                </div>
+                            </div>
+                        </div>
+                        <div class='col-sm-6 col-md-6 col-xs-12'>
+                            <div class='form-group'>
+                                <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.Value) </label>
+                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                    @Html.TextBoxFor(model => model.Value, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.Value)
+                                </div>
+                            </div>
+                        </div>
+                        <div class='col-sm-6 col-md-6 col-xs-12'>
+                            <div class='form-group'>
+                                <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.LogicalConnector) </label>
+                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                    @Html.TextBoxFor(model => model.LogicalConnector, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.LogicalConnector)
+                                </div>
+                            </div>
+                        </div>
+                        <div class='col-sm-6 col-md-6 col-xs-12'>
+                            <div class='form-group'>
+                                <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.RuleConditionsID) </label>
+                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                    <div class="input-group">
+                                        @Html.DropDownList("RuleConditionsID", null, "-- Select --", new { @class = "chosen-select form-control", @HostingName = "BusinessRule", @dataurl = Url.Action("GetAllValue", "BusinessRule", null) })
+                                        @*@Html.DropDownList("RuleConditionsID", null, "--Select Business Rule--", new { @class = "chosen-select form-control", @HostingName = "BusinessRule", @dataurl = Url.Action("GetAllValue", "BusinessRule",null) })*@
+                                        @Html.ValidationMessageFor(model => model.RuleConditionsID)
+                                        @if (User.Identity.IsAuthenticated && User != null && User.CanAdd("BusinessRule"))
+                                        {
+                                            <div class="input-group-btn">
+                                                <a class="btn btn-default btn ie8fix" href="@Url.Action("Create", "BusinessRule", new {UrlReferrer = Request.Url, HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) })">
+                                                    <span class="glyphicon glyphicon-plus-sign"></span>
+                                                </a>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @Html.ActionLink("Cancel", "Cancel", new { UrlReferrer = ViewData["ConditionParentUrl"] }, new { @onclick = "", @class = "btn btn-default btn-sm" })
+    <input type="submit" value="Create" class="btn btn-primary btn-sm" /><br /><br />
+}
+<script>
+    $("form").submit(function () {
+        if ($(this).find('.input-validation-error').length == 0) {
+            $(this).find(':submit').attr('disabled', 'disabled');
+        }
+    });
+</script>
+
+

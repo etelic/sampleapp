@@ -1,0 +1,137 @@
+﻿@model GeneratorBase.MVC.Models.DefaultEntityPage
+@{
+    ViewBag.Title = "Create Default Entity Page";
+    Layout = null;
+}
+<script>
+    $(document).ready(function () {
+        try {
+            var hostingEntityName = "";
+            if ('@Convert.ToString(ViewData["AssociatedType"])' != null) {
+                hostingEntityName = '@Convert.ToString(ViewData["AssociatedType"])';
+                $("#dv" + hostingEntityName + "ID").hide();
+            }
+        }
+        catch (ex) { }
+    });
+    $("#PageType").change(function () {
+        var selectedval = ($(this).val());
+        SelectPageType(selectedval, $("#SelectUrl"), $("#DirectUrl"), $("#DefaultUrl"), $("#Favorites"))
+    });
+</script>
+<link href="~/Content/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+<link href="@Url.Content("~/Content/chosen.css")" rel="stylesheet" type="text/css" />
+@using (Html.BeginForm("CreateQuick", "DefaultEntityPage", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken();
+                            Html.ValidationSummary(true);
+                            Html.EnableClientValidation();
+                            <div class="row">
+                                <div class="col-md-12 col-sm-12 col-xs-12">
+                                    <div class="panel panel-default AppForm">
+                                        <div class="panel-body">
+                                            <div class="row">
+                                                <div class="panel-body">
+                                                    <div class='col-sm-6'>
+                                                        <div class='form-group'>
+                                                            <label>@Html.LabelFor(model => model.EntityName) <span class="text-danger-reg">*</span></label>
+                                                            @Html.DropDownList("EntityName", null, "-- Select --", new { @required = "required", @class = "form-control" })
+                                                            @Html.ValidationMessageFor(model => model.EntityName)
+
+                                                        </div>
+                                                    </div>
+                                                    <div class='col-sm-6'>
+                                                        <div class='form-group' id="dvRole" name="dvRoles">
+                                                            <label>@Html.LabelFor(model => model.Roles)<span class="text-danger-reg">*</span></label>
+                                                            <br />
+
+                                                            @*@Html.TextBoxFor(model => model.Roles, new { style = "border:none !important;Width:0px !important;" })*@
+                                                            @Html.DropDownList("RoleList", null, new { @multiple = "multiple" })
+                                                            @Html.Hidden("Roles", null, new { @Value = "" })
+                                                            @Html.ValidationMessageFor(model => model.Roles)
+                                                        </div>
+                                                    </div>
+                                                    <div class='col-sm-6' style="margin-left: 1px">
+                                                        <div class='form-group'>
+                                                            <label>@Html.LabelFor(model => model.PageType) </label>
+                                                            <select id="PageType" required="required" name="PageType" class="form-control">
+                                                                <option value="">--Select Type--</option>
+                                                                <option value="Default">Default</option>
+                                                                <option value="Favorite">Favorite</option>
+                                                                <option value="Url">Url</option>
+                                                            </select>
+                                                            @Html.ValidationMessageFor(model => model.PageType)
+                                                        </div>
+                                                    </div>
+                                                    <div class='col-sm-6' id="SelectUrl" style="display:none;margin-left: 246px;margin-top: -55px;">
+                                                        <div class='form-group'>
+                                                            <label>Select Url </label>
+                                                            <select id="DefaultUrl" style="display:none;" name="DefaultUrl" class="form-control">
+                                                                <option value="">--Select Type--</option>
+                                                                <option value="SetFSearch">Faceted Search</option>
+                                                                <option value="Index">List</option>
+                                                                <option value="Create">Create New</option>
+                                                            </select>
+                                                            @Html.DropDownList("Favorites", null, "-- Select --", new { @style = "display:none;", @class = "form-control" })
+                                                            @Html.TextBox("DirectUrl", null, new { @style = "display:none;", @class = "form-control", @required = "required" })
+                                                        </div>
+                                                    </div>
+                                                    <div class='col-sm-6 hidden'>
+                                                        <div class='form-group'>
+                                                            <label>@Html.LabelFor(model => model.PageUrl) </label>
+                                                            @Html.TextBoxFor(model => model.PageUrl, new { @class = "form-control" })
+                                                            @Html.ValidationMessageFor(model => model.PageUrl)
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            @Html.HiddenFor(model => model.Other)
+                            <button id="CancelQuickAdd" type="button" class="btn btn-default btn-sm" data-dismiss="modal" aria-hidden="true">Cancel</button>
+                            var busineesrule = User.businessrules.Where(p => p.EntityName == "DefaultEntityPage").ToList();
+                            if (ViewBag.IsAddPop != null)
+                            {
+                                <input type="submit" value="Create" class="btn btn-primary btn-sm" onclick="QuickAdd(event,'@busineesrule',@busineesrule.Count);" />
+                            }
+                            else
+                            {
+                                <input type="submit" value="Create" class="btn btn-primary btn-sm" onclick="Add(event);" />
+                            }
+}
+@Scripts.Render("~/bundles/jqueryval")
+<script src="~/Scripts/Common3/chosen.jquery.js" type="text/javascript"></script>
+<script type="text/javascript">
+    var config = {
+        '.chosen-select': {},
+        '.chosen-select-deselect': { allow_single_deselect: true },
+        '.chosen-select-no-single': { disable_search_threshold: 10 },
+        '.chosen-select-no-results': { no_results_text: 'Oops, nothing found!' },
+        '.chosen-select-width': { width: "95%" }
+    }
+    for (var selector in config) {
+        $(selector).chosen(config[selector]);
+    }
+    $(document).ready(function () {
+        $('select[name=RoleList]').multiselect({
+            buttonWidth: '100%'
+        });
+    });
+
+
+</script>
+<script>
+
+    function Add(e) {
+        var selectedval = ($("#PageType").val());
+        //
+        SaveDefaultPage(e, selectedval, $("#DefaultUrl"), $("#PageUrl"), $("#Other"), $("#Favorites"), $("#DirectUrl"), $("#EntityName"), $("#RoleList"), $("#Roles"));
+        //
+        
+    }
+
+</script>
+
+

@@ -1,0 +1,67 @@
+﻿@model PagedList.IPagedList<GeneratorBase.MVC.Models.FeedbackResource>
+@using PagedList.Mvc;
+@{
+    ViewBag.Title = "Index";
+    Layout = null;
+    Response.ContentType = "application/vnd.ms-excel";
+    Response.AddHeader("Content-Disposition", "attachment; filename=FeedbackResource.xls");
+}
+                    <table>
+                            <tr>
+@if(User.CanView("FeedbackResource","ResourceId"))
+{
+		<th>Resource Id</th>
+}
+@if(User.CanView("FeedbackResource","FirstName"))
+{
+		<th>First Name</th>
+}
+@if(User.CanView("FeedbackResource","LastName"))
+{
+		<th>Last Name</th>
+}
+@if(User.CanView("FeedbackResource","Email"))
+{
+		<th>Email</th>
+}
+@if(User.CanView("FeedbackResource","PhoneNo"))
+{
+		<th>Phone No</th>
+}
+    </tr>
+@foreach (var item in Model) {
+    <tr>
+	@if(User.CanView("FeedbackResource","ResourceId"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.ResourceId)
+        </td>
+}
+@if(User.CanView("FeedbackResource","FirstName"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.FirstName)
+        </td>
+}
+@if(User.CanView("FeedbackResource","LastName"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.LastName)
+        </td>
+}
+@if(User.CanView("FeedbackResource","Email"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.Email)
+        </td>
+}
+@if(User.CanView("FeedbackResource","PhoneNo"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.PhoneNo)
+        </td>
+}
+                                </tr>
+                            }
+</table>
+               

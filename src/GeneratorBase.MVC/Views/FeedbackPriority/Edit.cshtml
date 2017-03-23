@@ -1,0 +1,192 @@
+﻿@model GeneratorBase.MVC.Models.FeedbackPriority
+@using PagedList;
+@{
+    ViewBag.Title = "Edit Feedback Priority";
+}
+@functions {
+    object getHtmlAttributes(string Property)
+    {
+        if (User.CanEdit("FeedbackPriority", Property))
+        {
+            return new { @class = "form-control" };
+        } return new { @class = "form-control", @readonly = "readonly" };
+    }
+}
+<script>
+    $(document).ready(function () {
+        try {
+            var hostingEntityName = "";
+            if ('@Convert.ToString(ViewData["AssociatedType"])' != null) {
+                hostingEntityName = '@Convert.ToString(ViewData["AssociatedType"])';
+				$('#' + hostingEntityName + 'ID').attr("lock","true");
+            }
+        }
+        catch (ex) { }
+    });
+</script>
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-title">
+            <i class="glyphicon glyphicon-edit text-primary"></i> Feedback Priority  <i class="glyphicon glyphicon-chevron-right small"></i> <span>Edit</span>
+        </h1>
+<label id="ErrMsg" class="text-primary small pull-right" style="color:red; vertical-align:middle; font-weight:100;"></label>
+      <h2 class="text-primary">@Html.DisplayFor(model => model.DisplayValue)
+	  </h2>
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+ <div class="tabbable responsive">
+    <ul class="nav nav-tabs">
+	 <li class="active"><a href="#Details" data-toggle="tab">Details</a></li>
+		 <li @(!User.CanView("ApplicationFeedback")?"style=display:none;":"")><a href="#ApplicationFeedbackPriority" data-toggle="tab">Feedback</a></li>
+    </ul>
+		<div class="tab-content">
+        <div class="tab-pane fade in active" id="Details">
+@using (Html.BeginForm("Edit","FeedbackPriority",new {UrlReferrer =Convert.ToString(ViewData["FeedbackPriorityParentUrl"])}, FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+     Html.ValidationSummary(true);
+                Html.EnableClientValidation();
+    @Html.HiddenFor(model => model.Id)
+	@Html.HiddenFor(model => model.ConcurrencyKey)
+                <div class="col-md-12 col-sm-12 col-xs-12" style="padding:0px; margin:0px;">
+                    <div class="panel panel-default AppForm">
+						<div class="panel-body">
+						<div class="row">
+@if(User.CanView("FeedbackPriority","Name"))
+{
+						<div class='col-sm-6 col-md-6 col-xs-12'>
+							<div class='form-group'>
+								<label class="col-sm-5 col-md-5 col-xs-12" >@Html.LabelFor(model => model.Name)  <span class="text-danger-reg">*</span> </label>
+                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+									@Html.TextBoxFor(model => model.Name,  getHtmlAttributes("Name"))
+									@Html.ValidationMessageFor(model => model.Name)
+								</div>
+                             </div>
+						</div>
+} else { @Html.HiddenFor(model => model.Name, new { @class = "form-control" })}
+@if(User.CanView("FeedbackPriority","Description"))
+{
+						<div class='col-sm-6 col-md-6 col-xs-12'>
+							<div class='form-group'>
+								<label class="col-sm-5 col-md-5 col-xs-12" >@Html.LabelFor(model => model.Description) </label>
+                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+								@Html.TextAreaFor(model => model.Description, getHtmlAttributes("Description"))
+									@Html.ValidationMessageFor(model => model.Description)
+								</div>
+                             </div>
+						</div>
+} else { @Html.HiddenFor(model => model.Description, new { @class = "form-control" })}
+       </div>
+            </div>
+        </div>
+		</div>
+		 @Html.AntiForgeryToken();
+		 @Html.ActionLink("Cancel", "Cancel", new { UrlReferrer = ViewData["FeedbackPriorityParentUrl"] }, new { @onclick = "", @class = "btn btn-default btn-sm" })
+				<input type="submit" name="command" value="Save" class="btn btn-primary btn-sm" />
+				<input type="submit" name="command" value="Save & Continue" class="btn btn-primary btn-sm" />
+				<input type="hidden" name="hdncommand" value="" />
+}
+</div>
+ <div class="tab-pane fade in" id="ApplicationFeedbackPriority">
+ 	@if (User.Identity.IsAuthenticated && User != null && User.CanView("ApplicationFeedback"))
+	{
+	   Html.RenderAction("Index", "ApplicationFeedback", new {RenderPartial=true, HostingEntity = "FeedbackPriority", HostingEntityID = @Model.Id, AssociatedType = "ApplicationFeedbackPriority" }); 
+	}
+  </div>
+</div> <!-- /tab-content --><br />
+<br/>
+</div>
+	<script>
+    $(function () {
+        var userAgent = navigator.userAgent.toLowerCase();
+        // Figure out what browser is being used
+        var browser = {
+            version: (userAgent.match(/.+(?:rv|it|ra|ie)[\/: ]([\d.]+)/) || [])[1],
+            safari: /webkit/.test(userAgent),
+            opera: /opera/.test(userAgent),
+            msie: /msie/.test(userAgent) && !/opera/.test(userAgent),
+            mozilla: /mozilla/.test(userAgent) && !/(compatible|webkit)/.test(userAgent)
+        };
+        if (!browser.msie) {
+            $('form').areYouSure();
+        }
+        else if (browser.version > 8.0) {
+            $('form').areYouSure();
+        }
+    });
+</script>
+	<script>
+    $("input[type='submit']").click(function () {
+        var $this = $(this);
+        $('input:hidden[name="hdncommand"]').val($this.val());
+    });
+	</script>
+@{
+var busineesrule = User.businessrules.Where(p => p.EntityName == "FeedbackPriority").ToList();
+if ((busineesrule != null && busineesrule.Count > 0))
+{
+    <script>
+    $(document).ready(function () {
+        $.ajax({
+            async: false,
+            type: "GET",
+            url: "@Url.Action("GetLockBusinessRules", "FeedbackPriority")",
+            data: $("form").serialize(),
+        success: function (data) {
+            if (data.length > 0) {
+                $(':input:not([readonly])', 'form').attr('disabled', 'disabled').attr('readonly', 'readonly').trigger("chosen:updated");
+                document.getElementById('ErrMsg').innerHTML = data + " Rules applied";
+            }
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+        }
+    });
+	$.ajax({
+            async: false,
+            type: "GET",
+            url: "@Url.Action("GetReadOnlyProperties", "FeedbackPriority")",
+            data: $("form").serialize(),
+            success: function (data) {
+                for (var key in data) {
+                    $('#' + key).attr('disabled', 'disabled').attr('readonly', 'readonly').trigger("chosen:updated");
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+            }
+        });
+    });
+</script>
+<script>
+    $("form").submit(function () {
+            var flag = true;
+            $.ajax({
+                async: false,
+                type: "GET",
+                url: "@Url.Action("GetMandatoryProperties", "FeedbackPriority")",
+                data: $(this).serialize(),
+                success: function (data) {
+				 document.getElementById('ErrMsg').innerHTML = "";
+						 $('[businessrule="mandatory"]').each(function () {
+                                $(this).removeAttr('required');
+                            });
+                         for (var key in data) {
+                             if ($.trim($('#' + key).val()).length == 0) {
+                                 $('#' + key).attr('required', 'required');
+								  $('#' + key).attr('businessrule', 'mandatory');
+                                 flag = false;
+                                 document.getElementById('ErrMsg').innerHTML += data[key] + " is Mandatory.<br/>";
+                             }
+                         }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                }
+            });
+			 if (flag)
+                    $("form").find(':input').removeAttr('disabled');
+            return flag;
+    });
+</script>
+}
+}
+
+

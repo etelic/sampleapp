@@ -1,0 +1,74 @@
+﻿@model GeneratorBase.MVC.Models.FeedbackSeverity
+@using PagedList;
+@{
+    ViewBag.Title = "View Feedback Severity";
+}
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-title">
+            <i class="glyphicon glyphicon-hand-down text-primary"></i> Feedback Severity  <i class="glyphicon glyphicon-chevron-right small"></i> <span>View</span>
+        </h1>
+        <h2 class="text-primary">@Html.DisplayFor(model => model.DisplayValue)
+		</h2>
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+<div class="tabbable responsive">
+    <ul class="nav nav-tabs">
+	 <li class="active"><a href="#Details" data-toggle="tab">Details</a></li>
+		 <li @(!User.CanView("ApplicationFeedback")?"style=display:none;":"")><a href="#ApplicationFeedbackSeverity" data-toggle="tab">Feedback</a></li>
+    </ul>
+	    <div class="tab-content">
+		   <div class="tab-pane fade in active" id="Details">
+				 <div class="panel panel-default AppForm">
+					<div class="panel-body">
+			<div class="row">
+				<div class="col-sm-12 col-md-12 col-xs-12">
+			<div class="row">
+@if(User.CanView("FeedbackSeverity","Name"))
+{
+<div class='col-sm-6 col-md-6 col-xs-12'>
+	<div class='form-group'>
+		<label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.Name) </label>
+		<div class="input-group col-sm-7 col-md-7 col-xs-12">
+				<p class="viewlabel">@Model.Name</p>
+		</div>
+	</div>
+</div>
+}
+@if(User.CanView("FeedbackSeverity","Description"))
+{
+<div class='col-sm-6 col-md-6 col-xs-12'>
+	<div class='form-group'>
+		<label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.Description)</label>
+		<div class="input-group col-sm-7 col-md-7 col-xs-12">
+		<p class="viewlabel">@Model.Description</p>
+		</div>
+	</div>
+</div>
+}
+		</div>
+				</div>
+			</div>
+		</div>
+			</div>
+			<div class="row">
+				<div class="col-md-12 col-sm-12 col-xs-12">
+					@Html.ActionLink("Back", "Cancel", new { UrlReferrer = Request.UrlReferrer }, new { @class = "btn btn-default btn-sm" })
+					 @if (User.Identity.IsAuthenticated && User != null && User.CanEdit("FeedbackSeverity"))
+                     {
+                          @Html.ActionLink("Edit", "Edit", new { id = Model.Id, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, new { @class = "btn btn-primary btn-sm" })
+                     }
+				</div>
+			</div>    
+	</div>    
+<div class="tab-pane fade in" id="ApplicationFeedbackSeverity">
+     @if (User.Identity.IsAuthenticated && User != null && User.CanView("ApplicationFeedback"))
+	{
+	   Html.RenderAction("Index", "ApplicationFeedback", new {RenderPartial=true, HostingEntity = "FeedbackSeverity", HostingEntityID = @Model.Id, AssociatedType = "ApplicationFeedbackSeverity" }); 
+	}
+  </div>
+	</div> <!-- /tab-content --><br />
+<br/>
+</div>
+ 

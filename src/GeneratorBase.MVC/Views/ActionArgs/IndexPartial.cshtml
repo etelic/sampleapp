@@ -1,0 +1,559 @@
+﻿@model PagedList.IPagedList<GeneratorBase.MVC.Models.ActionArgs>
+@using PagedList.Mvc;
+@{
+    var ActionNameUrl = "Index";
+    if (HttpContext.Current.Request.RequestContext.RouteData.Values["action"].ToString().ToUpper() == "FSEARCH")
+    {
+        ActionNameUrl = "FSearch";
+    }
+    var currentUrl = HttpUtility.ParseQueryString(Request.Url.Query);
+    var ActionTypeId1 = currentUrl["ActionTypeId"];
+    var BusinessRuleId1 = currentUrl["BusinessRuleId"];
+}
+@if (ViewBag.ColumnMapping != null)
+{
+    using (Html.BeginForm("ImportData", "ActionArgs", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        <script type="text/javascript">
+            $(document).ready(function () {
+                $('#myModal').modal('show');
+            });
+        </script>
+        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-keyboard="false" data-backdrop="static">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <div class="panel panel-default">
+                            <div class="panel-heading clearfix" style="margin:0px; padding:8px;">
+                                Define Column Mapping(s) for ActionArgs
+                            </div>
+                            <input type="hidden" name="hdnFilePath" value="@ViewBag.FilePath" />
+                            <div class="panel-body" style="margin:0px; padding:8px;">
+                                <table class="table table-striped table-bordered table-hover table-condensed">
+                                    <thead>
+                                        <tr>
+                                            <th>Table Columns</th>
+                                            <th>Sheet Columns</th>
+                                        </tr>
+                                        @foreach (var col in ViewBag.ColumnMapping)
+                                        {
+                                        <tr>
+                                            <td>
+                                                @Html.Label((col.Key as GeneratorBase.MVC.ModelReflector.Property).DisplayName)
+                                                @Html.Hidden("lblColumn", (col.Key as GeneratorBase.MVC.ModelReflector.Property).Name)
+                                            </td>
+                                            <td>@Html.DropDownList("colList", col.Value as List<SelectListItem>) </td>
+                                        </tr>
+                                        }
+                                    </thead>
+                                </table>
+                            </div>
+                        </div>
+                        <input type="submit" value="Import Data" class="btn btn-primary btn-sm" />
+                        <a href="@Url.Action("Index", "ActionArgs")" class="btn btn-default btn-sm">Cancel</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}
+@if (ViewBag.ColumnMapping == null)
+{
+    <style>
+        .table-responsive > .fixed-column {
+            position: absolute;
+            display: block;
+            width: auto;
+            border: 0px solid transparent;
+            border-top: 1px solid #c3ddec;
+        }
+        .fixed-column th {
+            background: #fff;
+        }
+        .fixed-column td {
+            background: #fff;
+        }
+    </style>
+    <script>
+        function DoubleClickActionArgs(RecordID) {
+            var url = "@Url.Action("Details", "ActionArgs", new { id = "_Id" }, null)".replace("_Id", RecordID);
+            window.location.replace(url);
+        }
+        $(document).ready(function () {
+            if ("@HttpContext.Current.Request.RequestContext.RouteData.Values["action"].ToString().ToUpper()" == "FSEARCH") {
+                $("#fsearchActionArgs").addClass('in');
+            }
+            $('#actionarguments').multiselect({
+                buttonWidth: '100%'
+            });
+            $("#SearchStringActionArgs").keypress(function (e) {
+                if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
+                    $('#ActionArgsSearch').click();
+                    return true;
+                }
+            })
+            $("#btnShowHideActionArgs").mouseup(function () {
+                if (document.getElementById('ColumnShowHideActionArgs').className == 'collapse') {
+                    $('#lblActionArgs').css('display', 'none');
+                }
+            })
+            $(".SortLink").click(function (e) {
+                var thelink = e.target.href;//get the url that would be navigated to on sort
+                eval("query = {" + thelink.split("?")[1].replace(/&/ig, "\",").replace(/=/ig, ":\"") + "\"};");
+                var controllerName = "";
+                if (query.AssociatedType == null)
+                    controllerName = "@HttpContext.Current.Request.RequestContext.RouteData.Values["controller"].ToString()";
+                else
+                    controllerName = query.AssociatedType
+                e.preventDefault();
+                e.stopPropagation();
+                $.ajax({
+                    url: thelink,
+                    data: { itemsPerPage: $('#pagesizelist').val() },
+                    success: function (data) {
+                        if (data != null) {
+                            $("#" + controllerName).html(data);
+                            thelink = "";
+                        }
+                    }
+                })
+                return false;
+            })
+            $(".pagination a").click(function (e) {
+                var thelink = e.target.href;//get the url that would be navigated to on sort
+                eval("query = {" + thelink.split("?")[1].replace(/&/ig, "\",").replace(/=/ig, ":\"") + "\"};");
+                var controllerName = "";
+                if (query.AssociatedType == null)
+                    controllerName = "@HttpContext.Current.Request.RequestContext.RouteData.Values["controller"].ToString()";
+                else
+                    controllerName = query.AssociatedType;
+                e.preventDefault();
+                e.stopPropagation();
+                $.ajax({
+                    url: thelink,
+                    data: { itemsPerPage: $('#pagesizelist').val() },
+                    success: function (data) {
+                        if (data != null) {
+                            $("#" + controllerName).html(data);
+                        }
+                    }
+                })
+                return false;
+            })
+            $('#pagesizelist').change(function (e) {
+                var thelink = '@Html.Raw(@Url.Action(ActionNameUrl, "ActionArgs", getSortHtmlAttributes(ViewBag.CurrentSort, ViewBag.Pages == 1 ? false : true, ViewBag.Pages <= Model.PageCount ? ViewBag.Pages : 1, false), null))';
+                $.ajax({
+                    url: thelink,
+                    data: { searchString: $('#SearchStringActionArgs').val(), itemsPerPage: $('#pagesizelist').val() },
+                    success: function (data) {
+                        if (data != null) {
+                            $("#ActionArgs").html(data);
+                        }
+                    }
+                })
+                return false;
+            })
+            $("#ActionArgsSearch").click(function (e) {
+                var thelink = e.target.href;//get the url that would be navigated to on sort
+                $.ajax({
+                    url: thelink,
+                    data: { searchString: $('#SearchStringActionArgs').val() },
+                    success: function (data) {
+                        if (data != null) {
+                            $("#ActionArgs").html(data);
+                        }
+                    }
+                })
+                return false;
+            })
+        });
+    </script>
+    @functions {
+        object getSortHtmlAttributes(string sortby, bool IsPaging, int? page, bool? IsExport)
+        {
+            if (IsPaging)
+            {
+                return new
+                {
+                    page,
+                    sortBy = ViewBag.CurrentSort,
+                    isAsc = ViewBag.IsAsc,
+                    currentFilter = ViewBag.CurrentFilter,
+                    HostingEntity = @Convert.ToString(ViewData["HostingEntity"]),
+                    AssociatedType = @Convert.ToString(ViewData["AssociatedType"]),
+                    HostingEntityID = ViewData["HostingEntityID"],
+                    IsExport = IsExport,
+                    FSFilter = ViewBag.FSFilter == null ? "Fsearch" : ViewBag.FSFilter,
+                    actionarguments = Request.QueryString["actionarguments"],
+                };
+            }
+            else
+            {
+                return new
+                {
+                    sortBy = sortby,
+                    currentFilter = Request.QueryString["currentFilter"],
+                    searchString = Request.QueryString["searchString"],
+                    isAsc = (ViewBag.IsAsc == "ASC" ? "DESC" : ""),
+                    page = ViewBag.Pages,
+                    HostingEntity = @Convert.ToString(ViewData["HostingEntity"]),
+                    HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),
+                    AssociatedType = @Convert.ToString(ViewData["AssociatedType"]),
+                    IsExport = IsExport,
+                    FSFilter = ViewBag.FSFilter == null ? "Fsearch" : ViewBag.FSFilter,
+                    actionarguments = Request.QueryString["actionarguments"],
+                };
+            }
+        }
+    }
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".tip-top").tooltip({
+                placement: 'top'
+            });
+            $(".tip-right").tooltip({
+                placement: 'right'
+            });
+            $(".tip-bottom").tooltip({
+                placement: 'bottom'
+            });
+            $(".tip-left").tooltip({
+                placement: 'left'
+            });
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            $('input[type="checkbox"]').click(function () {
+                var index = $(this).attr('name').substr(3);
+                index--;
+                $('table tr').each(function () {
+                    $('td:eq(' + index + ')', this).toggle();
+                });
+                $('th.' + $(this).attr('name')).toggle();
+            });
+        });
+        $(document).ready(function () {
+            var usrName = "@HttpContext.Current.User.Identity.Name";
+            var myCookie = usrName + "ActionArgs";
+            if ($.cookie(myCookie) != null) {
+                var column = $.cookie(myCookie).split(',');
+                for (var i = 0; i < column.length; i++) {
+                    if (column[i] == "col1")
+                        continue;
+                    $('input[name=' + column[i] + ']').attr('checked', false);
+                    var index = column[i].substr(3)
+                    index--;
+                    $('table tr').each(function () {
+                        $('td:eq(' + index + ')', this).toggle();
+                    });
+                    $('th.' + column[i]).toggle();
+                }
+            }
+        });
+        function SaveCookiesActionArgs() {
+            var usrName = "@HttpContext.Current.User.Identity.Name";
+            var myCookie = usrName + "ActionArgs";
+            if ($.cookie(myCookie) != null) {
+                $.removeCookie(myCookie);
+            }
+            var selected = [];
+            $('#ColumnShowHideActionArgs input[type=checkbox]').each(function () {
+                if ($(this).prop('checked') == false) {
+                    selected.push($(this).attr('name'));
+                }
+            });
+            if (selected != "") {
+                $.cookie(myCookie, selected);
+                $('#lblActionArgs').css('display', 'block');
+            }
+        }
+    </script>
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-sx-12">
+            <div class="panel panel-default">
+                <div class="panel-heading clearfix" style="margin:0px; padding:8px;">
+                    <div class="btn-group">
+                        @if (User.Identity.IsAuthenticated && User != null && User.CanAdd("ActionArgs"))
+                        {
+                            <button class="btn btn-default tip-top" data-placement="top" data-original-title="Quick Add" style="padding:3px 5px;" data-toggle="modal" data-target="#quickaddActionArgs" onclick=@Html.Raw("OpenQuickQddPopUp('dvQAddquickaddActionArgs');")>
+                                <span class="fam-add"></span>
+                            </button>
+                            if (ViewData["HostingEntity"] == null)
+                            {
+                                <button type="button" class="btn btn-default btn-default collapse-data-btn tip-top" id="btnImportExcelActionArgs" data-original-title="Import Data" data-placement="top" style="padding:3px 5px;" data-toggle="collapse" href="#ImportExcelActionArgs">
+                                    <span class="fam-page-white-put"></span>
+                                </button>
+                            }
+                        }
+                        <div class="btn btn-default  btn-default tip-top" data-original-title="Export Excel" data-placement="top" style="padding:3px 5px;" onclick=@Html.Raw("NavigateToUrl('" + Url.Action(ActionNameUrl,"ActionArgs",getSortHtmlAttributes(null, false, null, true), null) + "');")>
+                            <span class="fam-page-excel"></span>
+                        </div>
+                        <button type="button" style="display:none;" class="btn btn-default btn-default collapse-data-btn tip-top" id="btnShowHideActionArgs" data-original-title="Show/Hide Column" data-placement="top" style="padding:3px 5px;" data-toggle="collapse" href="#ColumnShowHideActionArgs">
+                            <span class="fam-table-row-delete"></span>
+                        </button>
+                        @if (ViewData["HostingEntity"] == null)
+                        {
+                            <button class="btn btn-default  btn-default tip-top" data-original-title="Faceted Search" data-placement="top" style="padding:3px 5px;" data-toggle="modal" data-target="#setFSearchActionArgs" onclick=@Html.Raw("OpenQuickQddPopUp('dvsetFSearchActionArgs');")>
+                                <span class="fam-zoom-in"></span>
+                            </button>
+                        }
+                    </div>
+                    <div class="pull-right" style="width:200px;">
+                        <div class="input-group">
+                            @Html.TextBox("SearchStringActionArgs", ViewBag.CurrentFilter as string, null, new { @class = "form-control fixsearchbox", @placeholder = "Search" })
+                            <div class="input-group-btn">
+                                <a id="ActionArgsSearch" href="@Url.Action("Index", "ActionArgs", new { HostingEntity = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = @Convert.ToString(ViewData["AssociatedType"]) })" class="btn btn-default" style="padding:3px 5px;"><span class="fam-zoom"></span></a>
+                                <a href="@Url.Action("Index", "ActionArgs")" class="btn btn-default" style="padding:3px 5px;"><span class="fam-delete"></span></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-body" style="margin:0px; padding:8px;">
+                    @if (ViewData["HostingEntity"] == null)
+                    {
+                        <div id="fsearchActionArgs" class="collapse MessageFSearch">
+                            @Html.Raw(Html.Encode(ViewBag.SearchResult).Replace(Environment.NewLine, "<br/>"))
+                            <a href="@Url.Action("Index", "ActionArgs")" style="float:right"><span class="glyphicon glyphicon-remove-sign"></span> Clear</a>
+                        </div>
+                    }
+                    <div id="ColumnShowHideActionArgs" class="collapse">
+                        <div class="row">
+                            <div class='col-sm-12'>
+                                <div class="panel panel-default">
+                                    <div class="panel-heading clearfix">
+                                        <h3 class="panel-title">Show / Hide Table  Column </h3>
+                                    </div>
+                                    <div class="panel-body">
+                                        <p id="lblActionArgs" class="label label-success " style="display:none; width:100%; padding:5px; text-align:left; font-size:13px">Table display format successfully saved.</p>
+                                        <div class='form-group'>
+                                            <div class="input-group">
+                                                <input type="checkbox" name="col1" checked="checked" style="display:none;" />
+                                                <input type="checkbox" name="col2" checked="checked" /> Parameter Name
+                                                <input type="checkbox" name="col3" checked="checked" /> Parameter Value
+                                                <input type="checkbox" name="col4" checked="checked" /> Action
+                                            </div>
+                                            <input type="button" id="btnSave" value="Set as Default" onclick="SaveCookiesActionArgs();" class="btn btn-primary" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="ImportExcelActionArgs" class="collapse">
+                        @using (Html.BeginForm("Upload", "ActionArgs", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                        {
+                            <div class="row">
+                                <div class='col-sm-12'>
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading clearfix">
+                                            <h3 class="panel-title">Upload data from excel</h3>
+                                        </div>
+                                        <div class="panel-body">
+                                            <div class='form-group'>
+                                                <div class="input-group">
+                                                    <div class='col-sm-12'>
+                                                        <div class='col-sm-6'>
+                                                            <input type="file" id="FileUpload" name="FileUpload" required data-val="true" data-val-required="please select a file" />
+                                                        </div>
+                                                        <div class='col-sm-4'>
+                                                            <input type="submit" id="impData" value="Upload" title="Click to upload file" onclick="return CheckFileName();" class="btn btn-primary" />
+                                                            <script type="text/javascript">
+                                                                function CheckFileName() {
+                                                                    var fileName = document.getElementById("FileUpload").value
+                                                                    if (fileName == "") {
+                                                                        alert("Browse to upload a valid File with xls / xlsx extension");
+                                                                        return false;
+                                                                    }
+                                                                    else if (fileName.split(".")[1].toUpperCase() == "XLS" || fileName.split(".")[1].toUpperCase() == "XLSX")
+                                                                        return true;
+                                                                    else {
+                                                                        alert("File with " + fileName.split(".")[1] + " is invalid. Upload a validfile with xls / xlsx extensions");
+                                                                        return false;
+                                                                    }
+                                                                    return true;
+                                                                }
+                                                            </script>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    <div id="Des_Table" class="table-responsive" style="overflow-x:auto;">
+                        <table class="table table-striped table-bordered table-hover table-condensed">
+                            <thead>
+                                <tr>
+                                    <th class="col1">Actions</th>
+                                    @if (User.CanView("ActionArgs", "ParameterName"))
+                                    {
+                                        <th class="col2">
+                                            @Html.ActionLink("Parameter Name", ActionNameUrl, "ActionArgs", getSortHtmlAttributes("ParameterName", false, null, false), new { @class = "SortLink" })
+                                            @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "ParameterName")
+                                            {<i class="fa fa-sort-desc"></i>}
+                                            @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "ParameterName")
+                                            {<i class="fa fa-sort-asc"></i>}
+                                        </th>
+                                    }
+                                    @if (User.CanView("ActionArgs", "ParameterValue"))
+                                    {
+                                        <th class="col3">
+                                            @Html.ActionLink("Parameter Value", ActionNameUrl, "ActionArgs", getSortHtmlAttributes("ParameterValue", false, null, false), new { @class = "SortLink" })
+                                            @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "ParameterValue")
+                                            {<i class="fa fa-sort-desc"></i>}
+                                            @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "ParameterValue")
+                                            {<i class="fa fa-sort-asc"></i>}
+                                        </th>
+                                    }
+                                    @if (User.CanView("ActionArgs", "ActionArgumentsID"))
+                                    {
+                                        <th class="col4" @(Convert.ToString(ViewData["HostingEntity"]) == "RuleAction" ? "hidden" : "")>
+                                            @Html.ActionLink("Action", ActionNameUrl, "ActionArgs", getSortHtmlAttributes("ActionArgumentsID", false, null, false), new { @class = "SortLink" })
+                                            @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "ActionArgumentsID")
+                                            {<i class="fa fa-sort-desc"></i>}
+                                            @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "ActionArgumentsID")
+                                            {<i class="fa fa-sort-asc"></i>}
+                                        </th>
+                                    }
+                                </tr>
+                                @foreach (var item in Model)
+                                {
+                                    <tr ondblclick="DoubleClickActionArgs(@item.Id);">
+                                        <td>
+                                            <div style="width:60px; margin-top:-2px;">
+                                                <div class="btn-group" style="position:absolute;">
+                                                    <button data-toggle="dropdown" class="btn btn-xs dropdown-toggle btn-default">
+                                                        Action
+                                                        <span class="caret">    </span>
+                                                    </button>
+                                                    <ul class="dropdown-menu pull-left">
+                                                        <li>
+                                                            <a href="@Url.Action("Details", "ActionArgs", new { id = item.Id }, null)"><i class="glyphicon glyphicon-eye-open"></i>  View</a>
+                                                        </li>
+                                                        <li>
+                                                            @if (User.Identity.IsAuthenticated && User != null && User.CanEdit("ActionArgs"))
+                                                            {
+                                                                <a href="@Url.Action("Edit","ActionArgs", new { id = item.Id },null)"><i class="glyphicon glyphicon-edit"></i>  Edit</a>
+                                                            }
+                                                        </li>
+                                                        <li>
+                                                            @if (User.Identity.IsAuthenticated && User != null && User.CanDelete("ActionArgs"))
+                                                            {
+                                                                <a href="@Url.Action("Delete", "ActionArgs", new { id = item.Id }, null)"><i class="glyphicon glyphicon-remove-sign"></i>  Delete</a>
+                                                            }
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        @if (User.CanView("ActionArgs", "ParameterName"))
+                                        {
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.ParameterName)
+                                            </td>
+                                        }
+                                        @if (User.CanView("ActionArgs", "ParameterValue"))
+                                        {
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.ParameterValue)
+                                            </td>
+                                        }
+                                        @if (User.CanView("ActionArgs", "ActionArgumentsID"))
+                                        {
+                                            <td @(Convert.ToString(ViewData["HostingEntity"]) == "RuleAction" ? "hidden" : "")>
+                                                @Html.DisplayFor(modelItem => item.actionarguments.DisplayValue)
+                                            </td>
+                                        }
+                                    </tr>
+                                }
+                        </table>
+                    </div>
+                    <ul id="Mob_List" class="list-group">
+                        @foreach (var item in Model)
+                        {
+                            <li class="list-group-item">
+                                @if (User.CanView("ActionArgs", "ParameterName"))
+                                {
+                                    <p>
+                                        <span class="text-primary"> Parameter Name </span> : <span>
+                                            @Html.DisplayFor(modelItem => item.ParameterName)
+                                        </span>
+                                    </p>
+                                }
+                                @if (User.CanView("ActionArgs", "ParameterValue"))
+                                {
+                                    <p>
+                                        <span class="text-primary"> Parameter Value </span> : <span>
+                                            @Html.DisplayFor(modelItem => item.ParameterValue)
+                                        </span>
+                                    </p>
+                                }
+                                @if (User.CanView("ActionArgs", "ActionArgumentsID"))
+                                {
+                                    <p @(Convert.ToString(ViewData["HostingEntity"]) == "RuleAction" ? "hidden" : "")>
+                                        <span class="text-primary"> Action Arguments </span> : <span>
+                                            @Html.DisplayFor(modelItem => item.actionarguments.DisplayValue)
+                                        </span>
+                                    </p>
+                                }
+                                <span class="label label-primary text-linkwhite">
+                                    @Html.ActionLink("View", "Details", "ActionArgs", new { id = item.Id }, null)
+                                </span>
+                                <span class="label label-warning text-linkwhite">
+                                    @if (User.Identity.IsAuthenticated && User != null && User.CanEdit("ActionArgs"))
+                                    {
+                                        @Html.ActionLink("Edit", "Edit", "ActionArgs", new { id = item.Id }, null)
+                                    }
+                                </span>
+                                <span class="label label-danger text-linkwhite">
+                                    @if (User.Identity.IsAuthenticated && User != null && User.CanDelete("ActionArgs"))
+                                    {
+                                        @Html.ActionLink("Delete", "Delete", "ActionArgs", new { id = item.Id }, null)
+                                    }
+                                </span>
+                            </li>
+                        }
+                    </ul>
+                    @if (Model.Count > 0)
+                    {
+                        <div id="pagination">
+                            @Html.PagedListPager(Model, page => Url.Action(ActionNameUrl, "ActionArgs", getSortHtmlAttributes(null, true, page, false)))
+                            <div class="fixPageSize">
+                                Page Size :
+                                @Html.DropDownList("PageSize", new SelectList(new Dictionary<string, int> { { "10", 10 }, { "20", 20 }, { "50", 50 }, { "100", 100 } }, "Key", "Value"), new { @id = "pagesizelist" })
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="quickaddActionArgs" tabindex="-1" role="dialog" aria-labelledby="quickaddActionArgsLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="quickaddActionArgsLabel"> Create Action Args</h4>
+                </div>
+                <div id="dvQAddquickaddActionArgs" class="modal-body" data-url="@Url.Action("CreateQuick", "ActionArgs",new {UrlReferrer = Request.Url, HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), ActionTypeId=ActionTypeId1, BusinessRuleId = BusinessRuleId1 })">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="setFSearchActionArgs" tabindex="-1" role="dialog" aria-labelledby="setFSearchActionArgsLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="setFSearchActionArgsLabel"> Set Faceted Search Criteria</h4>
+                </div>
+                <div id="dvsetFSearchActionArgs" class="modal-body" data-url="@Url.Action("SetFSearch", "ActionArgs",new {searchString = ViewBag.CurrentFilter, UrlReferrer = Request.Url, HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) })">
+                </div>
+            </div>
+        </div>
+    </div>
+}

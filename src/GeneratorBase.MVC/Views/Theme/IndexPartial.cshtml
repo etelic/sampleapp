@@ -1,0 +1,225 @@
+﻿@model PagedList.IPagedList<GeneratorBase.MVC.Models.ThemeSettings>
+@using PagedList.Mvc;
+@{
+    var ActionNameUrl = "Index";
+}
+<div id="ThemeSettings">
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".pagination a").click(function (e) {
+                PaginationClick(e, 'ThemeSettings', '@User.JavaScriptEncodedName')
+            })
+            $("#SearchStringTheme").keypress(function (e) {
+                if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
+                    $("#ThemeSettingsSearch").bind("click", (function () {
+                    }));
+                    $('#ThemeSettingsSearch').trigger("click");
+                    return false;
+                }
+            })
+        });
+    </script>
+    <script>
+        function SetCurrentTheme(obj, Id) {
+            var url = $(obj).attr('dataurl')
+            //var Id = $("#CurrentThemeDD option:selected").val()
+            url = url + "?Id=" + Id;
+            try {
+                $.ajax({
+                    url: url,
+                    type: "POST",
+                    cache: false,
+                    processData: false,
+                    contentType: false,
+                    success: function () {
+                        success();
+                    }
+                });
+            }
+            catch (ex) {
+            }
+        }
+        function DeleteTheme(obj, Id, themename) {
+            var r = confirm("Do you want to delete \"" + themename + "\" theme!");
+            if (r == true) {
+                var url = $(obj).attr('dataurl')
+                url = url + "?Id=" + Id;
+                try {
+                    $.ajax({
+                        url: url,
+                        type: "POST",
+                        cache: false,
+                        processData: false,
+                        contentType: false,
+                        success: function () {
+                            success();
+                        }
+                    });
+                }
+                catch (ex) {
+                }
+            }
+            else {
+            }
+        }
+        function success() {
+            var url = '@Url.Action("Create", "Theme")'
+            window.location.replace(url);
+        }
+    </script>
+    @functions {
+        object getSortHtmlAttributes(string sortby, bool IsPaging, int? page)
+        {
+            if (IsPaging)
+            {
+                return new
+                {
+                    page,
+                    sortBy = ViewBag.CurrentSort,
+                    isAsc = ViewBag.IsAsc,
+                    search = Request.QueryString["search"],
+                };
+            }
+            else
+            {
+                return new
+                {
+                    sortBy = sortby,
+                    searchString = Request.QueryString["searchString"],
+                    isAsc = (ViewBag.IsAsc == "ASC" ? "DESC" : ""),
+                    page = ViewBag.Pages,
+                    search = Request.QueryString["search"],
+                };
+            }
+        }
+        object Getgb(string cssstr, string varName)
+        {
+            Dictionary<string, string> varlist = new Dictionary<string, string>();
+            if (System.IO.File.Exists(Server.MapPath("~/Content/Sitetemp.css")))
+            {
+                using (System.IO.StringReader sr = new StringReader(cssstr))
+                {
+                    String input;
+                    while ((input = sr.ReadLine()) != null)
+                    {
+                        if (input.Contains("var"))
+                            varlist.Add(input.ToString().Trim().TrimStart("var".ToCharArray()).Split('=')[0], input.ToString().Trim().TrimStart("var".ToCharArray()).Split('=')[1]);
+                    }
+                }
+            }
+            return varlist.Where(p => p.Key.Trim() == varName)
+                 .First().Value.Replace("\"", "").Replace(";", "").Trim();
+        }
+    }
+    <div class="row">
+        <div class="clearfix"></div>
+        <br />
+        <hr style="margin:0px 0px 10px 0px;" />
+        <div class="col-sm-9" style="width:15%">
+            <h5 style="font-size:12px; font-weight:bold; text-align:center; color:black;margin:20px 18px 3px 5px;">
+                Default Theme1
+            </h5>
+            <div style="overflow: hidden;height: 100px;  width: 100px; position: relative; border: 1px solid #c3ddec;
+                 border-radius: 8px; text-align: center;padding: 0; background-color: #000000;color:black;margin-bottom:10px">
+                <div class="content">
+                    <img src="../assets/images/default.png" />
+                </div>
+            </div>
+            <div style="margin:-5px;">
+                <a onclick="SetCurrentTheme(this, 0);" style="margin: 0 0 4px 6px" class="btn btn-default btn-sm" dataurl='@Url.Action("SetCurrentTheme", "Theme" , null)'>Select Theme</a>
+            </div>
+        </div>
+        @foreach (var item in Model)
+        {
+            if (item.IsDefault)
+            {
+                var bg = Getgb(item.CssEditor, "HeaderBackgroundColor");
+                <div class="col-xs-9" style="width:15%">
+                    <h5 style="font-size:12px; font-weight:bold; text-align:center; color:black;margin:20px 18px 3px 5px;">
+                        @Html.DisplayFor(modelItem => item.Name)
+                    </h5>
+                    <div style="overflow: hidden;height: 100px;  width: 100px; position: relative; border: 1px solid #c3ddec; border-radius: 8px; text-align: center;padding: 0; background-color: @bg;color:black;margin-bottom:10px">
+                        <div class="content">
+                            <img src=@Html.Raw("../assets/images/theme"+item.Id+".png") />
+                        </div>
+                    </div>
+                    <div style="margin:-5px;">
+                        @if (item.IsActive == true)
+                        {
+                            <a onclick="SetCurrentTheme(this, @item.Id);" style="margin: 0 0 4px 6px" title="Current Theme is @item.Name"
+                               class="btn btn-primary btn-sm"
+                               dataurl='@Url.Action("SetCurrentTheme", "Theme" , null)'>Current Theme</a>
+                        }
+                        else
+                        {
+                            <a onclick="SetCurrentTheme(this, @item.Id);" style="margin: 0 0 4px 6px" title="Set Current Theme @item.Name" class="btn btn-default btn-sm" dataurl='@Url.Action("SetCurrentTheme", "Theme" , null)'>Select Theme</a>
+                        }
+                    </div>
+                </div>
+            }
+        }
+
+
+        @if (Model.Count > 0)
+        {
+            <div class="clearfix"></div>
+            <br />
+            <hr style="margin:0px 0px 10px 0px;" />
+        }
+        <div class="row">
+            @foreach (var item in Model)
+            {
+                if (!item.IsDefault)
+                {
+                    var bg = Getgb(item.CssEditor, "HeaderBackgroundColor");
+                    <div class="col-xs-9" style="width:15%">
+                        <h5 style="font-size:12px; font-weight:bold; text-align:center; color:black;margin:20px 18px 3px 5px;">
+                            @Html.DisplayFor(modelItem => item.Name)
+                        </h5>
+                        <div style="overflow: hidden;height: 100px;  width: 100px; position: relative; border: 1px solid #c3ddec; border-radius: 8px; text-align: center;padding: 0; background-color: @bg;color:black;margin-bottom:10px">
+                            <div class="content">
+                            </div>
+                        </div>
+                        <h5 style="font-size:12px; font-weight:bold; color:black;">
+                            @(item.IsActive == true ? Html.Raw("<p id='help-block--padding' class='help-block'>Current Theme</p>") : Html.Raw("<br/>"))
+                        </h5>
+                        <div style="margin:-5px;">
+                            <a onclick="SetCurrentTheme(this, @item.Id);" title="Set Current Theme @item.Name" class="btn btn-default btn-sm" dataurl='@Url.Action("SetCurrentTheme", "Theme" , null)'><i class='glyphicon glyphicon-floppy-disk'> </i> </a>
+                            <a href="@Url.Action("Edit","Theme", new { RenderPartial=false, id = item.Id},null)" title="Edit @item.Name" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-pencil"></span></a>
+                            <a onclick="DeleteTheme(this, @item.Id, '@item.Name');" dataurl='@Url.Action("Delete", "Theme" , null)' title="Delete @item.Name" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-trash"></span></a>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+        @if (Model.Count > 0)
+        {
+            <div class="clearfix"></div>
+            <br />
+            <hr style="margin:0px 0px 10px 0px;" />
+            <div class="row">
+                <div class="col-sm-4">
+                    <div id="pagination">
+                        @Html.PagedListPager(Model, page => Url.Action(ActionNameUrl, "Theme", getSortHtmlAttributes(null, true, page)))
+                        <br />
+                        <div class="fixPageSize">
+                            <span id='help-block--padding' style="font-size:11px;margin: 0px;" class='help-block'>Page Size</span>
+                            @Html.DropDownList("PageSize", new SelectList(new Dictionary<string, int> { { "12", 12 }, { "24", 24 }, { "60", 60 }, { "120", 120 } }, "Key", "Value")
+                                                    , new
+                                                    {
+                                                        @id = "pagesizelistTheme",
+                                                        @onchange = @Html.Raw("pagesizelistChange(event,'ThemeSettings','"
+                                                         + @User.JavaScriptEncodedName + "')"),
+                                                        @Url = Html.Raw(@Url.Action(ActionNameUrl, "Theme",
+                                                        getSortHtmlAttributes(ViewBag.CurrentSort, ViewBag.Pages == 1 ? false : true,
+                                                        null), null))
+                                                    })
+                            <p id='help-block--padding' style="font-size:11px;margin: 0px;" class='help-block'>Count: @(Model.TotalItemCount)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <br />
+        }
+    </div>
+</div>

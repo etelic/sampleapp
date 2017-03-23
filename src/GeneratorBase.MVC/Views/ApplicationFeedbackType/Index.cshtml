@@ -1,0 +1,15 @@
+﻿@model IEnumerable<GeneratorBase.MVC.Models.ApplicationFeedbackType>
+@{
+    ViewBag.Title = "Application Feedback Type List";
+	Layout ="~/Views/Shared/_Layout.cshtml";
+}
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-title">
+            <i class="glyphicon glyphicon-thumbs-up text-primary" style="margin-bottom:-20px;"></i> Application Feedback Type  <i class="glyphicon glyphicon-chevron-right small"></i>  <span>List</span>
+</h1>
+    </div>
+</div>
+<div id="dvApplicationFeedbackTypeFilter"></div>
+@Html.Partial("~/Views/ApplicationFeedbackType/IndexPartial.cshtml", Model)
+

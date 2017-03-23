@@ -1,0 +1,123 @@
+﻿@model GeneratorBase.MVC.Models.RegisterViewModel
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="favicon.ico">
+    <title>
+        @{
+            ViewBag.Title = "Log in";
+            Layout = null;
+        }
+    </title>
+    <!-- Bootstrap core CSS -->
+    <link href="~/assets/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom styles for this template -->
+    <link href="~/assets/css/signin.css" rel="stylesheet">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    @Scripts.Render("~/bundles/modernizr")
+    <link href="~/Content/bootstrap.css" rel="stylesheet" />
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/Content/Site.css" rel="stylesheet" />
+    <script src="@Url.Content("~/Scripts/jquery-1.10.2.min.js")" type="text/javascript"></script>
+    <script src="~/Scripts/bootstrap.js"></script>
+    <script src="~/Scripts/jquery-1.10.2.min.js"></script>
+    <script>
+        function onRefreshChange(e) {
+            $("#captchaimage").attr("src", $("#captchaimage").attr("src") + "?timestamp=" + new Date().getTime());
+        }
+    </script>
+</head>
+<body>
+    @using (Html.BeginForm("Register", "Account", FormMethod.Post, new { role = "form" }))
+    {
+        @Html.AntiForgeryToken()
+        <div style="background-color:white;">
+            <div class="container pagecontainer">
+                <p class="text-danger-reg">@ViewBag.DuplicacyMessage</p>
+@if (ViewBag.Success != null)
+{
+<p class="text-success">@ViewBag.Success @Html.ActionLink("Login", "Login")</p>
+}
+                <h5 class="form-signin-heading">Create new Account.</h5>
+                <div class="form-canvas">
+                    <div class="divcanvas">
+                        <div class="bs-example">
+                            <div>
+                                <div class='form-group'>
+                                    <label>@Html.DisplayNameFor(m => m.UserName) <span style="color:red">*</span></label>
+                                    @Html.TextBoxFor(m => m.UserName, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(m => m.UserName)
+                                </div>
+                                <div class='form-group'>
+                                    <label>
+                                        @Html.DisplayNameFor(m => m.Password) <span style="color:red">*</span>
+                                    </label>
+                                    @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(m => m.Password)
+                                </div>
+                                <div class='form-group'>
+                                    <label>
+                                        @Html.DisplayNameFor(m => m.ConfirmPassword)
+                                    </label>
+                                    @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(m => m.ConfirmPassword)
+                                </div>
+                                <div class='form-group'>
+                                    <label>
+                                        @Html.DisplayNameFor(m => m.FirstName) <span style="color:red">*</span>
+                                    </label>
+                                    @Html.TextBoxFor(m => m.FirstName, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(m => m.FirstName)
+                                </div>
+                                <div class='form-group'>
+                                    <label>
+                                        @Html.DisplayNameFor(m => m.LastName) <span style="color:red">*</span>
+                                    </label>
+                                    @Html.TextBoxFor(m => m.LastName, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(m => m.LastName)
+                                </div>
+                                <div class='form-group'>
+                                    <label>
+                                        @Html.DisplayNameFor(m => m.Email) <span style="color:red">*</span>
+                                    </label>
+                                    @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(m => m.Email)
+                                </div>
+                                <div class='form-group'>
+                                    <label>Captcha</label> @Html.TextBox("CaptchaText", null, new { @class = "form-control" })
+                                    <span class="field-validation-error" data-valmsg-for="captchaID" data-valmsg-replace="true">
+                                        <span for="captchaID" class="">@ViewBag.Message</span>
+                                    </span>
+                                </div>
+                                <div class='form-group'>
+                                    <label>
+                                        Captcha letters are case sensitive
+                                    </label>
+                                    <img id="captchaimage" src="@Url.Action("generateCaptcha", "Account")" />
+                                    <a id="refresh" onclick="onRefreshChange(event);">&nbsp;<i class="glyphicon glyphicon-refresh"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div><div style="text-align:center; margin:20px">
+                    @Html.ActionLink("Login", "Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, new { @onclick = "", @class = "btn btn-lg btn-default", @style = "width:45%;" })
+                    <input type="submit" class="btn btn-lg btn-primary" style="width:45%;" value="Register" />
+                </div>
+            </div>
+        </div>
+    }
+    @section Scripts {
+        @Scripts.Render("~/bundles/jqueryval")
+    }
+</body>
+</html>
+

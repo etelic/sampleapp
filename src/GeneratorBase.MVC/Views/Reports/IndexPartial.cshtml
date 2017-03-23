@@ -1,0 +1,165 @@
+﻿@model PagedList.IPagedList<GeneratorBase.MVC.WebReference.CatalogItem>
+@using PagedList.Mvc;
+<style>
+    .table-responsive > .fixed-column {
+        position: absolute;
+        display: block;
+        width: auto;
+        border: 0px solid transparent;
+        border-top: 1px solid #c3ddec;
+    }
+    .fixed-column th {
+        background: #fff;
+    }
+    .fixed-column td {
+        background: #fff;
+    }
+</style>
+<script>
+    $(document).ready(function () {
+        $("#SearchStringReports").keypress(function (e) {
+            if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
+                $('#ReportsSearch').click();
+                return true;
+            }
+        })
+        $(".pagination a").click(function (e) {
+            var thelink = e.target.href;//get the url that would be navigated to on sort
+            if (thelink != '') {
+                eval("query = {" + thelink.split("?")[1].replace(/&/ig, "\",").replace(/=/ig, ":\"") + "\"};");
+                var controllerName = "";
+                if (query.AssociatedType == null)
+                    controllerName = "@HttpContext.Current.Request.RequestContext.RouteData.Values["controller"].ToString()";
+                else
+                    controllerName = query.AssociatedType;
+                e.preventDefault();
+                e.stopPropagation();
+                $.ajax({
+                    url: thelink,
+                    data: {},
+                    success: function (data) {
+                        if (data != null) {
+                            $("#" + controllerName).html(data);
+                        }
+                    }
+                })
+            }
+            return false;
+        })
+        $('#pagesizelist').change(function (e) {
+            var thelink = '@Url.Action("Index", "Reports")';
+            $.ajax({
+                url: thelink,
+                data: { searchString: $('#SearchStringReports').val(), itemsPerPage: $('#pagesizelist').val() },
+                success: function (data) {
+                    if (data != null) {
+                        $("#Reports").html(data);
+                    }
+                }
+            })
+            return false;
+        })
+        $("#ReportsSearch").click(function (e) {
+            var thelink = e.target.href;//get the url that would be navigated to on sort
+            if (thelink.split("?")[1] != undefined)
+                eval("query = {" + thelink.split("?")[1].replace(/&/ig, "\",").replace(/=/ig, ":\"") + "\"};");
+            var controllerName = "";
+            if (thelink.split("?")[1] == undefined)
+                controllerName = "@HttpContext.Current.Request.RequestContext.RouteData.Values["controller"].ToString()";
+            else
+                controllerName = query.AssociatedType;
+            e.preventDefault();
+            e.stopPropagation();
+            $.ajax({
+                url: thelink,
+                data: { searchString: $('#SearchStringReports').val(), itemsPerPage: $('#pagesizelist').val() },
+                success: function (data) {
+                    if (data != null) {
+                        $("#" + controllerName).html(data);
+                    }
+                }
+            })
+            return false;
+        })
+    });
+</script>
+<div class="row">
+    <div class="col-md-12 col-sm-12 col-sx-12">
+        <div class="panel panel-default">
+            <div class="panel-heading clearfix" style="margin:0px; padding:8px;">
+                <div class="btn-group">
+                </div>
+                <div class="pull-right" style="width:200px;">
+                    <div class="input-group">
+                        @Html.TextBox("SearchStringReports", ViewBag.CurrentFilter as string, null, new { @class = "form-control fixsearchbox", @placeholder = "Search" })
+                        <div class="input-group-btn">
+                            <a id="ReportsSearch" href="@Url.Action("Index", "Reports")" class="btn btn-default" style="padding:3px 5px;"><span class="fam-zoom"></span></a>
+                            <a href="@Url.Action("Index", "Reports")" class="btn btn-default" style="padding:3px 5px;"><span class="fam-delete"></span></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="panel-body" style="margin:0px; padding:8px;">
+                <div class="table-responsive" style="overflow-x:auto;">
+                    <table class="table table-striped table-bordered table-hover table-condensed">
+                        <thead>
+                            @if (Model.Count > 0)
+                            {
+                                <tr>
+                                    <th>Actions</th>
+                                    <th>Name</th>
+                                    <th>Description</th>
+                                </tr>
+                                foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td>
+                                            <div style="width:60px;">
+                                                <div class="btn-group" style="position:absolute;">
+                                                    <button data-toggle="dropdown" class="btn btn-xs dropdown-toggle btn-default">
+                                                        Action
+                                                        <span class="caret"></span>
+                                                    </button>
+                                                    <ul class="dropdown-menu pull-left">
+                                                        <li>
+                                                            @Html.ActionLink("View", "ResultShow", "Reports", new { ReportName = item.Path }, null)
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Name)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Description)
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td>
+                                        <span style="color: Red; padding: 5px;">No Reports Available For Display !</span>
+                                    </td>
+                                </tr>
+                            }
+                        </thead>
+                    </table>
+                </div>
+                @if (Model.Count > 0)
+                {
+                    <div id="pagination">
+                        @Html.PagedListPager(Model, page => Url.Action("Index", new { page, searchString = ViewBag.CurrentFilter, itemsPerPage = ViewBag.CurrentItemsPerPage }))
+                        <div class="fixPageSize">
+                            Page Size :
+                            @Html.DropDownList("PageSize", new SelectList(new Dictionary<string, int> { { "10", 10 }, { "20", 20 }, { "50", 50 }, { "100", 100 } }, "Key", "Value"), new { @id = "pagesizelist" })
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+

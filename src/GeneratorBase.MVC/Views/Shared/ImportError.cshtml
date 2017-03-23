@@ -1,0 +1,24 @@
+﻿@model string
+@using (Html.BeginForm("Index",Model, FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#myModalError').modal('show');
+        });
+    </script>
+    <div class="modal fade" id="myModalError" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-keyboard="false" data-backdrop="static">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div class="panel panel-default">
+                        <div class="panel-body" style="margin:0px; padding:8px;">
+                            @Html.Raw(ViewBag.ImportError)
+                        </div>
+                    </div>
+                    <input type="submit" value="Back To List" class="btn btn-primary btn-sm" />
+                    <a href="@Url.Action("Index",Model)" class="btn btn-default btn-sm">Cancel</a>
+                </div>
+            </div>
+        </div>
+    </div>
+}

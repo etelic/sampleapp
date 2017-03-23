@@ -1,0 +1,142 @@
+﻿@model GeneratorBase.MVC.Models.ApplicationFeedback
+@{
+    ViewBag.Title = "Delete Application Feedback";
+}
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-title">
+            <i class="glyphicon glyphicon-hand-down text-primary"></i>Delete Application Feedback  <i class="glyphicon glyphicon-chevron-right small"></i> 
+            <span style="color:red;">  Are you sure you want to delete this?</span>
+        </h1>
+        <h2 class="text-primary">@Html.DisplayFor(model => model.DisplayValue)</h2>
+    </div>
+</div>
+<div class="row">
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(model => model.ConcurrencyKey)
+    @Html.HiddenFor(model => model.Id)
+							  <div class='col-sm-12'>
+							   <div class="row">
+<div class="col-sm-2 col-md-2">
+<div class="thumbnail">
+   <img src='@(!string.IsNullOrEmpty(Html.DisplayFor(model => model.AttachImage).ToString()) ? Url.Content("~/Files/") + Url.Content(Html.DisplayFor(model => model.AttachImage).ToString()) : "")' alt="NA" />
+    <div class="caption">
+        <h5 class="text-center">@Html.DisplayNameFor(model => model.AttachImage)</h5>
+    </div>
+</div>
+</div>
+				</div>
+		</div>
+		<div style="clear:both"></div>
+    <dl class="dl-horizontal">
+		  <dt>
+            @Html.DisplayNameFor(model => model.EntityName)
+        </dt>
+		<dd class="clearfix">
+            @Html.DisplayFor(model => model.EntityName)
+        </dd>
+		  <dt>
+            @Html.DisplayNameFor(model => model.CommentId)
+        </dt>
+		<dd class="clearfix">
+            @Html.DisplayFor(model => model.CommentId)
+        </dd>
+		  <dt>
+            @Html.DisplayNameFor(model => model.Summary)
+        </dt>
+		<dd class="clearfix">
+            @Html.DisplayFor(model => model.Summary)
+        </dd>
+		  <dt>
+            @Html.DisplayNameFor(model => model.PropertyName)
+        </dt>
+		<dd class="clearfix">
+            @Html.DisplayFor(model => model.PropertyName)
+        </dd>
+		  <dt>
+            @Html.DisplayNameFor(model => model.Description)
+        </dt>
+		<dd class="clearfix">
+            @Html.DisplayFor(model => model.Description)
+        </dd>
+		  <dt>
+            @Html.DisplayNameFor(model => model.PageName)
+        </dt>
+		<dd class="clearfix">
+            @Html.DisplayFor(model => model.PageName)
+        </dd>
+		  <dt>
+            @Html.DisplayNameFor(model => model.PageUrlTitle)
+        </dt>
+		<dd class="clearfix">
+            @Html.DisplayFor(model => model.PageUrlTitle)
+        </dd>
+		  <dt>
+            @Html.DisplayNameFor(model => model.UIControlName)
+        </dt>
+		<dd class="clearfix">
+            @Html.DisplayFor(model => model.UIControlName)
+        </dd>
+		  <dt>
+            @Html.DisplayNameFor(model => model.PageUrl)
+        </dt>
+		<dd class="clearfix">
+            @Html.DisplayFor(model => model.PageUrl)
+        </dd>
+		 <dt>
+            @Html.DisplayNameFor(model => model.AssociatedApplicationFeedbackTypeID)
+        </dt>
+		<dd class="clearfix">
+            @Html.DisplayFor(model => model.associatedapplicationfeedbacktype.DisplayValue)
+        </dd>
+		 <dt>
+            @Html.DisplayNameFor(model => model.AssociatedApplicationFeedbackStatusID)
+        </dt>
+		<dd class="clearfix">
+            @Html.DisplayFor(model => model.associatedapplicationfeedbackstatus.DisplayValue)
+        </dd>
+		 <dt>
+            @Html.DisplayNameFor(model => model.ApplicationFeedbackPriorityID)
+        </dt>
+		<dd class="clearfix">
+            @Html.DisplayFor(model => model.applicationfeedbackpriority.DisplayValue)
+        </dd>
+		 <dt>
+            @Html.DisplayNameFor(model => model.ApplicationFeedbackSeverityID)
+        </dt>
+		<dd class="clearfix">
+            @Html.DisplayFor(model => model.applicationfeedbackseverity.DisplayValue)
+        </dd>
+		 <dt>
+            @Html.DisplayNameFor(model => model.ApplicationFeedbackResourceID)
+        </dt>
+		<dd class="clearfix">
+            @Html.DisplayFor(model => model.applicationfeedbackresource.DisplayValue)
+        </dd>
+		  <dt>
+            @Html.DisplayNameFor(model => model.ReportedBy)
+        </dt>
+		<dd class="clearfix">
+            @Html.DisplayFor(model => model.ReportedBy)
+        </dd>
+		  <dt>
+            @Html.DisplayNameFor(model => model.ReportedByUser)
+        </dt>
+		<dd class="clearfix">
+            @Html.DisplayFor(model => model.ReportedByUser)
+        </dd>
+    </dl>
+	<br/>
+        <div class="row deletefix">
+				<div class="col-md-12 col-sm-12 col-xs-12">
+        @Html.ActionLink("Back", "Index", null, new { @class = "btn btn-default btn-sm" })
+	@if (User.Identity.IsAuthenticated && User != null && User.CanDelete("ApplicationFeedback"))
+     {
+			<input type="submit" value="Delete" class="btn btn-primary btn-sm" /> 
+	}
+        </div>
+            </div>
+    }
+</div>

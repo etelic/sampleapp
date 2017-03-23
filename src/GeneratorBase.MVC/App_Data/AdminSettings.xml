@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Administrator>
+  <Settings>
+    <DefaultRoleForNewUser>None</DefaultRoleForNewUser>
+    <GooglePlusId>None</GooglePlusId>
+    <GooglePlusSecretKey>None</GooglePlusSecretKey>
+    <FacebookId>790304701039569</FacebookId>
+    <FacebookSecretKey>6da10c8151fdb20c4c2fee12cbcc4a47</FacebookSecretKey>
+    <EnableODataServices>false</EnableODataServices>
+  </Settings>
+</Administrator>

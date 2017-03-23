@@ -1,0 +1,137 @@
+﻿@model GeneratorBase.MVC.Models.BusinessRule
+@{
+    ViewBag.Title = "Create Business Rule";
+    Layout = null;
+}
+<link href="@Url.Content("~/Content/bootstrap-multiselect.css")" rel="stylesheet" type="text/css" />
+<script type="text/javascript" language="javascript">
+    $(document).ready(function () {
+        $('#EntityName').val($('#EntityList :selected').val());
+        $('#EntityList').change(function () {
+            var SelectedText = $('#EntityList :selected').val();
+            $('#EntityName').val(SelectedText);
+            //
+            $.ajax({
+                url: '@Url.Action("GetUserAssociation","BusinessRule")' + '?Entity=' + SelectedText,
+                type: "GET",
+                cache: false,              
+                success: function (result) {
+                    var optionDOM = "";
+                    for (i = 0; i < result.length; i++) {
+                        optionDOM += '<option value="' + result[i].Key + '">' + result[i].Value + '</option>';
+                    }
+                    $("#" + "cmbNotifyTo").html(optionDOM);
+                    $("#" + "cmbNotifyTo").multiselect('rebuild');
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    alert("DFDFDFD");
+                }
+            })
+            //
+        });
+    });
+</script>
+<link href="~/Content/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+<link href="@Url.Content("~/Content/chosen.css")" rel="stylesheet" type="text/css" />
+@using (Html.BeginForm("CreateQuickTimeRule", "BusinessRule", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken();
+    Html.ValidationSummary(true);
+    Html.EnableClientValidation();
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="panel panel-default AppForm">
+                <div class="panel-body">
+                    <div class="row">
+                        <div class='col-sm-6'>
+                            <div class='form-group'>
+                                <label>@Html.LabelFor(model => model.RuleName) <span class="text-danger-reg">*</span></label>
+                                @Html.TextBoxFor(model => model.RuleName, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.RuleName)
+                            </div>
+                        </div>
+                        <div class='col-sm-6'>
+                            <div class='form-group'>
+                                <label>@Html.LabelFor(model => model.EntityName)<span class="text-danger-reg">*</span></label>
+                                @Html.DropDownList("EntityList", null, "-- Select --", new { @required = "required", @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.EntityName)
+                                @Html.TextBoxFor(model => model.EntityName, new { @class = "form-control hidden" })
+                            </div>
+                        </div>
+                        <div class='col-sm-6'>
+                            <div class='form-group'>
+                                <label>Notify after <span class="text-danger-reg">*</span></label>
+                                @Html.TextBox("TimeValue", null, new { @placeholder = "Days after adding record", @required = "required", @class = "form-control" })
+                            </div>
+                        </div>
+                        <div class='col-sm-6'>
+                            <div class='form-group' name="dvNotifyTo" id="dvNotify">
+                                <label>Notify to <span class="text-danger-reg">*</span></label>
+                                <br />
+                                @Html.TextBox("NotifyTo", null, new { style = "border:none !important;Width:0px !important;" })
+                                @Html.DropDownList("cmbNotifyTo", null, new { @multiple = "multiple" })
+                            </div>
+                        </div>
+                        <div style="clear:both;"></div>
+                        <div class='col-sm-6'>
+                            <div class='form-group'>
+                                <label>Specify extra email-ids </label>
+                                @Html.TextArea("NotifyToExtra", null, new { @placeholder = "Notify some these people also", @class = "form-control" })
+                            </div>
+                        </div>
+                        <div class='col-sm-6'>
+                            <div class='form-group'>
+                                <label>Alert Message</label>
+                                @Html.TextArea("AlertMessage", null, new { @placeholder = "Alert Message for notification", @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <button type="button" class="btn btn-default btn-sm" data-dismiss="modal" aria-hidden="true">Cancel</button>
+    <input type="submit" value="Create" class="btn btn-primary btn-sm" />
+}
+@Scripts.Render("~/bundles/jqueryval")
+<script src="~/Scripts/Common3/chosen.jquery.js" type="text/javascript"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('select[name=cmbNotifyTo]').multiselect({
+            buttonWidth: '100%'
+        });
+    });
+    var config = {
+        '.chosen-select': {},
+        '.chosen-select-deselect': { allow_single_deselect: true },
+        '.chosen-select-no-single': { disable_search_threshold: 10 },
+        '.chosen-select-no-results': { no_results_text: 'Oops, nothing found!' },
+        '.chosen-select-width': { width: "95%" }
+    }
+    for (var selector in config) {
+        $(selector).chosen(config[selector]);
+    }
+</script>
+<script src="@Url.Content("~/Scripts/Common2/bootstrap-multiselect.js")" type="text/javascript"></script>
+<script>
+    $("form").submit(function () {
+        $('div[name=dvNotifyTo]').each(function (e) {
+            catname = $(this).attr('id');
+            var firstInput = $("#" + catname).find('input[type=text],input[type=password],input[type=radio],input[type=checkbox],textarea,select').filter(':visible:first');
+            var firstButton = $("#" + catname).find('button').filter(':first');
+            var txtid = firstInput.attr('id');
+            var btntitle = firstButton.attr('title');
+            var value = $('#cmbNotifyTo').val();
+            if (firstButton != null) {
+                if (btntitle != 'None selected')
+                    $("#" + txtid).val(value);
+                else
+                    $("#" + txtid).val('');
+            }
+        });
+        if ($(this).find('.input-validation-error').length == 0) {
+            $(this).find(':submit').attr('disabled', 'disabled');
+        }
+    });
+</script>
+

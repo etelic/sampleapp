@@ -1,0 +1,57 @@
+﻿@model PagedList.IPagedList<GeneratorBase.MVC.Models.FileDocument>
+@using PagedList.Mvc;
+@{
+    ViewBag.Title = "Index";
+    Layout = null;
+    Response.ContentType = "application/vnd.ms-excel";
+    Response.AddHeader("Content-Disposition", "attachment; filename=Document.xls");
+}
+                    <table>
+                            <tr>
+@if(User.CanView("FileDocument","DocumentName"))
+{
+		<th>Document Name</th>
+}
+@if(User.CanView("FileDocument","Description"))
+{
+		<th>Description</th>
+}
+@if(User.CanView("FileDocument","DateCreated"))
+{
+		<th>Created</th>
+}
+@if(User.CanView("FileDocument","DateLastUpdated"))
+{
+		<th>Last Updated</th>
+}
+    </tr>
+@foreach (var item in Model) {
+    <tr>
+	@if(User.CanView("FileDocument","DocumentName"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.DocumentName)
+        </td>
+}
+@if(User.CanView("FileDocument","Description"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.Description)
+        </td>
+}
+@if(User.CanView("FileDocument","DateCreated"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.DateCreated)
+        </td>
+}
+@if(User.CanView("FileDocument","DateLastUpdated"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.DateLastUpdated)
+        </td>
+}
+                                </tr>
+                            }
+</table>
+               

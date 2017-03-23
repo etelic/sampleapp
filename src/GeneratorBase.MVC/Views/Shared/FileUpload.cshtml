@@ -1,0 +1,39 @@
+﻿<div class="row">
+    <div class='col-sm-12'>
+        <div class="panel panel-default">
+            <div class="panel-heading clearfix">
+                <h3 class="panel-title">Upload data from excel</h3>
+            </div>
+            <div class="panel-body">
+                <div class='form-group'>
+                    <div class="input-group">
+                        <div class='col-sm-12'>
+                            <div class='col-sm-8'>
+                                <input type="file" id="FileUpload" name="FileUpload" required data-val="true" data-val-required="please select a file" />
+                            </div>
+                            <div class='col-sm-4'>
+                                <input type="submit" id="impData" value="Upload" title="Click to upload file" onclick="return CheckFileName();" class="btn btn-primary" />
+                                <script type="text/javascript">
+                                    function CheckFileName() {
+                                        var fileName = document.getElementById("FileUpload").value
+                                        if (fileName == "") {
+                                            alert("Browse to upload a valid File with xls / xlsx extension");
+                                            return false;
+                                        }
+                                        else if (fileName.split(".")[1].toUpperCase() == "XLS" || fileName.split(".")[1].toUpperCase() == "XLSX")
+                                            return true;
+                                        else {
+                                            alert("File with " + fileName.split(".")[1] + " is invalid. Upload a validfile with xls / xlsx extensions");
+                                            return false;
+                                        }
+                                        return true;
+                                    }
+                                </script>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

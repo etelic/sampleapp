@@ -1,0 +1,162 @@
+﻿@model GeneratorBase.MVC.Models.ImportConfiguration
+@using (Html.BeginForm("Create", "ImportConfiguration", new { UrlReferrer = Convert.ToString(ViewData["ImportConfigurationParentUrl"]), IsDDAdd = ViewBag.IsDDAdd }, FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken();
+    Html.ValidationSummary(true);
+    Html.EnableClientValidation();
+    <label id="ErrMsg" class="text-primary small pull-right" style="color:red; vertical-align:middle; font-weight:100;"></label>
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="panel panel-default AppForm">
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-12 col-sm-12 col-xs-12">
+                            <div class="panel panel-default">
+                                <div class="panel-heading clearfix">
+                                    <i class="icon-calendar"></i>
+                                    <h3 class="panel-title">General</h3>
+                                </div>
+                                <div class="panel-body">
+                                    <div class='col-sm-6 col-md-6 col-xs-12'>
+                                        <div class='form-group'>
+                                            <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.TableColumn)  </label>
+                                            <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                @Html.TextBoxFor(model => model.TableColumn, new { @class = "form-control" })
+                                                @Html.ValidationMessageFor(model => model.TableColumn)
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class='col-sm-6 col-md-6 col-xs-12'>
+                                        <div class='form-group'>
+                                            <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.SheetColumn)  </label>
+                                            <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                @Html.TextBoxFor(model => model.SheetColumn, new { @class = "form-control" })
+                                                @Html.ValidationMessageFor(model => model.SheetColumn)
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class='col-sm-6 col-md-6 col-xs-12'>
+                                        <div class='form-group'>
+                                            <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.UniqueColumn)  </label>
+                                            <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                @Html.TextBoxFor(model => model.UniqueColumn, new { @class = "form-control" })
+                                                @Html.ValidationMessageFor(model => model.UniqueColumn)
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class='col-sm-6 col-md-6 col-xs-12'>
+                                        <div class="form-group">
+                                            <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.LastUpdate) </label>
+                                            <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                <div class="col-sm-6 col-md-6 col-xs-12" id="datetimepickerLastUpdate" style="padding-left:0px; padding-right:5px">
+                                                    @Html.TextBox("CurrentDateTime", DateTime.Now.ToString("MM/dd/yyyy hh:mm tt"), new { @class = "form-control", @readonly = "readonly" })
+                                                </div>
+                                                <div class="col-sm-6 col-md-6 col-xs-12" style="padding-left:0px; padding-right:0px">
+                                                    @Html.TextBox("CurrentUser", HttpContext.Current.User.Identity.Name, new { @class = "form-control", @readonly = "readonly" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class='col-sm-6 col-md-6 col-xs-12'>
+                                        <div class='form-group'>
+                                            <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.Name)  </label>
+                                            <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                @Html.TextBoxFor(model => model.Name, new { @class = "form-control" })
+                                                @Html.ValidationMessageFor(model => model.Name)
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class='col-sm-6 col-md-6 col-xs-12'>
+                                        <div class='form-group'>
+                                            <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.MappingName)  </label>
+                                            <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                @Html.TextBoxFor(model => model.MappingName, new { @class = "form-control" })
+                                                @Html.ValidationMessageFor(model => model.MappingName)
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class='col-sm-6 col-md-6 col-xs-12'>
+                                        <div class='form-group'>
+                                            <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.IsDefaultMapping)  </label>
+                                            <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                @Html.CheckBoxFor(model => model.IsDefaultMapping)
+                                                @Html.ValidationMessageFor(model => model.IsDefaultMapping)
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @Html.ActionLink("Cancel", "Cancel", new { UrlReferrer = ViewData["ImportConfigurationParentUrl"] }, new { @onclick = "", @class = "btn btn-default btn-sm" })
+    <input type="submit" name="command" value="Create" class="btn btn-primary btn-sm" />
+    if (ViewBag.IsDDAdd == null)
+    {
+        <input type="submit" name="command" value="Create & Continue" class="btn btn-primary btn-sm" />
+    }
+    <input type="hidden" name="hdncommand" value="" />
+    <br /><br />
+}
+<script>
+    $(function () {
+        var userAgent = navigator.userAgent.toLowerCase();
+        // Figure out what browser is being used
+        var browser = {
+            version: (userAgent.match(/.+(?:rv|it|ra|ie)[\/: ]([\d.]+)/) || [])[1],
+            safari: /webkit/.test(userAgent),
+            opera: /opera/.test(userAgent),
+            msie: /msie/.test(userAgent) && !/opera/.test(userAgent),
+            mozilla: /mozilla/.test(userAgent) && !/(compatible|webkit)/.test(userAgent)
+        };
+        if (!browser.msie) {
+            $('form').areYouSure();
+        }
+        else if (browser.version > 8.0) {
+            $('form').areYouSure();
+        }
+    });
+</script>
+<script>
+    $("input[type='submit']").click(function () {
+        var $this = $(this);
+        $('input:hidden[name="hdncommand"]').val($this.val());
+    });
+</script>
+@{
+    var busineesrule = User.businessrules.Where(p => p.EntityName == "ImportConfiguration").ToList();
+    if ((busineesrule != null && busineesrule.Count > 0))
+    {
+        <script>
+            $("form").submit(function () {
+                var flag = true;
+                $.ajax({
+                    async: false,
+                    type: "GET",
+                    url: "@Url.Action("GetMandatoryProperties", "ImportConfiguration")",
+                    data: $(this).serialize(),
+                    success: function (data) {
+                        document.getElementById('ErrMsg').innerHTML = "";
+                        for (var key in data) {
+                            if ($.trim($('#' + key).val()).length == 0) {
+                                $('#' + key).attr('required', 'required');
+                                flag = false;
+                                document.getElementById('ErrMsg').innerHTML += data[key] + " is Mandatory.<br/>";
+                            }
+                        }
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        //alert(JSON.stringify(jqXHR));
+                        //alert(errorThrown);
+                    }
+                });
+                return flag;
+            });
+        </script>
+    }
+}
+
+

@@ -1,0 +1,54 @@
+﻿@model GeneratorBase.MVC.Models.BusinessRuleType
+@using (Html.BeginForm("Create", "BusinessRuleType",new {UrlReferrer = Convert.ToString(ViewData["BusinessRuleTypeParentUrl"])}, FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+   @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="panel panel-default AppForm">
+                <div class="panel-body">
+               <div class="row">         
+					<div class='col-sm-6 col-md-6 col-xs-12'>
+                                <div class='form-group'>
+                                   <label class="col-sm-5 col-md-5 col-xs-12" >@Html.LabelFor(model => model.TypeNo) </label>
+									<div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                    @Html.TextBoxFor(model => model.TypeNo, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.TypeNo)
+									</div>
+                                </div>
+					</div>
+					<div class='col-sm-6 col-md-6 col-xs-12'>
+                                <div class='form-group'>
+                                   <label class="col-sm-5 col-md-5 col-xs-12" >@Html.LabelFor(model => model.TypeName) <span class="text-danger-reg">*</span></label>
+									<div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                    @Html.TextBoxFor(model => model.TypeName, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.TypeName)
+									</div>
+                                </div>
+					</div>
+						<div class='col-sm-6 col-md-6 col-xs-12'>
+                                <div class='form-group'>
+                                   <label class="col-sm-5 col-md-5 col-xs-12" >@Html.LabelFor(model => model.Description) </label>
+									<div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                    @Html.TextAreaFor(model => model.Description, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.Description)
+									</div>
+                                </div>
+						</div>
+       </div>
+                        </div>
+                    </div>
+                </div>
+        </div>
+          @Html.ActionLink("Cancel", "Cancel", new { UrlReferrer = ViewData["BusinessRuleTypeParentUrl"] }, new { @onclick = "", @class = "btn btn-default btn-sm" })
+            <input type="submit" value="Create" class="btn btn-primary btn-sm" /><br/><br/>
+}
+<script>
+    $("form").submit(function () {
+        if ($(this).find('.input-validation-error').length == 0) {
+            $(this).find(':submit').attr('disabled', 'disabled');
+        }
+    });
+</script>
+
+

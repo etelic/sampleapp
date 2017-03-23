@@ -1,0 +1,843 @@
+﻿@model GeneratorBase.MVC.Models.Theme
+@{
+    ViewBag.Title = " Update Theme";
+}
+@functions {
+    object getHtmlAttributes(string Property)
+    {
+        return new { @class = "form-control" };
+    }
+}
+<div class="tabbable responsive">
+    @using (Html.BeginForm("Edit", "Theme", new { RenderPartial = true }, FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        Html.ValidationSummary(true);
+        Html.EnableClientValidation();
+        @Html.HiddenFor(model => model.Id)
+        <div class="tab-content">
+            <div class="tab-pane fade in active" id="Details">
+                <div class="clearfix"></div>
+                <br />
+                <hr style="margin:0px 0px 10px 0px;" />
+                <div class="row">
+                    <div class='col-xs-4'>
+                        <label>Change Theme Name </label>
+                        <div class="input-group">
+                            @Html.TextBoxFor(model => model.Name, new { @placeholder = "Enter New Theme", @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.Name)
+                        </div>
+                    </div>
+                    <div class='col-xs-4'>
+                        <label>Is Current Theme?</label>
+                        <div class="input-group">
+                            @Html.CheckBoxFor(model => model.IsActive)
+                        </div>
+                        <p id="help-block--padding" class="help-block">Set As Current Theme</p>
+                    </div>
+                </div>
+                <br />
+                <hr style="margin:0px 0px 10px 0px;" />
+                <div class="row">
+                    <div class='col-xs-4'>
+                        <label>Left background</label>
+                        <div class="input-group colorpicker-component demo demo-auto">
+                            @Html.TextBoxFor(model => model.backgroundColorbody, getHtmlAttributes("backgroundColorbody"))
+                            @Html.ValidationMessageFor(model => model.backgroundColorbody)
+                            <span class="input-group-addon"><i></i></span>
+                        </div>
+                        <p id="help-block--padding" class="help-block">Page/Sidebar background Color</p>
+                    </div>
+                    <div class='col-xs-4'>
+                        <label>Right background</label>
+                        <div class="input-group colorpicker-component demo demo-auto">
+                            @Html.TextBoxFor(model => model.rightwrapper, getHtmlAttributes("rightwrapper"))
+                            @Html.ValidationMessageFor(model => model.rightwrapper)
+                            <span class="input-group-addon"><i></i></span>
+                        </div>
+                        <p id="help-block--padding" class="help-block">Right background Color</p>
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+                <h2>Header</h2>
+                <hr style="margin:0px 0px 10px 0px;" />
+                <div class="row">
+                    <div class="col-xs-4">
+                        <label>background</label>
+                        <div class="input-group colorpicker-component demo demo-auto">
+                            @Html.TextBoxFor(model => model.HeaderBackgroundColor, getHtmlAttributes("HeaderBackgroundColor"))
+                            @Html.ValidationMessageFor(model => model.HeaderBackgroundColor)
+                            <span class="input-group-addon"><i></i></span>
+                        </div>
+                        <p id="help-block--padding" class="help-block">Header background color</p>
+                    </div>
+                    <div class="col-xs-4">
+                        <label for="input--bg">Application Label</label>
+                        <div class="input-group colorpicker-component demo demo-auto">
+                            @Html.TextBoxFor(model => model.HeaderAppLabel, getHtmlAttributes("HeaderAppLabel"))
+                            @Html.ValidationMessageFor(model => model.HeaderAppLabel)
+                            <span class="input-group-addon"><i></i></span>
+                        </div>
+                        <p id="help-block--bg" class="help-block">Application name "forecolor"</p>
+                    </div>
+                </div>
+                <h2>Header - Links <a class="anchorjs-link" href="#thumbnails"><span class="anchorjs-icon"></span></a></h2>
+                <hr style="margin:0px 0px 10px 0px;" />
+                <div class="row">
+                    <div class="col-xs-4">
+                        <label for="input--border">Report BG</label>
+                        <div class="input-group colorpicker-component demo demo-auto">
+                            @Html.TextBoxFor(model => model.HeaderLinkReportBG, new { @getHtmlAttributes = "HeaderLinkReportBG", @class = "form-control bg-green" })
+                            @Html.ValidationMessageFor(model => model.HeaderLinkReportBG)
+                            <span class="input-group-addon"><i></i></span>
+                        </div>
+                        <p id="help-block--border" class="help-block">Button background color</p>
+                    </div>
+                    <div class="col-xs-4">
+                        <label for="input--border">Report Text Color</label>
+                        <div class="input-group colorpicker-component demo demo-auto">
+                            @Html.TextBoxFor(model => model.HeaderLinkReportText, new { @getHtmlAttributes = "HeaderLinkReportText", @class = "form-control bg-green" })
+                            @Html.ValidationMessageFor(model => model.HeaderLinkReportText)
+                            <span class="input-group-addon"><i></i></span>
+                        </div>
+                        <p id="help-block--border" class="help-block">Button text color</p>
+                    </div>
+                    <div class="col-xs-4">
+                        <label for="input--border">Report Text Hover</label>
+                        <div class="input-group colorpicker-component demo demo-auto">
+                            @Html.TextBoxFor(model => model.HeaderLinkReportTextHover, new { @getHtmlAttributes = "HeaderLinkReportTextHover", @class = "form-control bg-green" })
+                            @Html.ValidationMessageFor(model => model.HeaderLinkReportTextHover)
+                            <span class="input-group-addon"><i></i></span>
+                        </div>
+                        <p id="help-block--border" class="help-block">Button text hover color</p>
+                    </div>
+                    <div class="col-xs-4">
+                        <label for="input--border">Admin BG</label>
+                        <div class="input-group colorpicker-component demo demo-auto">
+                            @Html.TextBoxFor(model => model.HeaderLinkAdminBG, new { @getHtmlAttributes = "HeaderLinkAdminBG", @class = "form-control bg-purpul" })
+                            @Html.ValidationMessageFor(model => model.HeaderLinkAdminBG)
+                            <span class="input-group-addon"><i></i></span>
+                        </div>
+                        <p id="help-block--border" class="help-block">Button background color</p>
+                    </div>
+                    <div class="col-xs-4">
+                        <label for="input--border">Admin Text Color</label>
+                        <div class="input-group colorpicker-component demo demo-auto">
+                            @Html.TextBoxFor(model => model.HeaderLinkAdminText, new { @getHtmlAttributes = "HeaderLinkAdminText", @class = "form-control bg-purpul" })
+                            @Html.ValidationMessageFor(model => model.HeaderLinkAdminText)
+                            <span class="input-group-addon"><i></i></span>
+                        </div>
+                        <p id="help-block--border" class="help-block">Button text color</p>
+                    </div>
+                    <div class="col-xs-4">
+                        <label for="input--border">Admin Text Hover</label>
+                        <div class="input-group colorpicker-component demo demo-auto">
+                            @Html.TextBoxFor(model => model.HeaderLinkAdminTextHover, new { @getHtmlAttributes = "HeaderLinkAdminTextHover", @class = "form-control bg-purpul" })
+                            @Html.ValidationMessageFor(model => model.HeaderLinkAdminTextHover)
+                            <span class="input-group-addon"><i></i></span>
+                        </div>
+                        <p id="help-block--border" class="help-block">Button text hover color</p>
+                    </div>
+                    <div class="col-xs-4">
+                        <label for="input--border">User BG</label>
+                        <div class="input-group colorpicker-component demo demo-auto">
+                            @Html.TextBoxFor(model => model.HeaderLinkUserBG, new { @getHtmlAttributes = "HeaderLinkUserBG", @class = "form-control bg-blue" })
+                            @Html.ValidationMessageFor(model => model.HeaderLinkUserBG)
+                            <span class="input-group-addon"><i></i></span>
+                        </div>
+                        <p id="help-block--border" class="help-block">Button background color</p>
+                    </div>
+                    <div class="col-xs-4">
+                        <label for="input--border">User Text</label>
+                        <div class="input-group colorpicker-component demo demo-auto">
+                            @Html.TextBoxFor(model => model.HeaderLinkUserText, new { @getHtmlAttributes = "HeaderLinkUserText", @class = "form-control bg-blue" })
+                            @Html.ValidationMessageFor(model => model.HeaderLinkUserText)
+                            <span class="input-group-addon"><i></i></span>
+                        </div>
+                        <p id="help-block--border" class="help-block">Button text color</p>
+                    </div>
+                    <div class="col-xs-4">
+                        <label for="input--border">User Text Hover</label>
+                        <div class="input-group colorpicker-component demo demo-auto">
+                            @Html.TextBoxFor(model => model.HeaderLinkUserTextHover, new { @getHtmlAttributes = "HeaderLinkUserTextHover", @class = "form-control bg-blue" })
+                            @Html.ValidationMessageFor(model => model.HeaderLinkUserTextHover)
+                            <span class="input-group-addon"><i></i></span>
+                        </div>
+                        <p id="help-block--border" class="help-block">Button text hover color</p>
+                    </div>
+                </div>
+                <h2>Sidebar</h2>
+                <hr style="margin:0px 0px 10px 0px;" />
+                <div class="row">
+                    <div class="col-xs-8" style="margin:0px; padding:0px;">
+                        <h2 style="margin-left:15px; margin-top:0px;">a:link</h2>
+                        <div class="col-xs-6">
+                            <label for="input--border">Background</label>
+                            <div class="input-group colorpicker-component demo demo-auto">
+                                @Html.TextBoxFor(model => model.navlistBackground, getHtmlAttributes("navlistBackground"))
+                                @Html.ValidationMessageFor(model => model.navlistBackground)
+                                <span class="input-group-addon"><i></i></span>
+                            </div>
+                            <p id="help-block--border" class="help-block">Sidebar background color</p>
+                        </div>
+                        <div class="col-xs-6">
+                            <label for="input--border">Link Color </label>
+                            <div class="input-group colorpicker-component demo demo-auto">
+                                @Html.TextBoxFor(model => model.sidebarLinkColor, getHtmlAttributes("sidebarLinkColor"))
+                                @Html.ValidationMessageFor(model => model.sidebarLinkColor)
+                                <span class="input-group-addon"><i></i></span>
+                            </div>
+                            <p id="help-block--border" class="help-block">Sidebar link forecolor</p>
+                        </div>
+                        <div class="clearfix"></div>
+                        <h2 style="margin-left:15px; margin-top:0px;">a:hover</h2>
+                        <div class="col-xs-6">
+                            <label for="input--border">Link Hover BG </label>
+                            <div class="input-group colorpicker-component demo demo-auto">
+                                @Html.TextBoxFor(model => model.sidebarLinkHoverBG, getHtmlAttributes("sidebarLinkHoverBG"))
+                                @Html.ValidationMessageFor(model => model.sidebarLinkHoverBG)
+                                <span class="input-group-addon"><i></i></span>
+                            </div>
+                            <p id="help-block--border" class="help-block">Sidebar hover link background</p>
+                        </div>
+                        <div class="col-xs-6">
+                            <label for="input--border">Link Hover Color </label>
+                            <div class="input-group colorpicker-component demo demo-auto">
+                                @Html.TextBoxFor(model => model.sidebarLinkHoverColor, getHtmlAttributes("sidebarLinkHoverColor"))
+                                @Html.ValidationMessageFor(model => model.sidebarLinkHoverColor)
+                                <span class="input-group-addon"><i></i></span>
+                            </div>
+                            <p id="help-block--border" class="help-block">Hover left Border color</p>
+                        </div>
+                        <div class="col-xs-6">
+                            <label for="input--border">Link Hover Border </label>
+                            <div class="input-group colorpicker-component demo demo-auto">
+                                @Html.TextBoxFor(model => model.SidebarHoverBorderLeft, getHtmlAttributes("SidebarHoverBorderLeft"))
+                                @Html.ValidationMessageFor(model => model.SidebarHoverBorderLeft)
+                                <span class="input-group-addon"><i></i></span>
+                            </div>
+                            <p id="help-block--border" class="help-block">Sidebar hover link forecolor</p>
+                        </div>
+                        <div class="clearfix"></div>
+                        <h2 style="margin-left:15px; margin-top:0px;">a:active</h2>
+                        <div class="col-xs-6">
+                            <label for="input--border">Active BG</label>
+                            <div class="input-group colorpicker-component demo demo-auto">
+                                @Html.TextBoxFor(model => model.SidebarActiveBG, getHtmlAttributes("SidebarActiveBG"))
+                                @Html.ValidationMessageFor(model => model.SidebarActiveBG)
+                                <span class="input-group-addon"><i></i></span>
+                            </div>
+                            <p id="help-block--border" class="help-block">Sidebar hover link forecolor</p>
+                        </div>
+                        <div class="col-xs-6">
+                            <label for="input--border">Active ForeColor </label>
+                            <div class="input-group colorpicker-component demo demo-auto">
+                                @Html.TextBoxFor(model => model.SidebarActiveforcolor, getHtmlAttributes("SidebarActiveforcolor"))
+                                @Html.ValidationMessageFor(model => model.SidebarActiveforcolor)
+                                <span class="input-group-addon"><i></i></span>
+                            </div>
+                            <p id="help-block--border" class="help-block">Sidebar hover link forecolor</p>
+                        </div>
+                    </div>
+                    <div class="col-xs-4">
+                        <label>Preview</label>
+                        <nav class="navbar-default navbar-static-side" role="navigation">
+                            <div class="sidebar-collapse">
+                                <ul class="nav nav-list" id="GA-SideBar">
+                                    <li><a href="#"><i class="glyphicon glyphicon-home icon-small"></i>Home</a></li>
+                                    <li><a href="#"><i class="glyphicon glyphicon-list icon-small"></i>Link 1</a></li>
+                                    <li><a href="#"><i class="glyphicon glyphicon-user icon-small"></i>Link 2</a></li>
+                                </ul>
+                                <!-- /#side-menu -->
+                            </div>
+                            <!-- /.sidebar-collapse -->
+                            <div style="clear:both"> </div>
+                        </nav>
+                    </div>
+                </div>
+                <h2>Footer</h2>
+                <hr style="margin:0px 0px 10px 0px;" />
+                <div class="row">
+                    <div class="col-xs-4">
+                        <label for="input--border">Background</label>
+                        <div class="input-group colorpicker-component demo demo-auto">
+                            @Html.TextBoxFor(model => model.footerbgcolor, getHtmlAttributes("footerbgcolor"))
+                            @Html.ValidationMessageFor(model => model.footerbgcolor)
+                            <span class="input-group-addon"><i></i></span>
+                        </div>
+                        <p id="help-block--border" class="help-block">footer background color</p>
+                    </div>
+                    <div class="col-xs-4">
+                        <label for="input--border">Forecolor</label>
+                        <div class="input-group colorpicker-component demo demo-auto">
+                            @Html.TextBoxFor(model => model.FooterForecolor, getHtmlAttributes("FooterForecolor"))
+                            @Html.ValidationMessageFor(model => model.FooterForecolor)
+                            <span class="input-group-addon"><i></i></span>
+                        </div>
+                        <p id="help-block--border" class="help-block">Footer forecolor</p>
+                    </div>
+                    <div class="col-xs-4">
+                        <label for="input--border">a:link</label>
+                        <div class="input-group colorpicker-component demo demo-auto">
+                            @Html.TextBoxFor(model => model.FooterLinkcolor, getHtmlAttributes("FooterLinkcolor"))
+                            @Html.ValidationMessageFor(model => model.FooterLinkcolor)
+                            <span class="input-group-addon"><i></i></span>
+                        </div>
+                        <p id="help-block--border" class="help-block">footer link color</p>
+                    </div>
+                </div>
+                <h2>Page Title</h2>
+                <hr style="margin:0px 0px 10px 0px;" />
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h1 class="page-title">
+                            <i class="glyphicon glyphicon-thumbs-up text-primary" style="margin-bottom:-20px;"></i> Page Title  <i class="glyphicon glyphicon-chevron-right small"></i>  <span>List</span>
+                        </h1>
+                    </div>
+                    <div class="col-xs-6">
+                        <label for="input--border">Background</label>
+                        <div class="input-group colorpicker-component demo demo-auto">
+                            @Html.TextBoxFor(model => model.PageTitleBG, getHtmlAttributes("PageTitleBG"))
+                            @Html.ValidationMessageFor(model => model.PageTitleBG)
+                            <span class="input-group-addon"><i></i></span>
+                        </div>
+                        <p id="help-block--border" class="help-block">Page title background color</p>
+                    </div>
+                    <div class="col-xs-6">
+                        <label for="input--border">ForeColor</label>
+                        <div class="input-group colorpicker-component demo demo-auto">
+                            @Html.TextBoxFor(model => model.PageTitleForeColor, getHtmlAttributes("PageTitleForeColor"))
+                            @Html.ValidationMessageFor(model => model.PageTitleForeColor)
+                            <span class="input-group-addon"><i></i></span>
+                        </div>
+                        <p id="help-block--border" class="help-block">Page title forecolor</p>
+                    </div>
+                    <div class="col-xs-6">
+                        <label for="input--border">Border</label>
+                        <div class="input-group colorpicker-component demo demo-auto">
+                            @Html.TextBoxFor(model => model.PageTitleBorder1, getHtmlAttributes("PageTitleBorder1"))
+                            @Html.ValidationMessageFor(model => model.PageTitleBorder1)
+                            <span class="input-group-addon"><i></i></span>
+                        </div>
+                        <p id="help-block--border" class="help-block">Page title border color</p>
+                    </div>
+                </div>
+                <h2>Dashboard</h2>
+                <hr style="margin:0px 0px 10px 0px;" />
+                <div class="row">
+                    <div class="col-xs-8" style="margin:0px; padding:0px;">
+                        <div class="col-xs-4">
+                            <label for="input--border">Box Background</label>
+                            <div class="input-group colorpicker-component demo demo-auto">
+                                @Html.TextBoxFor(model => model.DashboardBoxBG, getHtmlAttributes("DashboardBoxBG"))
+                                @Html.ValidationMessageFor(model => model.DashboardBoxBG)
+                                <span class="input-group-addon"><i></i></span>
+                            </div>
+                            <p id="help-block--border" class="help-block">Dashboard Box background color</p>
+                        </div>
+                        <div class="col-xs-4">
+                            <label for="input--border">Box Border</label>
+                            <div class="input-group colorpicker-component demo demo-auto">
+                                @Html.TextBoxFor(model => model.DashboardBoxBorder, getHtmlAttributes("DashboardBoxBorder"))
+                                @Html.ValidationMessageFor(model => model.DashboardBoxBorder)
+                                <span class="input-group-addon"><i></i></span>
+                            </div>
+                            <p id="help-block--border" class="help-block">Dashboard border color</p>
+                        </div>
+                        <div class="col-xs-4">
+                            <label for="input--border">Box Hover</label>
+                            <div class="input-group colorpicker-component demo demo-auto">
+                                @Html.TextBoxFor(model => model.DashboardBoxHover, getHtmlAttributes("DashboardBoxHover"))
+                                @Html.ValidationMessageFor(model => model.DashboardBoxHover)
+                                <span class="input-group-addon"><i></i></span>
+                            </div>
+                            <p id="help-block--border" class="help-block">Dashboard Box hover color</p>
+                        </div>
+                        <div class="col-xs-4">
+                            <label for="input--border">Box Link Color</label>
+                            <div class="input-group colorpicker-component demo demo-auto">
+                                @Html.TextBoxFor(model => model.DashboardBoxLink, getHtmlAttributes("DashboardBoxLink"))
+                                @Html.ValidationMessageFor(model => model.DashboardBoxLink)
+                                <span class="input-group-addon"><i></i></span>
+                            </div>
+                            <p id="help-block--border" class="help-block">Dashboard link forecolor</p>
+                        </div>
+                        <div class="col-xs-4">
+                            <label for="input--border">Box Link Hover</label>
+                            <div class="input-group colorpicker-component demo demo-auto">
+                                @Html.TextBoxFor(model => model.DashboardBoxLinkHover, getHtmlAttributes("DashboardBoxLinkHover"))
+                                @Html.ValidationMessageFor(model => model.DashboardBoxLinkHover)
+                                <span class="input-group-addon"><i></i></span>
+                            </div>
+                            <p id="help-block--border" class="help-block">Dashboard Link Hover</p>
+                        </div>
+                    </div>
+                    <div class="col-xs-4">
+                        <div class="col-xs-12">
+                            <label>Preview</label><br />
+                            <div class="index-box" style="width:100%;">
+                                <div class="index-box-inner primary">
+                                    <a href="/theme/Patient">
+                                        <div class="infobox-icon info">
+                                            <span class="glyphicon glyphicon-list size-icon"></span>
+                                        </div>
+                                        <div class="infobox-data">
+                                            <span class="infobox-data-number text-danger">
+                                                0
+                                            </span>
+                                            <div class="infobox-content">Heading</div>
+                                        </div>
+                                    </a>
+                                    <div class="input-group" style="margin-top:10px;">
+                                        <input class="form-control fixsearchbox" id="SearchStringPatient" name="SearchStringPatient" onkeypress="SearchKeyPress(event,'Patient');" placeholder="Search" type="text" value="">
+                                        <div class="input-group-btn">
+                                            <a id="#" onclick="#" data-original-title="List Search" class="btn btn-default btn-default tip-top" style="padding:3px 5px;"><span class="glyphicon glyphicon-search"></span></a>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-12 col-sm-12" style="padding:0px; margin:5px 0px 0px 0px;">
+                                        <a href="#" class="btn btn-default btn-xs" style="width:48%">List</a>
+                                        <a style="width:48%" class="btn btn-default btn-xs"> Add </a>
+                                    </div>
+                                    <div style="clear:both"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <h2>Panel</h2>
+                <hr style="margin:0px 0px 10px 0px;" />
+                <div class="row">
+                    <div class="col-xs-8" style="margin:0px; padding:0px;">
+                        <div class="col-xs-4">
+                            <label for="input--border">Heading Background</label>
+                            <div class="input-group colorpicker-component demo demo-auto">
+                                @Html.TextBoxFor(model => model.PanelHeadingBG, getHtmlAttributes("PanelHeadingBG"))
+                                @Html.ValidationMessageFor(model => model.PanelHeadingBG)
+                                <span class="input-group-addon"><i></i></span>
+                            </div>
+                            <p id="help-block--border" class="help-block">Panel header background</p>
+                        </div>
+                        <div class="col-xs-4">
+                            <label for="input--border">Heading Border</label>
+                            <div class="input-group colorpicker-component demo demo-auto">
+                                @Html.TextBoxFor(model => model.PanelHeadingBorder, getHtmlAttributes("PanelHeadingBorder"))
+                                @Html.ValidationMessageFor(model => model.PanelHeadingBorder)
+                                <span class="input-group-addon"><i></i></span>
+                            </div>
+                            <p id="help-block--border" class="help-block">Panel border color</p>
+                        </div>
+                        <div class="col-xs-4">
+                            <label for="input--border">Heading Text</label>
+                            <div class="input-group colorpicker-component demo demo-auto">
+                                @Html.TextBoxFor(model => model.PanelHeadingForeColor1, getHtmlAttributes("PanelHeadingForeColor1"))
+                                @Html.ValidationMessageFor(model => model.PanelHeadingForeColor1)
+                                <span class="input-group-addon"><i></i></span>
+                            </div>
+                            <p id="help-block--border" class="help-block">Panel Header forecolor</p>
+                        </div>
+                    </div>
+                    <div class="col-xs-4">
+                        <label>Preview</label>
+                        <div class="panel panel-default">
+                            <div class="panel-heading clearfix" style="margin:0px; padding:8px;">
+                                <div class="btn-group">
+                                    <button class="btn btn-xs  btn-default tip-top" type="button" data-original-title="Full Add" data-placement="top" style="padding:4px 5px;">
+                                        <span class="fam-world-add"></span>
+                                    </button>
+                                    <button class="btn btn-xs  btn-default tip-top" type="button" data-original-title="Add Wizard" data-placement="top" style="padding:4px 5px;">
+                                        <span class="fam-chart-organisation-add"></span>
+                                    </button>
+                                    <button type="button" class="btn btn-default btn-default collapse-data-btn tip-top" id="btnImportExcelPatient" data-original-title="Import Excel" data-placement="top" style="padding:3px 5px;" data-toggle="collapse">
+                                        <span class="fam-page-white-put"></span>
+                                    </button>
+                                    <div class="btn btn-default  btn-default tip-top" data-original-title="Export Excel" data-placement="top" style="padding:3px 5px;">
+                                        <span class="fam-page-excel"></span>
+                                    </div>
+                                    <button class="btn btn-default tip-top" data-placement="top" data-original-title="Show Graph" style="padding:3px 5px;" data-toggle="modal" data-target="#ShowGraphPatient">
+                                        <span class="fam-chart-bar"></span>
+                                    </button>
+                                    <button type="button" class="btn btn-default btn-default collapse-data-btn tip-top" id="btnShowHidePatient" data-original-title="Show/Hide Column" data-placement="top" style="padding:3px 5px;">
+                                        <span class="fam-table-row-delete"></span>
+                                    </button>
+                                    <a data-original-title="Faceted Search" class="btn btn-default btn-default tip-top" style="padding:3px 5px;"><span class="fam-zoom-in"></span></a>
+                                    <div class="btn-group">
+                                        <a class="btn btn-default btn-default dropdown-toggle tip-top" data-original-title="Filter-Groupby" style="padding:3px 5px;" data-toggle="dropdown" href="#">
+                                            <span class="glyphicon glyphicon-filter"></span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel-body" style="margin:0px; padding:8px;">
+                            </div>
+                        </div>
+                        <div class="panel panel-default">
+                            <div class="panel-heading clearfix">
+                                <i class="icon-calendar"></i>
+                                <h3 class="panel-title">Panel Heading Text</h3>
+                            </div>
+                            <div class="panel-body">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <h2>Buttons</h2>
+                <hr />
+                <div class="row">
+                    <div class="col-xs-8" style="margin:0px; padding:0px;">
+                        <h2 style="margin-left:15px; margin-top:0px;">Button 1</h2>
+                        <div style="clear:both;"></div>
+                        <div class="col-xs-4">
+                            <label for="input--border">Background</label>
+                            <div class="input-group colorpicker-component demo demo-auto">
+                                @Html.TextBoxFor(model => model.BtnDefaultBG1, getHtmlAttributes("BtnDefaultBG1"))
+                                @Html.ValidationMessageFor(model => model.BtnDefaultBG1)
+                                <span class="input-group-addon"><i></i></span>
+                            </div>
+                            <p id="help-block--border" class="help-block">Default background color</p>
+                        </div>
+                        <div class="col-xs-4">
+                            <label for="input--border">Forecolor</label>
+                            <div class="input-group colorpicker-component demo demo-auto">
+                                @Html.TextBoxFor(model => model.BtnDefaultForecolor, getHtmlAttributes("BtnDefaultForecolor"))
+                                @Html.ValidationMessageFor(model => model.BtnDefaultForecolor)
+                                <span class="input-group-addon"><i></i></span>
+                            </div>
+                            <p id="help-block--border" class="help-block">Default forecolor</p>
+                        </div>
+                        <div class="col-xs-4">
+                            <label for="input--border">Border</label>
+                            <div class="input-group colorpicker-component demo demo-auto">
+                                @Html.TextBoxFor(model => model.Borderbutton, getHtmlAttributes("Borderbutton"))
+                                @Html.ValidationMessageFor(model => model.Borderbutton)
+                                <span class="input-group-addon"><i></i></span>
+                            </div>
+                            <p id="help-block--border" class="help-block">Default border color</p>
+                        </div>
+                        <div class="col-xs-4">
+                            <label for="input--border">Hover Background</label>
+                            <div class="input-group colorpicker-component demo demo-auto">
+                                @Html.TextBoxFor(model => model.BtnDefaultHoverBG, getHtmlAttributes("BtnDefaultHoverBG"))
+                                @Html.ValidationMessageFor(model => model.BtnDefaultHoverBG)
+                                <span class="input-group-addon"><i></i></span>
+                            </div>
+                            <p id="help-block--border" class="help-block">Default background color</p>
+                        </div>
+                        <div class="col-xs-4">
+                            <label for="input--border">Hover Forecolor</label>
+                            <div class="input-group colorpicker-component demo demo-auto">
+                                @Html.TextBoxFor(model => model.BtnDefaultHoverForecolor, getHtmlAttributes("BtnDefaultHoverForecolor"))
+                                @Html.ValidationMessageFor(model => model.BtnDefaultHoverForecolor)
+                                <span class="input-group-addon"><i></i></span>
+                            </div>
+                            <p id="help-block--border" class="help-block">Default forecolor</p>
+                        </div>
+                        <div class="col-xs-4">
+                            <label for="input--border">Hover Border</label>
+                            <div class="input-group colorpicker-component demo demo-auto">
+                                @Html.TextBoxFor(model => model.Borderbutton1, getHtmlAttributes("Borderbutton1"))
+                                @Html.ValidationMessageFor(model => model.Borderbutton1)
+                                <span class="input-group-addon"><i></i></span>
+                            </div>
+                            <p id="help-block--border" class="help-block">Default border color</p>
+                        </div>
+                        <h2 style="margin-left:15px; margin-top:0px;">Button 2</h2>
+                        <div style="clear:both;"></div>
+                        <div class="col-xs-4">
+                            <label for="input--border">Background</label>
+                            <div class="input-group colorpicker-component demo demo-auto">
+                                @Html.TextBoxFor(model => model.Btn2DefaultBG, getHtmlAttributes("Btn2DefaultBG"))
+                                @Html.ValidationMessageFor(model => model.Btn2DefaultBG)
+                                <span class="input-group-addon"><i></i></span>
+                            </div>
+                            <p id="help-block--border" class="help-block">Default background color</p>
+                        </div>
+                        <div class="col-xs-4">
+                            <label for="input--border">Forecolor</label>
+                            <div class="input-group colorpicker-component demo demo-auto">
+                                @Html.TextBoxFor(model => model.Btn2DefaultForecolor, getHtmlAttributes("Btn2DefaultForecolor"))
+                                @Html.ValidationMessageFor(model => model.Btn2DefaultForecolor)
+                                <span class="input-group-addon"><i></i></span>
+                            </div>
+                            <p id="help-block--border" class="help-block">Default forecolor</p>
+                        </div>
+                        <div class="col-xs-4">
+                            <label for="input--border">Border</label>
+                            <div class="input-group colorpicker-component demo demo-auto">
+                                @Html.TextBoxFor(model => model.Borderbutton2, getHtmlAttributes("Borderbutton2"))
+                                @Html.ValidationMessageFor(model => model.Borderbutton2)
+                                <span class="input-group-addon"><i></i></span>
+                            </div>
+                            <p id="help-block--border" class="help-block">Default border color</p>
+                        </div>
+                        <div class="col-xs-4">
+                            <label for="input--border">Hover Background</label>
+                            <div class="input-group colorpicker-component demo demo-auto">
+                                @Html.TextBoxFor(model => model.Btn2DefaultHoverBG, getHtmlAttributes("Btn2DefaultHoverBG"))
+                                @Html.ValidationMessageFor(model => model.Btn2DefaultHoverBG)
+                                <span class="input-group-addon"><i></i></span>
+                            </div>
+                            <p id="help-block--border" class="help-block">Default background color</p>
+                        </div>
+                        <div class="col-xs-4">
+                            <label for="input--border">Hover Forecolor</label>
+                            <div class="input-group colorpicker-component demo demo-auto">
+                                @Html.TextBoxFor(model => model.Btn2DefaultHoverForecolor, getHtmlAttributes("Btn2DefaultHoverForecolor"))
+                                @Html.ValidationMessageFor(model => model.Btn2DefaultHoverForecolor)
+                                <span class="input-group-addon"><i></i></span>
+                            </div>
+                            <p id="help-block--border" class="help-block">Default forecolor</p>
+                        </div>
+                        <div class="col-xs-4">
+                            <label for="input--border">Hover Border</label>
+                            <div class="input-group colorpicker-component demo demo-auto">
+                                @Html.TextBoxFor(model => model.Borderbutton3, getHtmlAttributes("Borderbutton3"))
+                                @Html.ValidationMessageFor(model => model.Borderbutton3)
+                                <span class="input-group-addon"><i></i></span>
+                            </div>
+                            <p id="help-block--border" class="help-block">Default border color</p>
+                        </div>
+                    </div>
+                    <div class="col-xs-4">
+                        <label>Preview</label> <br />
+                        <a class="btn btn-default btn-sm" href="#" onclick="">Button 1</a>
+                        <a class="btn btn-primary btn-sm" href="#" onclick="">Button 2</a>
+                        <div class="btn-group" style="margin-top:10px;">
+                            <button class="btn btn-xs  btn-default tip-top" type="button" data-original-title="Full Add" data-placement="top" style="padding:4px 5px;">
+                                <span class="fam-world-add"></span>
+                            </button>
+                            <button class="btn btn-xs  btn-default  tip-top" type="button" data-original-title="Add Wizard" data-placement="top" style="padding:4px 5px;">
+                                <span class="fam-chart-organisation-add"></span>
+                            </button>
+                            <button type="button" class="btn btn-default btn-default collapse-data-btn tip-top" id="btnImportExcelPatient" data-original-title="Import Excel" data-placement="top" style="padding:3px 5px;" data-toggle="collapse">
+                                <span class="fam-page-white-put"></span>
+                            </button>
+                            <div class="btn btn-default  btn-default tip-top" data-original-title="Export Excel" data-placement="top" style="padding:3px 5px;">
+                                <span class="fam-page-excel"></span>
+                            </div>
+                            <button class="btn btn-default tip-top" data-placement="top" data-original-title="Show Graph" style="padding:3px 5px;" data-toggle="modal" data-target="#ShowGraphPatient">
+                                <span class="fam-chart-bar"></span>
+                            </button>
+                            <button type="button" class="btn btn-default btn-default collapse-data-btn tip-top" id="btnShowHidePatient" data-original-title="Show/Hide Column" data-placement="top" style="padding:3px 5px;">
+                                <span class="fam-table-row-delete"></span>
+                            </button>
+                            <a data-original-title="Faceted Search" class="btn btn-default btn-default tip-top" style="padding:3px 5px;"><span class="fam-zoom-in"></span></a>
+                            <div class="btn-group">
+                                <a class="btn btn-default btn-default dropdown-toggle tip-top" data-original-title="Filter-Groupby" style="padding:3px 5px;" data-toggle="dropdown" href="#">
+                                    <span class="glyphicon glyphicon-filter"></span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <h2>Table</h2>
+                <hr />
+                <div class="row">
+                    <div class="col-xs-8" style="margin:0px; padding:0px;">
+                        <div class="col-xs-4">
+                            <label for="input--border">Header BG</label>
+                            <div class="input-group colorpicker-component demo demo-auto">
+                                @Html.TextBoxFor(model => model.TableHeaderBG, getHtmlAttributes("TableHeaderBG"))
+                                @Html.ValidationMessageFor(model => model.TableHeaderBG)
+                                <span class="input-group-addon"><i></i></span>
+                            </div>
+                            <p id="help-block--border" class="help-block">Default forecolor</p>
+                        </div>
+                        <div class="col-xs-4">
+                            <label for="input--border">Header Forecolor</label>
+                            <div class="input-group colorpicker-component demo demo-auto">
+                                @Html.TextBoxFor(model => model.TableForecolor, getHtmlAttributes("TableForecolor"))
+                                @Html.ValidationMessageFor(model => model.TableForecolor)
+                                <span class="input-group-addon"><i></i></span>
+                            </div>
+                            <p id="help-block--border" class="help-block">Default forecolor</p>
+                        </div>
+                        <div class="col-xs-4">
+                            <label for="input--border">Border</label>
+                            <div class="input-group colorpicker-component demo demo-auto">
+                                @Html.TextBoxFor(model => model.TableBorder, getHtmlAttributes("TableBorder"))
+                                @Html.ValidationMessageFor(model => model.TableBorder)
+                                <span class="input-group-addon"><i></i></span>
+                            </div>
+                            <p id="help-block--border" class="help-block">Default forecolor</p>
+                        </div>
+                    </div>
+                    <div class="col-xs-4">
+                        <table class="table table-striped table-bordered table-hover table-condensed">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th><a href="#">First Name</a></th>
+                                    <th><a href="#">Last Name</a></th>
+                                    <th><a href="#">Username</a></th>
+                                </tr>
+                                <tr>
+                                    <td>1</td>
+                                    <td>Mark</td>
+                                    <td>Otto</td>
+                                    <td>mdo</td>
+                                </tr>
+                                <tr>
+                                    <td>2</td>
+                                    <td>Jacob</td>
+                                    <td>Thornton</td>
+                                    <td>fat</td>
+                                </tr>
+                                <tr>
+                                    <td>3</td>
+                                    <td>Larry</td>
+                                    <td>the Bird</td>
+                                    <td>twitter</td>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                </div>
+                <h2>Tabs</h2>
+                <hr />
+                <div class="row">
+                    <div class="col-xs-8" style="margin:0px; padding:0px;">
+                        <h2>Tabs Header</h2>
+                        <div class="col-xs-4">
+                            <label for="input--border">Heading BG</label>
+                            <div class="input-group colorpicker-component demo demo-auto">
+                                @Html.TextBoxFor(model => model.TabsHeadingBG, getHtmlAttributes("TabsHeadingBG"))
+                                @Html.ValidationMessageFor(model => model.TabsHeadingBG)
+                                <span class="input-group-addon"><i></i></span>
+                            </div>
+                            <p id="help-block--border" class="help-block">Tabs Active Forecolor</p>
+                        </div>
+                        <div class="col-xs-4">
+                            <label for="input--border">Border</label>
+                            <div class="input-group colorpicker-component demo demo-auto">
+                                @Html.TextBoxFor(model => model.TabsHeadingBorder, getHtmlAttributes("TabsHeadingBorder"))
+                                @Html.ValidationMessageFor(model => model.TabsHeadingBorder)
+                                <span class="input-group-addon"><i></i></span>
+                            </div>
+                            <p id="help-block--border" class="help-block">Border color</p>
+                        </div>
+                        <div class="clearfix"></div>
+                        <h2>a:link</h2>
+                        <div class="col-xs-4">
+                            <label for="input--border">Forecolor</label>
+                            <div class="input-group colorpicker-component demo demo-auto">
+                                @Html.TextBoxFor(model => model.TabsForecolor, getHtmlAttributes("TabsForecolor"))
+                                @Html.ValidationMessageFor(model => model.TabsForecolor)
+                                <span class="input-group-addon"><i></i></span>
+                            </div>
+                            <p id="help-block--border" class="help-block">Forecolor</p>
+                        </div>
+                        <div class="col-xs-4">
+                            <label for="input--border">background</label>
+                            <div class="input-group colorpicker-component demo demo-auto">
+                                @Html.TextBoxFor(model => model.TabsBackground, getHtmlAttributes("TabsBackground"))
+                                @Html.ValidationMessageFor(model => model.TabsBackground)
+                                <span class="input-group-addon"><i></i></span>
+                            </div>
+                            <p id="help-block--border" class="help-block">Background</p>
+                        </div>
+                        <div class="col-xs-4">
+                            <label for="input--border">Border</label>
+                            <div class="input-group colorpicker-component demo demo-auto">
+                                @Html.TextBoxFor(model => model.TabsBorder, getHtmlAttributes("TabsBorder"))
+                                @Html.ValidationMessageFor(model => model.TabsBorder)
+                                <span class="input-group-addon"><i></i></span>
+                            </div>
+                            <p id="help-block--border" class="help-block">Background</p>
+                        </div>
+                        <div class="clearfix"></div>
+                        <h2>a:hover</h2>
+                        <div class="col-xs-4">
+                            <label for="input--border">Forecolor</label>
+                            <div class="input-group colorpicker-component demo demo-auto">
+                                @Html.TextBoxFor(model => model.TabsForecolorHover, getHtmlAttributes("TabsForecolorHover"))
+                                @Html.ValidationMessageFor(model => model.TabsForecolorHover)
+                                <span class="input-group-addon"><i></i></span>
+                            </div>
+                            <p id="help-block--border" class="help-block">Forecolor</p>
+                        </div>
+                        <div class="col-xs-4">
+                            <label for="input--border">background</label>
+                            <div class="input-group colorpicker-component demo demo-auto">
+                                @Html.TextBoxFor(model => model.TabsBackgroundHover, getHtmlAttributes("TabsBackgroundHover"))
+                                @Html.ValidationMessageFor(model => model.TabsBackgroundHover)
+                                <span class="input-group-addon"><i></i></span>
+                            </div>
+                            <p id="help-block--border" class="help-block">Background</p>
+                        </div>
+                        <div class="col-xs-4">
+                            <label for="input--border">Border</label>
+                            <div class="input-group colorpicker-component demo demo-auto">
+                                @Html.TextBoxFor(model => model.TabsBorderHover, getHtmlAttributes("TabsBorderHover"))
+                                @Html.ValidationMessageFor(model => model.TabsBorderHover)
+                                <span class="input-group-addon"><i></i></span>
+                            </div>
+                            <p id="help-block--border" class="help-block">Background</p>
+                        </div>
+                        <div class="clearfix"></div>
+                        <h2>a:active</h2>
+                        <div class="col-xs-4">
+                            <label for="input--border">Active Forecolor</label>
+                            <div class="input-group colorpicker-component demo demo-auto">
+                                @Html.TextBoxFor(model => model.TabsActiveforecolor, getHtmlAttributes("TabsActiveforecolor"))
+                                @Html.ValidationMessageFor(model => model.TabsActiveforecolor)
+                                <span class="input-group-addon"><i></i></span>
+                            </div>
+                            <p id="help-block--border" class="help-block">Tabs Active Forecolor</p>
+                        </div>
+                        <div class="col-xs-4">
+                            <label for="input--border">Active background</label>
+                            <div class="input-group colorpicker-component demo demo-auto">
+                                @Html.TextBoxFor(model => model.TabsActiveBackground, getHtmlAttributes("TabsActiveBackground"))
+                                @Html.ValidationMessageFor(model => model.TabsActiveBackground)
+                                <span class="input-group-addon"><i></i></span>
+                            </div>
+                            <p id="help-block--border" class="help-block">Tabs Active background</p>
+                        </div>
+                        <div class="col-xs-4">
+                            <label for="input--border">Border</label>
+                            <div class="input-group colorpicker-component demo demo-auto">
+                                @Html.TextBoxFor(model => model.TabsActiveBorder, getHtmlAttributes("TabsActiveBorder"))
+                                @Html.ValidationMessageFor(model => model.TabsActiveBorder)
+                                <span class="input-group-addon"><i></i></span>
+                            </div>
+                            <p id="help-block--border" class="help-block">Border color</p>
+                        </div>
+                        <div class="col-xs-4">
+                            <label for="input--border">Top Border</label>
+                            <div class="input-group colorpicker-component demo demo-auto">
+                                @Html.TextBoxFor(model => model.TabsActiveTopborder, getHtmlAttributes("TabsActiveTopborder"))
+                                @Html.ValidationMessageFor(model => model.TabsActiveTopborder)
+                                <span class="input-group-addon"><i></i></span>
+                            </div>
+                            <p id="help-block--border" class="help-block">Top border color</p>
+                        </div>
+                    </div>
+                    <div class="col-xs-4">
+                        <ul class="nav nav-tabs">
+                            <li class="active"><a href="#Tab1" data-toggle="tab"> Tab 1</a></li>
+                            <li class=""><a href="#Tab2" data-toggle="tab"> Tab 2</a></li>
+                            <li><a href="#Tab3" data-toggle="tab"> Tab 3</a></li>
+                        </ul>
+                        <div class="col-md-12 col-sm-12 col-xs-12" style="padding:0px; margin:0px;">
+                            <div class="panel panel-default AppForm">
+                                <div class="panel-body">
+                                    <div class="tab-content">
+                                        <div class="tab-pane fade active in" id="Tab1">Tab 1</div>
+                                        <div class="tab-pane fade" id="Tab2">Tab 2</div>
+                                        <div class="tab-pane fade" id="Tab3">Tab 3</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div style="bottom:0px; position:fixed; background:#ffffff; width:100%; padding:10px; margin-left:-30px; border-top:solid 2px #dddddd; z-index:3000;">
+                    @Html.ActionLink("Back to Admin Settings", "Index", "Admin", null, new { @class = "btn btn-default btn-sm" })
+                    <input type="submit" name="command" value="Save" class="btn btn-primary btn-sm" />
+                    <input type="hidden" name="hdncommand" value="" />
+                    @Html.ActionLink("Cancel", "Create", "Theme", null, new { @class = "btn btn-default btn-sm" })
+                </div>
+            </div>
+            <!-- /tab-content --><br />
+        </div>
+    }
+</div>

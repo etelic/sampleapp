@@ -1,0 +1,12 @@
+﻿@model GeneratorBase.MVC.Models.Theme
+@{
+    ViewBag.Title = " Edit Theme";
+}
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-title">
+            <i class="glyphicon glyphicon-thumbs-up text-primary" style="margin-bottom:-20px;"></i>Theme <i class="glyphicon glyphicon-chevron-right small"></i>  <span>Edit</span>
+        </h1>
+    </div>
+</div>
+@Html.Partial("~/Views/Theme/EditPartial.cshtml", Model)

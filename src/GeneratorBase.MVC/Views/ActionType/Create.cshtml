@@ -1,0 +1,14 @@
+﻿@model GeneratorBase.MVC.Models.ActionType
+@{
+    ViewBag.Title = "Create Action Type";
+}
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-title">
+            <i class="glyphicon glyphicon-save text-primary"></i> Action Type  <i class="glyphicon glyphicon-chevron-right small"></i> <span> Add Action Type </span>
+        </h1>
+        <h2 class="text-primary">@Html.DisplayFor(model => model.DisplayValue)</h2>
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+@Html.Partial("~/Views/ActionType/CreatePartial.cshtml", Model)

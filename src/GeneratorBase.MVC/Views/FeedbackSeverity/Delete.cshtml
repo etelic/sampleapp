@@ -1,0 +1,45 @@
+﻿@model GeneratorBase.MVC.Models.FeedbackSeverity
+@{
+    ViewBag.Title = "Delete Feedback Severity";
+}
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-title">
+            <i class="glyphicon glyphicon-hand-down text-primary"></i>Delete Feedback Severity  <i class="glyphicon glyphicon-chevron-right small"></i> 
+            <span style="color:red;">  Are you sure you want to delete this?</span>
+        </h1>
+        <h2 class="text-primary">@Html.DisplayFor(model => model.DisplayValue)</h2>
+    </div>
+</div>
+<div class="row">
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(model => model.ConcurrencyKey)
+    @Html.HiddenFor(model => model.Id)
+    <dl class="dl-horizontal">
+		  <dt>
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+		<dd class="clearfix">
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+		  <dt>
+            @Html.DisplayNameFor(model => model.Description)
+        </dt>
+		<dd class="clearfix">
+            @Html.DisplayFor(model => model.Description)
+        </dd>
+    </dl>
+	<br/>
+        <div class="row deletefix">
+				<div class="col-md-12 col-sm-12 col-xs-12">
+        @Html.ActionLink("Back", "Index", null, new { @class = "btn btn-default btn-sm" })
+	@if (User.Identity.IsAuthenticated && User != null && User.CanDelete("FeedbackSeverity"))
+     {
+			<input type="submit" value="Delete" class="btn btn-primary btn-sm" /> 
+	}
+        </div>
+            </div>
+    }
+</div>

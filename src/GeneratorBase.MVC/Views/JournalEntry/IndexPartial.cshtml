@@ -1,0 +1,327 @@
+﻿@model PagedList.IPagedList<GeneratorBase.MVC.Models.JournalEntry>
+@using PagedList.Mvc;
+@{
+    var ActionNameUrl = "Index";
+    if (HttpContext.Current.Request.RequestContext.RouteData.Values["action"].ToString().ToUpper() == "FSEARCH")
+    {
+        ActionNameUrl = "FSearch";
+    }
+}
+<script>
+    function EntityFilterJE(EntityName, url, dataurl) {
+        var FilterHostingEntityID = (dataurl.indexOf("FirstCall=True") > 0) ? undefined : getHostingEntityID(dataurl)["FilterHostingEntityID"];
+        var html = "<ul class=\"nav nav-tabs\">";
+        $.ajax({
+            url: url,
+            type: "GET",
+            cache: false,
+            dataType: "json",
+            success: function (result) {
+                var firstClick = "";
+                for (i in result) {
+                    if (result[i].Id == undefined) continue;
+                    var isactive = false;
+                    if (FilterHostingEntityID != undefined) {
+                        if (result[i].Id == FilterHostingEntityID) {
+                            html += "<li name=\"" + result[i].Id + "\" class=\"active\">";
+                            isactive = true;
+                        }
+                        else
+                            html += "<li name=\"" + result[i].Id + "\">";
+                    } else {
+                        if (i == 0) {
+                            html += "<li name=\"" + result[i].Id + "\" class=\"active\">";
+                            isactive = true;
+                        }
+                        else
+                            html += "<li name=\"" + result[i].Id + "\">";
+                    }
+                    html += "<a data-toggle=\"tab\"  onclick=\"CancelSearch('" + EntityName + "','" + dataurl + "&AssociatedType=" + result[i].Id + "')\">" + result[i].Name + "</a>";
+                    html += "</li>";
+                    if (isactive)
+                        firstClick = dataurl + "&AssociatedType=" + result[i].Id;
+                }
+                html += "</ul>";
+                $("#dv" + EntityName + "Filter").html($(html));
+                if (firstClick.length > 0 && firstClick.indexOf("FirstCall=True") > 0) {
+                    CancelSearch(EntityName, firstClick.replace("FirstCall=True", ""));
+                }
+            }
+        });
+    }
+</script>
+<div id="JournalEntry">
+    @if (ViewBag.ColumnMapping == null && ViewBag.ImportError == null && ViewBag.ConfirmImportData == null)
+    {
+        <style>
+            .table-responsive > .fixed-column {
+                position: absolute;
+                display: block;
+                width: auto;
+                border: 0px solid transparent;
+                border-top: 1px solid #c3ddec;
+            }
+            .fixed-column th {
+                background: #fff;
+            }
+            .fixed-column td {
+                background: #fff;
+            }
+        </style>
+        <script type="text/javascript">
+            $(document).ready(function () {
+                $(".pagination a").click(function (e) {
+                    PaginationClick(e, 'JournalEntry')
+                });
+                $("#SearchStringJournalEntry").keypress(function (e) {
+                    if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
+                        $("#JournalEntrySearch").bind("click", (function () {
+                        }));
+                        $('#JournalEntrySearch').trigger("click");
+                        return false;
+                    }
+                })
+            });
+        </script>
+        @functions {
+            object getSortHtmlAttributes(string sortby, bool IsPaging, int? page, bool? IsExport)
+            {
+                if (IsPaging)
+                {
+                    return new
+                    {
+                        page,
+                        sortBy = ViewBag.CurrentSort,
+                        isAsc = ViewBag.IsAsc,
+                        currentFilter = ViewBag.CurrentFilter,
+                        HostingEntity = @Convert.ToString(ViewData["HostingEntity"]),
+                        AssociatedType = @Convert.ToString(ViewData["AssociatedType"]),
+                        HostingEntityID = ViewData["HostingEntityID"],
+                        IsExport = IsExport,
+                        FSFilter = ViewBag.FSFilter == null ? "Fsearch" : ViewBag.FSFilter,
+                        IsFilter = @Convert.ToBoolean(ViewData["IsFilter"]),
+                        search = Request.QueryString["search"],
+                    };
+                }
+                else
+                {
+                    return new
+                    {
+                        sortBy = sortby,
+                        currentFilter = Request.QueryString["currentFilter"],
+                        searchString = Request.QueryString["searchString"],
+                        isAsc = (ViewBag.IsAsc == "ASC" ? "DESC" : ""),
+                        page = ViewBag.Pages,
+                        HostingEntity = @Convert.ToString(ViewData["HostingEntity"]),
+                        HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),
+                        AssociatedType = @Convert.ToString(ViewData["AssociatedType"]),
+                        IsExport = IsExport,
+                        FSFilter = ViewBag.FSFilter == null ? "Fsearch" : ViewBag.FSFilter,
+                        IsFilter = @Convert.ToBoolean(ViewData["IsFilter"]),
+                        search = Request.QueryString["search"],
+                    };
+                }
+            }
+        }
+        <div class="row">
+            <div class="col-md-12 col-sm-12 col-sx-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading clearfix" style="margin:0px; padding:8px;">
+                        <div class="btn-group">
+                            <div class="btn btn-default  btn-default tip-top" data-original-title="Export Excel" data-placement="top" style="padding:3px 5px;" onclick=@Html.Raw("NavigateToUrl('" + Url.Action(ActionNameUrl, "JournalEntry", getSortHtmlAttributes(null, false, null, true), null) + "');")>
+                                <span class="fam-page-excel"></span>
+                            </div>
+                            @if (ViewData["HostingEntity"] == null || Convert.ToBoolean(ViewData["IsFilter"]) == true)
+                            {
+                                <div class="btn-group">
+                                    <a class="btn btn-default btn-default dropdown-toggle tip-top" data-original-title="Filter-Groupby" style="padding:3px 5px;" data-toggle="dropdown" href="#">
+                                        <span class="glyphicon glyphicon-filter"></span>
+                                    </a>
+                                    <ul class="dropdown-menu" role="menu">
+                                        <li>
+                                            <a id="fltEntityName" data-placement="top" onclick=@Html.Raw("EntityFilterJE('JournalEntry','" + Url.Action("GetAllValue", "JournalEntry", new { HostingEntityName = "EntityName" }) + "','" + Html.Raw(Url.Action("Index", "JournalEntry", new { FirstCall = true, FilterHostingEntityID = ViewData["HostingEntityID"], IsFilter = true, HostingEntity = "EntityName", ClearSearchTimeStamp = DateTime.Now })) + "');")>
+                                                <span>Entity Name</span>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a id="fltType" data-placement="top" onclick=@Html.Raw("EntityFilterJE('JournalEntry','" + Url.Action("GetAllValue", "JournalEntry", new { HostingEntityName = "Type" }) + "','" + Html.Raw(Url.Action("Index", "JournalEntry", new { FirstCall = true, FilterHostingEntityID = ViewData["HostingEntityID"], IsFilter = true, HostingEntity = "Type", ClearSearchTimeStamp = DateTime.Now })) + "');")>
+                                                <span>Audit Type</span>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a id="fltUserName" data-placement="top" onclick=@Html.Raw("EntityFilterJE('JournalEntry','" + Url.Action("GetAllValue", "JournalEntry", new { HostingEntityName = "UserName" }) + "','" + Html.Raw(Url.Action("Index", "JournalEntry", new { FirstCall = true, FilterHostingEntityID = ViewData["HostingEntityID"], IsFilter = true, HostingEntity = "UserName", ClearSearchTimeStamp = DateTime.Now })) + "');")>
+                                                <span>User</span>
+                                            </a>
+                                        </li>
+                                        <li><span class="label label-primary pull-left filterLabel" style="margin-left:20px;">@Html.ActionLink("Clear", "Index")</span></li>
+                                    </ul>
+                                </div>
+                            }
+                        </div>
+                        <div class="pull-right" style="width:200px;">
+                            <div class="input-group">
+                                @Html.TextBox("SearchStringJournalEntry", ViewBag.CurrentFilter as string, null, new { @class = "form-control fixsearchbox", @placeholder = "Search" })
+                                <div class="input-group-btn">
+                                    <a id="JournalEntrySearch" onclick="SearchClick(event, 'JournalEntry', '@Html.Raw(Url.Action("Index", "JournalEntry", new { IsFilter = ViewData["IsFilter"], IsDeepSearch = false, searchString = "_SearchString", HostingEntity = Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]), SearchTimeStamp = DateTime.Now }))');" data-original-title="Grid Search" class="btn btn-default btn-default tip-top" style="padding:3px 5px;"><span class="fam-zoom"></span></a>
+                                    <button id="JournalEntryCancel" type="button" class="btn btn-default btn-default collapse-data-btn tip-top" onclick="CancelSearch('JournalEntry','@Html.Raw(Url.Action("Index", "JournalEntry", new { IsFilter = ViewData["IsFilter"], HostingEntity = Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]), ClearSearchTimeStamp = DateTime.Now }))')" data-original-title="Clear Search" data-placement="top" style="padding:3px 5px;">
+                                        <span class="fam-delete"></span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel-body" style="margin:0px; padding:8px;">
+                        <div class="table-responsive" style="overflow-x:auto;">
+                            <table class="table table-striped table-bordered table-hover table-condensed">
+                                <tr>
+                                    @if (User.CanView("JournalEntry", "EntityName"))
+                                    {
+                                        <th class="col2">
+                                            @Html.ActionLink("EntityName", ActionNameUrl, "JournalEntry", getSortHtmlAttributes("EntityName", false, null, false), new { @onclick = "SortLinkClick(event,'JournalEntry');" })
+                                            @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "EntityName")
+                                            {<i class="fa fa-sort-desc"></i>}
+                                            @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "EntityName")
+                                            {<i class="fa fa-sort-asc"></i>}
+                                        </th>
+                                    }
+                                    @if (User.CanView("JournalEntry", "Type"))
+                                    {
+                                        <th class="col2">
+                                            @Html.ActionLink("Type", ActionNameUrl, "JournalEntry", getSortHtmlAttributes("Type", false, null, false), new { @onclick = "SortLinkClick(event,'JournalEntry');" })
+                                            @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "Type")
+                                            {<i class="fa fa-sort-desc"></i>}
+                                            @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "Type")
+                                            {<i class="fa fa-sort-asc"></i>}
+                                        </th>
+                                    }
+                                    @if (User.CanView("JournalEntry", "DateTimeOfEntry"))
+                                    {
+                                        <th class="col2">
+                                            @Html.ActionLink("DateTimeOfEntry", ActionNameUrl, "JournalEntry", getSortHtmlAttributes("DateTimeOfEntry", false, null, false), new { @onclick = "SortLinkClick(event,'JournalEntry');" })
+                                            @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "DateTimeOfEntry")
+                                            {<i class="fa fa-sort-desc"></i>}
+                                            @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "DateTimeOfEntry")
+                                            {<i class="fa fa-sort-asc"></i>}
+                                        </th>
+                                    }
+                                    @if (User.CanView("JournalEntry", "RecordInfo"))
+                                    {
+                                        <th class="col2">
+                                            @Html.ActionLink("RecordInfo", ActionNameUrl, "JournalEntry", getSortHtmlAttributes("RecordInfo", false, null, false), new { @onclick = "SortLinkClick(event,'JournalEntry');" })
+                                            @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "RecordInfo")
+                                            {<i class="fa fa-sort-desc"></i>}
+                                            @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "RecordInfo")
+                                            {<i class="fa fa-sort-asc"></i>}
+                                        </th>
+                                    }@if (User.CanView("JournalEntry", "UserName"))
+                                    {
+                                        <th class="col2">
+                                            @Html.ActionLink("UserName", ActionNameUrl, "JournalEntry", getSortHtmlAttributes("UserName", false, null, false), new { @onclick = "SortLinkClick(event,'JournalEntry');" })
+                                            @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "UserName")
+                                            {<i class="fa fa-sort-desc"></i>}
+                                            @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "UserName")
+                                            {<i class="fa fa-sort-asc"></i>}
+                                        </th>
+                                    }@if (User.CanView("JournalEntry", "PropertyName"))
+                                    {
+                                        <th class="col2">
+                                            @Html.ActionLink("PropertyName", ActionNameUrl, "JournalEntry", getSortHtmlAttributes("PropertyName", false, null, false), new { @onclick = "SortLinkClick(event,'JournalEntry');" })
+                                            @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "PropertyName")
+                                            {<i class="fa fa-sort-desc"></i>}
+                                            @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "PropertyName")
+                                            {<i class="fa fa-sort-asc"></i>}
+                                        </th>
+                                    }@if (User.CanView("JournalEntry", "OldValue"))
+                                    {
+                                        <th class="col2">
+                                            @Html.ActionLink("OldValue", ActionNameUrl, "JournalEntry", getSortHtmlAttributes("OldValue", false, null, false), new { @onclick = "SortLinkClick(event,'JournalEntry');" })
+                                            @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "OldValue")
+                                            {<i class="fa fa-sort-desc"></i>}
+                                            @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "OldValue")
+                                            {<i class="fa fa-sort-asc"></i>}
+                                        </th>
+                                    }
+                                    @if (User.CanView("JournalEntry", "NewValue"))
+                                    {
+                                        <th class="col2">
+                                            @Html.ActionLink("NewValue", ActionNameUrl, "JournalEntry", getSortHtmlAttributes("NewValue", false, null, false), new { @onclick = "SortLinkClick(event,'JournalEntry');" })
+                                            @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "NewValue")
+                                            {<i class="fa fa-sort-desc"></i>}
+                                            @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "NewValue")
+                                            {<i class="fa fa-sort-asc"></i>}
+                                        </th>
+                                    }
+                                    <th>View</th>
+                                </tr>
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        @if (User.CanView("JournalEntry", "EntityName"))
+                                        {
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.EntityName)
+                                            </td>
+                                        }
+                                        @if (User.CanView("JournalEntry", "Type"))
+                                        {
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.Type)
+                                            </td>
+                                        }@if (User.CanView("JournalEntry", "DateTimeOfEntry"))
+                                        {
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.DateTimeOfEntry)
+                                            </td>
+                                        }@if (User.CanView("JournalEntry", "RecordInfo"))
+                                        {
+                                            <td>
+                                                @Html.Raw(HttpUtility.HtmlDecode(item.RecordInfo))
+                                            </td>
+                                        }@if (User.CanView("JournalEntry", "UserName"))
+                                        {
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.UserName)
+                                            </td>
+                                        }@if (User.CanView("JournalEntry", "PropertyName"))
+                                        {
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.PropertyName)
+                                            </td>
+                                        }@if (User.CanView("JournalEntry", "OldValue"))
+                                        {
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.OldValue)
+                                            </td>
+                                        }@if (User.CanView("JournalEntry", "NewValue"))
+                                        {
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.NewValue)
+                                            </td>
+                                        }@if (User.CanView("JournalEntry", "EntityName"))
+                                        {
+                                            <td>
+                                                @Html.ActionLink("View", "Edit", @Html.DisplayFor(modelItem => item.EntityName).ToString(), new { id = @Html.DisplayFor(modelItem => item.RecordId) }, new { @class = "label label-primary" })
+                                            </td>
+                                        }
+                                    </tr>
+                                }
+                            </table>
+                            @if (Model.Count > 0)
+                            {
+                                <div id="pagination">
+                                    @Html.PagedListPager(Model, page => Url.Action(ActionNameUrl, "JournalEntry", getSortHtmlAttributes(null, true, page, false)))
+                                    <div class="fixPageSize">
+                                        Page Size :
+                                        @Html.DropDownList("PageSize", new SelectList(new Dictionary<string, int> { { "10", 10 }, { "20", 20 }, { "50", 50 }, { "100", 100 } }, "Key", "Value"), new { @id = "pagesizelistJournalEntry", @onchange = "pagesizelistChange(event,'JournalEntry')", @Url = Html.Raw(@Url.Action(ActionNameUrl, "JournalEntry", getSortHtmlAttributes(ViewBag.CurrentSort, ViewBag.Pages == 1 ? false : true, ViewBag.Pages <= Model.PageCount ? ViewBag.Pages : 1, false), null)) })
+                                        <span style="text-align:right;"> Total Count: @(Model.TotalItemCount)</span>
+                                    </div>
+                                </div>
+                            }
+                            <br />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>

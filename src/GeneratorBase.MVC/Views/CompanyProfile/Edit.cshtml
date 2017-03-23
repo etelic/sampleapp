@@ -1,0 +1,212 @@
+﻿@model GeneratorBase.MVC.Models.CompanyProfile
+@{
+    ViewBag.Title = "Edit Company Profile";
+    // Layout = null;
+}
+@functions {
+    object getHtmlAttributes(string Property)
+    {
+        return new { @class = "form-control" };
+    }
+}
+<link href='@Url.Content("~/Scripts/summernote.css")' rel="stylesheet" type="text/css" />
+<script src="@Url.Content("~/Scripts/summernote.js")" type="text/javascript"></script>
+<script type="text/javascript">
+    function initHtmlEditor() {
+        $('#summernote').summernote();
+    }
+    $(document).ready(function () {
+        initHtmlEditor();
+    });
+</script>
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-title">
+            <i class="glyphicon glyphicon-edit text-primary"></i> Edit Company Profile  <i class="glyphicon glyphicon-chevron-right small"></i> <span>Edit</span>
+        </h1>
+    </div>
+</div>
+<div class="tabbable responsive">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="#Details" data-toggle="tab">Company Information</a></li>
+    </ul>
+    <div class="tab-content">
+        <div class="tab-pane fade in active" id="Details">
+            @using (Html.BeginForm("Edit", "CompanyProfile", FormMethod.Post, new { enctype = "multipart/form-data" }))
+            {
+                @Html.AntiForgeryToken()
+                <div class="col-md-12 col-sm-12 col-xs-12" style="padding:0px; margin:0px;">
+                    <div class="panel panel-default AppForm">
+                        <div class="panel-body">
+                            <div class="row">
+                                @Html.ValidationSummary(true)
+                                <div class='col-sm-6 col-md-6 col-xs-12'>
+                                    <div class='form-group'>
+                                        <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.Name) <span class="text-danger-reg">*</span> </label>
+                                        <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                            @Html.TextBoxFor(model => model.Name, getHtmlAttributes("Name"))
+                                            @Html.ValidationMessageFor(model => model.Name)
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class='col-sm-6 col-md-6 col-xs-12'>
+                                    <div class='form-group'>
+                                        <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.Email) <span class="text-danger-reg">*</span> </label>
+                                        <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                            @Html.TextBoxFor(model => model.Email, getHtmlAttributes("Email"))
+                                            @Html.ValidationMessageFor(model => model.Email)
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class='col-sm-6 col-md-6 col-xs-12'>
+                                    <div class='form-group'>
+                                        <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.Address) </label>
+                                        <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                            @Html.TextBoxFor(model => model.Address, getHtmlAttributes("Address"))
+                                            @Html.ValidationMessageFor(model => model.Address)
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class='col-sm-6 col-md-6 col-xs-12'>
+                                    <div class='form-group'>
+                                        <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.Country) </label>
+                                        <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                            @Html.TextBoxFor(model => model.Country, getHtmlAttributes("Country"))
+                                            @Html.ValidationMessageFor(model => model.Country)
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class='col-sm-6 col-md-6 col-xs-12'>
+                                    <div class='form-group'>
+                                        <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.State) </label>
+                                        <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                            @Html.TextBoxFor(model => model.State, getHtmlAttributes("State"))
+                                            @Html.ValidationMessageFor(model => model.State)
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class='col-sm-6 col-md-6 col-xs-12'>
+                                    <div class='form-group'>
+                                        <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.City) </label>
+                                        <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                            @Html.TextBoxFor(model => model.City, getHtmlAttributes("City"))
+                                            @Html.ValidationMessageFor(model => model.City)
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class='col-sm-6 col-md-6 col-xs-12'>
+                                    <div class='form-group'>
+                                        <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.Zip) </label>
+                                        <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                            @Html.TextBoxFor(model => model.Zip, getHtmlAttributes("Zip"))
+                                            @Html.ValidationMessageFor(model => model.Zip)
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class='col-sm-6 col-md-6 col-xs-12'>
+                                    <div class='form-group'>
+                                        <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.ContactNumber1) </label>
+                                        <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                            @Html.TextBoxFor(model => model.ContactNumber1, getHtmlAttributes("ContactNumber1"))
+                                            @Html.ValidationMessageFor(model => model.ContactNumber1)
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class='col-sm-6 col-md-6 col-xs-12'>
+                                    <div class='form-group'>
+                                        <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.ContactNumber2)</label>
+                                        <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                            @Html.TextBoxFor(model => model.ContactNumber2, getHtmlAttributes("ContactNumber2"))
+                                            @Html.ValidationMessageFor(model => model.ContactNumber2)
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class='col-sm-6 col-md-6 col-xs-12'>
+                                    <div class='form-group'>
+                                        <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.logo) </label>
+                                        <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                            <div style="position:relative;">
+                                                @Html.TextBoxFor(model => model.logo, new { @class = "hidden" })
+                                                <a class='btn btn-primary btnupload' href='javascript:;'>
+                                                    Upload File
+                                                    <input id="logo" type="file" style='position:absolute;z-index:2;top:0;left:0;filter: alpha(opacity=0);-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";opacity:0;background-color:transparent;color:transparent;width:105px;' name="logo" onchange='$("#upload-file-infologo").html($(this).val());'>
+                                                </a>
+                                                &nbsp;
+                                                <span class='label uploadlblFix' id="upload-file-infologo"></span>
+                                            </div><img src="@(Url.Content("~/") + "/logo/logo.gif")" width="50px" height="50px" alt="NA" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12 col-sm-12 col-xs-12">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading clearfix">
+                                            <i class="icon-calendar"></i>
+                                            <h3 class="panel-title">Set SMTP Details</h3>
+                                        </div>
+                                        <div class="panel-body">
+                                            <div class='col-sm-6 col-md-6 col-xs-12'>
+                                                <div class='form-group'>
+                                                    <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.SMTPServer) <span class="text-danger-reg">*</span> </label>
+                                                    <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                        @Html.TextBoxFor(model => model.SMTPServer, getHtmlAttributes("SMTPServer"))
+                                                        @Html.ValidationMessageFor(model => model.SMTPServer)
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class='col-sm-6 col-md-6 col-xs-12'>
+                                                <div class='form-group'>
+                                                    <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.SMTPPassword) <span class="text-danger-reg">*</span> </label>
+                                                    <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                        @Html.TextBoxFor(model => model.SMTPPassword, new { @class = "form-control", @type = "Password" })
+                                                        @Html.ValidationMessageFor(model => model.SMTPPassword)
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class='col-sm-6 col-md-6 col-xs-12'>
+                                                <div class='form-group'>
+                                                    <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.SMTPPort) <span class="text-danger-reg">*</span> </label>
+                                                    <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                        @Html.TextBoxFor(model => model.SMTPPort, getHtmlAttributes("SMTPPort"))
+                                                        @Html.ValidationMessageFor(model => model.SMTPPort)
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class='col-sm-6 col-md-6 col-xs-12'>
+                                                <div class='form-group'>
+                                                    <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.SSL)  </label>
+                                                    <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                        @Html.EditorFor(model => model.SSL, getHtmlAttributes("SSL"))
+                                                        @Html.ValidationMessageFor(model => model.SSL)
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12 col-sm-12 col-xs-12">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading clearfix">
+                                            <i class="icon-calendar"></i>
+                                            <h3 class="panel-title">About Company</h3>
+                                        </div>
+                                        <div class="panel-body" style="margin:0px; padding:8px;">
+                                            @Html.TextAreaFor(model => model.AboutCompany, new { @id = "summernote" })
+                                            @Html.ValidationMessageFor(model => model.AboutCompany)
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @Html.ActionLink("Back to Admin Settings", "Index", "Admin", null, new { @class = "btn btn-default btn-sm" })
+                <input type="submit" value="Save" class="btn btn-primary btn-sm" />
+            }
+        </div>
+    </div><!-- /tab-content --><br />
+</div>
+

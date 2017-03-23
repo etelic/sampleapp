@@ -1,0 +1,11 @@
+﻿@model GeneratorBase.MVC.Models.SelectUserEditorViewModel
+@{
+    var checkboxHtmlAttributes = new Dictionary<string, object>
+    {{"attibute1", "value1"},
+    {"attribute2", "value2"}};
+}
+<tr>
+    @Html.HiddenFor(model => model.UserName)
+    <td>@Html.CheckBoxFor(model => model.Selected, checkboxHtmlAttributes)</td>
+    <td>@Html.DisplayFor(model => model.UserName)</td>
+</tr>

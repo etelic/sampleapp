@@ -1,0 +1,99 @@
+﻿@model GeneratorBase.MVC.Models.SelectPermissionEditorViewModel
+@Html.HiddenFor(model => model.EntityName)
+@{
+    if (Model.IsAssociatedWithUser)
+    {
+        ViewBag.cmbUserAssociation = new SelectList(Model.UserAssociationList, "Name", "DisplayName"); ;
+    }
+    //code for verb action security
+    if (Model.IsHaveVerbs)
+    {
+        ViewBag.cmbEntityVerb = new SelectList(Model.EntityVerbsList, "Name", "DisplayName"); ;
+    }
+    //
+    var ModelEntity = ModelReflector.Entities.FirstOrDefault(p => p.Name == Model.EntityName);
+    var DispName = Model.EntityName;
+    if (ModelEntity != null)
+    {
+        DispName = ModelEntity.DisplayName;
+    }
+}
+<tr>
+    <td>
+        @Html.HiddenFor(model => model.EntityName)
+        @DispName
+    </td>
+    <td style="text-align:center">
+        @Html.CheckBoxFor(model => model.CanAdd, new { @class = "fooAdd" })
+    </td>
+    <td style="text-align:center">
+        @Html.CheckBoxFor(model => model.CanEdit, new { @class = "fooEdit" })
+    </td>
+    <td style="text-align:center">
+        @Html.CheckBoxFor(model => model.CanDelete, new { @class = "fooDelete" })
+    </td>
+    <td style="text-align:center">
+        @Html.CheckBoxFor(model => model.CanView, new { @class = "fooView" })
+    </td>
+    @*code for verb action security*@
+    <td style="text-align:center" id='tdVerbs_@Model.EntityName'>
+
+        @if (Model.IsHaveVerbs)
+        {
+            @Html.DropDownList("cmbEntityVerb", null, new { @onchange = "CheckIsVerbs(this);", @Verbent = Model.EntityName, @multiple = "multiple" })
+            @Html.HiddenFor(model => model.Verbs, new { @id = Model.EntityName + "Verbstxt", @class = "classuser" })
+        }
+
+    </td>
+
+    <td style="text-align:center" id='td_@Model.EntityName'>
+        @if (Model.IsAssociatedWithUser)
+        {
+            @Html.DropDownList("cmbUserAssociation", null, new { @onchange = "CheckIsOwner(this);", @ent = Model.EntityName, @multiple = "multiple" })
+            @Html.CheckBoxFor(model => model.IsOwner, new { @id = Model.EntityName + "Owner", @class = "foo1 hidden" })
+            @Html.HiddenFor(model => model.UserAssociation, new { @id = Model.EntityName + "Ownertxt", @class = "classuser" })
+        }
+    </td>
+    <td style="text-align:center">
+        @if (Model.IsSelfRegistrartion)
+        {
+            @Html.CheckBoxFor(model => model.SelfRegistration)
+        }
+    </td>
+</tr>
+@if (Model.IsAssociatedWithUser)
+{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var roles = "@Model.UserAssociation".split(",");
+            var eleRoles1 = $('select[multiple=multiple]', '#td_@Model.EntityName');
+            var eleRoles = document.getElementById($(eleRoles1).attr("id"));
+            if (roles != undefined)
+                for (i = 0; i < roles.length; i++) {
+                    for (var o = 0; o < eleRoles.options.length; o++) {
+                        if (eleRoles.options[o].value == roles[i])
+                            eleRoles.options[o].selected = true;
+                    }
+                }
+        });
+    </script>
+}
+    @*code for verb action security*@
+    @if (Model.IsHaveVerbs)
+    {
+        <script type="text/javascript">
+            $(document).ready(function () {
+                var verbs = "@Model.Verbs".split(",");
+
+                var eleVerbs1 = $('select[multiple=multiple]', '#tdVerbs_@Model.EntityName');
+                var eleverbs = document.getElementById($(eleVerbs1).attr("id"));
+                if (verbs != undefined)
+                    for (i = 0; i < verbs.length; i++) {
+                        for (var o = 0; o < eleverbs.options.length; o++) {
+                            if (eleverbs.options[o].value == verbs[i])
+                                eleverbs.options[o].selected = true;
+                        }
+                    }
+            });
+        </script>
+    }

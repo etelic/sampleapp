@@ -1,0 +1,77 @@
+﻿@model PagedList.IPagedList<GeneratorBase.MVC.Models.T_StudentPerformance>
+@using PagedList.Mvc;
+@{
+    ViewBag.Title = "Index";
+    Layout = null;
+    Response.ContentType = "application/vnd.ms-excel";
+    Response.AddHeader("Content-Disposition", "attachment; filename=StudentPerformance.xls");
+}
+                    <table>
+                            <tr>
+@if(User.CanView("T_StudentPerformance","T_StudentCodeID"))
+{
+		<th  @(Convert.ToString(ViewData["HostingEntity"]) == "T_Student"?"hidden":"")>Student</th>
+}
+@if(User.CanView("T_StudentPerformance","T_Mark1"))
+{
+		<th>Mark1</th>
+}
+@if(User.CanView("T_StudentPerformance","T_Mark2"))
+{
+		<th>Mark2</th>
+}
+@if(User.CanView("T_StudentPerformance","T_TotalMarks"))
+{
+		<th>Total Marks</th>
+}
+@if(User.CanView("T_StudentPerformance","T_Grade"))
+{
+		<th>Grade</th>
+}
+@if(User.CanView("T_StudentPerformance","T_Remarks"))
+{
+		<th>Remarks</th>
+}
+    </tr>
+@foreach (var item in Model) {
+    <tr>
+	@if(User.CanView("T_StudentPerformance","T_StudentCodeID"))
+{
+		<td @(Convert.ToString(ViewData["HostingEntity"]) == "T_Student"?"hidden":"")>
+            @Html.DisplayFor(modelItem => item.t_studentcode.DisplayValue)
+        </td>
+}
+@if(User.CanView("T_StudentPerformance","T_Mark1"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.T_Mark1)
+        </td>
+}
+@if(User.CanView("T_StudentPerformance","T_Mark2"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.T_Mark2)
+        </td>
+}
+@if(User.CanView("T_StudentPerformance","T_TotalMarks"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.T_TotalMarks)
+        </td>
+}
+@if(User.CanView("T_StudentPerformance","T_Grade"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.T_Grade)
+        </td>
+}
+@if(User.CanView("T_StudentPerformance","T_Remarks"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.T_Remarks)
+        </td>
+}
+                                </tr>
+                            }
+</table>
+               

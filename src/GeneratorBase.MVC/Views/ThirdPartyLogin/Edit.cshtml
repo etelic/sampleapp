@@ -1,0 +1,132 @@
+﻿@model GeneratorBase.MVC.Models.ThirdPartyLogin
+@{
+    ViewBag.Title = "Edit Third Party Login Settings";
+}
+@functions {
+    object getHtmlAttributes(string Property)
+    {
+        return new { @class = "form-control" };
+    }
+}
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-title">
+            <i class="glyphicon glyphicon-edit text-primary"></i> Third Party Login Settings Information  <i class="glyphicon glyphicon-chevron-right small"></i> <span>Edit</span>
+        </h1>
+    </div>
+</div>
+@using (Html.BeginForm("Edit", "ThirdPartyLogin", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="col-md-12 col-sm-12 col-xs-12" style="margin:0px; padding:0px;">
+        <div class="panel panel-default">
+            <div class="panel-heading clearfix">
+                <h3 class="panel-title">GooglePlus Credentials </h3> <button type="button" class="btn btn-default pull-right btnsmall" data-toggle="collapse" data-target="#GoogleHelp"> Help <span class="caret"></span></button>
+            </div>
+            <div class="panel-body">
+                <div id="GoogleHelp" class="collapse">
+                    <div class="col-sm-12 col-md-12" style="margin:-20px 0px 0px 0px; padding:0px;">
+                        <div class="alert-message alert-message-warning">
+                            <h4>
+                                Steps to create a client ID and client secret key:
+                            </h4>
+                            <ul>
+                                <li>Create a Google Developers Console project</li>
+                                <li>Enable the Google+ API, create an OAuth 2.0 client ID</li>
+                                <li>Register your JavaScript origins and redirect URI</li>
+                            </ul>
+                            For more details follow Step1 of this <a target="_blank" href="https://developers.google.com/+/web/signin/redirect-uri-flow">URL</a>
+                            <br /><br />
+                            <ul>
+                                <li>
+                                    <b>App Domains </b>should be your domain name e.g.
+                                    <b>mvc.turanto.com</b>
+                                </li>
+                                <li><b>Site URL </b> should be <b>http://DomainName/ </b> e.g. <b>http://mvc.turanto.com/</b></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div style="clear:both"></div>
+                <div class="alert alert-success">
+                    Please add GooglePlus third party authentication credentials for your application.
+                </div>
+                <div class='col-sm-6 col-md-6 col-xs-12'>
+                    <div class='form-group'>
+                        <label class="col-sm-6 col-md-6 col-xs-12">@Html.LabelFor(model => model.GooglePlusId) <span class="text-danger-reg">*</span> </label>
+                        <div class="col-sm-6 col-md-6 col-xs-12">
+                            @Html.TextBoxFor(model => model.GooglePlusId, getHtmlAttributes("GooglePlusId"))
+                            @Html.ValidationMessageFor(model => model.GooglePlusId)
+                        </div>
+                    </div>
+                </div>
+                <div class='col-sm-6 col-md-6 col-xs-12'>
+                    <div class='form-group'>
+                        <label class="col-sm-6 col-md-6 col-xs-12">@Html.LabelFor(model => model.GooglePlusSecretKey) <span class="text-danger-reg">*</span> </label>
+                        <div class="col-sm-6 col-md-6 col-xs-12">
+                            @Html.TextBoxFor(model => model.GooglePlusSecretKey, getHtmlAttributes("GooglePlusSecretKey"))
+                            @Html.ValidationMessageFor(model => model.GooglePlusSecretKey)
+                        </div>
+                    </div>
+                </div>
+            </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12 col-sm-12 col-xs-12">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading clearfix">
+                                            <h3 class="panel-title">Facebook Credentials </h3> <button type="button" class="btn btn-default pull-right btnsmall" data-toggle="collapse" data-target="#FacebookHelp"> Help <span class="caret"></span></button>
+                                        </div>
+                                        <div class="panel-body">
+                                            <div id="FacebookHelp" class="collapse">
+                                                <div class="col-sm-12 col-md-12" style="margin:-20px 0px 0px 0px; padding:0px;">
+                                                    <div class="alert-message alert-message-warning">
+                                                        <h4>
+                                                            Steps to create a client ID and client secret key:
+                                                        </h4>
+                                                        <ul>
+                                                            <li><strong>Create New App : </strong> Fill all details under Settings option</li>
+                                                        </ul>
+                                                                        For more details visit this
+                                                                   <a target="_blank" href="http://www.asp.net/mvc/overview/security/create-an-aspnet-mvc-5-app-with-facebook-and-google-oauth2-and-openid-sign-on#fb">URL</a>
+                                                        <br /><br />
+                                                        <ul>
+                                                            <li>
+                                                                <b>App Domains </b>should be your domain name e.g.
+                                                                <b>mvc.turanto.com</b>
+                                                            </li>
+                                                            <li><b>Site URL </b> should be <b>http://DomainName/ </b> e.g. <b>http://mvc.turanto.com/</b></li>
+                                                        </ul>
+                                                     </div>
+                                                </div>
+                                            </div>
+                                            <div style="clear:both"></div>
+                                            <div class="alert alert-success">
+                                                Please add Facebook third party authentication credentials for your application.
+                                            </div>
+                                            <div class='col-sm-6 col-md-6 col-xs-12'>
+                                                <div class='form-group'>
+                                                    <label class="col-sm-6 col-md-6 col-xs-12">@Html.LabelFor(model => model.FacebookId) <span class="text-danger-reg">*</span> </label>
+                                                    <div class="col-sm-6 col-md-6 col-xs-12">
+                                                        @Html.TextBoxFor(model => model.FacebookId, getHtmlAttributes("FacebookId"))
+                                                        @Html.ValidationMessageFor(model => model.FacebookId)
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class='col-sm-6 col-md-6 col-xs-12'>
+                                                <div class='form-group'>
+                                                    <label class="col-sm-6 col-md-6 col-xs-12">@Html.LabelFor(model => model.FacebookSecretKey) <span class="text-danger-reg">*</span> </label>
+                                                    <div class="col-sm-6 col-md-6 col-xs-12">
+                                                        @Html.TextBoxFor(model => model.FacebookSecretKey, getHtmlAttributes("FacebookSecretKey"))
+                                                        @Html.ValidationMessageFor(model => model.FacebookSecretKey)
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            @Html.ActionLink("Back to Admin Settings", "Index", "Admin", null, new { @class = "btn btn-default btn-sm" })
+                            <input type="submit" value="Save" class="btn btn-primary btn-sm" /> <br /><br />
+}

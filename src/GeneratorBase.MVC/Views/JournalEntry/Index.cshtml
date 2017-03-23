@@ -1,0 +1,16 @@
+﻿@model IEnumerable<GeneratorBase.MVC.Models.JournalEntry>
+@{
+    ViewBag.Title = "Index";
+}
+@if (Request.Url.Query.Length == 0)
+{
+    <div class="row">
+        <div class="col-lg-12">
+            <h1 class="page-title">
+                <i class="glyphicon glyphicon-hand-down text-primary"></i> Journal Entries  <i class="glyphicon glyphicon-chevron-right small"></i> <span class="text-primary small">Audit Log for Add,Update,Delete and View Actions</span>
+            </h1>
+        </div>
+    </div>
+}
+<div id="dvJournalEntryFilter"></div>
+@Html.Partial("~/Views/JournalEntry/IndexPartial.cshtml", Model)

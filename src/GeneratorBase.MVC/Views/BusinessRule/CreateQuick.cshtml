@@ -1,0 +1,117 @@
+﻿@model GeneratorBase.MVC.Models.BusinessRule
+@{
+    ViewBag.Title = "Create Business Rule";
+    Layout = null;
+}
+<link href="@Url.Content("~/Content/bootstrap-multiselect.css")" rel="stylesheet" type="text/css" />
+<script type="text/javascript" language="javascript">
+    $(document).ready(function () {
+        $('#EntityName').val($('#EntityList :selected').val());
+        $('#EntityList').change(function () {
+            var SelectedText = $('#EntityList :selected').val();
+            $('#EntityName').val(SelectedText);
+        });
+    });
+</script>
+<link href="~/Content/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+<link href="@Url.Content("~/Content/chosen.css")" rel="stylesheet" type="text/css" />
+@using (Html.BeginForm("CreateQuick", "BusinessRule", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken();
+    Html.ValidationSummary(true);
+    Html.EnableClientValidation();
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="panel panel-default AppForm">
+                <div class="panel-body">
+                    <div class="row">
+                        <div class='col-sm-6'>
+                            <div class='form-group'>
+                                <label>@Html.LabelFor(model => model.RuleName) <span class="text-danger-reg">*</span></label>
+                                @Html.TextBoxFor(model => model.RuleName, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.RuleName)
+                            </div>
+                        </div>
+                        <div class='col-sm-6'>
+                            <div class='form-group'>
+                                <label>@Html.LabelFor(model => model.EntityName)<span class="text-danger-reg">*</span></label>
+                                @Html.DropDownList("EntityList", null, "-- Select --", new { @required = "required", @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.EntityName)
+                                @Html.TextBoxFor(model => model.EntityName, new { @class = "form-control hidden" })
+                            </div>
+                        </div>
+                        <div class='col-sm-6'>
+                            <div class='form-group' id="dvRole" name="dvRoles">
+                                <label>@Html.LabelFor(model => model.Roles) </label>
+                                @Html.TextBoxFor(model => model.Roles, new { style = "border:none !important;Width:0px !important;" })
+                                @Html.DropDownList("RoleList", null, new { @multiple = "multiple" })
+                                @Html.ValidationMessageFor(model => model.Roles)
+                            </div>
+                        </div>
+                        <div class='col-sm-6'>
+                            <label>@Html.LabelFor(model => model.DateCreated1) </label>
+                            <div class="form-group">
+                                <div class="input-group date" id="datetimepickerDateCreated1">
+                                    @Html.TextBox("DateCreated1", DateTime.Now, new { @class = "form-control", @readonly = "readonly" })
+                                    <span class="input-group-addon btn-default calendar">
+                                        <i class="fa fa-calendar"></i>
+                                    </span>
+                                </div>
+                                @Html.ValidationMessageFor(model => model.DateCreated1)
+                            </div>
+                            <script type="text/javascript">
+                                $(function () {
+                                    $('#datetimepickerDateCreated1').datetimepicker({ pickTime: false });
+                                    $('#datetimepickerDateCreated1txt').datetimepicker({ pickTime: false });
+                                });
+                            </script>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <button type="button" class="btn btn-default btn-sm" data-dismiss="modal" aria-hidden="true">Cancel</button>
+    <input type="submit" value="Create" class="btn btn-primary btn-sm" />
+}
+@Scripts.Render("~/bundles/jqueryval")
+<script src="~/Scripts/Common3/chosen.jquery.js" type="text/javascript"></script>
+<script type="text/javascript">
+    var config = {
+        '.chosen-select': {},
+        '.chosen-select-deselect': { allow_single_deselect: true },
+        '.chosen-select-no-single': { disable_search_threshold: 10 },
+        '.chosen-select-no-results': { no_results_text: 'Oops, nothing found!' },
+        '.chosen-select-width': { width: "95%" }
+    }
+    for (var selector in config) {
+        $(selector).chosen(config[selector]);
+    }
+    $(document).ready(function () {
+        $('select[name=RoleList]').multiselect({
+            buttonWidth: '100%'
+        });
+    });
+</script>
+<script src="@Url.Content("~/Scripts/Common2/bootstrap-multiselect.js")" type="text/javascript"></script>
+<script>
+    $("form").submit(function () {
+        $('div[name=dvRoles]').each(function (e) {
+            catname = $(this).attr('id');
+            var firstInput = $("#" + catname).find('input[type=text],input[type=password],input[type=radio],input[type=checkbox],textarea,select').filter(':visible:first');
+            var firstButton = $("#" + catname).find('button').filter(':first');
+            var txtid = firstInput.attr('id');
+            var btntitle = firstButton.attr('title');
+            if (firstButton != null) {
+                if (btntitle != 'None selected')
+                    $("#" + txtid).val(btntitle);
+                else
+                    $("#" + txtid).val('');
+            }
+        });
+        if ($(this).find('.input-validation-error').length == 0) {
+            $(this).find(':submit').attr('disabled', 'disabled');
+        }
+    });
+</script>
+

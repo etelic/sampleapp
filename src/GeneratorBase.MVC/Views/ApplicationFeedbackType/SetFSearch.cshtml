@@ -1,0 +1,88 @@
+﻿@model IEnumerable<GeneratorBase.MVC.Models.ApplicationFeedbackType>
+@{
+    ViewBag.Title = "Set Search Criteria";
+	var parentUrl = HttpUtility.ParseQueryString(Request.UrlReferrer.Query);
+}
+<script>
+    function keypressHandler(e) {
+        if (e.which == 13) {
+            $(this).blur();
+            $('#fSearchApplicationFeedbackType').focus().click();
+        }
+    }
+ $(document).keypress(keypressHandler);
+ $(document).ready(function () {
+  if ("@parentUrl".length > 0) {
+ }
+    });
+</script>
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-title">
+            <i class="glyphicon glyphicon-search text-primary"></i> Application Feedback Type <i class="glyphicon glyphicon-chevron-right small"></i> <span>Faceted Search</span>
+        </h1>
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+			 <div class="fsearch">
+				<div class="panel panel-default">
+						   <div class="panel-body fsearchbg">
+                            <div class='col-sm-9 small'>
+							<div class='col-sm-4'>
+                                    <label class='col-sm-12'> General Criteria </label>
+									@{
+									var txtGenCriteria = String.IsNullOrEmpty(Convert.ToString(ViewBag.CurrentFilter)) ? "" : Convert.ToString(ViewBag.CurrentFilter);
+									}
+									<input type="text" id="FSearch" class="form-control" placeholder="General Criteria" value="@txtGenCriteria" />
+                             </div>
+					 </div>
+		<div class='col-sm-3' style="padding:10px; background:white; border:1px solid #c3ddec !important">
+                @if (User.Identity.IsAuthenticated && User != null && User.CanView("ApplicationFeedbackType"))
+                { 
+					<button class="btn btn-xs  btn-default tip-top pull-right" type="button" data-original-title="Full Add" data-placement="top" onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Index", "ApplicationFeedbackType") + "');") style="padding:4px 10px 7px 10px; height:30px !important; margin-bottom:5px; width:100%; text-align:left;">
+						<span class="glyphicon glyphicon-list"></span> List
+					</button>
+				}
+				@if (User.Identity.IsAuthenticated && User != null && User.CanAdd("ApplicationFeedbackType"))
+                {
+                    <button class="btn btn-xs  btn-default tip-top" type="button" data-original-title="Create New" data-placement="top" onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Create", "ApplicationFeedbackType", new { UrlReferrer = Request.Url, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null) + "');") style="padding:4px 10px 7px 10px; height:30px !important; margin-bottom:5px; width:100%; text-align:left;">
+                        <span class="fam-world-add"></span> Create New
+                    </button>
+                }
+		@if (ViewBag.FavoriteItem != null)
+        {
+				<div class="col-lg-12 col-sm-12 col-sx-12" style="padding:0px; ">
+                    <table class="table table-striped table-bordered table-hover table-condensed ">
+                        <thead>
+                            <tr>
+                                <th colspan="2">Favorite Items</th>
+                            </tr>
+                        </thead>
+                        @foreach (GeneratorBase.MVC.Models.FavoriteItem fItem in ViewBag.FavoriteItem)
+                        {
+						<tr>
+                            <td>
+                                <a href='/@GeneratorBase.MVC.Models.CommonFunction.Instance.AppURL().ToString()@fItem.LinkAddress' style="color:black">@fItem.Name</a>
+                            </td>
+                        </tr>                           
+                        }
+                </table>
+            </div>
+        }
+            </div>
+					  </div>
+                                        </div>
+                                    </div>
+   <a href="@Url.Action("Index")" class="btn btn-default btn-sm"> Cancel</a>
+<button id="fSearchApplicationFeedbackType" class="btn btn-primary btn-sm" type="button" dataurl="@(Url.Action("FSearch", "ApplicationFeedbackType", null) )"
+        onclick="@(Html.Raw("FacetedSearch('ApplicationFeedbackType','','','"
+    +  Convert.ToString(Request.QueryString["sortBy"]) +"','"
+     + Convert.ToString(Request.QueryString["isAsc"]) + "','" + "'); "))">
+    Search
+</button>
+<script>
+    $(document).ready(function () {
+    });
+</script>
+
+

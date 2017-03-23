@@ -1,0 +1,301 @@
+﻿@model GeneratorBase.MVC.Models.ApplicationFeedback
+@using PagedList;
+@{
+    ViewBag.Title = "View Application Feedback";
+}
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-title">
+            <i class="glyphicon glyphicon-hand-down text-primary"></i> Application Feedback  <i class="glyphicon glyphicon-chevron-right small"></i> <span>View</span>
+        </h1>
+        <h2 class="text-primary">
+            @Html.DisplayFor(model => model.DisplayValue)
+        </h2>
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+<div class="tabbable responsive">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="#Details" data-toggle="tab">Details</a></li>
+        <li @(!User.CanView("JournalEntry") ? "style=display:none;" : "")><a href="#JournalEntryToApplicationFeedbackRelation" data-toggle="tab">Application Feedback Journal</a></li>
+    </ul>
+    <div class="tab-content">
+        <div class="tab-pane fade in active" id="Details">
+            <div class="panel panel-default AppForm">
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-sm-12 col-md-12 col-xs-12">
+                            <div class="panel panel-default">
+                                <div class="panel-heading clearfix">
+                                    <i class="icon-calendar"></i>
+                                    <h3 class="panel-title">Feedback Details</h3>
+                                </div>
+                                <div class="panel-body">
+                                    @if (User.CanView("ApplicationFeedback", "Summary"))
+                                    {
+                                    <div class='col-sm-12 col-md-12 col-xs-12'>
+                                        <div class='form-group'>
+                                            <label>@Html.DisplayNameFor(model => model.Summary)</label>
+                                            <div>
+                                                <p class="viewlabel">@Model.Summary</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    }
+                                    @if (User.CanView("ApplicationFeedback", "Description"))
+                                    {
+                                    <div class='col-sm-12 col-md-12 col-xs-12'>
+                                        <div class='form-group'>
+                                            <label>@Html.DisplayNameFor(model => model.Description)</label>
+                                            <div>
+                                                <p class="viewlabel">@Model.Description</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    }
+                                    @if (User.CanView("ApplicationFeedback", "AttachDocument") && User.CanView("Document"))
+                                    {
+                                    <div class='col-sm-6 col-md-6 col-xs-12'>
+                                        <div class='form-group'>
+                                            <label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.AttachDocument)</label>
+                                            <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                <p class="text-primary">
+                                                    @if (!string.IsNullOrEmpty(Model.AttachDocument))
+                                                        {
+                                                        <a href="@(!string.IsNullOrEmpty(Html.DisplayFor(model => model.AttachDocument).ToString()) ? Url.Content("~/Files/") + Url.Content(Html.DisplayFor(model => model.AttachDocument).ToString()) : "#")" @(!string.IsNullOrEmpty(Html.DisplayFor(model => model.AttachDocument).ToString()) ? "download = " + Html.DisplayFor(model => model.AttachDocument).ToString() : "")>Download</a>
+                                                        }
+                                                        else
+                                                        {<label>NA</label>}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    }
+                                    @if (User.CanView("ApplicationFeedback", "AttachImage") && User.CanView("Document"))
+                                    {
+                                    <div class="col-sm-2 col-md-2">
+                                        <div class="thumbnail">
+                                            <img src='@(!string.IsNullOrEmpty(Html.DisplayFor(model => model.AttachImage).ToString()) ? Url.Content("~/Files/") + Url.Content(Html.DisplayFor(model => model.AttachImage).ToString()) : "")' alt="NA" />
+                                            <div class="caption">
+                                                <h5 class="text-center">@Html.DisplayNameFor(model => model.AttachImage)</h5>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    }
+                                </div>
+                            </div>
+                            <div class="panel panel-default">
+                                <div class="panel-heading clearfix">
+                                    <i class="icon-calendar"></i>
+                                    <h3 class="panel-title">About Feedback</h3>
+                                </div>
+                                <div class="panel-body">
+                                    @if (User.CanView("ApplicationFeedback", "CommentId"))
+                                    {
+                                        <div class='col-sm-6 col-md-6 col-xs-12'>
+                                            <div class='form-group'>
+                                                <label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.CommentId) </label>
+                                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                    <p class="viewlabel">@Model.CommentId</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                    @if (User.CanView("ApplicationFeedback", "AssociatedApplicationFeedbackTypeID"))
+                                    {
+                                        <div class='col-sm-6 col-md-6 col-xs-12'>
+                                            <div class='form-group'>
+                                                <label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.AssociatedApplicationFeedbackTypeID)</label>
+                                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                    @if (@Model.AssociatedApplicationFeedbackTypeID == 0 || @Model.AssociatedApplicationFeedbackTypeID == null || @Model.associatedapplicationfeedbacktype == null)
+                                                    {
+                                                        <p class="viewlabel"></p>
+                                                    }
+                                                    else
+                                                    {
+                                                        <p class="viewlabel">@Model.associatedapplicationfeedbacktype.DisplayValue</p>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                    @if (User.CanView("ApplicationFeedback", "AssociatedApplicationFeedbackStatusID"))
+                                    {
+                                        <div class='col-sm-6 col-md-6 col-xs-12'>
+                                            <div class='form-group'>
+                                                <label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.AssociatedApplicationFeedbackStatusID)</label>
+                                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                    @if (@Model.AssociatedApplicationFeedbackStatusID == 0 || @Model.AssociatedApplicationFeedbackStatusID == null || @Model.associatedapplicationfeedbackstatus == null)
+                                                    {
+                                                        <p class="viewlabel"></p>
+                                                    }
+                                                    else
+                                                    {
+                                                        <p class="viewlabel">@Model.associatedapplicationfeedbackstatus.DisplayValue</p>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                    @if (User.CanView("ApplicationFeedback", "ApplicationFeedbackPriorityID"))
+                                    {
+                                        <div class='col-sm-6 col-md-6 col-xs-12'>
+                                            <div class='form-group'>
+                                                <label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.ApplicationFeedbackPriorityID)</label>
+                                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                    @if (@Model.ApplicationFeedbackPriorityID == 0 || @Model.ApplicationFeedbackPriorityID == null || @Model.applicationfeedbackpriority == null)
+                                                    {
+                                                        <p class="viewlabel"></p>
+                                                    }
+                                                    else
+                                                    {
+                                                        <p class="viewlabel">@Model.applicationfeedbackpriority.DisplayValue</p>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                    @if (User.CanView("ApplicationFeedback", "ApplicationFeedbackSeverityID"))
+                                    {
+                                        <div class='col-sm-6 col-md-6 col-xs-12'>
+                                            <div class='form-group'>
+                                                <label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.ApplicationFeedbackSeverityID)</label>
+                                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                    @if (@Model.ApplicationFeedbackSeverityID == 0 || @Model.ApplicationFeedbackSeverityID == null || @Model.applicationfeedbackseverity == null)
+                                                    {
+                                                        <p class="viewlabel"></p>
+                                                    }
+                                                    else
+                                                    {
+                                                        <p class="viewlabel">@Model.applicationfeedbackseverity.DisplayValue</p>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                    @if (User.CanView("ApplicationFeedback", "ApplicationFeedbackResourceID"))
+                                    {
+                                        <div class='col-sm-6 col-md-6 col-xs-12'>
+                                            <div class='form-group'>
+                                                <label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.ApplicationFeedbackResourceID)</label>
+                                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                    @if (Model.applicationfeedbackresource != null && !string.IsNullOrEmpty(Model.applicationfeedbackresource.DisplayValue))
+                                                    {
+                                                        <p class="viewlabel">
+                                                            @Html.ActionLink(Html.DisplayFor(model => model.applicationfeedbackresource.DisplayValue).ToString(), "Details", "FeedbackResource", new { Id = Html.DisplayFor(model => model.applicationfeedbackresource.Id).ToString() }, null)
+                                                        </p>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                    @if (User.CanView("ApplicationFeedback", "ReportedBy"))
+                                    {
+                                        <div class='col-sm-6 col-md-6 col-xs-12'>
+                                            <div class='form-group'>
+                                                <label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.ReportedBy)</label>
+                                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                    <p class="viewlabel">@Model.ReportedBy.Value.ToString("MM/dd/yyyy hh:mm tt") @Model.ReportedByUser</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                            <div class="panel panel-default">
+                                <div class="panel-heading clearfix">
+                                    <i class="icon-calendar"></i>
+                                    <h3 class="panel-title">Page Info</h3>
+                                </div>
+                                <div class="panel-body">
+                                    @if (User.CanView("ApplicationFeedback", "EntityName"))
+                                    {
+                                        <div class='col-sm-6 col-md-6 col-xs-12'>
+                                            <div class='form-group'>
+                                                <label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.EntityName) </label>
+                                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                    <p class="viewlabel">@Model.EntityName</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                    @if (User.CanView("ApplicationFeedback", "PropertyName"))
+                                    {
+                                        <div class='col-sm-6 col-md-6 col-xs-12'>
+                                            <div class='form-group'>
+                                                <label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.PropertyName) </label>
+                                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                    <p class="viewlabel">@Model.PropertyName</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                    @if (User.CanView("ApplicationFeedback", "PageName"))
+                                    {
+                                        <div class='col-sm-6 col-md-6 col-xs-12'>
+                                            <div class='form-group'>
+                                                <label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.PageName) </label>
+                                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                    <p class="viewlabel">@Model.PageName</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                    @if (User.CanView("ApplicationFeedback", "PageUrlTitle"))
+                                    {
+                                        <div class='col-sm-6 col-md-6 col-xs-12'>
+                                            <div class='form-group'>
+                                                <label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.PageUrlTitle) </label>
+                                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                    <p class="viewlabel">@Model.PageUrlTitle</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                    @if (User.CanView("ApplicationFeedback", "UIControlName"))
+                                    {
+                                        <div class='col-sm-6 col-md-6 col-xs-12'>
+                                            <div class='form-group'>
+                                                <label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.UIControlName) </label>
+                                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                    <p class="viewlabel">@Model.UIControlName</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                    @if (User.CanView("ApplicationFeedback", "PageUrl"))
+                                    {
+                                        <div class='col-sm-12 col-md-12 col-xs-12'>
+                                            <div class='form-group'>
+                                                <label >@Html.DisplayNameFor(model => model.PageUrl) </label>
+                                                <div >
+                                                    <p class="viewlabel">@Model.PageUrl</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 col-sm-12 col-xs-12">
+                    @Html.ActionLink("Back", "Cancel", new { UrlReferrer = Request.UrlReferrer }, new { @class = "btn btn-default btn-sm" })
+                    @if (User.Identity.IsAuthenticated && User != null && User.CanEdit("ApplicationFeedback"))
+                    {
+                        @Html.ActionLink("Edit", "Edit", new { id = Model.Id, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, new { @class = "btn btn-primary btn-sm" })
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="tab-pane fade in" id="JournalEntryToApplicationFeedbackRelation">
+            @if (User.Identity.IsAuthenticated && User != null && User.CanView("JournalEntry"))
+            {
+                Html.RenderAction("Index", "JournalEntry", new { RenderPartial = true, HostingEntity = "ApplicationFeedback", HostingEntityID = @Model.Id, AssociatedType = "JournalEntry" });
+            }
+        </div>
+    </div> <!-- /tab-content --><br />
+    <br />
+</div>

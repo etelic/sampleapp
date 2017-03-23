@@ -1,0 +1,6 @@
+﻿@model IEnumerable<GeneratorBase.MVC.Models.JournalEntry>
+@{
+    ViewBag.Title = "Index";
+}
+<div id="dvJournalEntryFilter"></div>
+@Html.Partial("~/Views/JournalEntry/IndexPartial.Mobile.cshtml", Model)

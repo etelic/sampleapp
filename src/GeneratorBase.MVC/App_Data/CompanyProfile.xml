@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<companyprofile>
+  <item>
+    <Name>Turanto</Name>
+    <Email>turantotest@gmail.com</Email>
+    <Address>5388 Twin Hickory Rd </Address>
+    <Country>USA</Country>
+    <State>VA</State>
+    <City>Glen Allen</City>
+    <Zip>23059</Zip>
+    <ContactNumber1>1.866.591.5906</ContactNumber1>
+    <ContactNumber2>1.866.591.5909</ContactNumber2>
+    <logo>logo.gif</logo>
+    <SMTPServer>smtp.gmail.com</SMTPServer>
+    <SMTPPassword>dHVyYW50bzEj</SMTPPassword>
+    <SMTPPort>587</SMTPPort>
+    <SSL>true</SSL>
+    <AboutCompany>About Company</AboutCompany>
+  </item>
+</companyprofile>

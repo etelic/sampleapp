@@ -1,0 +1,19 @@
+﻿@model IEnumerable<GeneratorBase.MVC.WebReference.CatalogItem>
+@{
+    ViewBag.Title = "Reports";
+    if (ViewBag.CurrentFilter != null || ViewBag.CurrentItemsPerPage != null)
+    {
+        Layout = null;
+    }
+}
+<div id="Reports">
+    <div class="row">
+        <div class="col-lg-12">
+            <h1 class="page-title">
+                <i class="glyphicon glyphicon-thumbs-up text-primary" style="margin-bottom:-20px;"></i> Reports  <i class="glyphicon glyphicon-chevron-right small"></i>  <span>List</span>
+            </h1>
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+    @Html.Partial("~/Views/Reports/IndexPartial.cshtml", Model)
+</div>

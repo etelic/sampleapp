@@ -1,0 +1,72 @@
+﻿@model IEnumerable<GeneratorBase.MVC.Models.ImportConfiguration>
+@{
+    ViewBag.Title = "Set Search Criteria";
+	var parentUrl = HttpUtility.ParseQueryString(Request.UrlReferrer.Query);
+}
+<script>
+    function keypressHandler(e) {
+        if (e.which == 13) {
+            $(this).blur();
+            $('#fSearchImportConfiguration').focus().click();
+        }
+    }
+ $(document).keypress(keypressHandler);
+ $(document).ready(function () {
+  if ("@parentUrl".length > 0) {
+			 document.getElementById("FSearch").value = "@parentUrl["search"]";
+			document.getElementById("LastUpdateTo").value = "@parentUrl["LastUpdateTo"]";
+			 document.getElementById("LastUpdateFrom").value = "@parentUrl["LastUpdateFrom"]";
+ }
+    });
+</script>
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-title">
+            <i class="glyphicon glyphicon-search text-primary"></i> Import Configuration <i class="glyphicon glyphicon-chevron-right small"></i> <span>Faceted Search</span>
+        </h1>
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+			 <div class="fsearch">
+				<div class="panel panel-default">
+						   <div class="panel-body fsearchbg">
+                            <div class='col-sm-12 small'>
+							<div class='col-sm-3'>
+                                    <label class='col-sm-12'> General Criteria </label>
+                                    <input type="text" id="FSearch" class="form-control" placeholder="General Criteria"/>
+                             </div>
+                                <div class='col-sm-3'>
+                                    <label class='col-sm-12'> Last Update</label>
+									<div class='input-group'>
+                                    <input type="text" id="LastUpdateFrom" class="form-control"  placeholder="From"/>
+                                    <script type="text/javascript">
+                                        $(function () {
+                                            $('#LastUpdateFrom').datetimepicker({ pickTime: false });
+                                        });
+                                    </script>
+                                <span class="input-group-addon datefiled">
+                                    <input type="text" id="LastUpdateTo" class="form-control" placeholder="To" style=" border-radius:0px 4px 4px 0px; border-left:0px"/>
+                                    <script type="text/javascript">
+                                        $(function () {
+                                            $('#LastUpdateTo').datetimepicker({ pickTime: false });
+                                        });
+                                    </script>
+ </span>
+                                </div></div>
+					 </div>
+					  </div>
+                                        </div>
+                                    </div>
+   <a href="@Url.Action("Index")" class="btn btn-default btn-sm"> Cancel</a>
+<button id="fSearchImportConfiguration" class="btn btn-primary btn-sm" type="button" dataurl="@(Url.Action("FSearch", "ImportConfiguration", null) )"
+        onclick="@(Html.Raw("FacetedSearch('ImportConfiguration','','LastUpdateFrom,LastUpdateTo','"
+    +  Convert.ToString(Request.QueryString["sortBy"]) +"','"
+     + Convert.ToString(Request.QueryString["isAsc"]) + "','" + Convert.ToString(ViewBag.CurrentFilter) + "'); "))">
+    Search
+</button>
+<script>
+    $(document).ready(function () {
+    });
+</script>
+
+

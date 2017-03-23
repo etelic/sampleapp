@@ -1,0 +1,39 @@
+﻿@model GeneratorBase.MVC.Models.JournalEntry
+@{
+    ViewBag.Title = "Details";
+}
+<h2>Details</h2>
+<div>
+    <h4>JournalEntry</h4>
+	<hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.EntityName)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.EntityName)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Type)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Type)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.DateTimeOfEntry)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.DateTimeOfEntry)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.RecordInfo)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.RecordInfo)
+        </dd>
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

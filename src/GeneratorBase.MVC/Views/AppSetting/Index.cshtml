@@ -1,0 +1,21 @@
+﻿@model IEnumerable<GeneratorBase.MVC.Models.AppSetting>
+@{
+    ViewBag.Title = "Application Setting";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-title">
+            <i class="glyphicon glyphicon-save text-primary"></i> Application Setting
+            <div class="btn btn-default btn-sm dropdown pull-right" style="border: 0px solid #c3ddec !important; font-size:12px;">
+                <a href="#" data-toggle="dropdown" class="dropdown-toggle"> Add Application Setting or Group <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                    <li><a data-placement="top" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Application Setting Group','dvPopup','" + Url.Action("CreateGroup", "AppSetting", new { UrlReferrer = Request.Url, TS = DateTime.Now }) + "')")"> Add Application Setting Group</a></li>
+                    <li><a data-placement="top" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Application Setting','dvPopup','" + Url.Action("CreateSetting", "AppSetting", new { UrlReferrer = Request.Url, TS = DateTime.Now }) + "')")"> Add Application Setting</a></li>
+                </ul>
+            </div>
+        </h1>
+    </div>
+</div>
+@Html.Partial("~/Views/AppSetting/IndexPartial.cshtml", Model)
+

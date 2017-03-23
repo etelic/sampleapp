@@ -1,0 +1,16 @@
+﻿@model GeneratorBase.MVC.Models.SelectUserRoleEditorViewModel
+@{
+    var checkboxHtmlAttributes = new Dictionary<string, object>
+    {{"attibute1", "value1"},
+    {"attribute2", "value2"}};
+    if (Model.isdisabled)
+    {
+        checkboxHtmlAttributes.Add("disabled", "disabled");
+    }
+}
+<tr>
+    @Html.HiddenFor(model => model.Id)
+    @Html.HiddenFor(model => model.RoleName)
+    <td>@Html.CheckBoxFor(model => model.Selected, checkboxHtmlAttributes)</td>
+    <td>@Html.DisplayFor(model => model.RoleName)</td>
+</tr>

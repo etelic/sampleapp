@@ -1,0 +1,97 @@
+﻿@model GeneratorBase.MVC.Models.FeedbackResource
+@{
+    ViewBag.Title = "Create Feedback Resource";
+    Layout = null;
+}
+<script>
+    $(document).ready(function () {
+        try {
+            var hostingEntityName = "";
+            if ('@Convert.ToString(ViewData["AssociatedType"])' != null) {
+                hostingEntityName = '@Convert.ToString(ViewData["AssociatedType"])';
+                 $('#' + hostingEntityName + 'ID').attr("lock","true");
+            }
+        }
+        catch (ex) { }
+    });
+</script>
+<link href="~/Content/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+<link href="@Url.Content("~/Content/chosen.css")" rel="stylesheet" type="text/css" />
+@using (Html.BeginForm("CreateQuick", "FeedbackResource",FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken();
+    Html.ValidationSummary(true);
+    Html.EnableClientValidation();
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="panel panel-default AppForm">
+                <div class="panel-body">
+               <div class="row">         
+					<div class='col-sm-6'>
+                                <div class='form-group'>
+                                    <label>@Html.LabelFor(model => model.ResourceId) </label>
+                                    @Html.TextBoxFor(model => model.ResourceId, new { @class = "form-control", @readonly = "readonly" })
+                                    @Html.ValidationMessageFor(model => model.ResourceId)
+                                </div>
+					</div>
+					<div class='col-sm-6'>
+                                <div class='form-group'>
+                                    <label>@Html.LabelFor(model => model.FirstName) <span class="text-danger-reg">*</span></label>
+                                    @Html.TextBoxFor(model => model.FirstName, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.FirstName)
+                                </div>
+					</div>
+					<div class='col-sm-6'>
+                                <div class='form-group'>
+                                    <label>@Html.LabelFor(model => model.LastName) </label>
+                                    @Html.TextBoxFor(model => model.LastName, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.LastName)
+                                </div>
+					</div>
+					<div class='col-sm-6'>
+                                <div class='form-group'>
+                                    <label>@Html.LabelFor(model => model.Email) </label>
+                                    @Html.TextBoxFor(model => model.Email, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.Email)
+                                </div>
+					</div>
+					<div class='col-sm-6'>
+                                <div class='form-group'>
+                                    <label>@Html.LabelFor(model => model.PhoneNo) </label>
+                                    @Html.TextBoxFor(model => model.PhoneNo, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.PhoneNo)
+                                </div>
+					</div>
+       </div>
+                        </div>
+                    </div>
+                </div>
+        </div>
+		<button id="CancelQuickAdd" type="button" class="btn btn-default btn-sm" data-dismiss="modal" aria-hidden="true">Cancel</button>
+		var busineesrule = User.businessrules.Where(p => p.EntityName == "FeedbackResource").ToList();
+        if (ViewBag.IsAddPop != null)
+		{
+			<input type="submit" value="Create" class="btn btn-primary btn-sm" onclick="QuickAdd(event,'@busineesrule',@busineesrule.Count);" />
+		}
+		else
+		{
+			<input type="submit" value="Create" class="btn btn-primary btn-sm" onclick="QuickAddFromIndex(event,true,'FeedbackResource','@ViewData["AssociatedType"]','@busineesrule',@busineesrule.Count);" />
+		}
+}
+@Scripts.Render("~/bundles/jqueryval")
+<script src="~/Scripts/Common3/chosen.jquery.js" type="text/javascript"></script>
+<script type="text/javascript">
+    var config = {
+        '.chosen-select': {},
+        '.chosen-select-deselect': { allow_single_deselect: true },
+        '.chosen-select-no-single': { disable_search_threshold: 10 },
+        '.chosen-select-no-results': { no_results_text: 'Oops, nothing found!' },
+        '.chosen-select-width': { width: "95%" }
+    }
+    for (var selector in config) {
+        $(selector).chosen(config[selector]);
+    }
+</script>
+<script type='text/javascript'>$(document).ready(function () {  $('#PhoneNo').mask('999-999-9999');  });</script>
+
+

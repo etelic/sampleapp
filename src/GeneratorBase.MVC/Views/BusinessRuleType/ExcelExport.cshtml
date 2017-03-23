@@ -1,0 +1,47 @@
+﻿@model PagedList.IPagedList<GeneratorBase.MVC.Models.BusinessRuleType>
+@using PagedList.Mvc;
+@{
+    ViewBag.Title = "Index";
+    Layout = null;
+    Response.ContentType = "application/vnd.ms-excel";
+    Response.AddHeader("Content-Disposition", "attachment; filename=BusinessRuleType.xls");
+}
+<table>
+    <tr>
+        @if (User.CanView("BusinessRuleType", "TypeNo"))
+        {
+            <th>TypeNo</th>
+        }
+        @if (User.CanView("BusinessRuleType", "TypeName"))
+        {
+            <th>Type Name</th>
+        }
+        @if (User.CanView("BusinessRuleType", "Description"))
+        {
+            <th>Description</th>
+        }
+    </tr>
+    @foreach (var item in Model)
+    {
+        <tr>
+            @if (User.CanView("BusinessRuleType", "TypeNo"))
+            {
+                <td>
+                    @Html.DisplayFor(modelItem => item.TypeNo)
+                </td>
+            }
+            @if (User.CanView("BusinessRuleType", "TypeName"))
+            {
+                <td>
+                    @Html.DisplayFor(modelItem => item.TypeName)
+                </td>
+            }
+            @if (User.CanView("BusinessRuleType", "Description"))
+            {
+                <td>
+                    @Html.DisplayFor(modelItem => item.Description)
+                </td>
+            }
+        </tr>
+    }
+</table>

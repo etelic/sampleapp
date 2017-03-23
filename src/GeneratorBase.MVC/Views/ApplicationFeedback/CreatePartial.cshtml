@@ -1,0 +1,360 @@
+﻿@model GeneratorBase.MVC.Models.ApplicationFeedback
+<script>
+    $(document).ready(function () {
+        try {
+            var hostingEntityName = "";
+            if ('@Convert.ToString(ViewData["AssociatedType"])' != null) {
+                hostingEntityName = '@Convert.ToString(ViewData["AssociatedType"])';
+                $('#' + hostingEntityName + 'ID').attr("lock", "true");
+            }
+        }
+        catch (ex) { }
+    });
+</script>
+@using (Html.BeginForm("Create", "ApplicationFeedback", new { UrlReferrer = Convert.ToString(ViewData["ApplicationFeedbackParentUrl"]), IsDDAdd = ViewBag.IsDDAdd }, FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken();
+    Html.ValidationSummary(true);
+    Html.EnableClientValidation();
+    <label id="ErrMsg" class="text-primary small pull-right" style="color:red; vertical-align:middle; font-weight:100;"></label>
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="panel panel-default AppForm">
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-12 col-sm-12 col-xs-12">
+                            <div class="panel panel-default">
+                                <div class="panel-heading clearfix">
+                                    <i class="icon-calendar"></i>
+                                    <h3 class="panel-title">Feedback Details</h3>
+                                </div>
+                                <div class="panel-body">
+                                    <div class='col-sm-12'>
+                                        <div class='form-group'>
+                                            <label>@Html.LabelFor(model => model.Summary) <span class="text-danger-reg">*</span></label>
+                                            <div>
+                                                @Html.TextAreaFor(model => model.Summary, new { @required = "required", @class = "form-control" })
+                                                @Html.ValidationMessageFor(model => model.Summary)
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class='col-sm-12'>
+                                        <div class='form-group'>
+                                            <label>@Html.LabelFor(model => model.Description) </label>
+                                            <div>
+                                                @Html.TextAreaFor(model => model.Description, new { @class = "form-control" })
+                                                @Html.ValidationMessageFor(model => model.Description)
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @if (User.CanAdd("Document"))
+                                    {
+                                        <div class='col-sm-6 col-md-6 col-xs-12'>
+                                            <div class='form-group'>
+                                                <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.AttachImage) </label>
+                                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                    <div style="position:relative;">
+                                                        <a class='btn btn-primary btnupload' href='javascript:;'>
+                                                            Upload File
+                                                            <input id="AttachImage" type="file" style='position:absolute;z-index:2;top:0;left:0;filter: alpha(opacity=0);-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";opacity:0;background-color:transparent;color:transparent;width:105px;' name="AttachImage" onchange='$("#upload-file-infoAttachImage").html($(this).val());'>
+                                                        </a>
+                                                        &nbsp;
+                                                        <span class='label uploadlblFix' id="upload-file-infoAttachImage"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                    @if (User.CanAdd("Document"))
+                                    {
+                                        <div class='col-sm-6 col-md-6 col-xs-12'>
+                                            <div class='form-group'>
+                                                <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.AttachDocument) </label>
+                                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                    <div style="position:relative;">
+                                                        <a class='btn btn-primary btnupload' href='javascript:;'>
+                                                            Upload File
+                                                            <input id="AttachDocument" type="file" style='position:absolute;z-index:2;top:0;left:0;filter: alpha(opacity=0);-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";opacity:0;background-color:transparent;color:transparent;width:105px;' name="AttachDocument" onchange='$("#upload-file-infoAttachDocument").html($(this).val());'>
+                                                        </a>
+                                                        &nbsp;
+                                                        <span class='label uploadlblFix' id="upload-file-infoAttachDocument"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 col-sm-12 col-xs-12">
+                            <div class="panel panel-default">
+                                <div class="panel-heading clearfix">
+                                    <i class="icon-calendar"></i>
+                                    <h3 class="panel-title">About Feedback</h3>
+                                </div>
+                                <div class="panel-body">
+                                    <div class='col-sm-6 col-md-6 col-xs-12'>
+                                        <div class='form-group'>
+                                            <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.CommentId) </label>
+                                            <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                @Html.TextBoxFor(model => model.CommentId, new { @class = "form-control", @readonly = "readonly" })
+                                                @Html.ValidationMessageFor(model => model.CommentId)
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class='col-sm-6 col-md-6 col-xs-12' id="dvAssociatedApplicationFeedbackTypeID">
+                                        <div class='form-group'>
+                                            <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.AssociatedApplicationFeedbackTypeID) </label>
+                                            <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                <div class="input-group" style="width:100%;">
+                                                    @Html.DropDownList("AssociatedApplicationFeedbackTypeID", null, "-- Select --", new { @class = "chosen-select form-control", @HostingName = "ApplicationFeedbackType", @dataurl = Url.Action("GetAllValue", "ApplicationFeedbackType", new { caller = "AssociatedApplicationFeedbackTypeID" }) })
+                                                    @Html.ValidationMessageFor(model => model.AssociatedApplicationFeedbackTypeID)
+                                                    @if (User.Identity.IsAuthenticated && User != null && User.CanAdd("ApplicationFeedbackType"))
+                                                    {
+                                                        <div class="input-group-btn">
+                                                            <a class="btn btn-default btn ie8fix" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Type','dvPopup','" + Url.Action("CreateQuick", "ApplicationFeedbackType", new { UrlReferrer = Request.Url, HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), IsAddPop=true }) + "')")">
+                                                                <span class="glyphicon glyphicon-plus-sign"></span>
+                                                            </a>
+                                                        </div>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class='col-sm-6 col-md-6 col-xs-12' id="dvAssociatedApplicationFeedbackStatusID">
+                                        <div class='form-group'>
+                                            <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.AssociatedApplicationFeedbackStatusID) </label>
+                                            <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                <div class="input-group" style="width:100%;">
+                                                    @Html.DropDownList("AssociatedApplicationFeedbackStatusID", null, "-- Select --", new { @class = "chosen-select form-control", @HostingName = "ApplicationFeedbackStatus", @dataurl = Url.Action("GetAllValue", "ApplicationFeedbackStatus", new { caller = "AssociatedApplicationFeedbackStatusID" }) })
+                                                    @Html.ValidationMessageFor(model => model.AssociatedApplicationFeedbackStatusID)
+                                                    @if (User.Identity.IsAuthenticated && User != null && User.CanAdd("ApplicationFeedbackStatus"))
+                                                    {
+                                                        <div class="input-group-btn">
+                                                            <a class="btn btn-default btn ie8fix" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Status','dvPopup','" + Url.Action("CreateQuick", "ApplicationFeedbackStatus", new { UrlReferrer = Request.Url, HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), IsAddPop=true }) + "')")">
+                                                                <span class="glyphicon glyphicon-plus-sign"></span>
+                                                            </a>
+                                                        </div>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class='col-sm-6 col-md-6 col-xs-12' id="dvApplicationFeedbackPriorityID">
+                                        <div class='form-group'>
+                                            <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.ApplicationFeedbackPriorityID) </label>
+                                            <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                <div class="input-group" style="width:100%;">
+                                                    @Html.DropDownList("ApplicationFeedbackPriorityID", null, "-- Select --", new { @class = "chosen-select form-control", @HostingName = "FeedbackPriority", @dataurl = Url.Action("GetAllValue", "FeedbackPriority", new { caller = "ApplicationFeedbackPriorityID" }) })
+                                                    @Html.ValidationMessageFor(model => model.ApplicationFeedbackPriorityID)
+                                                    @if (User.Identity.IsAuthenticated && User != null && User.CanAdd("FeedbackPriority"))
+                                                    {
+                                                        <div class="input-group-btn">
+                                                            <a class="btn btn-default btn ie8fix" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Priority','dvPopup','" + Url.Action("CreateQuick", "FeedbackPriority", new { UrlReferrer = Request.Url, HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), IsAddPop=true }) + "')")">
+                                                                <span class="glyphicon glyphicon-plus-sign"></span>
+                                                            </a>
+                                                        </div>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class='col-sm-6 col-md-6 col-xs-12' id="dvApplicationFeedbackSeverityID">
+                                        <div class='form-group'>
+                                            <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.ApplicationFeedbackSeverityID) </label>
+                                            <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                <div class="input-group" style="width:100%;">
+                                                    @Html.DropDownList("ApplicationFeedbackSeverityID", null, "-- Select --", new { @class = "chosen-select form-control", @HostingName = "FeedbackSeverity", @dataurl = Url.Action("GetAllValue", "FeedbackSeverity", new { caller = "ApplicationFeedbackSeverityID" }) })
+                                                    @Html.ValidationMessageFor(model => model.ApplicationFeedbackSeverityID)
+                                                    @if (User.Identity.IsAuthenticated && User != null && User.CanAdd("FeedbackSeverity"))
+                                                    {
+                                                        <div class="input-group-btn">
+                                                            <a class="btn btn-default btn ie8fix" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Severity','dvPopup','" + Url.Action("CreateQuick", "FeedbackSeverity", new { UrlReferrer = Request.Url, HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), IsAddPop=true }) + "')")">
+                                                                <span class="glyphicon glyphicon-plus-sign"></span>
+                                                            </a>
+                                                        </div>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class='col-sm-6 col-md-6 col-xs-12' id="dvApplicationFeedbackResourceID">
+                                        <div class='form-group'>
+                                            <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.ApplicationFeedbackResourceID) </label>
+                                            <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                <div class="input-group" style="width:100%;">
+                                                    @Html.DropDownList("ApplicationFeedbackResourceID", null, "-- Select --", new { @class = "chosen-select form-control", @HostingName = "FeedbackResource", @dataurl = Url.Action("GetAllValue", "FeedbackResource", new { caller = "ApplicationFeedbackResourceID" }) })
+                                                    @Html.ValidationMessageFor(model => model.ApplicationFeedbackResourceID)
+                                                    @if (User.Identity.IsAuthenticated && User != null && User.CanAdd("FeedbackResource"))
+                                                    {
+                                                        <div class="input-group-btn">
+                                                            <a class="btn btn-default btn ie8fix" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Assigned To','dvPopup','" + Url.Action("CreateQuick", "FeedbackResource", new { UrlReferrer = Request.Url, HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), IsAddPop=true }) + "')")">
+                                                                <span class="glyphicon glyphicon-plus-sign"></span>
+                                                            </a>
+                                                        </div>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class='col-sm-6 col-md-6 col-xs-12'>
+                                        <div class="form-group">
+                                            <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.ReportedBy) </label>
+                                            <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                <div class="col-sm-6 col-md-6 col-xs-12" id="datetimepickerReportedBy" style="padding-left:0px; padding-right:5px">
+                                                    @Html.TextBox("CurrentDateTime", DateTime.Now.ToString("MM/dd/yyyy hh:mm tt"), new { @class = "form-control", @readonly = "readonly" })
+                                                </div>
+                                                <div class="col-sm-6 col-md-6 col-xs-12" style="padding-left:0px; padding-right:0px">
+                                                    @Html.TextBox("CurrentUser", User.Name, new { @class = "form-control", @readonly = "readonly" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 col-sm-12 col-xs-12">
+                            <div class="panel panel-default">
+                                <div class="panel-heading clearfix">
+                                    <i class="icon-calendar"></i>
+                                    <h3 class="panel-title">Page Info</h3>
+                                </div>
+                                <div class="panel-body">
+                                    <div class='col-sm-6 col-md-6 col-xs-12'>
+                                        <div class='form-group'>
+                                            <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.EntityName) </label>
+                                            <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                @Html.TextBoxFor(model => model.EntityName, new { @class = "form-control" })
+                                                @Html.ValidationMessageFor(model => model.EntityName)
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class='col-sm-6 col-md-6 col-xs-12'>
+                                        <div class='form-group'>
+                                            <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.PropertyName) </label>
+                                            <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                @Html.TextBoxFor(model => model.PropertyName, new { @class = "form-control" })
+                                                @Html.ValidationMessageFor(model => model.PropertyName)
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class='col-sm-6 col-md-6 col-xs-12'>
+                                        <div class='form-group'>
+                                            <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.PageName) </label>
+                                            <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                @Html.TextBoxFor(model => model.PageName, new { @class = "form-control" })
+                                                @Html.ValidationMessageFor(model => model.PageName)
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class='col-sm-6 col-md-6 col-xs-12'>
+                                        <div class='form-group'>
+                                            <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.PageUrlTitle) </label>
+                                            <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                @Html.TextBoxFor(model => model.PageUrlTitle, new { @class = "form-control" })
+                                                @Html.ValidationMessageFor(model => model.PageUrlTitle)
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class='col-sm-6 col-md-6 col-xs-12'>
+                                        <div class='form-group'>
+                                            <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.UIControlName) </label>
+                                            <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                @Html.TextBoxFor(model => model.UIControlName, new { @class = "form-control" })
+                                                @Html.ValidationMessageFor(model => model.UIControlName)
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class='col-sm-12 col-md-12 col-xs-12'>
+                                        <div class='form-group'>
+                                            <label >@Html.LabelFor(model => model.PageUrl) </label>
+                                            <div >
+                                                @Html.TextBoxFor(model => model.PageUrl, new { @class = "form-control" })
+                                                @Html.ValidationMessageFor(model => model.PageUrl)
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @Html.ActionLink("Cancel", "Cancel", new { UrlReferrer = ViewData["ApplicationFeedbackParentUrl"] }, new { @onclick = "", @class = "btn btn-default btn-sm" })
+    <input type="submit" name="command" value="Create" class="btn btn-primary btn-sm" />
+    if (ViewBag.IsDDAdd == null && User.CanEdit("ApplicationFeedback"))
+    {
+        <input type="submit" name="command" value="Create & Continue" class="btn btn-primary btn-sm" />
+    }
+    <input type="hidden" name="hdncommand" value="" />
+    <br /><br />
+}
+<script>
+    $(function () {
+        var userAgent = navigator.userAgent.toLowerCase();
+        // Figure out what browser is being used
+        var browser = {
+            version: (userAgent.match(/.+(?:rv|it|ra|ie)[\/: ]([\d.]+)/) || [])[1],
+            safari: /webkit/.test(userAgent),
+            opera: /opera/.test(userAgent),
+            msie: /msie/.test(userAgent) && !/opera/.test(userAgent),
+            mozilla: /mozilla/.test(userAgent) && !/(compatible|webkit)/.test(userAgent)
+        };
+        if (!browser.msie) {
+            $('form').areYouSure();
+        }
+        else if (browser.version > 8.0) {
+            $('form').areYouSure();
+        }
+    });
+</script>
+<script>
+    $("input[type='submit']").click(function () {
+        var $this = $(this);
+        $('input:hidden[name="hdncommand"]').val($this.val());
+    });
+</script>
+@{
+    var busineesrule = User.businessrules.Where(p => p.EntityName == "ApplicationFeedback").ToList();
+    if ((busineesrule != null && busineesrule.Count > 0))
+    {
+        <script>
+            $("form").submit(function () {
+                var flag = true;
+                $.ajax({
+                    async: false,
+                    type: "GET",
+                    url: "@Url.Action("GetMandatoryProperties", "ApplicationFeedback")",
+                    data: $(this).serialize(),
+                    success: function (data) {
+                        $('[businessrule="mandatory"]').each(function () {
+                            $(this).removeAttr('required');
+                        });
+                        document.getElementById('ErrMsg').innerHTML = "";
+                        for (var key in data) {
+                            if ($.trim($('#' + key).val()).length == 0) {
+                                $('#' + key).attr('required', 'required');
+                                $('#' + key).attr('businessrule', 'mandatory');
+                                flag = false;
+                                document.getElementById('ErrMsg').innerHTML += data[key] + " is Mandatory.<br/>";
+                            }
+                        }
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        //alert(JSON.stringify(jqXHR));
+                        //alert(errorThrown);
+                    }
+                });
+                return flag;
+            });
+        </script>
+    }
+}
+
+

@@ -1,0 +1,101 @@
+﻿@model GeneratorBase.MVC.Models.ActionArgs
+@using PagedList;
+@{
+    ViewBag.Title = "Edit Action Args";
+}
+@functions {
+    object getHtmlAttributes(string Property)
+    {
+        if (User.CanEdit("ActionArgs", Property))
+        {
+            return new { @class = "form-control" };
+        } return new { @class = "form-control", @readonly = "readonly" };
+    }
+}
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-title">
+            <i class="glyphicon glyphicon-edit text-primary"></i> Action Args  <i class="glyphicon glyphicon-chevron-right small"></i> <span>Edit</span>
+        </h1>
+        <h2 class="text-primary">@Html.DisplayFor(model => model.DisplayValue)</h2>
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+<div class="tabbable responsive">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="#Details" data-toggle="tab">Details</a></li>
+    </ul>
+    <div class="tab-content">
+        <div class="tab-pane fade in active" id="Details">
+            @using (Html.BeginForm("Edit", "ActionArgs", new { UrlReferrer = Convert.ToString(ViewData["ActionArgsParentUrl"]) }, FormMethod.Post, new { enctype = "multipart/form-data" }))
+            {
+                @Html.ValidationSummary(true)
+                @Html.HiddenFor(model => model.Id)
+                <div class="col-md-12 col-sm-12 col-xs-12" style="padding:0px; margin:0px;">
+                    <div class="panel panel-default AppForm">
+                        <div class="panel-body">
+                            <div class="row">
+                                @if (User.CanView("ActionArgs", "ParameterName"))
+                                {
+                                    <div class='col-sm-6 col-md-6 col-xs-12'>
+                                        <div class='form-group'>
+                                            <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.ParameterName) <span class="text-danger-reg">*</span> </label>
+                                            <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                @Html.TextBoxFor(model => model.ParameterName, getHtmlAttributes("ParameterName"))
+                                                @Html.ValidationMessageFor(model => model.ParameterName)
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                { @Html.HiddenFor(model => model.ParameterName, new { @class = "form-control" })}
+                                @if (User.CanView("ActionArgs", "ParameterValue"))
+                                {
+                                    <div class='col-sm-6 col-md-6 col-xs-12'>
+                                        <div class='form-group'>
+                                            <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.ParameterValue) <span class="text-danger-reg">*</span> </label>
+                                            <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                @Html.TextBoxFor(model => model.ParameterValue, getHtmlAttributes("ParameterValue"))
+                                                @Html.ValidationMessageFor(model => model.ParameterValue)
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                { @Html.HiddenFor(model => model.ParameterValue, new { @class = "form-control" })}
+                                @if (User.CanView("ActionArgs", "ActionArgumentsID"))
+                                {
+                                    <div class='col-sm-6 col-md-6 col-xs-12'>
+                                        <div class='form-group'>
+                                            <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.ActionArgumentsID) </label>
+                                            <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                <div class="input-group">
+                                                    @Html.DropDownList("ActionArgumentsID", null, "-- Select --", new { @class = "chosen-select form-control", @HostingName = "RuleAction", @dataurl = Url.Action("GetAllValue", "RuleAction", null) })
+                                                    @*@Html.DropDownList("ActionArgumentsID", null, "--Select Action--", new {@class = "chosen-select form-control", @HostingName = "RuleAction", @dataurl = Url.Action("GetAllValue", "RuleAction",null) })*@
+                                                    @Html.ValidationMessageFor(model => model.ActionArgumentsID)
+                                                    @if (User.Identity.IsAuthenticated && User != null && User.CanAdd("RuleAction"))
+                                                    {
+                                                        <div class="input-group-btn">
+                                                            <a class="btn btn-default btn ie8fix" href="@Url.Action("Create", "RuleAction", new {UrlReferrer = Request.Url, HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) })">
+                                                                <span class="glyphicon glyphicon-plus-sign"></span>
+                                                            </a>
+                                                        </div>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                { @Html.HiddenFor(model => model.ActionArgumentsID, new { @class = "form-control" })}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @Html.AntiForgeryToken()
+                @Html.ActionLink("Cancel", "Cancel", new { UrlReferrer = ViewData["ActionArgsParentUrl"] }, new { @onclick = "", @class = "btn btn-default btn-sm" })
+                <input type="submit" value="Save" class="btn btn-primary btn-sm" />
+            }
+        </div>
+    </div> <!-- /tab-content --><br />
+</div>

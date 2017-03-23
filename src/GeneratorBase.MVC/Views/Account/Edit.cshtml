@@ -1,0 +1,66 @@
+﻿@model GeneratorBase.MVC.Models.EditUserViewModel
+@{
+    ViewBag.Title = "Edit";
+}
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-title">
+            <i class="glyphicon glyphicon-edit text-primary"></i> Admin   <i class="glyphicon glyphicon-chevron-right small"></i> <span>Edit User</span>
+        </h1>
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+<div class="col-md-12 col-sm-12 col-xs-12" style="padding:0px; margin:0px;">
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+        <div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="panel panel-default AppForm">
+                    <div class="panel-heading clearfix">
+                        <i class="icon-calendar"></i>
+                        <h3 class="panel-title">@Model.UserName</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="form-horizontal">
+                            @Html.ValidationSummary(true)
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.UserName, new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">
+                                    @Html.TextBoxFor(model => model.UserName, new { @readonly = "readonly" })
+                                    @Html.ValidationMessageFor(model => model.UserName)
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.FirstName, new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">
+                                    @Html.EditorFor(model => model.FirstName)
+                                    @Html.ValidationMessageFor(model => model.FirstName)
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.LastName, new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">
+                                    @Html.EditorFor(model => model.LastName)
+                                    @Html.ValidationMessageFor(model => model.LastName)
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Email, new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">
+                                    @Html.EditorFor(model => model.Email)
+                                    @Html.ValidationMessageFor(model => model.Email)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+         @Html.ActionLink("Back to List", "Index", null, new { @class = "btn btn-default" })
+        <input type="submit" value="Save" class="btn btn-primary" />
+    }
+</div>
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

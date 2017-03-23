@@ -1,0 +1,47 @@
+﻿@model PagedList.IPagedList<GeneratorBase.MVC.Models.ActionType>
+@using PagedList.Mvc;
+@{
+    ViewBag.Title = "Index";
+    Layout = null;
+    Response.ContentType = "application/vnd.ms-excel";
+    Response.AddHeader("Content-Disposition", "attachment; filename=ActionType.xls");
+}
+<table>
+    <tr>
+        @if (User.CanView("ActionType", "TypeNo"))
+        {
+            <th>TypeNo</th>
+        }
+        @if (User.CanView("ActionType", "ActionTypeName"))
+        {
+            <th>Action Type Name</th>
+        }
+        @if (User.CanView("ActionType", "Description"))
+        {
+            <th>Description</th>
+        }
+    </tr>
+    @foreach (var item in Model)
+    {
+        <tr>
+            @if (User.CanView("ActionType", "TypeNo"))
+            {
+                <td>
+                    @Html.DisplayFor(modelItem => item.TypeNo)
+                </td>
+            }
+            @if (User.CanView("ActionType", "ActionTypeName"))
+            {
+                <td>
+                    @Html.DisplayFor(modelItem => item.ActionTypeName)
+                </td>
+            }
+            @if (User.CanView("ActionType", "Description"))
+            {
+                <td>
+                    @Html.DisplayFor(modelItem => item.Description)
+                </td>
+            }
+        </tr>
+    }
+</table>

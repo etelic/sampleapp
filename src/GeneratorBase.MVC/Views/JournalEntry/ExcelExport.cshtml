@@ -1,0 +1,97 @@
+﻿@model PagedList.IPagedList<GeneratorBase.MVC.Models.JournalEntry>
+@using PagedList.Mvc;
+@{
+    ViewBag.Title = "Index";
+    Layout = null;
+    Response.ContentType = "application/vnd.ms-excel";
+    Response.AddHeader("Content-Disposition", "attachment; filename=JournalEntry.xls");
+}
+<table>
+    <tr>
+        @if (User.CanView("JournalEntry", "EntityName"))
+        {
+            <th>Entity Name</th>
+        }
+        @if (User.CanView("JournalEntry", "Type"))
+        {
+            <th>Type</th>
+        }
+        @if (User.CanView("JournalEntry", "DateTimeOfEntry"))
+        {
+            <th>DateTime Of Entry</th>
+        }
+        @if (User.CanView("JournalEntry", "RecordInfo"))
+        {
+            <th>Record Info</th>
+        }
+        @if (User.CanView("JournalEntry", "UserName"))
+        {
+            <th>User Name</th>
+        }
+        @if (User.CanView("JournalEntry", "PropertyName"))
+        {
+            <th>Property Name</th>
+        }
+        @if (User.CanView("JournalEntry", "OldValue"))
+        {
+            <th>Old Value</th>
+        }
+        @if (User.CanView("JournalEntry", "	NewValue"))
+        {
+            <th>New Value</th>
+        }
+    </tr>
+    @foreach (var item in Model)
+    {
+        <tr>
+            @if (User.CanView("JournalEntry", "EntityName"))
+            {
+                <td>
+                    @Html.DisplayFor(modelItem => item.EntityName)
+                </td>
+            }
+            @if (User.CanView("JournalEntry", "Type"))
+            {
+                <td>
+                    @Html.DisplayFor(modelItem => item.Type)
+                </td>
+            }
+            @if (User.CanView("JournalEntry", "DateTimeOfEntry"))
+            {
+                <td>
+                    @Html.DisplayFor(modelItem => item.DateTimeOfEntry)
+                </td>
+            }
+           @if (User.CanView("JournalEntry", "RecordInfo"))
+           {
+            <td>
+                @Html.DisplayFor(modelItem => item.RecordInfo)
+            </td>
+           }
+           @if (User.CanView("JournalEntry", "UserName"))
+           {
+            <td>
+                @Html.DisplayFor(modelItem => item.UserName)
+            </td>
+           }
+            @if (User.CanView("JournalEntry", "PropertyName"))
+            {
+                <td>
+                    @Html.DisplayFor(modelItem => item.PropertyName)
+                </td>
+            }
+            @if (User.CanView("JournalEntry", "OldValue"))
+            {
+                <td>
+                    @Html.DisplayFor(modelItem => item.OldValue)
+                </td>
+            }
+            @if (User.CanView("JournalEntry", "NewValue"))
+            {
+                <td>
+                    @Html.DisplayFor(modelItem => item.NewValue)
+                </td>
+            }
+        </tr>
+    }
+</table>

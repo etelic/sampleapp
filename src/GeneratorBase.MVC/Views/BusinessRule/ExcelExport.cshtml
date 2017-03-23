@@ -1,0 +1,67 @@
+﻿@model PagedList.IPagedList<GeneratorBase.MVC.Models.BusinessRule>
+@using PagedList.Mvc;
+@{
+    ViewBag.Title = "Index";
+    Layout = null;
+    Response.ContentType = "application/vnd.ms-excel";
+    Response.AddHeader("Content-Disposition", "attachment; filename=BusinessRule.xls");
+}
+<table>
+    <tr>
+        @if (User.CanView("BusinessRule", "RuleName"))
+        {
+            <th>Rule Name</th>
+        }
+        @if (User.CanView("BusinessRule", "EntityName"))
+        {
+            <th>Entity Name</th>
+        }
+        @if (User.CanView("BusinessRule", "Roles"))
+        {
+            <th>Roles</th>
+        }
+        @if (User.CanView("BusinessRule", "DateCreated1"))
+        {
+            <th>Date Created</th>
+        }
+        @if (User.CanView("BusinessRule", "AssociatedBusinessRuleTypeID"))
+        {
+            <th @(Convert.ToString(ViewData["HostingEntity"]) == "BusinessRuleType" ? "hidden" : "")>BusinessRule Type</th>
+        }
+    </tr>
+    @foreach (var item in Model)
+    {
+        <tr>
+            @if (User.CanView("BusinessRule", "RuleName"))
+            {
+                <td>
+                    @Html.DisplayFor(modelItem => item.RuleName)
+                </td>
+            }
+            @if (User.CanView("BusinessRule", "EntityName"))
+            {
+                <td>
+                    @Html.DisplayFor(modelItem => item.EntityName)
+                </td>
+            }
+            @if (User.CanView("BusinessRule", "Roles"))
+            {
+                <td>
+                    @Html.DisplayFor(modelItem => item.Roles)
+                </td>
+            }
+            @if (User.CanView("BusinessRule", "DateCreated1"))
+            {
+                <td>
+                    @Html.DisplayFor(modelItem => item.DateCreated1)
+                </td>
+            }
+            @if (User.CanView("BusinessRule", "AssociatedBusinessRuleTypeID"))
+            {
+                <td @(Convert.ToString(ViewData["HostingEntity"]) == "BusinessRuleType" ? "hidden" : "")>
+                    @Html.DisplayFor(modelItem => item.associatedbusinessruletype.DisplayValue)
+                </td>
+            }
+        </tr>
+    }
+</table>

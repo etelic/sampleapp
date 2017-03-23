@@ -1,0 +1,417 @@
+﻿@model GeneratorBase.MVC.Models.BusinessRule
+@{
+    ViewBag.Title = "Create Business Rule";
+    var Roles = Model.Roles;
+    var RuleType = Model.associatedbusinessruletype.TypeNo;
+}
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-title">
+            <i class="glyphicon glyphicon-plus-sign text-primary"></i> Business Rule  <i class="glyphicon glyphicon-chevron-right small"></i> <span>Create</span>
+            @Html.ActionLink("Back To List", "Cancel", new { UrlReferrer = ViewData["BusinessRuleParentUrl"] }, new { @class = "btn btn-default btn-sm small pull-right" })
+        </h1>
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+<link href="@Url.Content("~/Content/bootstrap-multiselect.css")" rel="stylesheet" type="text/css" />
+@if (@ViewBag.IsContainsCondition == true)
+{
+    <script type="text/javascript" language="javascript">
+        function fillcondition() {
+            $("#" + "PropertyList").val('@Model.ruleconditions.FirstOrDefault().PropertyName');
+        }
+    </script>
+}
+else
+{
+     <script type="text/javascript" language="javascript">
+        function fillcondition() {
+        }
+    </script>
+}
+@if(Model.ruleaction.FirstOrDefault().actionarguments.FirstOrDefault(p=>p.ParameterName == "NotifyOn") != null)
+{
+    <script type="text/javascript" language="javascript">
+        function fillNotifyOn() {
+            var roles = "@Model.ruleaction.FirstOrDefault().actionarguments.FirstOrDefault(p=>p.ParameterName == "NotifyOn").ParameterValue".split(",");
+            var eleRoles = document.getElementById("TimeRuleApplyOn");
+            for (i = 0; i < roles.length; i++) {
+                for (var o = 0; o < eleRoles.options.length; o++) {
+                    if (eleRoles.options[o].value == roles[i])
+                        eleRoles.options[o].selected = true;
+                }
+            }
+        }
+    </script>
+}
+else
+{
+        <script type="text/javascript" language="javascript">
+        function fillNotifyOn() {
+        }
+    </script>
+}
+@if (Model.ruleaction.FirstOrDefault().actionarguments.FirstOrDefault(p => p.ParameterName == "NotifyTo") != null)
+{
+    <script type="text/javascript" language="javascript">
+       function fillcmbNotifyTo() {
+            var roles = "@Model.ruleaction.First().actionarguments.First(p => p.ParameterName == "NotifyTo").ParameterValue".split(",");
+            var eleRoles = document.getElementById("cmbNotifyTo");
+            for (i = 0; i < roles.length; i++) {
+                for (var o = 0; o < eleRoles.options.length; o++) {
+                    if (eleRoles.options[o].value == roles[i])
+                        eleRoles.options[o].selected = true;
+                }
+            }
+        }
+    </script>
+}
+else
+{
+     <script type="text/javascript" language="javascript">
+       function fillcmbNotifyTo() {
+        }
+    </script>
+}
+@if (Model.ruleaction.FirstOrDefault(p =>p.associatedactiontype!=null && p.associatedactiontype.DisplayValue.Contains("Mandatory")) != null)
+{
+    <script type="text/javascript" language="javascript">
+        function fillPropertyRuleProps() {
+            var roles = "@String.Join(",", Model.ruleaction.FirstOrDefault(p => p.associatedactiontype.DisplayValue.Contains("Mandatory") || p.associatedactiontype.DisplayValue.Contains("Readonly")).actionarguments.Select(q => q.ParameterName))".split(",");
+            var eleRoles = document.getElementById("PropertyList1");
+            for (i = 0; i < roles.length; i++) {
+                for (var o = 0; o < eleRoles.options.length; o++) {
+                    if (eleRoles.options[o].value == roles[i])
+                        eleRoles.options[o].selected = true;
+                }
+            }
+        }
+    </script>
+}
+else
+{
+     <script type="text/javascript" language="javascript">
+        function fillPropertyRuleProps() {
+        }
+    </script>
+}
+<script type="text/javascript" language="javascript">
+    function fillRoles() {
+        var roles = "@Roles".split(",");
+        var eleRoles = document.getElementById("RoleList");
+        for (i = 0; i < roles.length; i++) {
+            for (var o = 0; o < eleRoles.options.length; o++) {
+                if (eleRoles.options[o].value == roles[i])
+                    eleRoles.options[o].selected = true;
+            }
+        }
+    }
+    function toggleCriteria(obj) {
+        $('#rulecondition').toggle();
+        if ($(obj).html() == "Add Criteria")
+            $(obj).html("Remove Criteria");
+        else
+            $(obj).html("Add Criteria");
+    }
+    function showProperties(val) {
+        var SelectedText = $('#EntityList :selected').val();
+        $('#EntityName').val(SelectedText);
+        $.ajax({
+            url: '@Url.Action("GetAllAssociationsofEntity", "BusinessRule")' + '?Entity=' + SelectedText,
+            type: "GET",
+            cache: false,
+            success: function (result) {
+                var optionDOM = "";
+                for (i = 0; i < result.length; i++) {
+                    optionDOM += '<option value="' + result[i].Key + '">' + result[i].Value + '</option>';
+                }
+                $("#" + "cmbNotifyTo").html(optionDOM);
+                if(val==1)
+                    fillcmbNotifyTo();
+                $("#" + "cmbNotifyTo").multiselect('rebuild');
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                alert("error");
+            }
+        })
+        $.ajax({
+            url: '@Url.Action("GetPropertiesofEntity", "BusinessRule")' + '?Entity=' + SelectedText,
+            type: "GET",
+            cache: false,
+            success: function (result) {
+                var optionDOM = "";
+                for (i = 0; i < result.length; i++) {
+                    optionDOM += '<option value="' + result[i].Name + '">' + result[i].DisplayName + '</option>';
+                }
+                $("#" + "PropertyList").html(optionDOM);
+                $("#" + "PropertyList1").html(optionDOM);
+                if (val == 1)
+                { fillcondition(); fillPropertyRuleProps(); }
+                $("#" + "PropertyList1").multiselect('rebuild');
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                alert("error");
+            }
+        })
+    }
+    function showhidepanels() {
+        var SelectedText = $('#AssociatedBusinessRuleTypeID :selected').val();
+        $('div[name=ruletype]').each(function (e) {
+            $(this).hide();
+        });
+        if (SelectedText.length == 1 && SelectedText != 3)
+            $('#rulecondition').show();
+        try {
+            $('#ruletype' + SelectedText).show();
+        } catch (ex) { }
+    }
+    $(document).ready(function () {
+        showhidepanels(); showProperties(1);
+        if ('@RuleType' == '3' && '@ViewBag.IsContainsCondition'=='True') {
+            $("#btnCriteria").click();
+        }
+        fillRoles(); fillNotifyOn()
+        $('#EntityName').val($('#EntityList :selected').val());
+        $('#ConditionOperator').val($('#OperatorList :selected').val());
+        $('#OperatorList').change(function () {
+            var SelectedText = $('#OperatorList :selected').val();
+            $('#ConditionOperator').val(SelectedText);
+        });
+        $('#AssociatedBusinessRuleTypeID').change(function () {
+            showhidepanels();
+        });
+        $('#EntityList').change(function () {
+            showProperties(0);
+        });
+    });
+</script>
+<link href="~/Content/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+@using (Html.BeginForm("CreateBusinessRule", "BusinessRule", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken();
+    Html.ValidationSummary(true);
+    Html.EnableClientValidation();
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="panel panel-default AppForm">
+                <div class="panel-body">
+                    <div class="row">
+                        <div class='col-sm-6'>
+                            <div class='form-group'>
+                                <label>@Html.LabelFor(model => model.RuleName) <span class="text-danger-reg">*</span></label>
+                                @Html.TextBoxFor(model => model.RuleName, new { @class = "form-control" })
+                                @Html.HiddenFor(model => model.Id)
+                            </div>
+                        </div>
+                        <div class='col-sm-6' id="cmbEntity" style="height:70px;">
+                            <div class='form-group'>
+                                <label>Select Entity <span class="text-danger-reg">*</span></label>
+                                @Html.DropDownList("EntityList", null, "-- Select --", new { @required = "required", @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.EntityName)
+                                @Html.TextBoxFor(model => model.EntityName, new { @class = "form-control hidden" })
+                            </div>
+                        </div>
+                        <div class='col-sm-6'>
+                            <div class='form-group'>
+                                <label>Select Type of Rule <span class="text-danger-reg">*</span></label>
+                                <div class="input-group" style="width: 100%;">
+                                    @Html.DropDownList("AssociatedBusinessRuleTypeID", null, "-- Select --", new { @required = "required", @class = "chosen-select form-control", @HostingName = "BusinessRuletype", @dataurl = Url.Action("GetAllValue", "BusinessRuletype", null) })
+                                    @Html.ValidationMessageFor(model => model.AssociatedBusinessRuleTypeID)
+                                </div>
+                            </div>
+                        </div>
+                        <div class='col-sm-6'>
+                            <div class='form-group'>
+                                <label>@Html.LabelFor(model => model.Roles) </label>
+                                <br />
+                                @Html.DropDownList("RoleList", null, new { @multiple = "multiple" })
+                                @Html.TextBox("RoleListValue", null, new { @class = "form-control hidden" })
+                                @Html.ValidationMessageFor(model => model.Roles)
+                            </div>
+                        </div>
+                        <div class="col-md-12 col-sm-12 col-xs-12" id="rulecondition" style="display:none;" name="ruletype">
+                            <div class="panel panel-default">
+                                <div class="panel-heading clearfix">
+                                    <i class="fam-lightbulb"></i>
+                                    <h3 class="panel-title">Define condition for Rule </h3>
+                                </div>
+                                <div class="panel-body">
+                                    <div>
+                                        <div class="row">
+                                            <div class='col-sm-6'>
+                                                <div class='form-group'>
+                                                    <label>Select Property <span class="text-danger-reg">*</span></label>
+                                                    @Html.DropDownList("PropertyList", null, new { @class = "form-control" })
+                                                </div>
+                                            </div>
+                                            <div class='col-sm-6'>
+                                                <div class='form-group'>
+                                                    <label>Select Operator <span class="text-danger-reg">*</span></label>
+                                                    <select class="form-control" id="OperatorList">
+                                                        <option @(Model.ruleconditions.FirstOrDefault() != null && Model.ruleconditions.FirstOrDefault().Operator == "="?"selected=selected":"")  value="=">Equals to</option>
+                                                        <option @(Model.ruleconditions.FirstOrDefault() != null && Model.ruleconditions.FirstOrDefault().Operator == ">" ? "selected=selected" : "") value=">">Greater than</option>
+                                                        <option @(Model.ruleconditions.FirstOrDefault() != null && Model.ruleconditions.FirstOrDefault().Operator == "<" ? "selected=selected" : "") value="<">Less than</option>
+                                                        <option @(Model.ruleconditions.FirstOrDefault() != null && Model.ruleconditions.FirstOrDefault().Operator == "<=" ? "selected=selected" : "") value="<=">Less than Or Equals to</option>
+                                                        <option @(Model.ruleconditions.FirstOrDefault() != null && Model.ruleconditions.FirstOrDefault().Operator == ">=" ? "selected=selected" : "") value=">=">Greater than Or Equals to</option>
+                                                        <option @(Model.ruleconditions.FirstOrDefault() != null && Model.ruleconditions.FirstOrDefault().Operator == "Contains" ? "selected=selected" : "") value="Contains">Contains</option>
+                                                        <option @(Model.ruleconditions.FirstOrDefault() != null && Model.ruleconditions.FirstOrDefault().Operator == "!=" ? "selected=selected" : "") value="!=">Not Equals to</option>
+                                                    </select>
+                                                    @Html.TextBox("ConditionOperator", null, new { @class = "form-control hidden" })
+                                                </div>
+                                            </div>
+                                            <div class='col-sm-6'>
+                                                <div class='form-group'>
+                                                    <label>Property Value <span class="text-danger-reg">*</span></label>
+                                                    @Html.TextBox("ConditionValue", Model.ruleconditions.FirstOrDefault() != null ? Model.ruleconditions.FirstOrDefault().Value:null, new { @class = "form-control", @required = "required" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12 col-sm-12 col-xs-12" id="ruletype2" style="display:none;" name="ruletype">
+                            <div class="panel panel-default">
+                                <div class="panel-heading clearfix">
+                                    <i class="fam-book-edit"></i>
+                                    <h3 class="panel-title">Make properties readonly/mandatory based on condition</h3>
+                                </div>
+                                <div class="panel-body">
+                                    <div class="row">
+                                        <div class='col-sm-6'>
+                                            <div class='form-group'>
+                                                <label>Select Rule</label>
+                                                <select class="form-control" id="PropertyRule">
+                                                    <option @(Model.ruleaction.FirstOrDefault(p =>p.associatedactiontype!=null && p.associatedactiontype.DisplayValue.Contains("Readonly")) != null ? "selected=selected" : "") value="4">Readonly</option>
+                                                    <option @(Model.ruleaction.FirstOrDefault(p =>p.associatedactiontype != null && p.associatedactiontype.DisplayValue.Contains("Mandatory")) != null ? "selected=selected" : "") value="2">Mandatory</option>
+                                                </select>
+                                                @Html.TextBox("PropertyRuleValue", null, new { @class = "form-control hidden" })
+                                            </div>
+                                        </div>
+                                        <div class='col-sm-6'>
+                                            <div class='form-group'>
+                                                <label>Select Property<span class="text-danger-reg">*</span></label>
+                                                <br />
+                                                @Html.DropDownList("PropertyList1", null, new { @multiple = "multiple" })
+                                                @Html.TextBox("PropertyList1Value", null, new { @class = "form-control hidden" })
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12 col-sm-12 col-xs-12" id="ruletype3" style="display:none;" name="ruletype">
+                            <div class="panel panel-default">
+                                <div class="panel-heading clearfix">
+                                    <i class="fam-clock-add"></i>
+                                    <h3 class="panel-title">Time-based notification alert</h3>
+                                </div>
+                                <div class="panel-body">
+                                    <div class='col-sm-6'>
+                                        <div class='form-group'>
+                                            <label>Notify within days <span class="text-danger-reg">*</span></label>
+                                            @Html.TextBox("TimeValue", (string)ViewBag.TimeValue, new { @placeholder = "Days within to notify, 0 for immediate", @required = "required", @class = "form-control" })
+                                        </div>
+                                    </div>
+                                    <div class='col-sm-6'>
+                                        <div class='form-group' name="dvNotifyTo" id="dvNotify">
+                                            <label>Notify to <span class="text-danger-reg">*</span></label>
+                                            <br />
+                                            @Html.TextBox("NotifyTo", null, new { style = "border:none !important;Width:0px !important;" })
+                                            @Html.DropDownList("cmbNotifyTo", null, new { @multiple = "multiple" })
+                                        </div>
+                                    </div>
+                                    <div style="clear:both;"></div>
+                                    <div class='col-sm-6'>
+                                        <div class='form-group'>
+                                            <label>Specify extra email-ids </label>
+                                            @Html.TextArea("NotifyToExtra", (string)ViewBag.NotifyToExtra, new { @placeholder = "Notify some these people also", @class = "form-control" })
+                                        </div>
+                                    </div>
+                                    <div class='col-sm-6'>
+                                        <div class='form-group'>
+                                            <label>Notification Message</label>
+                                            @Html.TextArea("AlertMessage", (string)ViewBag.AlertMessage, new { @placeholder = "Alert Message for notification", @class = "form-control" })
+                                        </div>
+                                    </div>
+                                    <div class='col-sm-6'>
+                                        <div class='form-group'>
+                                            <label>Notify on</label>
+                                            @Html.DropDownList("TimeRuleApplyOn", null, new { @multiple = "multiple" })
+                                            @Html.TextBox("TimeRuleApplyOnValue", null, new { @class = "form-control hidden" })
+                                        </div>
+                                    </div>
+                                    <div class='col-sm-6'>
+                                        <div class='form-group'>
+                                            <button type="button" id="btnCriteria" onclick="toggleCriteria(this);" class="btn btn-primary btn-sm">Add Criteria</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12 col-sm-12 col-xs-12" id="ruletype4" style="display:none;" name="ruletype">
+                            <div class="panel panel-default">
+                                <div class="panel-heading clearfix">
+                                    <i class="fam-email-add"></i>
+                                    <h3 class="panel-title">Email to pre-defined people on create/edit</h3>
+                                </div>
+                                <div class="panel-body">
+                                    @Html.TextArea("Emailids", null, new { @plcaceholder = "Provide comma separated email-ids", @class = "form-control" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <button type="button" class="btn btn-default btn-sm" data-dismiss="modal" aria-hidden="true">Cancel</button>
+    <input type="submit" value="Update" class="btn btn-primary btn-sm" />
+}
+@Scripts.Render("~/bundles/jqueryval")
+<script src="~/Scripts/Common3/chosen.jquery.js" type="text/javascript"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('select[name=RoleList]').multiselect({
+            buttonWidth: '100%'
+        });
+        $('select[name=cmbNotifyTo]').multiselect({
+            buttonWidth: '100%'
+        });
+        $('select[name=PropertyList1]').multiselect({
+            buttonWidth: '100%'
+        });
+        $('select[name=TimeRuleApplyOn]').multiselect({
+            buttonWidth: '100%'
+        });
+    });
+</script>
+<script src="@Url.Content("~/Scripts/Common2/bootstrap-multiselect.js")" type="text/javascript"></script>
+<script>
+    $("form").submit(function () {
+        try {
+            $('#PropertyList1Value').val(($('#PropertyList1').val()));
+            $('#RoleListValue').val(($('#RoleList').val()));
+            $('#PropertyRuleValue').val($('#PropertyRule :selected').val());
+            $('#TimeRuleApplyOnValue').val($('#TimeRuleApplyOn').val());
+        } catch (ex) { }
+        $('div[name=dvNotifyTo]').each(function (e) {
+            catname = $(this).attr('id');
+            var firstInput = $("#" + catname).find('input[type=text],input[type=password],input[type=radio],input[type=checkbox],textarea,select').filter(':visible:first');
+            var firstButton = $("#" + catname).find('button').filter(':first');
+            var txtid = firstInput.attr('id');
+            var btntitle = firstButton.attr('title');
+            var value = $('#cmbNotifyTo').val();
+            if (firstButton != null) {
+                if (btntitle != 'None selected')
+                    $("#" + txtid).val(value);
+                else
+                    $("#" + txtid).val('');
+            }
+        });
+        //if ($(this).find('.input-validation-error').length == 0) {
+        //    $(this).find(':submit').attr('disabled', 'disabled');
+        //}
+    });
+</script>
+
