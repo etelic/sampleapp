@@ -1,4 +1,4 @@
-#!/bin/bash
+﻿#!/bin/bash
 
 function usage
 {
@@ -15,7 +15,7 @@ function usage
 # Main
 TemplateFile='./ProdAndStage.json'
 TemplateParameterFile='./paramcli.json'
-RepoUrl='https://github.com/azure-appservice-samples/ToDoApp.git'
+RepoUrl='https://https://github.com/etelic/sampleapp'
 Branch='master'
 
 while [ "$1" != "" ]; do
