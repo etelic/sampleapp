@@ -3,7 +3,7 @@
 	[string] $SlotName = "Staging",
 	[string] $TemplateFile = "ProdAndStage.json",
 	[string] $TemplateParameterFile = "param.json",
-	[string] $RepoUrl = "https://github.com/etelic/sampleapp.git",
+	[string] $RepoUrl = "https://github.com/etelic/sampleapp",
 	[string] $Branch = "master"
 )
 
