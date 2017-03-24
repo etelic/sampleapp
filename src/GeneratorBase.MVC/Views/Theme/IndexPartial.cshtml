@@ -23,16 +23,17 @@
         function SetCurrentTheme(obj, Id) {
             var url = $(obj).attr('dataurl')
             //var Id = $("#CurrentThemeDD option:selected").val()
-            url = url + "?Id=" + Id;
             try {
                 $.ajax({
-                    url: url,
+                    url: url + "?Id=" + Id,
                     type: "POST",
                     cache: false,
                     processData: false,
                     contentType: false,
-                    success: function () {
-                        success();
+                    success: function (result) {
+                        if (result == "SUCCESS") {
+                            success();
+                        }
                     }
                 });
             }
@@ -95,7 +96,7 @@
         object Getgb(string cssstr, string varName)
         {
             Dictionary<string, string> varlist = new Dictionary<string, string>();
-            if (System.IO.File.Exists(Server.MapPath("~/Content/Sitetemp.css")))
+            if (System.IO.File.Exists(Server.MapPath("~/Content/SiteOriginal.css")))
             {
                 using (System.IO.StringReader sr = new StringReader(cssstr))
                 {
@@ -152,7 +153,7 @@
                         }
                         else
                         {
-                            <a onclick="SetCurrentTheme(this, @item.Id);" style="margin: 0 0 4px 6px" title="Set Current Theme @item.Name" class="btn btn-default btn-sm" dataurl='@Url.Action("SetCurrentTheme", "Theme" , null)'>Select Theme</a>
+                            <a onclick="SetCurrentTheme(this, @item.Id);" style="margin: 0 0 4px 6px" title="Set Current Theme @item.Name" class="btn btn-default btn-sm" dataurl='@Url.Action("SetCurrentTheme", "Theme", null)'>Select Theme</a>
                         }
                     </div>
                 </div>

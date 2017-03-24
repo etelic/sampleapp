@@ -17,17 +17,22 @@ namespace GeneratorBase.MVC
         {
             this.user = user;
 			//this.Database.Log = MvcApplication.LogToConsole;
-			if (this.user != null && !this.user.IsAdmin())
+			if (this.user != null && !this.user.IsAdmin)
 			this.ApplyFilters(new List<IFilter<ApplicationContext>>()
                      {
                          new ApplicationSecurityFilter(user)                                         
                      });
         }	
         public IDbSet<FileDocument> FileDocuments { get; set; }
-        public IDbSet<T_School> T_Schools { get; set; }
-        public IDbSet<T_Student> T_Students { get; set; }
-        public IDbSet<T_Department> T_Departments { get; set; }
-        public IDbSet<T_StudentPerformance> T_StudentPerformances { get; set; }
+        public IDbSet<T_Employee> T_Employees { get; set; }
+        public IDbSet<T_Country> T_Countrys { get; set; }
+        public IDbSet<T_State> T_States { get; set; }
+        public IDbSet<T_City> T_Citys { get; set; }
+        public IDbSet<T_Address> T_Addresss { get; set; }
+        public IDbSet<T_Employeetype> T_Employeetypes { get; set; }
+        public IDbSet<T_Employeestatus> T_Employeestatuss { get; set; }
+        public IDbSet<T_Organization> T_Organizations { get; set; }
+        public IDbSet<T_EmployeeOrganizationAssociation> T_EmployeeOrganizationAssociations { get; set; }
 		//Default DbSet for Application
 		public IDbSet<Document> Documents { get; set; }
 		public IDbSet<ImportConfiguration> ImportConfigurations { get; set; }     
@@ -44,7 +49,27 @@ namespace GeneratorBase.MVC
 		public IDbSet<AppSetting> AppSettings { get; set; }
 		public IDbSet<EmailTemplateType> EmailTemplateTypes { get; set; }
 		public IDbSet<EmailTemplate> EmailTemplates { get; set; }
-				//End default DbSet for Application
+		public IDbSet<EntityDataSource> EntityDataSources { get; set; }
+        public IDbSet<DataSourceParameters> DataSourceParameterss { get; set; }
+        public IDbSet<PropertyMapping> PropertyMappings { get; set; }
+		public IDbSet<T_Chart> Charts { get; set; }
+		//Scheduler
+		public IDbSet<T_Schedule> T_Schedules { get; set; }
+        public IDbSet<T_Scheduletype> T_Scheduletypes { get; set; }
+        public IDbSet<T_RecurringScheduleDetailstype> T_RecurringScheduleDetailstypes { get; set; }
+        public IDbSet<T_RecurringFrequency> T_RecurringFrequencys { get; set; }
+        public IDbSet<T_RecurringEndType> T_RecurringEndTypes { get; set; }
+        public IDbSet<T_RecurrenceDays> T_RecurrenceDayss { get; set; }
+        public IDbSet<T_MonthlyRepeatType> T_MonthlyRepeatTypes { get; set; }
+        public IDbSet<T_RepeatOn> T_RepeatOns { get; set; }
+		//Web Api
+		public IDbSet<ApiToken> ApiTokens { get; set; }//will be used in case of webapi only
+        //Custom Reports
+        public IDbSet<CustomReport> CustomReports { get; set; }
+        
+
+		 
+		//End default DbSet for Application
         public override int SaveChanges()
         {
 			var result = 0;
@@ -62,6 +87,10 @@ namespace GeneratorBase.MVC
                 //Add in list for business logic after successfully save.
                 if (!originalStates.ContainsKey(entry))
                     originalStates.Add(entry, entry.State);
+				if(CheckExternalAPISave(entry))
+                {
+                    CancelChanges(entry); continue;
+                }
             }
             result = base.SaveChanges();//Save Changes
             ApplyBusinessLogicAfterSave(originalStates);
@@ -77,8 +106,13 @@ namespace GeneratorBase.MVC
             SetAutoProperty(entry);
             SetDisplayValue(entry);
             CheckFieldLevelSecurity(entry);
+			TimeBasedAlert(entry);
             if (entry.State == EntityState.Modified)
+            {
+                AssignOneToManyCurrentOnUpdate(entry);
                 MakeUpdateJournalEntry(entry);
+            }
+			OrderedListCheck(entry);
             if (entry.State == EntityState.Deleted)
                 MakeDeleteJournalEntry(entry);
         }
@@ -88,10 +122,10 @@ namespace GeneratorBase.MVC
             {
                 if (originalStates.Any(p => p.Value.HasFlag(EntityState.Added)))
                 {
+					AssignOneToManyCurrentOnAdd(originalStates);
                     MakeAddJournalEntry(originalStates);
                     SetAutoProperty(originalStates);
                 }
-					BroadcastMessageForMonitoring(originalStates);
             }
             if (originalStates != null && originalStates.Any(p => p.Value.HasFlag(EntityState.Added) || p.Value.HasFlag(EntityState.Modified)))
             {
@@ -100,6 +134,17 @@ namespace GeneratorBase.MVC
                 TimeBasedAlert(originalStates);
                 AfterSave(originalStates);
             }
+        }
+		private bool CheckExternalAPISave(DbEntityEntry entry)
+        {
+            var result = false;
+            var entity = (IEntity)entry.Entity;
+            var entityType = ObjectContext.GetObjectType(entry.Entity.GetType());
+            var EntityName = entityType.Name;
+            var state = entry.State;
+            if (IsExternalEntity(entity,EntityName,state))
+                result = true;
+            return result;
         }
         private bool ValidateBeforeSave(DbEntityEntry entry)
         {
@@ -113,13 +158,16 @@ namespace GeneratorBase.MVC
                 return false;
             if (ViolatingBusinessRules(entry))
                 return false;
+			if (CheckLockCondition(entry))
+                return false;
             if ((entry.State == EntityState.Added || entry.State == EntityState.Modified))
             {
                 if (!Check1MThresholdCondition(entry))
                     return false;
-                if (!CheckBeforeSave(entity, EntityName))
+				string strChkBeforeSave = CheckBeforeSave(entity, EntityName);
+                if (!string.IsNullOrEmpty(strChkBeforeSave))
                 {
-                    throw new ArgumentException("Validation Alert - Before Save !! Information not saved.");
+                    throw new ArgumentException(strChkBeforeSave);
                     return false;
                 }
             }

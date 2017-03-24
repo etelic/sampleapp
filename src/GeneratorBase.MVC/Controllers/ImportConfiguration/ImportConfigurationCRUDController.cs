@@ -169,7 +169,7 @@ namespace GeneratorBase.MVC.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult CreateWizard([Bind(Include="Id,ConcurrencyKey,TableColumn,SheetColumn,UniqueColumn,LastUpdate,LastUpdateUser,Name")] ImportConfiguration importconfiguration,string UrlReferrer)
+        public ActionResult CreateWizard([Bind(Include = "Id,ConcurrencyKey,TableColumn,SheetColumn,UniqueColumn,LastUpdate,LastUpdateUser,Name,MappingName,IsDefaultMapping")] ImportConfiguration importconfiguration, string UrlReferrer)
         {
             if (ModelState.IsValid)
             {
@@ -200,7 +200,7 @@ namespace GeneratorBase.MVC.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult CreateQuick([Bind(Include="Id,ConcurrencyKey,TableColumn,SheetColumn,UniqueColumn,Name")] ImportConfiguration importconfiguration,string UrlReferrer, bool? IsAddPop)
+        public ActionResult CreateQuick([Bind(Include = "Id,ConcurrencyKey,TableColumn,SheetColumn,UniqueColumn,Name,MappingName,IsDefaultMapping")] ImportConfiguration importconfiguration, string UrlReferrer, bool? IsAddPop)
         {
             if (ModelState.IsValid)
             {
@@ -235,7 +235,7 @@ namespace GeneratorBase.MVC.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
        [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include="Id,ConcurrencyKey,TableColumn,SheetColumn,UniqueColumn,LastUpdate,LastUpdateUser,Name")] ImportConfiguration importconfiguration,string UrlReferrer, bool? IsDDAdd)
+        public ActionResult Create([Bind(Include = "Id,ConcurrencyKey,TableColumn,SheetColumn,UniqueColumn,LastUpdate,LastUpdateUser,Name,MappingName,IsDefaultMapping")] ImportConfiguration importconfiguration, string UrlReferrer, bool? IsDDAdd)
         {
             if (ModelState.IsValid)
             {
@@ -290,7 +290,7 @@ namespace GeneratorBase.MVC.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include="Id,ConcurrencyKey,TableColumn,SheetColumn,UniqueColumn,LastUpdate,LastUpdateUser,Name")] ImportConfiguration importconfiguration,string UrlReferrer)
+        public ActionResult Edit([Bind(Include = "Id,ConcurrencyKey,TableColumn,SheetColumn,UniqueColumn,LastUpdate,LastUpdateUser,Name,MappingName,IsDefaultMapping")] ImportConfiguration importconfiguration, string UrlReferrer)
         {
             if (ModelState.IsValid)
             {
@@ -344,7 +344,7 @@ namespace GeneratorBase.MVC.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
        [ValidateAntiForgeryToken]
-        public ActionResult EditWizard([Bind(Include="Id,ConcurrencyKey,TableColumn,SheetColumn,UniqueColumn,LastUpdate,LastUpdateUser,Name")] ImportConfiguration importconfiguration,string UrlReferrer)
+         public ActionResult EditWizard([Bind(Include = "Id,ConcurrencyKey,TableColumn,SheetColumn,UniqueColumn,LastUpdate,LastUpdateUser,Name,MappingName,IsDefaultMapping")] ImportConfiguration importconfiguration, string UrlReferrer)
         {
             if (ModelState.IsValid)
             {

@@ -1,0 +1,898 @@
+﻿@model GeneratorBase.MVC.Models.T_Address
+@{
+    ViewBag.Title = "Set Search Criteria";
+	var parentUrl = HttpUtility.ParseQueryString(Request.QueryString.ToString());
+	var EntityDisplayNameReflector = ModelReflector.Entities.FirstOrDefault(p => p.Name == "T_Address");
+	var EntityDisplayName = EntityDisplayNameReflector != null ? EntityDisplayNameReflector.DisplayName : "Address";
+	var FromViewReport = parentUrl["FromViewReport"];
+    var rptId = parentUrl["rptId"];
+}
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-title">
+            <i class="glyphicon glyphicon-search text-primary"></i> @EntityDisplayName <i class="glyphicon glyphicon-chevron-right small"></i> <span>Report Filter</span>
+        </h1>
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+
+			 <div class="fsearch">
+					<div class="row">
+                        <div class="col-md-12 col-sm-12 col-xs-12">
+                            <div class="panel panel-default">
+                                <div class="panel-heading clearfix">
+                                    <i class="icon-calendar"></i>
+
+                                    <h3 class="panel-title">
+                                        All Field Search Criteria
+                                    </h3>
+                                </div>
+                                <div class="panel-body">
+                                    <div class='col-sm-12 col-md-12 col-xs-12'>
+                                       @{
+									var txtGenCriteria = String.IsNullOrEmpty(Convert.ToString(ViewBag.CurrentFilter)) ? "" : Convert.ToString(ViewBag.CurrentFilter);
+									}
+									<input type="text" id="FSearch" class="form-control" placeholder="Search Criteria" value="@txtGenCriteria" style="padding:15px; font-size:16px"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+					 <div  id="accordion"> 
+					 	<div class="row">
+                        <div class="col-md-12 col-sm-12 col-xs-12">
+                            <div class="panel panel-default">
+                                <div class="panel-heading clearfix">
+                                    <i class="icon-calendar"></i>
+                                    <h3 class="panel-title">
+									             <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo"><i class="glyphicon glyphicon-chevron-down pull-left" style="padding-top:5px; padding-right:5px;"></i> Association Property</a>  
+  
+                                    </h3>
+                                </div>
+								<div id="collapseTwo" class="panel-collapse in">
+                                <div class="panel-body">
+       @if (ViewBag.t_addresscountry!=null)
+                    {
+ <div class='col-sm-6 col-md-6 col-xs-12'>
+                            <div class='form-group' title="Address Country">
+							@Html.LabelFor(model => model.T_AddressCountryID, new { @class="col-sm-5 col-md-5 col-xs-12" })
+                                <div class="input-group col-sm-7 col-md-7 col-xs-12" id="dvt_addresscountry">
+                                    		
+	 @Html.DropDownList("t_addresscountry", null, new {  @onchange = Html.Raw("ClearMultiSelectChild('t_addressstate');ClearMultiSelectChild('t_addresscity');") ,  @multiple = "multiple", @HostingName = "T_Country", @dataurl = Url.Action("GetAllMultiSelectValue", "T_Country",null) })
+                                </div>
+                            </div>
+                        </div>
+		}
+@if (ViewBag.t_addressstate!=null)
+                    {
+ <div class='col-sm-6 col-md-6 col-xs-12'>
+                            <div class='form-group' title="Address State">
+							@Html.LabelFor(model => model.T_AddressStateID, new { @class="col-sm-5 col-md-5 col-xs-12" })
+                                <div class="input-group col-sm-7 col-md-7 col-xs-12" id="dvt_addressstate">
+                                    		
+	 @Html.DropDownList("t_addressstate", null, new {@ParentDD = "t_addresscountry" , @AssoNameWithParent = "T_StateCountryID" ,  @onchange = Html.Raw("ClearMultiSelectChild('t_addresscity');") ,  @multiple = "multiple", @HostingName = "T_State", @dataurl = Url.Action("GetAllMultiSelectValue", "T_State",null) })
+                                </div>
+                            </div>
+                        </div>
+		}
+@if (ViewBag.t_addresscity!=null)
+                    {
+ <div class='col-sm-6 col-md-6 col-xs-12'>
+                            <div class='form-group' title="Address City">
+							@Html.LabelFor(model => model.T_AddressCityID, new { @class="col-sm-5 col-md-5 col-xs-12" })
+                                <div class="input-group col-sm-7 col-md-7 col-xs-12" id="dvt_addresscity">
+                                    		
+	 @Html.DropDownList("t_addresscity", null, new {@ParentDD = "t_addressstate" , @AssoNameWithParent = "T_CityStateID" ,   @multiple = "multiple", @HostingName = "T_City", @dataurl = Url.Action("GetAllMultiSelectValue", "T_City",null) })
+                                </div>
+                            </div>
+                        </div>
+		}
+
+		</div>
+		</div>
+		</div>
+		</div>
+	</div>
+		 <div class="row">
+                        <div class="col-md-6 col-sm-6 col-xs-6">
+                            <div class="panel panel-default">
+                                <div class="panel-heading clearfix">
+                                    <i class="icon-calendar"></i>
+                                    <h3 class="panel-title">
+                                          <a data-toggle="collapse" data-parent="#accordion" href="#collapsesorting"><i class="glyphicon glyphicon-chevron-down pull-left" style="padding-top:5px; padding-right:5px;"></i> Select Columns for sorting</a>
+                 
+                                    </h3>
+                                </div>
+								<div id="collapsesorting" class="panel-collapse in">
+                                <div class="panel-body">
+                                    <div class='col-sm-6 col-md-6 col-xs-12'>
+                                        <div class='form-group'>
+                                            <label id="lblOrderDepth" class="col-sm-5 col-md-5 col-xs-12">Order By</label>
+                                            <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                <div class="input-group" style="width:100%;">
+                                                    @Html.DropDownList("SortOrder1", null, "-- Select --", new { @class = "form-control" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                    </div>
+                                    <button class="btn btn-primary btn-sm" onclick="SetSortOrder();" type="button" value="Add">Add</button>
+                                   
+                                    <div class="clearfix"></div>
+                                    <label id="lblsortorder" style=""></label>
+                                    <button class="btn btn-default btn-xs" type="button" id="btnsortorder" style="display:none !important;" onclick="clearsortorder();">Reset</button>
+                                   @Html.Hidden("SortOrder")
+								   </div>
+                                </div>
+                            </div>
+							</div>
+							<div class="col-md-6 col-sm-6 col-xs-6">
+							<div class="panel panel-default">
+                                <div class="panel-heading clearfix">
+                                    <i class="icon-calendar"></i>
+                                    <h3 class="panel-title">
+                                       <a data-toggle="collapse" data-parent="#accordion" href="#collapsegrouping"><i class="glyphicon glyphicon-chevron-down pull-left" style="padding-top:5px; padding-right:5px;"></i> Select Columns for grouping</a>
+                                    </h3>
+                                </div>
+								<div id="collapsegrouping" class="panel-collapse in">
+                                <div class="panel-body">
+                                    <div class='col-sm-6 col-md-6 col-xs-12'>
+                                        <div class='form-group'>
+                                            <label id="lblGroupDepth" class="col-sm-5 col-md-5 col-xs-12">Group By</label>
+                                            <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                <div class="input-group" style="width:100%;">
+                                                    @Html.DropDownList("GroupByColumn", null, "-- Select --", new { @class = "form-control" })
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <button class="btn btn-primary btn-sm" onclick="SetGroupByColumn();" type="button" value="Add">Add</button>
+
+                                    <div class="clearfix"></div>
+                                    <label id="lblgroupbycolumn" style=""></label>
+                                    <button class="btn btn-default btn-xs" type="button" id="btngroupbycolumn" style="display:none !important;" onclick="cleargroupbycolumn();">Reset</button>
+                                    @Html.Hidden("hdnGroupByColumn")
+                                </div>
+								</div>
+                            </div>
+							</div>
+							<div class="col-md-12 col-sm-12 col-xs-12">
+							 <div class="panel panel-default">
+                                <div class="panel-heading clearfix">
+                                    <i class="icon-calendar"></i>
+                                    <h3 class="panel-title">
+                                       <a data-toggle="collapse" data-parent="#accordion" href="#collapseGridLayout"><i class="glyphicon glyphicon-chevron-down pull-left" style="padding-top:5px; padding-right:5px;"></i> Grid Layout & Hide Columns</a>
+                                    </h3>
+                                </div>
+								<div id="collapseGridLayout" class="panel-collapse in">
+                                <div class="panel-body">
+                                    <div class='col-sm-6 col-md-6 col-xs-12'>
+                                        <div class='form-group'>
+                                            <label class="col-sm-5 col-md-5 col-xs-12">Hide Columns</label>
+                                            <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                <div class="input-group" style="width:100%;">
+                                                    @Html.DropDownList("HideColumns", null, new {@multiple = "multiple" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+								</div>
+                            </div>
+                        </div>
+                    </div>
+					<div class="row">
+                        <div class="col-md-12 col-sm-12 col-xs-12">
+                            <div class="panel panel-default">
+                                <div class="panel-heading clearfix">
+                                   <h3 class="panel-title">
+                            <a data-toggle="collapse" data-parent="#accordion" href="#collapseSearchCriteria"><i class="glyphicon glyphicon-chevron-down pull-left" style="padding-top:5px; padding-right:5px;"></i> Specific Field Search Criteria</a>
+                        </h3>
+                                </div>
+								<div id="collapseSearchCriteria" class="panel-collapse in">
+                                <div class="panel-body">
+                                    <div class="row">
+                                        <div class="col-sm-3 col-md-3 col-xs-12">
+                                            <div class='form-group'>
+                                                <label>Select Property <span class="text-danger-reg">*</span></label>
+                                                @Html.DropDownList("PropertyList", null, "-- Select Property --", new { @onchange = "FillCriteriaValue(this);GetSecondLevelAttributeForCriteria();", @class = "form-control" })
+                                                @Html.DropDownList("AssociationPropertyList", null, "-- Select --", new { @onchange = "GetCriteriaSuggestedValues(this);FillCriteriaForAssociation();", @class = "form-control", @style = "margin-top:8px;display:none;", @HostingName = "", @dataurl = "" })
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-3 col-md-3 col-xs-12">
+                                            <div class='form-group'>
+                                                <label>Select Operator <span class="text-danger-reg">*</span></label>
+                                                <select class="form-control" id="OperatorList" onchange="SetCriteriaValueType(this);">
+                                                    <option value="">-- Select --</option>
+                                                </select>
+                                                @Html.TextBox("ConditionOperator", null, new { @class = "form-control hidden" })
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-3 col-md-3 col-xs-12">
+                                            <div class='form-group'>
+                                                <label>Select Value Type<span class="text-danger-reg">*</span></label>
+                                                <select class="form-control" id="ValueTypeList" onchange="GetCriteriaSuggestedValues(this);">
+                                                    <option value="Constant">Constant</option>
+                                                    <option value="Pick From List">Pick From List</option>
+                                                    <option value="Dynamic">Dynamic</option>
+                                                </select>
+                                                @Html.TextBox("ConditionValueType", null, new { @class = "form-control hidden" })
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-3 col-md-3 col-xs-12">
+                                            <label>Property Value<span class="text-danger-reg">*</span></label>
+                                            <div class='form-group'>
+                                                @Html.TextBox("ConditionValue", null, new { @class = "col-sm-8 col-md-8 col-xs-8", @style = "border-radius:4px;" })
+                                                <div style="display:none; padding-left:0px;" id="dvSuggestedPropertyValue" class="col-sm-8 col-md-8 col-xs-8">
+                                                    @Html.DropDownList("SuggestedPropertyValue", null, new { @multiple = "multiple" })
+                                                    @Html.TextBox("SuggestedPropertyValues", null, new { @class = "form-control hidden" })
+                                                </div>
+                                                <div id="dvRule7DynamicValueInCondition" class="col-sm-8 col-md-8 col-xs-8" style="display:none; padding:0px;">
+                                                    @Html.DropDownList("SuggestedDynamicValueInCondition7", null, "-- Select --", new { @onchange = "GetSecondLevelAttributeInCriteria();", @class = "form-control", @style = "margin:0px;", @HostingName = "", @dataurl = "" })
+                                                    @Html.DropDownList("SuggestedDynamicValueInCondition71", null, "-- Select --", new { @class = "form-control", @style = "margin-top:8px;", @HostingName = "", @dataurl = "" })
+                                                </div>
+                                                <div class="col-sm-4 col-md-4 col-xs-4" style="padding:0px 0px 0px 5px;">
+                                                    <select class="form-control" id="LogicalConnectorList">
+                                                        <option value="AND">AND</option>
+                                                        <option value="OR">OR</option>
+                                                    </select>
+                                                    @Html.TextBox("LogicalConnector", null, new { @class = "form-control hidden" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12 col-md-12 col-lg-12" style="margin-top:10px; padding:0px">
+                                        <button type="button" id="btnAddAction4" onclick="AddCriteriaInGrid()" class="btn btn-primary pull-right">Add Condition</button>
+                                    </div>
+                                </div>
+                                <div id="Des_Table" style="padding-top:5px;" class="table-responsive" style="overflow-x:auto;">
+                                    <table id="tblConditionList" style="display:none;" class="table table-striped table-bordered table-hover table-condensed">
+                                        <thead>
+                                            <tr>
+                                                <th class="col1">Property</th>
+                                                <th class="col1">Operator</th>
+                                                <th class="col1">Value</th>
+                                                <th class="col1">Connector</th>
+                                                <th class="col1">Remove</th>
+                                            </tr>
+                                        </thead>
+                                        <tr></tr>
+                                    </table>
+                                </div>
+                                @Html.TextBox("FilterCondition", null, new { @class = "hidden" })
+                            </div>
+                        </div>
+						</div>
+                    </div>
+			@*End Div*@
+			</div>
+		 
+	
+</div>
+					
+<button id="fSearchT_Address" class="btn btn-primary btn-sm" type="button" data-placement="top" data-original-title="Show Reports" data-toggle="modal" data-target="#ShowReoprts"
+		dataurl="@(Url.Action("FSearch", "T_Address", null) )"
+		onclick="@(Html.Raw("LoadReports(" +(rptId == null ? "\'\'" : rptId) + ",'LoadReportsDiv','T_Address','t_addresscountry,t_addressstate,t_addresscity','','"
+		+ Convert.ToString(Request.QueryString["sortBy"]) + "','"
+		+ Convert.ToString(Request.QueryString["isAsc"]) + "','" + "');"))">
+	
+		 <label>Get Report</label>
+    
+</button>
+<button id="hdnReportButton" hidden="hidden"
+        dataurl="@(Url.Action("FSearch", "T_Address", null) )"
+        onclick="@(Html.Raw("SetReportUrl(" + (rptId == null ? "\'\'" : rptId) + ",'LoadReportsDiv','T_Address','t_addresscountry,t_addressstate,t_addresscity','','"
+		+ Convert.ToString(Request.QueryString["sortBy"]) + "','"
+		+ Convert.ToString(Request.QueryString["isAsc"]) + "','" + "');"))"></button>
+<script>
+function cleargroupbycolumn() {
+        $("#hdnGroupByColumn").val('');
+        $("#lblgroupbycolumn").html('');
+        $("#lblgroupbycolumn").removeAttr("style");
+        $("#btngroupbycolumn").attr("style", "display:none !important;");
+        $("#lblGroupDepth").html('Group By');
+    }
+    function SetGroupByColumn() {
+        var value = $("#hdnGroupByColumn").val();
+        value += $("#GroupByColumn").val() + ",";
+        $("#hdnGroupByColumn").val(value);
+        var text = $("#GroupByColumn option:selected").map(function () {
+            return $(this).text();
+        }).get().join();
+        if ($("#lblgroupbycolumn").html().length > 0)
+            $("#lblgroupbycolumn").append(" Then Group By " + text);
+        else
+            $("#lblgroupbycolumn").append(text);
+        $("#btngroupbycolumn").show();
+        $("#lblGroupDepth").html('Then Group By');
+        $("#lblgroupbycolumn").attr("style", "border:1px solid #428bca;margin-left: 15px; background: #edf5fa; padding-left: 5px !important; border-radius: 4px;")
+    }	
+
+    function clearsortorder()
+    {
+        $("#SortOrder").val('');
+        $("#lblsortorder").html('');
+        $("#lblsortorder").removeAttr("style");
+        $("#btnsortorder").attr("style", "display:none !important;");
+        $("#lblOrderDepth").html('Order By');
+        
+    }
+    function SetSortOrder()
+    {
+        var value = $("#SortOrder").val();
+        value += $("#SortOrder1").val() + ",";
+        $("#SortOrder").val(value);
+        var text = $("#SortOrder1 option:selected").map(function () {
+            return $(this).text();
+        }).get().join();
+        if ($("#lblsortorder").html().length>0)
+            $("#lblsortorder").append("->" + text);
+        else
+            $("#lblsortorder").append(text);
+        $("#btnsortorder").show();
+        $("#lblOrderDepth").html('Then Order By');
+        $("#lblsortorder").attr("style", "border:1px solid #428bca;margin-left: 15px; background: #edf5fa; padding-left: 5px !important; border-radius: 4px;")
+    }
+    $(document).ready(function () {
+	 $('#HideColumns').multiselect({
+            buttonWidth: '100%'
+        });
+	 $('#t_addresscountry').multiselect({
+            buttonWidth: '100%'
+        });
+	 $('#t_addressstate').multiselect({
+            buttonWidth: '100%'
+        });
+	 $('#t_addresscity').multiselect({
+            buttonWidth: '100%'
+        });
+    });
+    function checkOperator(operator) {
+        var operand = operator;
+        switch (operator) {
+            case "&gt;":
+                {
+                    operand = ">";
+                    break;
+                }
+            case "&lt;":
+                {
+                    operand = "<";
+                    break;
+                }
+            case "&gt;=":
+                {
+                    operand = ">=";
+                    break;
+                }
+            case "&lt;=":
+                {
+                    operand = "<=";
+                    break;
+                }
+        }
+        return operand;
+    }
+    function FillCriteriaValue(obj) {
+        var propertyName = $("#" + obj.id).val();
+        var entityName = '@ViewBag.EntityName';
+        $("#" + "OperatorList").html('');
+        $.ajax({
+            url: '@Url.Action("GetDateType", "BusinessRule")' + '?entityName=' + entityName + '&propertyName=' + propertyName,
+            type: "GET",
+            cache: false,
+            async: false,
+            success: function (result) {
+                var optionDOM = '<option value="0">-- Select --</option>';
+                optionDOM += '<option value="=">Equals to</option>';
+                if (result == "String") {
+                    optionDOM += '<option value="Contains">Contains</option>';
+                }
+                else if (result != "Boolean") {
+                    optionDOM += '<option value=">">Greater than</option>';
+                    optionDOM += '<option value="<">Less than</option>';
+                    optionDOM += '<option value="<=">Less than Or Equals to</option>';
+                    optionDOM += '<option value=">=">Greater than Or Equals to</option>';
+                }
+                optionDOM += '<option value="!=">Not Equals to</option>';
+                $("#" + "OperatorList").html(optionDOM);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+
+            }
+        });
+    }
+    function GetSecondLevelAttributeForCriteria() {
+        var SelectedEntity = '@ViewBag.EntityName';
+        var SelectedProperty = $("#" + "PropertyList").val();
+        $("#" + "AssociationPropertyList").hide();
+        $("#" + "AssociationPropertyList").html('');
+        $.ajax({
+            url: '@Url.Action("GetAttributesofTargetEntity", "BusinessRule")' + '?Entity=' + SelectedEntity + '&AttributeName=' + SelectedProperty,
+            type: "GET",
+            cache: false,
+            success: function (result) {
+                var optionDOM = '<option value="SelectProperty">-- Select Association Property --</option>';
+                for (i = 0; i < result.length; i++) {
+                    optionDOM += '<option value="' + result[i].Name + '">' + result[i].DisplayName + '</option>';
+                }
+
+                if (result.length == 0) {
+                    $("#" + "AssociationPropertyList").html('');
+                    $("#" + "AssociationPropertyList").hide();
+                }
+                else {
+                    $("#" + "AssociationPropertyList").show();
+                    $("#" + "AssociationPropertyList").html(optionDOM);
+                }
+                FillSugestedDynamicValuesForCriteria();
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                alert("error");
+            }
+        });
+    }
+    function FillSugestedDynamicValuesForCriteria() {
+        var text = $("#" + "PropertyList option:selected").text();
+        if ($("#" + "AssociationPropertyList").val() != null && $("#" + "AssociationPropertyList").val().length > 0) {
+            var value = "[" + $("#" + "PropertyList").val() + "." + $("#" + "AssociationPropertyList").val() + "]";
+        }
+        else {
+            var value = "[" + $("#" + "PropertyList").val() + "]";
+        }
+    }
+    function GetCriteriaSuggestedValues(obj) {
+        $("#dvRule7DynamicValueInCondition").hide();
+        $("#" + "ConditionValue").val('');
+
+        if ($("#ValueTypeList option:selected").text() == "Pick From List") {
+            var SelectedProperty = $("#" + "PropertyList").val();
+            var SelectedEntity = '@ViewBag.EntityName';
+            if (SelectedEntity.length == 0) {
+                alert("Please select an Entity first !");
+                return false;
+            }
+            if (SelectedProperty.length == 0) {
+                alert("Please select a Property !");
+                return false;
+            }
+
+            var assocProp = $("#AssociationPropertyList").val();
+            if (assocProp == "SelectProperty") {
+                alert("Please select Association Property.");
+                return false;
+            }
+            var hostingEntity = "";
+            $.ajax({
+                url: '@Url.Action("GetDropdown", "BusinessRule")' + '?Entity=' + SelectedEntity + '&Property=' + SelectedProperty,
+                type: "GET",
+                cache: false,
+                success: function (result) {
+                    if (result != "Failure") {
+                        $("#" + "dvSuggestedPropertyValue").show();
+                        $("#" + "ConditionValue").hide();
+                        hostingEntity = result;
+                        $("#SuggestedPropertyValue").attr("dataurl", '@Url.Action("GetAllMultiSelectValueForBR", "_Entity", null)'.replace("_Entity", result) + '?propNameBR=' + assocProp);
+                        if (hostingEntity != "") {
+                            var dataurl = '@Url.Action("GetAllMultiSelectValueForBR", "_Entity", null)'.replace("_Entity", result) + '?propNameBR=' + assocProp;
+                            $.ajax({
+                                url: dataurl,
+                                type: "GET",
+                                cache: false,
+                                async: false,
+                                success: function (result) {
+                                    var countItems = 0
+                                    var optionDOM = "";
+                                    for (i = 0; i < result.length; i++) {
+                                        if (result[i] != null)
+                                            optionDOM += '<option value="' + i + '">' + result[i] + '</option>';
+                                        countItems++;
+                                    }
+                                    $("#SuggestedPropertyValue").html(optionDOM);
+                                    $("#SuggestedPropertyValue").multiselect('rebuild');
+                                },
+                                error: function (jqXHR, textStatus, errorThrown) {
+                                    alert("error");
+                                }
+                            });
+                        }
+                    }
+                    else {
+                        alert("Supports only association values.");
+                        $("#ValueTypeList :nth(0)").prop("selected", "selected").change();
+                        hostingEntity = "";
+                        $("#" + "dvSuggestedPropertyValue").hide();
+                        $("#" + "ConditionValue").show();
+                        $("#" + "SuggestedPropertyValue").removeClass = "chosen-select form-control";
+                        $("#" + "SuggestedPropertyValue").removeAttr("HostingName");
+                        $("#" + "SuggestedPropertyValue").removeAttr("dataurl");
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    alert("error");
+                }
+            });
+        }
+        else if ($("#ValueTypeList option:selected").text() == "Dynamic") {
+            $("#dvSuggestedPropertyValue").hide();
+            $("#ConditionValue").val('');
+            $("#ConditionValue").hide();
+            GetSecondLevelAttributeInCriteria();
+            $("#dvRule7DynamicValueInCondition").show();
+        }
+        else { $("#" + "dvSuggestedPropertyValue").hide(); $("#" + "ConditionValue").show(); $("#" + "ConditionValue").prop("disabled", false); }
+    }
+    function FillCriteriaForAssociation() {
+        var entityName = '@ViewBag.EntityName';
+        var assocName = $("#PropertyList").val();
+        var propertyName = $("#AssociationPropertyList").val();
+        $("#" + "OperatorList").html('');
+        $.ajax({
+            url: '@Url.Action("GetDateTypeForAssociationProperties", "BusinessRule")' + '?entityName=' + entityName + '&assocName=' + assocName + '&propertyName=' + propertyName,
+            type: "GET",
+            cache: false,
+            async: false,
+            success: function (result) {
+                var optionDOM = '<option value="0">--- Select ---</option>';
+                optionDOM += '<option value="=">Equals to</option>';
+                if (result == "String") {
+                    optionDOM += '<option value="Contains">Contains</option>';
+                }
+                else if (result != "Boolean") {
+                    optionDOM += '<option value=">">Greater than</option>';
+                    optionDOM += '<option value="<">Less than</option>';
+                    optionDOM += '<option value="<=">Less than Or Equals to</option>';
+                    optionDOM += '<option value=">=">Greater than Or Equals to</option>';
+                }
+                optionDOM += '<option value="!=">Not Equals to</option>';
+                $("#" + "OperatorList").html(optionDOM);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+            }
+        });
+    }
+    function SetCriteriaValueType(obj) {
+        if (obj.id == "OperatorList") {
+            $("#ValueTypeList").val('Constant').change();
+        }
+    }
+    function GetSecondLevelAttributeInCriteria() {
+        var SelectedEntity = '@ViewBag.EntityName';
+        var SelectedProperty = $("#" + "SuggestedDynamicValueInCondition7").val();
+        $("#" + "SuggestedDynamicValueInCondition71").hide();
+        $("#" + "SuggestedDynamicValueInCondition71").html('');
+        $.ajax({
+            url: '@Url.Action("GetAttributesofTargetEntity", "BusinessRule")' + '?Entity=' + SelectedEntity + '&AttributeName=' + SelectedProperty,
+            type: "GET",
+            cache: false,
+            success: function (result) {
+                var optionDOM = '<option value="SelectProperty">--Select Association Property--</option>';
+                for (i = 0; i < result.length; i++) {
+                    optionDOM += '<option value="' + result[i].Name + '">' + result[i].DisplayName + '</option>';
+                }
+
+                if (result.length == 0) {
+                    $("#" + "SuggestedDynamicValueInCondition71").html('');
+                    $("#" + "SuggestedDynamicValue71").hide();
+                }
+                else {
+                    $("#" + "SuggestedDynamicValueInCondition71").show();
+                    $("#" + "SuggestedDynamicValueInCondition71").html(optionDOM);
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                alert("error");
+            }
+        })
+    }
+   function AddCriteriaInGrid() {
+        if ($("#PropertyList option:selected").val() == "SelectProperty") {
+            alert("Please select Property.");
+            return false;
+        }
+
+        if ($("#AssociationPropertyList").val() != null && $("#AssociationPropertyList").val() != "") {
+            if ($("#AssociationPropertyList option:selected").val() == "SelectProperty") {
+                alert("Please select Association Property.");
+                return false;
+            }
+            var option_all = $("#SuggestedPropertyValue option:selected").map(function () {
+                return $(this).text();
+            }).get().join();
+            if (option_all != "")
+                $("#ConditionValue").val(option_all);
+            $("#SuggestedPropertyValue option:selected").removeAttr("selected");
+            $("#SuggestedPropertyValue").multiselect('rebuild');
+        }
+        //Dynamic
+        var dynamicPropertyDispValue = "";
+        if ($("#ValueTypeList option:selected").text() == "Dynamic") {
+            if ($("#" + "SuggestedDynamicValueInCondition71").val() != null && $("#" + "SuggestedDynamicValueInCondition71").val().length > 0) {
+                var value = "[" + $("#" + "SuggestedDynamicValueInCondition7").val() + "." + $("#" + "SuggestedDynamicValueInCondition71").val() + "]";
+                dynamicPropertyDispValue = "[" + $("#" + "SuggestedDynamicValueInCondition7 option:selected").text() + "." + $("#" + "SuggestedDynamicValueInCondition71 option:selected").text() + "]";
+                $("#" + "ConditionValue").val(value);
+            }
+            else {
+                var value = "[" + $("#" + "SuggestedDynamicValueInCondition7").val() + "]";
+                dynamicPropertyDispValue = "[" + $("#" + "SuggestedDynamicValueInCondition7 option:selected").text() + "]";
+                $("#" + "ConditionValue").val(value);
+            }
+        }
+        //Dynamic
+        var condValue = $("#ConditionValue").val();
+        var str = "<tr>";
+        var entityName = '@ViewBag.EntityName';
+        var val1Text = $("#PropertyList option:selected").text();
+        var val1 = $("#PropertyList").val();
+        var val2 = $("#OperatorList option:selected").val();
+        var val3 = $("#ConditionValue").val();
+        var val4 = $("#LogicalConnectorList option:selected").text();
+        var val5 = $("#ValueTypeList").val();
+
+        if ($("#AssociationPropertyList").val() != null && $("#AssociationPropertyList").val() != "") {
+            val1 = "[" + val1 + "." + $("#AssociationPropertyList").val() + "]";
+            val1Text = "[" + val1Text + "." + $("#AssociationPropertyList option:selected").text() + "]";
+            CreateCriteriaForAssociation(entityName, condValue, val1, val1Text, val5, dynamicPropertyDispValue);
+            return true;
+        }
+
+        var funcval = val1 + "," + val2 + "," + val3 + "," + val4 + "?";
+        var val = $("#FilterCondition").val();
+        val += val1 + "," + val2 + "," + val3 + "," + val4 + "?";
+
+        if ($("#ValueTypeList option:selected").text() == "Dynamic" && dynamicPropertyDispValue != "") {
+            val3 = dynamicPropertyDispValue;
+        }
+
+        str += "<td>" + val1Text + "</td>";
+        str += "<td>" + val2 + "</td>";
+        str += "<td>" + val3 + "</td>";
+        str += "<td>" + val4 + "</td>";
+        str += "<td><i name=\"FilterCondition\" onclick=\"deleteRowCriteria(this,'" + funcval + "');\" class=\"fam-delete\"></i></td>";
+
+        var exMsg = VerifyPropertyAndValueDataType(entityName, val1, $("#ConditionValue").val(), val5, 'condition');
+        if (exMsg != "" && exMsg != null) {
+            $("#ConditionValue").val('');
+            alert('Please enter correct Property Value. ' + exMsg);
+            return false;
+        }
+
+        $("#FilterCondition").val(val);
+        $('#tblConditionList').show();
+        $('#tblConditionList').append(str);
+        $("#DurationCount").val('');
+        $("#ConditionValue").val('');
+    }
+    function CreateCriteriaForAssociation(entityName, param, assocName, assocDispName, valueType, dynamicDispName) {
+        var arrCond = param.split(",");
+        var val = $("#FilterCondition").val();
+        var operator = $("#OperatorList").val();
+
+        var exMsg = VerifyPropertyAndValueDataType(entityName, assocName, param, valueType, 'condition');
+        if (exMsg != "" && exMsg != null) {
+            $("#ConditionValue").val('');
+            alert('Data types of selected properties did not match. Please select compatible properties. ' + exMsg);
+            return false;
+        }
+        var logicalConnector = $("#LogicalConnectorList").val();
+
+        if (valueType == "Pick From List") {
+            logicalConnector = "OR";
+        }
+
+        for (i = 0; i < arrCond.length; i++) {
+            if (i == arrCond.length - 1) {
+                logicalConnector = $("#LogicalConnectorList").val();
+            }
+            if (valueType != "Dynamic")
+                dynamicDispName = arrCond[i];
+            val += assocName + ',' + operator + ',' + arrCond[i] + ',' + logicalConnector + '?';
+            var str = "<tr><td>" + assocDispName + "</td><td>" + operator + "</td><td>" + dynamicDispName + "</td><td>" + logicalConnector + "</td>";
+            str += "<td><i name=\"FilterCondition\" onclick=\"deleteRowCriteria(this,'" + assocName + ',' + operator + ',' + dynamicDispName + ',' + logicalConnector + '' + "');\" class=\"fam-delete\"></i></td>";
+            $("#FilterCondition").val(val);
+            $('#tblConditionList').show();
+            $('#tblConditionList').append(str);
+            $("#ConditionValue").val('');
+        }
+    }
+    function VerifyPropertyAndValueDataType(entityName, propertyName, conditionValue, valueType, actionType) {
+        var propDataType = "";
+        $.ajax({
+            url: '@Url.Action("VerifyPropertyAndValueDataType", "BusinessRule")' + '?entityName=' + entityName + '&propertyName=' + propertyName + "&conditionValue=" + conditionValue + "&valueType=" + valueType + "&actionType=" + actionType,
+            type: "GET",
+            cache: false,
+            async: false,
+            success: function (result) {
+                propDataType = result;
+            }
+        });
+        return propDataType;
+    }
+    function deleteRowCriteria(obj, val) {
+        var obj_tr = $(obj).closest("tr");
+        var newobj = $("#" + $(obj).attr("name")).val().replace(val, "");
+        $("#" + $(obj).attr("name")).val(newobj);
+        obj_tr.remove();
+    }
+    function keypressHandler(e) {
+        if (e.which == 13) {
+            $(this).blur();
+            $('#fSearchT_Address').focus().click();
+        }
+    }
+ $(document).keypress(keypressHandler);
+ $(document).ready(function () {
+  if ("@parentUrl".length > 0) {
+		  if ("@parentUrl["SortOrder"]" != null && "@parentUrl["SortOrder"]".length > 0) {
+                var value = '@parentUrl["SortOrder"]';
+                var indexlist = value.split(',')
+                $("#SortOrder").val('');
+                for (var i = 0; i < indexlist.length; i++) {
+                    if (indexlist[i].length > 0) {
+                        $("#SortOrder1").val(indexlist[i]);
+                        SetSortOrder();
+                    }
+                }
+                $("#SortOrder").val(value);
+                $("#btnsortorder").show();
+                $("#lblOrderDepth").html('Then Order By');
+                $("#lblsortorder").attr("style", "border:1px solid #428bca;margin-left: 15px; background: #edf5fa; padding-left: 5px !important; border-radius: 4px;")
+            }
+
+			if ("@parentUrl["GroupByColumn"]" != null && "@parentUrl["GroupByColumn"]".length > 0) {
+                var value = '@parentUrl["GroupByColumn"]';
+                var indexlist = value.split(',')
+                $("#hdnGroupByColumn").val('');
+                for (var i = 0; i < indexlist.length; i++) {
+                    if (indexlist[i].length > 0) {
+                        $("#GroupByColumn").val(indexlist[i]);
+                        SetGroupByColumn();
+                    }
+                }
+                $("#hdnGroupByColumn").val(value);
+                $("#btngroupbycolumn").show();
+                $("#lblGroupDepth").html('Then Group By');
+                $("#lblgroupbycolumn").attr("style", "border:1px solid #428bca;margin-left: 15px; background: #edf5fa; padding-left: 5px !important; border-radius: 4px;")
+            }
+
+            if ("@parentUrl["HideColumns"]" != null && "@parentUrl["HideColumns"]".length > 0) {
+                var resHideColumns = "@parentUrl["HideColumns"]".split(",");
+                var eleHideColumns = document.getElementById("HideColumns");
+                for (i = 0; i < resHideColumns.length; i++) {
+                    for (var o = 0; o < eleHideColumns.options.length; o++) {
+                        if (eleHideColumns.options[o].value == resHideColumns[i])
+                            eleHideColumns.options[o].selected = true;
+                    }
+                }
+                $("#HideColumns").multiselect("rebuild");
+            }
+			if ("@parentUrl["viewtype"]" != null && "@parentUrl["viewtype"]".length > 0) {
+                $("#DisplayLayout").val('@parentUrl["viewtype"]');
+            }
+
+			if ("@parentUrl["FilterCondition"]" != null && "@parentUrl["FilterCondition"]".length > 0) {
+                var value = "@parentUrl["FilterCondition"]".split("?");
+                for (i = 0; i < value.length - 1; i++) {
+                    if (value != "" && value != "undefined") {
+                        var str = "<tr>";
+                        var param = value[i].toString().split(",");
+                        var val1Text = "";
+                        if (param[0].indexOf("[") > -1) {
+                            var assocNm = param[0].substring(1, param[0].lastIndexOf("."));
+                            var assocPrp = param[0].substring(param[0].lastIndexOf(".") + 1, param[0].length - 1);
+                            var assocEnt = $("#PropertyList option[value='" + assocNm + "']").text();
+                            var assocEntPrp = "";
+                            if (assocPrp != "") {
+                                $.ajax({
+                                    url: '@Url.Action("GetPropertyDP", "Customer")' + '?entityName=' + assocEnt + '&propertyName=' + assocPrp,
+                                    type: "GET",
+                                    cache: false,
+                                    async: false,
+                                    success: function (result) {
+                                        if (result != "") {
+                                            assocEntPrp = result;
+                                        }
+                                    },
+                                    error: function (jqXHR, textStatus, errorThrown) {
+
+                                    }
+                                });
+                            }
+                            val1Text = param[0].replace(assocNm, assocEnt).replace(assocPrp, assocEntPrp);
+                        }
+                        else { val1Text = $("#PropertyList option[value='" + param[0] + "']").text(); }
+
+                        var val1 = param[0];
+                        var val2 = checkOperator(param[1]);
+                        var val3 = param[2];
+                        var val4 = param[3];
+
+                        var funcval = val1 + "," + val2 + "," + val3 + "," + val4 + "?";
+                        var val = $("#FilterCondition").val();
+                        val += val1 + "," + val2 + "," + val3 + "," + val4 + "?";
+
+                        str += "<td>" + val1Text + "</td>";
+                        str += "<td>" + val2 + "</td>";
+                        str += "<td>" + val3 + "</td>";
+                        str += "<td>" + val4 + "</td>";
+                        str += "<td><i name=\"FilterCondition\" onclick=\"deleteRowCriteria(this,'" + funcval + "');\" class=\"fam-delete\"></i></td>";
+
+                        $("#FilterCondition").val(val);
+                        $('#tblConditionList').show();
+                        $('#tblConditionList').append(str);
+                    }
+                }
+            }
+
+
+			 document.getElementById("FSearch").value = AntiSanitizeURLString("@parentUrl["search"]");
+ if ("@parentUrl["t_addresscountry"]" != null && "@parentUrl["t_addresscountry"]".length > 0) {
+            var resT_AddressCountry = "@parentUrl["t_addresscountry"]".split(",");
+            var eleT_AddressCountry = document.getElementById("t_addresscountry");
+			FillMultiSelectDorpDown(resT_AddressCountry , eleT_AddressCountry, "t_addresscountry");
+	}
+	else {
+            var resT_AddressCountry = "@parentUrl["t_addresscountry"]".split(",");
+            var eleT_AddressCountry = document.getElementById("t_addresscountry");
+			FillMultiSelectDorpDown(resT_AddressCountry , eleT_AddressCountry, "t_addresscountry");
+         }
+ if ("@parentUrl["t_addressstate"]" != null && "@parentUrl["t_addressstate"]".length > 0) {
+            var resT_AddressState = "@parentUrl["t_addressstate"]".split(",");
+            var eleT_AddressState = document.getElementById("t_addressstate");
+			FillMultiSelectDorpDown(resT_AddressState , eleT_AddressState, "t_addressstate");
+	}
+	else {
+            var resT_AddressState = "@parentUrl["t_addressstate"]".split(",");
+            var eleT_AddressState = document.getElementById("t_addressstate");
+			FillMultiSelectDorpDown(resT_AddressState , eleT_AddressState, "t_addressstate");
+         }
+ if ("@parentUrl["t_addresscity"]" != null && "@parentUrl["t_addresscity"]".length > 0) {
+            var resT_AddressCity = "@parentUrl["t_addresscity"]".split(",");
+            var eleT_AddressCity = document.getElementById("t_addresscity");
+			FillMultiSelectDorpDown(resT_AddressCity , eleT_AddressCity, "t_addresscity");
+	}
+	else {
+            var resT_AddressCity = "@parentUrl["t_addresscity"]".split(",");
+            var eleT_AddressCity = document.getElementById("t_addresscity");
+			FillMultiSelectDorpDown(resT_AddressCity , eleT_AddressCity, "t_addresscity");
+         }
+ }
+    });
+
+	  function FillMultiSelectDorpDown(result, element, elementName) {
+        var isHaveNullSelect = false;
+        var countoptions = 0;
+
+        for (var o = 0; o < element.options.length; o++) {
+            if (result.includes(element.options[o].value))
+                element.options[o].selected = true;
+            else if (result.includes("NULL"))
+                isHaveNullSelect = true;
+            countoptions++;
+        }
+        var opt = document.createElement('option');
+        opt.value = "NULL";
+        opt.innerHTML = "None";
+        if (isHaveNullSelect) {
+            opt.selected = true;
+            element.insertBefore(opt, element.firstChild);
+        }
+        if (!isHaveNullSelect) {
+            element.insertBefore(opt, element.firstChild);
+        }
+        $("#" + elementName).multiselect("rebuild");
+        if (countoptions >= 10) {
+            var hostingentity = elementName;
+            var urlGetAll = $('#' + hostingentity).attr("dataurl").replace("GetAllMultiSelectValue", "Index") + "?BulkOperation=multiple";
+            var dispName = ($("label[for=\"" + hostingentity + "\"]").text());
+            var link = "<a onclick=\"" + "OpenPopUpBulkOperation('PopupBulkOperation','" + hostingentity + "','" + dispName + "','dvPopupBulkOperation','" + urlGetAll + "')\">View All</a>";
+            var getall = "<li class='disabled-result disabled-result' style='font-style:Italic;text-decoration:underline;' >" + link + "</li>";
+            var $ul = $("ul", "#dv" + elementName);
+            $ul.append($(getall));
+        }
+    }
+</script>
+
+

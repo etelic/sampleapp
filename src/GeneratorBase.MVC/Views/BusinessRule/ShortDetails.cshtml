@@ -14,7 +14,14 @@
         Roles : @Model.Roles<br />
         @foreach (var cond in Model.ruleconditions)
         {
-            <span>Condition : </span><b>@cond.PropertyName  @cond.Operator  @cond.Value  </b><br />
+            if (cond.PropertyName == "Id" && cond.Operator == ">" && cond.Value == "0")
+            {
+                <span>Condition : </span><b>Always  </b><br />
+            }
+            else
+            {
+                <span>Condition : </span><b>@cond.PropertyName  @cond.Operator  @cond.Value  </b><br />
+            }
         }
         <br />
         @if (Model.ruleaction != null)
@@ -24,6 +31,8 @@
                 if (act.associatedactiontype != null)
                 {
                     <b><span>Action : </span>@act.associatedactiontype.DisplayValue </b>
+                    <br/>
+                    <b><span>Is Else Action : </span>@act.IsElseAction</b>
                 }
                 if (act.actionarguments != null && act.actionarguments.Count() > 0)
                 {

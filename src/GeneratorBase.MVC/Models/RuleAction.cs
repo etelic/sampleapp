@@ -24,6 +24,8 @@ namespace GeneratorBase.MVC.Models
         [DisplayName("Send Email To")]
         [AllowHtml]
         public string ErrorMessage { get; set; }
+        [DisplayName("Is Else Action")]
+        public Boolean IsElseAction { get; set; }
         [DisplayName("Business Rule")]
         public Nullable<long> RuleActionID { get; set; }
         //  [ForeignKey("RuleActionID")]

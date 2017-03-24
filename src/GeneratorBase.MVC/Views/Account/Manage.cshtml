@@ -2,18 +2,28 @@
 @using Microsoft.AspNet.Identity;
 @{
     ViewBag.Title = "Manage Account";
+    Layout = null;
 }
-<div class="row">
-    <div class="col-lg-12">
-        <h1 class="page-title">
-            <i class="glyphicon glyphicon-edit text-primary"></i> @ViewBag.Title.
-        </h1>
-    </div>
-    <!-- /.col-lg-12 -->
-</div>
-<p class="text-success">@ViewBag.StatusMessage</p>
-<div class="row">
-    <div class="col-md-12">
+<link rel="icon" href="~/Content/images/turanto.ico" type="image/x-icon">
+<link rel="shortcut icon" href="~/Content/images/turanto.ico" type="image/x-icon">
+@Styles.Render("~/Content/css")
+@Styles.Render("~/Content/fontawesome")
+@Styles.Render("~/Content/csstheme")
+@Scripts.Render("~/bundles/modernizr")
+<script src="@Url.Content("~/Scripts/jquery-1.10.2.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/Entity.js")" type="text/javascript"></script>
+<script src="~/Scripts/jquery-ui.js"></script>
+@Scripts.Render("~/bundles/common1")
+
+<!--[if IE 8]>
+        <link href="@Url.Content("~/Content/IE8/ie8.css")" rel="stylesheet" type="text/css" />
+<![endif]-->
+
+
+    
+
+@ViewBag.StatusMessage
+
         @if (ViewBag.HasLocalPassword)
         {
             @Html.Partial("_ChangePasswordPartial")
@@ -22,8 +32,7 @@
         {
             @Html.Partial("_SetPasswordPartial")
         }
-    </div>
-</div>
+  
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
 }

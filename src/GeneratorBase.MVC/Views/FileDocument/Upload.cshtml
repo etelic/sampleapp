@@ -164,18 +164,54 @@
                                             string colClass = string.Empty;
                                             if (objDataType[j].ToLower() == "datetime")
                                             {
+                                                var columnName = ((System.Data.DataTable)ViewBag.ConfirmImportData).Columns[j].Caption;
+                                                var DataTypeAttribute = GeneratorBase.MVC.ModelReflector.Entities.FirstOrDefault(e => e.Name == "FileDocument").Properties.FirstOrDefault(p => p.DisplayName == columnName).DataTypeAttribute;
                                                 try
                                                 {
-                                                    if (System.Text.RegularExpressions.Regex.IsMatch(colValue, "^[0-9]*$"))
+                                                    if (DataTypeAttribute != null)
                                                     {
-                                                        var us = new System.Globalization.CultureInfo("en-US");
-                                                        string text = colValue;
-                                                        string format = "yyyyMMdd";
-                                                        colValue = (DateTime.ParseExact(text, format, us)).ToString("MM/dd/yyyy");
-                                                    }
-                                                    else
-                                                    {
-                                                        colValue = (DateTime.Parse(cell.ToString())).ToString("MM/dd/yyyy");
+                                                        if (DataTypeAttribute.ToLower() == "date")
+                                                        {
+                                                            if (System.Text.RegularExpressions.Regex.IsMatch(colValue, "^[0-9]*$"))
+                                                            {
+                                                                var us = new System.Globalization.CultureInfo("en-US");
+                                                                string text = colValue;
+                                                                string format = "yyyyMMdd";
+                                                                colValue = (DateTime.ParseExact(text, format, us)).ToString("MM/dd/yyyy");
+                                                            }
+                                                            else
+                                                            {
+                                                                colValue = (DateTime.Parse(cell.ToString())).ToString("MM/dd/yyyy");
+                                                            }
+                                                        }
+                                                        else if (DataTypeAttribute.ToLower() == "time")
+                                                        {
+                                                            if (System.Text.RegularExpressions.Regex.IsMatch(colValue, "^[0-9]*$"))
+                                                            {
+                                                                var us = new System.Globalization.CultureInfo("en-US");
+                                                                string text = colValue;
+                                                                string format = "hhmmtt";
+                                                                colValue = (DateTime.ParseExact(text, format, us)).ToString("hh:mm tt");
+                                                            }
+                                                            else
+                                                            {
+                                                                colValue = (DateTime.Parse(cell.ToString())).ToString("hh:mm tt");
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            if (System.Text.RegularExpressions.Regex.IsMatch(colValue, "^[0-9]*$"))
+                                                            {
+                                                                var us = new System.Globalization.CultureInfo("en-US");
+                                                                string text = colValue;
+                                                                string format = "yyyyMMddhhmmtt";
+                                                                colValue = (DateTime.ParseExact(text, format, us)).ToString("MM/dd/yyyy hh:mm tt");
+                                                            }
+                                                            else
+                                                            {
+                                                                colValue = (DateTime.Parse(cell.ToString())).ToString("MM/dd/yyyy hh:mm tt");
+                                                            }
+                                                        }
                                                     }
                                                 }
                                                 catch

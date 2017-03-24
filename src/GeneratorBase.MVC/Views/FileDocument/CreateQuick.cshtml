@@ -12,14 +12,24 @@
                  $('#' + hostingEntityName + 'ID').attr("lock","true");
 				  $('#' + hostingEntityName + 'ID').trigger("change");
             }
+			
         }
         catch (ex) { }
+		
+		 
     });
 </script>
+
 @{
     if (!string.IsNullOrEmpty(ViewBag.FileDocumentIsHiddenRule))
     {
         @Html.Raw(ViewBag.FileDocumentIsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.FileDocumentIsSetValueUIRule))
+    {
+        @Html.Raw(ViewBag.FileDocumentIsSetValueUIRule);
     }
 }
 <link href="~/Content/bootstrap-datetimepicker.min.css" rel="stylesheet" />
@@ -29,19 +39,27 @@
     @Html.AntiForgeryToken();
     Html.ValidationSummary(true);
     Html.EnableClientValidation();
-	<label id="ErrMsgQuickAdd" class="text-primary small pull-right" style="color:red; vertical-align:middle; font-weight:100;"></label>
+	<input type="hidden" id="ErrMsgQuickAdd" />
+	@*<label id="ErrMsgQuickAdd" class="text-primary small pull-right" style="color:red; vertical-align:middle; font-weight:100;"></label>*@
     <div id="errorContainerQuickAdd" style="display: none">
         <div id="errorsMsgQuickAdd"></div>
         <div id="errorsQuickAdd"></div>
     </div>
-    <div class="row">
+	<div id="divDisplayThresholdLimit" style="display:none;">
+	</div>
+	 <div id="divDisplayBRmsgMandatory" style="display:none;">
+	</div>
+	<div id="divDisplayBRmsgBeforeSaveProp" style="display:none;">
+	</div>
+		    <div class="row">
 	@Html.Hidden("AssociatedEntity", Convert.ToString(ViewData["AssociatedType"]))
         <div class="col-md-12 col-sm-12 col-xs-12">
             <div class="panel panel-default AppForm">
                 <div class="panel-body">
-               <div class="row">         
-					<div class='col-sm-6' id="dvDocumentName">
-                                <div class='form-group'>
+               					<div class="row">
+				        
+							<div class='col-sm-6' id="dvDocumentName">
+                                <div class='form-group' title="">
                                     <label>@Html.LabelFor(model => model.DocumentName) <span class="text-danger-reg">*</span></label>
 									 
                                     @Html.TextBoxFor(model => model.DocumentName, new { @class = "form-control" })
@@ -49,8 +67,10 @@
 									
                                 </div>
 					</div>
-					<div class='col-sm-6' id="dvDescription">
-                                <div class='form-group'>
+     
+				
+							<div class='col-sm-6' id="dvDescription">
+                                <div class='form-group' title="">
                                     <label>@Html.LabelFor(model => model.Description) </label>
 									 
                                     @Html.TextBoxFor(model => model.Description, new { @class = "form-control" })
@@ -58,10 +78,13 @@
 									
                                 </div>
 					</div>
+     
+				
 				@if(User.CanAdd("Document"))
                 { 
-				   <div class='col-sm-6' id="dvAttachDocument">
-                            <div class='form-group'>
+
+							     <div class='col-sm-6' id="dvAttachDocument">
+                            <div class='form-group' title="">
                                    <label>@Html.LabelFor(model => model.AttachDocument) </label>
                                      <div style="position:relative;">
 										 <a class='btn btn-primary btnupload' href='javascript:;'>
@@ -73,49 +96,63 @@
 									</div> 
                             </div>
                    </div>
+
+				   
 				}
+
+     
                             <div class='col-sm-6' id="dvDateCreated">
                                 <label >@Html.LabelFor(model => model.DateCreated)<span class="text-danger-reg">*</span></label>
-                                <div class="form-group">
+                                <div class="form-group" title="">
                                     <div class="input-group date" id="datetimepickerDateCreated">
-  @Html.TextBox("DateCreated",DateTime.Now, new {@id = "datetimepickerDateCreatedtxt" ,@class = "form-control", @readonly="readonly" })
-   <span class="input-group-addon btn-default calendar">
+									@Html.TextBox("DateCreated",DateTime.Now, new {@id = "datetimepickerDateCreatedtxt" ,@class = "form-control", @readonly="readonly" })
+										<span class="input-group-addon btn-default calendar">
                                            <i class="fa fa-calendar"></i>
                                         </span>
                                     </div>
                                     @Html.ValidationMessageFor(model => model.DateCreated)
                                 </div>
                             </div>
+
+
+
+     
                             <div class='col-sm-6' id="dvDateLastUpdated">
                                 <label >@Html.LabelFor(model => model.DateLastUpdated)<span class="text-danger-reg">*</span></label>
-                                <div class="form-group">
+                                <div class="form-group" title="">
                                     <div class="input-group date" id="datetimepickerDateLastUpdated">
-  @Html.TextBox("DateLastUpdated",DateTime.Now, new {@id = "datetimepickerDateLastUpdatedtxt" ,@class = "form-control", @readonly="readonly" })
-   <span class="input-group-addon btn-default calendar">
+									@Html.TextBox("DateLastUpdated",DateTime.Now, new {@id = "datetimepickerDateLastUpdatedtxt" ,@class = "form-control", @readonly="readonly" })
+										<span class="input-group-addon btn-default calendar">
                                            <i class="fa fa-calendar"></i>
                                         </span>
                                     </div>
                                     @Html.ValidationMessageFor(model => model.DateLastUpdated)
                                 </div>
                             </div>
+
+
        </div>
                         </div>
                     </div>
                 </div>
         </div>
 		<button id="CancelQuickAdd" type="button" class="btn btn-default btn-sm" data-dismiss="modal" aria-hidden="true">Cancel</button>
+
 		var busineesrule = User.businessrules.Where(p => p.EntityName == "FileDocument").ToList();
+		 var lstinlineentityname = "";
+		 var lstinlineassocdispname ="";
+		 var lstinlineassocname = "";
         if (ViewBag.IsAddPop != null)
 		{
-			<input type="submit" value="Create" class="btn btn-primary btn-sm" onclick="QuickAdd(event,'@busineesrule',@busineesrule.Count);" />
+			<input type="submit" value="Create" class="btn btn-primary btn-sm" onclick="QuickAdd(event,'FileDocument','@busineesrule',@busineesrule.Count,'OnCreate','ErrMsgQuickAdd',false,'@lstinlineassocname','@lstinlineassocdispname','@lstinlineentityname');" />
 		}
 		else
 		{
-			<input type="submit" value="Create" class="btn btn-primary btn-sm" onclick="QuickAddFromIndex(event,true,'FileDocument','@ViewData["AssociatedType"]','@busineesrule',@busineesrule.Count);" />
+			<input type="submit" value="Create" class="btn btn-primary btn-sm" onclick="QuickAddFromIndex(event,true,'FileDocument','@ViewData["AssociatedType"]','@busineesrule',@busineesrule.Count,'OnCreate','ErrMsgQuickAdd',false,'@lstinlineassocname','@lstinlineassocdispname','@lstinlineentityname');" />
 		}
 }
-@Scripts.Render("~/bundles/jqueryval")
-<script src="~/Scripts/Common3/chosen.jquery.js" type="text/javascript"></script>
+<script src="@Url.Content("~/bundles/jqueryval")" type="text/javascript"></script>
+<script src="@Url.Content("~/bundles/common3")" type="text/javascript"></script>
 <script type="text/javascript">
     var config = {
         '.chosen-select': {},
@@ -129,4 +166,26 @@
     }
 </script>
 
+<script type='text/javascript'>
+    $(document).ready(function () {
+        try {
+            document.getElementsByTagName("body")[0].focus();
+            $("#addPopup").removeAttr("tabindex");
+            var cltcoll = $("#dvPopup").find('input[type=text]:not([class=hidden]):not([readonly]),textarea:not([readonly])');
+            var cltid = "";
+            $(cltcoll).each(function () {
+			  if ($(this).attr("id") == undefined)
+                    return
+                var dvhidden = $("#dv" + $(this).attr("id"));
+                if (!(dvhidden.css('display') == 'none')) {
+                    cltid = $(this);
+                    return false;
+                }
+            });
+            if (cltid != "" && cltid != undefined)
+                setTimeout(function () { $(cltid).focus(); }, 500)
+        }
+        catch (ex) { }
+    });
+</script>
 

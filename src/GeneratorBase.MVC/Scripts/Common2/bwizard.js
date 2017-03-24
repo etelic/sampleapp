@@ -237,7 +237,7 @@
                     var requiresPager = true;
                 }
                 if (saveBtnText != '') {
-                    $("<li><input type='submit' value='Save & Return' class='btn btn-primary btn-sm' style='margin-right:5px;'/>")
+                    $("<li><input type='button' onclick='Call_Submit()' value='Save & Return' class='btn btn-primary btn-sm' style='margin-right:5px;'/>")
                     .appendTo(this.buttons).attr("role", "button");
                 }
                 if (CancelBtnText != '') {
@@ -740,6 +740,9 @@
 }(jQuery));
 function deactive_tiptip() {
     window.location.href = $('#cancel').attr('href');
+}
+function Call_Submit() {
+    $('#WizardSubmit').click();
 }
 $("#wizard").bwizard();
 

@@ -8,37 +8,37 @@ using System.ComponentModel;
 using Microsoft.AspNet.Identity.EntityFramework;
 namespace GeneratorBase.MVC.Models
 {
-    [Table("tbl_FileDocument"),DisplayName("Document")]
+    [Table("tbl_FileDocument"),CustomDisplayName("FileDocument", "FileDocument.resx", "Document")]
 	public class FileDocument : Entity
     {	
 
 		 
 		 
-		[DisplayName("Document Name"), Column("DocumentName")] [Required] 
+		[CustomDisplayName("DocumentName","FileDocument.resx","Document Name"), Column("DocumentName")] [Required] 
 		
         public string DocumentName { get; set; }
 
 		 
 		 
-		[DisplayName("Description"), Column("Description")]  
+		[CustomDisplayName("Description","FileDocument.resx","Description"), Column("Description")]  
 		
         public string Description { get; set; }
 
 		 
 		 
-		[DisplayName("Attach Document"), Column("AttachDocument")]  
+		[CustomDisplayName("AttachDocument","FileDocument.resx","Attach Document"), Column("AttachDocument")]  
 		
         public string AttachDocument { get; set; }
 
 		[DataType(DataType.DateTime)][DisplayFormat(DataFormatString = "{0:MM/dd/yyyy hh:mm tt}", ApplyFormatInEditMode = true)] 
 		 
-		[DisplayName("Created"), Column("DateCreated")] [Required] 
+		[CustomDisplayName("DateCreated","FileDocument.resx","Created"), Column("DateCreated")] [Required] 
 		
         public DateTime DateCreated { get; set; }
 
 		[DataType(DataType.DateTime)][DisplayFormat(DataFormatString = "{0:MM/dd/yyyy hh:mm tt}", ApplyFormatInEditMode = true)] 
 		 
-		[DisplayName("Last Updated"), Column("DateLastUpdated")] [Required] 
+		[CustomDisplayName("DateLastUpdated","FileDocument.resx","Last Updated"), Column("DateLastUpdated")] [Required] 
 		
         public DateTime DateLastUpdated { get; set; }
 		 public  string getDisplayValue() { 

@@ -25,7 +25,8 @@ namespace GeneratorBase.MVC.Models
                 var assocPropArray = obj.Split('.');
                 if (obj == "Owner")
                 {
-                    var objuser = usercontext.Users.First(p => p.UserName == userName);
+                    var objuser = usercontext.Users.FirstOrDefault(p => p.UserName == userName);
+					if(objuser != null && !string.IsNullOrEmpty(objuser.Email))
                     result += objuser != null ? objuser.Email + "," : "";
                 }
                 if (EntityName == assocPropArray[0])
@@ -38,7 +39,8 @@ namespace GeneratorBase.MVC.Models
                     {
                         if (Property.Name.EndsWith("UserLoginID"))
                         {
-                            var objuser = usercontext.Users.First(p => p.Id == PropValue);
+                            var objuser = usercontext.Users.FirstOrDefault(p => p.Id == PropValue);
+							if(objuser != null && !string.IsNullOrEmpty(objuser.Email))
                             result += objuser != null ? objuser.Email + "," : "";
                         }
                         else
@@ -75,7 +77,8 @@ namespace GeneratorBase.MVC.Models
                             var data = Convert.ToString(((System.Web.Mvc.JsonResult)(obj1)).Data);
                             if (emailProperty.Name.EndsWith("UserLoginID"))
                             {
-                                var objuser = usercontext.Users.First(p => p.Id == data);
+                                var objuser = usercontext.Users.FirstOrDefault(p => p.Id == data);
+								if(objuser != null && !string.IsNullOrEmpty(objuser.Email))
                                 result += objuser != null ? objuser.Email + "," : "";
                             }
                             else
@@ -102,7 +105,8 @@ namespace GeneratorBase.MVC.Models
                 object PropValue = Property.GetValue(obj1, null);
                 if (PropValue != null)
                 {
-                    var objuser = usercontext.Users.First(p => p.Id == PropValue);
+                    var objuser = usercontext.Users.FirstOrDefault(p => p.Id == PropValue);
+					if(objuser != null && !string.IsNullOrEmpty(objuser.Email))
                     result += objuser != null ? objuser.Email + "," : "";
                 }
             }
@@ -122,7 +126,8 @@ namespace GeneratorBase.MVC.Models
                 userIds = x.GetUsersInRole(item);
                 foreach (var userId in userIds)
                 {
-                    var objuser = usercontext.Users.First(p => p.Id == userId);
+                    var objuser = usercontext.Users.FirstOrDefault(p => p.Id == userId);
+					if(objuser != null && !string.IsNullOrEmpty(objuser.Email))
                     result += objuser != null ? objuser.Email + "," : "";
                 }
             }

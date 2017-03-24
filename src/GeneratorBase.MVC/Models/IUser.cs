@@ -8,7 +8,8 @@ namespace GeneratorBase.MVC.Models
     {
         string Name { get; }
         string JavaScriptEncodedName { get; }
-        bool IsAdmin();
+        bool IsAdmin{ get; }
+        bool IsAdminUser();
         bool IsInRole(string role);
         bool IsInRole(string[] roles);
         IEnumerable<string> GetRoles();
@@ -25,5 +26,7 @@ namespace GeneratorBase.MVC.Models
         string FLSAppliedOnProperties(string resource);
         List<BusinessRule> businessrules { get;}
         List<Permission> permissions { get;  }
+        List<MultiTenantLoginSelected> MultiTenantLoginSelected { get; }
+        List<PermissionAdminPrivilege> adminprivileges { get; }
     }
 }

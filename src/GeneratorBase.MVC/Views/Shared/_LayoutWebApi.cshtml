@@ -1,0 +1,123 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+    @RenderSection("scripts", required: false)
+    @Styles.Render("~/Content/css")
+    @Styles.Render("~/Content/fontawesome")
+    @Styles.Render("~/Content/csstheme")
+</head>
+<body>
+    <div class="navbar navbar-inverse navbar-static-top" role="navigation">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".sidebar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <img src="~/logo/logo.gif" class="logoimg" />
+                @Html.ActionLink(GeneratorBase.MVC.Models.CommonFunction.Instance.AppName().ToString(), "Index", "Home", null, new { @class = "navbar-brand" })
+            </div>
+            <ul class="nav navbar-top-links navbar-right">
+                @if (GeneratorBase.MVC.ModelReflector.Entities.Where(p => p.Name == Request.RequestContext.RouteData.Values["controller"].ToString()).Count() > 0)
+                {
+                    <li id="liFavorite" class="dropdown">
+                        @{
+                    string starcolor = GeneratorBase.MVC.Controllers.BaseController.objFavorite == null ? " color: #FFF;" : "color: #F90;";
+                    string favoriteId = GeneratorBase.MVC.Controllers.BaseController.objFavorite == null ? "" : GeneratorBase.MVC.Controllers.BaseController.objFavorite.Id.ToString();
+                    string favoriteName = GeneratorBase.MVC.Controllers.BaseController.objFavorite == null ? "" : GeneratorBase.MVC.Controllers.BaseController.objFavorite.Name;
+                        }
+                        <a class="dropdown-toggle" href="#" data-toggle="dropdown"><i class="fa fa-1x fa-star" style="margin-right:5px; @starcolor"></i></a>
+                        <div class="dropdown-menu" style="padding: 15px; padding-bottom: 0px;">
+                            <form method="post" accept-charset="UTF-8">
+                                <h2>Add to Favorite</h2>
+                                <div class="col-sm-2" style="padding-left:0px;"><label class="label" style="color:#000; padding-left:0px;">Name :</label></div>
+                                <div class="col-sm-4" style="padding-left:10px; margin-right:10px"> <input style="margin-bottom: 15px;" type="text" placeholder="Favourite Name" id="Favorite" name="Favorite" required value="@favoriteName" /></div>
+                                <input type="hidden" id="hdnFavorite" name="hdnFavorite" value="@favoriteId" />
+                                <input class="btn btn-primary btn-block" type="submit" id="save" onclick="return favorite();" value="save" />
+                                <br>
+                            </form>
+                        </div>
+                    </li>
+                }
+                @if (User.Identity.IsAuthenticated && User != null && User.CanView("Reports"))
+                {
+                    <li class="dropdown bg-green">
+                        <a href="@Url.Action("Index", "Reports")">
+                            <i class="fa fa-file-text fa-fw ie8-icon">  </i> Reports
+                        </a>
+                        <!-- /.dropdown-user -->
+                    </li>
+                }
+                @if (HttpContext.Current.User.Identity.IsAuthenticated)
+                {
+                    if (User.IsAdmin)
+                    {
+                        <li class="dropdown bg-purpul">
+                            <a href="@Url.Action("Index", "Admin")">
+                                <i class="fa fa-cogs fa-fw"> </i> Admin
+                            </a>
+                            <!-- /.dropdown-user -->
+                        </li>
+                    }
+                }
+                <!-- /.dropdown -->
+                <li class="dropdown bg-blue">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                        <i class="fa fa-user fa-fw"></i>  @User.Name
+                        <i class="fa fa-caret-down"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-user">
+                        <li>
+                            @Html.ActionLink("Change Password", "Manage", "Account", routeValues: null, htmlAttributes: new { title = "Manage" })
+                        </li>
+
+                        <li class="divider"></li>
+                        @if (Request.IsAuthenticated)
+                        {
+                            using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm" }))
+                            {
+                                @Html.AntiForgeryToken()
+                                <li>
+                                    <a id="logoutbtn" onclick="logoutform();" style="color:black;"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
+                                </li>
+                                <script>
+                                    function logoutform() {
+                                        ClearFilterCookies();
+                                        $("#logoutForm").submit();
+                                    }
+                                </script>
+                            }
+                        }
+                        @if (User.Identity.IsAuthenticated && User.CanView("ApplicationFeedback"))
+                        {
+                            <li class="divider"></li>
+                            <li>
+                                @Html.ActionLink("Application Feedback", "Index", "ApplicationFeedback", routeValues: null, htmlAttributes: new { title = "Application Feedback" })
+                            </li>
+                        }
+                        @if ((new GeneratorBase.MVC.Models.UserBasedSecurityContext()).UserBasedSecurities.Count() > 0)
+                        {
+                            <li class="divider"></li>
+                            <li>
+                                <a href="#" style="color:black;"> Security Filter is Active</a>
+                            </li>
+                        }
+                        <li class="divider"></li>
+                        <li>
+                            @Html.ActionLink("API Token & Help", "Index", "ApiHelp", routeValues: null, htmlAttributes: new { title = "API Help" })
+                        </li>
+                    </ul>
+                    <!-- /.dropdown-user -->
+                </li>
+            </ul>
+        </div>
+    </div>
+    
+    @RenderBody()
+</body>
+</html>

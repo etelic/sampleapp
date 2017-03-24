@@ -1,0 +1,457 @@
+﻿@model GeneratorBase.MVC.Models.T_Employee
+<script>
+    $(document).ready(function () {
+        try {
+            var hostingEntityName = "";
+            if ('@Convert.ToString(ViewData["AssociatedType"])' != null) {
+                hostingEntityName = '@Convert.ToString(ViewData["AssociatedType"])';
+                 $('#' + hostingEntityName + 'ID').attr("lock","true");
+				  $('#' + hostingEntityName + 'ID').trigger("change");
+            }
+			
+        }
+        catch (ex) { }
+		});
+</script>
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_EmployeeIsHiddenRule))
+    {
+        @Html.Raw(ViewBag.T_EmployeeIsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_EmployeeIsSetValueUIRule))
+    {
+        @Html.Raw(ViewBag.T_EmployeeIsSetValueUIRule);
+    }
+}
+@using (Html.BeginForm("Create", "T_Employee",new {UrlReferrer = Convert.ToString(ViewData["T_EmployeeParentUrl"]), IsDDAdd = ViewBag.IsDDAdd }, FormMethod.Post, new { enctype = "multipart/form-data",id="frmT_Employee" }))
+{
+   @Html.AntiForgeryToken();
+    Html.ValidationSummary(true);
+    Html.EnableClientValidation();
+	<input type="hidden" id="ErrMsg" />
+	@*<label id="ErrMsg" class="text-primary small pull-right" style="color:red; vertical-align:middle; font-weight:100;"></label>*@
+    <div id="errorContainer" style="display: none">
+        <div id="errorsMsg"></div>
+        <div id="errors"></div>
+    </div>
+	 <h2>
+	<div class="pull-right" style="margin-top:-10px;margin-bottom:10px">
+	 @Html.ActionLink("Cancel", "Cancel", new { UrlReferrer = ViewData["T_EmployeeParentUrl"] }, new { @onclick = "", @class="btn btn-default btn-xs" })
+	<input type="submit" name="command" value="Create" class="btn btn-primary btn-xs" />
+    @if (ViewBag.IsDDAdd == null && User.CanEdit("T_Employee"))
+    {
+	<input type="submit" name="command" value="Create & Continue" class="btn btn-primary btn-xs" />
+	}
+	</div>
+	 </h2>
+	 <div id="divDisplayThresholdLimit" style="display:none;">
+	</div>
+	 <div id="divDisplayBRmsgMandatory" style="display:none;">
+	</div>
+	<div id="divDisplayBRmsgBeforeSaveProp" style="display:none;">
+	</div>
+	<div id="divDisplayCodeFragment" style="display:none;">
+	</div>
+
+	<div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="panel panel-default AppForm">
+                <div class="panel-body">
+               					<div class="row">
+				       
+			     <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_Title">
+                                <div class='form-group' title="Title">
+                                   <label class="col-sm-5 col-md-5 col-xs-12" >@Html.LabelFor(model => model.T_Title) </label>
+									<div class="input-group col-sm-7 col-md-7 col-xs-12">
+									
+                                    @Html.TextBoxFor(model => model.T_Title, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.T_Title)
+									</div>
+                                </div>
+					</div>
+
+					
+			     <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_FirstName">
+                                <div class='form-group' title="First Name">
+                                   <label class="col-sm-5 col-md-5 col-xs-12" >@Html.LabelFor(model => model.T_FirstName) <span class="text-danger-reg">*</span></label>
+									<div class="input-group col-sm-7 col-md-7 col-xs-12">
+									
+                                    @Html.TextBoxFor(model => model.T_FirstName, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.T_FirstName)
+									</div>
+                                </div>
+					</div>
+
+					
+			     <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_MiddleName">
+                                <div class='form-group' title="Middle Name">
+                                   <label class="col-sm-5 col-md-5 col-xs-12" >@Html.LabelFor(model => model.T_MiddleName) </label>
+									<div class="input-group col-sm-7 col-md-7 col-xs-12">
+									
+                                    @Html.TextBoxFor(model => model.T_MiddleName, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.T_MiddleName)
+									</div>
+                                </div>
+					</div>
+
+					
+			     <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_LastName">
+                                <div class='form-group' title="Last Name">
+                                   <label class="col-sm-5 col-md-5 col-xs-12" >@Html.LabelFor(model => model.T_LastName) </label>
+									<div class="input-group col-sm-7 col-md-7 col-xs-12">
+									
+                                    @Html.TextBoxFor(model => model.T_LastName, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.T_LastName)
+									</div>
+                                </div>
+					</div>
+
+					
+			     <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_Email">
+                                <div class='form-group' title="Email">
+                                   <label class="col-sm-5 col-md-5 col-xs-12" >@Html.LabelFor(model => model.T_Email) </label>
+									<div class="input-group col-sm-7 col-md-7 col-xs-12">
+									
+                                    @Html.TextBoxFor(model => model.T_Email, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.T_Email)
+									</div>
+                                </div>
+					</div>
+
+					
+			     <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_PhoneNo">
+                                <div class='form-group' title="Phone No">
+                                   <label class="col-sm-5 col-md-5 col-xs-12" >@Html.LabelFor(model => model.T_PhoneNo) </label>
+									<div class="input-group col-sm-7 col-md-7 col-xs-12">
+									
+                                    @Html.TextBoxFor(model => model.T_PhoneNo, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.T_PhoneNo)
+									</div>
+                                </div>
+					</div>
+
+					
+			     <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_IdentificationNo">
+                                <div class='form-group' title="Identification No">
+                                   <label class="col-sm-5 col-md-5 col-xs-12" >@Html.LabelFor(model => model.T_IdentificationNo) </label>
+									<div class="input-group col-sm-7 col-md-7 col-xs-12">
+									
+                                    @Html.TextBoxFor(model => model.T_IdentificationNo, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.T_IdentificationNo)
+									</div>
+                                </div>
+					</div>
+
+					
+				 @if(User.CanAdd("Document"))
+                 { 
+				      <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_Picture">
+                            <div class='form-group' title="Picture">
+                                   <label class="col-sm-5 col-md-5 col-xs-12" >@Html.LabelFor(model => model.T_Picture) </label>
+                                     <div class="input-group col-sm-7 col-md-7 col-xs-12">
+									 <div style="position:relative;">
+										 <a class='btn btn-primary btnupload' href='javascript:;'>
+											 Upload File
+										 <input id="T_Picture"  type="file" style='position:absolute;z-index:2;top:0;left:0;filter: alpha(opacity=0);-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";opacity:0;background-color:transparent;color:transparent;width:105px;' name="T_Picture" onchange='$("#upload-file-infoT_Picture").html($(this).val());'>
+										</a>
+										&nbsp;
+										<span class='label uploadlblFix' id="upload-file-infoT_Picture"></span>
+									</div> 
+									</div>
+                            </div>
+                   </div>
+
+				  
+				 }
+			      <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_AssociatedEmployeeTypeID">
+                        <div class='form-group'>
+                            <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.T_AssociatedEmployeeTypeID) </label>
+							<div class="input-group col-sm-7 col-md-7 col-xs-12">
+                            <div class="input-group" style="width:100%;">
+									@Html.DropDownList("T_AssociatedEmployeeTypeID", null, "-- Select --", new {       @class = "chosen-select form-control", @HostingName = "T_Employeetype", @dataurl = Url.Action("GetAllValue", "T_Employeetype",new { caller = "T_AssociatedEmployeeTypeID" }) })
+ @*<script>
+    $(function () {
+        LoadUserDropdown('ID');
+    });
+</script>*@
+			@Html.ValidationMessageFor(model => model.T_AssociatedEmployeeTypeID)
+			@if (User.Identity.IsAuthenticated && User != null && User.CanAdd("T_Employeetype"))
+				{
+			<div class="input-group-btn">
+				<a class="btn btn-default btn ie8fix"  data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Employee Type','dvPopup','" + Url.Action("CreateQuick", "T_Employeetype", new { UrlReferrer = Request.Url, HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), IsAddPop=true }) + "')")">
+					<span class="glyphicon glyphicon-plus-sign"></span>
+				</a>
+			</div>
+			}
+		                                
+                            </div>
+							</div>
+                        </div>
+                    </div>
+
+				
+			      <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_AssociatedEmployeeStatusID">
+                        <div class='form-group'>
+                            <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.T_AssociatedEmployeeStatusID) </label>
+							<div class="input-group col-sm-7 col-md-7 col-xs-12">
+                            <div class="input-group" style="width:100%;">
+									@Html.DropDownList("T_AssociatedEmployeeStatusID", null, "-- Select --", new {       @class = "chosen-select form-control", @HostingName = "T_Employeestatus", @dataurl = Url.Action("GetAllValue", "T_Employeestatus",new { caller = "T_AssociatedEmployeeStatusID" }) })
+ @*<script>
+    $(function () {
+        LoadUserDropdown('ID');
+    });
+</script>*@
+			@Html.ValidationMessageFor(model => model.T_AssociatedEmployeeStatusID)
+			@if (User.Identity.IsAuthenticated && User != null && User.CanAdd("T_Employeestatus"))
+				{
+			<div class="input-group-btn">
+				<a class="btn btn-default btn ie8fix"  data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Employee Status','dvPopup','" + Url.Action("CreateQuick", "T_Employeestatus", new { UrlReferrer = Request.Url, HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), IsAddPop=true }) + "')")">
+					<span class="glyphicon glyphicon-plus-sign"></span>
+				</a>
+			</div>
+			}
+		                                
+                            </div>
+							</div>
+                        </div>
+                    </div>
+
+				
+			      <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_EmployeeUserLoginID">
+                        <div class='form-group'>
+                            <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.T_EmployeeUserLoginID) </label>
+							<div class="input-group col-sm-7 col-md-7 col-xs-12">
+                            <div class="input-group" style="width:100%;">
+									@Html.DropDownList("T_EmployeeUserLoginID", null, "--Select Employee User Login--", new { @class = "chosen-select form-control", @HostingName = "UserDropDown", @dataurl = Url.Action("GetAllValueUserLogin", "T_Employee", null) })
+		@Html.ValidationMessageFor(model => model.T_EmployeeUserLoginID)
+                               
+                            </div>
+							</div>
+                        </div>
+                    </div>
+
+				
+@if(User.CanView("T_Address"))
+{
+                            <div class="col-md-12 col-sm-12 col-xs-12" id="dvT_EmployeeAddressID">
+                                <div class="panel panel-default">
+                                     <div class="panel-sub-heading clearfix">
+                                        <h3 class="panel-title">@Html.LabelFor(model => model.T_EmployeeAddressID)</h3>
+                                    </div>
+                                    <div class="panel-body">
+                                        <div class="row">
+                                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                                        <div class="row">
+							<div class='col-sm-6 col-md-6 col-xs-12' id="dvT_EmployeeAddressID_T_AddressLine1">
+                            <div class='form-group' title="AddressLine1">
+                                <label class="col-sm-5 col-md-5 col-xs-12" >@Html.LabelFor(model => model.t_employeeaddress.T_AddressLine1) </label>
+                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                    @Html.TextBoxFor(model => model.t_employeeaddress.T_AddressLine1, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.t_employeeaddress.T_AddressLine1)
+                                </div>
+                            </div>
+							</div>
+                                               
+							<div class='col-sm-6 col-md-6 col-xs-12' id="dvT_EmployeeAddressID_T_AddressLine2">
+                            <div class='form-group' title="AddressLine2">
+                                <label class="col-sm-5 col-md-5 col-xs-12" >@Html.LabelFor(model => model.t_employeeaddress.T_AddressLine2) </label>
+                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                    @Html.TextBoxFor(model => model.t_employeeaddress.T_AddressLine2, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.t_employeeaddress.T_AddressLine2)
+                                </div>
+                            </div>
+							</div>
+                                               
+							<div class='col-sm-6 col-md-6 col-xs-12' id="dvT_EmployeeAddressID_T_ZipCode">
+                            <div class='form-group' title="ZipCode">
+                                <label class="col-sm-5 col-md-5 col-xs-12" >@Html.LabelFor(model => model.t_employeeaddress.T_ZipCode) </label>
+                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                    @Html.TextBoxFor(model => model.t_employeeaddress.T_ZipCode, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.t_employeeaddress.T_ZipCode)
+                                </div>
+                            </div>
+							</div>
+                                               
+				<div class='col-sm-6 col-md-6 col-xs-12'  id="dvT_EmployeeAddressID_T_AddressCountryID">
+                        <div class='form-group'>
+                            <label class="col-sm-5 col-md-5 col-xs-12" >
+							@Html.LabelFor(model => model.t_employeeaddress.T_AddressCountryID) </label>
+                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+								<div class="input-group" style="width:100%;">
+											
+		@Html.DropDownListFor(model => model.t_employeeaddress.T_AddressCountryID, (SelectList)ViewBag.T_AddressCountryID, "--Select--", new {     @onchange = Html.Raw("ClearChildDD('t_employeeaddress_T_AddressStateID',this,'false');ClearChildDD('t_employeeaddress_T_AddressCityID',this,'false');") ,  @class = "chosen-select form-control", @HostingName = "T_Country", @dataurl = Url.Action("GetAllValue", "T_Country",new { caller = "T_AddressCountryID" }) })
+	
+                                    @Html.ValidationMessageFor(model => model.t_employeeaddress.T_AddressCountryID)
+															 @if (User.Identity.IsAuthenticated && User != null && User.CanAdd("T_Country"))
+                                    {
+                                    <div class="input-group-btn">
+										<a class="btn btn-default btn ie8fix"  data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Address Country','dvPopup','" + Url.Action("CreateQuick", "T_Country", new { UrlReferrer = Request.Url, HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), IsAddPop=true }) + "')")">
+											<span class="glyphicon glyphicon-plus-sign"></span>
+										</a>
+                                    </div>
+									}
+																	
+                                </div>
+								</div>
+                            </div>
+                    </div>
+				                                               
+				<div class='col-sm-6 col-md-6 col-xs-12'  id="dvT_EmployeeAddressID_T_AddressStateID">
+                        <div class='form-group'>
+                            <label class="col-sm-5 col-md-5 col-xs-12" >
+							@Html.LabelFor(model => model.t_employeeaddress.T_AddressStateID) </label>
+                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+								<div class="input-group" style="width:100%;">
+											
+		@Html.DropDownListFor(model => model.t_employeeaddress.T_AddressStateID, (SelectList)ViewBag.T_AddressStateID, "--Select--", new {   @ParentDD = "t_employeeaddress_T_AddressCountryID" , @AssoNameWithParent = "T_StateCountryID" ,  @onchange = Html.Raw("ClearChildDD('t_employeeaddress_T_AddressCityID',this,'false');") ,  @class = "chosen-select form-control", @HostingName = "T_State", @dataurl = Url.Action("GetAllValue", "T_State",new { caller = "T_AddressStateID" }) })
+	
+                                    @Html.ValidationMessageFor(model => model.t_employeeaddress.T_AddressStateID)
+															 @if (User.Identity.IsAuthenticated && User != null && User.CanAdd("T_State"))
+                                    {
+                                    <div class="input-group-btn">
+										<a class="btn btn-default btn ie8fix"  data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Address State','dvPopup','" + Url.Action("CreateQuick", "T_State", new { UrlReferrer = Request.Url, HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), IsAddPop=true }) + "')")">
+											<span class="glyphicon glyphicon-plus-sign"></span>
+										</a>
+                                    </div>
+									}
+																	
+                                </div>
+								</div>
+                            </div>
+                    </div>
+				                                               
+				<div class='col-sm-6 col-md-6 col-xs-12'  id="dvT_EmployeeAddressID_T_AddressCityID">
+                        <div class='form-group'>
+                            <label class="col-sm-5 col-md-5 col-xs-12" >
+							@Html.LabelFor(model => model.t_employeeaddress.T_AddressCityID) </label>
+                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+								<div class="input-group" style="width:100%;">
+											
+		@Html.DropDownListFor(model => model.t_employeeaddress.T_AddressCityID, (SelectList)ViewBag.T_AddressCityID, "--Select--", new {   @ParentDD = "t_employeeaddress_T_AddressCountryID,t_employeeaddress_T_AddressStateID" , @AssoNameWithParent = "T_CityCountryID,T_CityStateID" ,   @class = "chosen-select form-control", @HostingName = "T_City", @dataurl = Url.Action("GetAllValue", "T_City",new { caller = "T_AddressCityID" }) })
+	
+                                    @Html.ValidationMessageFor(model => model.t_employeeaddress.T_AddressCityID)
+															 @if (User.Identity.IsAuthenticated && User != null && User.CanAdd("T_City"))
+                                    {
+                                    <div class="input-group-btn">
+										<a class="btn btn-default btn ie8fix"  data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Address City','dvPopup','" + Url.Action("CreateQuick", "T_City", new { UrlReferrer = Request.Url, HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), IsAddPop=true }) + "')")">
+											<span class="glyphicon glyphicon-plus-sign"></span>
+										</a>
+                                    </div>
+									}
+																	
+                                </div>
+								</div>
+                            </div>
+                    </div>
+				                                               
+					
+                                                </div>
+                                            </div>
+                                        </div>
+                                        @Html.ValidationMessageFor(model => model.T_EmployeeAddressID)
+                                    </div>
+                                </div>
+                            </div>
+  }                     
+       </div>
+                        </div>
+                    </div>
+                </div>
+        </div>
+          @Html.ActionLink("Cancel", "Cancel", new { UrlReferrer = ViewData["T_EmployeeParentUrl"] }, new { @onclick = "", @class = "btn btn-default btn-sm" })
+	<input type="submit" name="command" value="Create" class="btn btn-primary btn-sm" />
+    if (ViewBag.IsDDAdd == null && User.CanEdit("T_Employee"))
+    {
+	<input type="submit" name="command" value="Create & Continue" class="btn btn-primary btn-sm" />
+	}
+	 <input type="hidden" name="hdncommand" value="" />
+	<br/><br/>
+}
+	<script>
+	    $(function () {
+        var userAgent = navigator.userAgent.toLowerCase();
+        // Figure out what browser is being used
+        var browser = {
+            version: (userAgent.match(/.+(?:rv|it|ra|ie)[\/: ]([\d.]+)/) || [])[1],
+            safari: /webkit/.test(userAgent),
+            opera: /opera/.test(userAgent),
+            msie: /msie/.test(userAgent) && !/opera/.test(userAgent),
+            mozilla: /mozilla/.test(userAgent) && !/(compatible|webkit)/.test(userAgent)
+        };
+        if (!browser.msie) {
+            $('form').areYouSure();
+        }
+        else if (browser.version > 8.0) {
+            $('form').areYouSure();
+        }
+    });
+</script>
+	
+@{
+		var businessrule = User.businessrules.Where(p => p.EntityName == "T_Employee").ToList();
+		
+		var businessurlinline = User.businessrules.Where(p => p.EntityName == "T_Address").ToList();
+if ((businessrule != null && businessrule.Count > 0)  || (businessurlinline != null && businessurlinline.Count > 0) )
+    {
+        <script>
+            $("form").submit(function () {
+				document.getElementById("ErrMsg").innerHTML = "";
+                var flag = true;
+                var dataurl = "";
+                var form = "";
+                var inlinecount = "0";
+                
+              
+                //var form = $(this).serialize();
+	 form = $("#frmT_Employee").find(":not(#dvT_EmployeeAddressID *)").serialize();
+  
+                dataurl = "@Url.Action("businessruletype", "T_Employee", new { ruleType = "OnCreate"})";
+                flag = ApplyBusinessRuleOnSubmit(dataurl, "T_Employee", false, "ErrMsg", form);
+				//business rules on inline associations
+                inlinecount = "@businessurlinline.Where(p => p.EntityName == "T_Address").Count()";
+                if (inlinecount != "0") {
+                    form = $('#dvT_EmployeeAddressID :input').serialize();
+                    form = form.replaceAll("t_employeeaddress.", "");
+                    dataurl = "@Url.Action("businessruletype", "T_Address", new { ruleType = "OnCreate" })";
+                    flag = flag && ApplyBusinessRuleOnSubmit(dataurl, "T_Address", true, "ErrMsg", form, "T_EmployeeAddress", "Employee Address");
+                }
+				if (flag) {
+						
+                    SaveServerTime(this, true);
+                    $('input:hidden[name="hdncommand"]').val($("input[type='submit']").val());
+                    $("form").find(':input').removeAttr('disabled');
+                }
+				return flag;
+			 });	
+            $(document).ready(function () {
+                $("input[type='submit']").on('blur', function () {
+                    $("input[type='submit']").removeAttr('disabled');
+                });
+            });
+        </script>
+    }
+    else
+    {
+	<script>
+            $("input[type='submit']").click(function (event) {
+                var $this = $(this);
+				 SaveServerTime(this);
+                $('input:hidden[name="hdncommand"]').val($this.val());
+            });
+	</script>
+           
+    }
+}
+
+ <script type='text/javascript'>$(document).ready(function () {   $('#T_PhoneNo').mask('999-999-9999');  });</script>
+<script type='text/javascript'>
+    $(document).ready(function () {
+        try {
+		 focusOnControl('frmT_Employee');
+        }
+        catch (ex) { }
+    });
+</script>
+

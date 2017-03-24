@@ -2,14 +2,22 @@
 @{
     ViewBag.Title = "Document List";
 	Layout ="~/Views/Shared/_Layout.cshtml";
+	string templatename = ("~/Views/FileDocument/" + ViewBag.TemplatesName + ".cshtml").Replace("?IsAddPop=true", "");
+	 var EntityDisplayNameReflector = ModelReflector.Entities.FirstOrDefault(p => p.Name == "FileDocument");
+    var EntityDisplayName = EntityDisplayNameReflector != null ? EntityDisplayNameReflector.DisplayName : "Document";
 }
 <div class="row">
     <div class="col-lg-12">
         <h1 class="page-title">
-            <i class="glyphicon glyphicon-thumbs-up text-primary" style="margin-bottom:-20px;"></i> Document  <i class="glyphicon glyphicon-chevron-right small"></i>  <span>List</span>
+            <i class="glyphicon glyphicon-thumbs-up text-primary" style="margin-bottom:-20px;"></i> @EntityDisplayName  <i class="glyphicon glyphicon-chevron-right small"></i>  <span>List</span>
 </h1>
     </div>
 </div>
+<script>
+    $(document).ready(function () {
+        ClickFilterBtn();
+    });
+</script>
 <div id="dvFileDocumentFilter"></div>
-@Html.Partial("~/Views/FileDocument/IndexPartial.cshtml", Model)
+@Html.Partial(templatename, Model)
 

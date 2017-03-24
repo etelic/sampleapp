@@ -1,4 +1,4 @@
-ï»¿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -48,8 +48,8 @@ namespace GeneratorBase.MVC.Controllers
                 generateDocument.ReplaceText("Company_Name", comp.Name);
                 generateDocument.ReplaceText("Company_Email", comp.Email);
                 generateDocument.ReplaceText("App_URL", CommonFunction.Instance.Server() + "/" + CommonFunction.Instance.AppURL());
-                generateDocument = ImagePlace(generateDocument, comp.logo, "#Company_Logo#");
-                generateDocument = HeaderImagePlace(generateDocument, comp.logo, "#Header_Logo#");
+                generateDocument = ImagePlace(generateDocument, comp.Icon, "#Company_Logo#");
+                generateDocument = HeaderImagePlace(generateDocument, comp.Icon, "#Header_Logo#");
                 foreach (var paragraph in generateDocument.Paragraphs.Where(p => p.Text.Contains("#Table_TOC#")))
                 {
                     generateDocument.InsertTableOfContents(paragraph, "Table of Contents", TableOfContentsSwitches.O | TableOfContentsSwitches.H | TableOfContentsSwitches.Z | TableOfContentsSwitches.U);
@@ -146,10 +146,13 @@ namespace GeneratorBase.MVC.Controllers
 
                 string OldName = string.Empty;
                 int rowCnt = 1;
-                foreach (BusinessRule objBR in businessRules.OrderBy(br => br.EntityName))
+                foreach (BusinessRule objBR in businessRules.ToList().OrderBy(br => br.EntityName))
                 {
-                    var Conditions = objCondition.Conditions.Where(c => c.RuleConditionsID == objBR.Id);
+                    var Conditions = objCondition.Conditions.ToList().Where(c => c.RuleConditionsID == objBR.Id);
                     var RuleActions = objRuleAction.RuleActions.Where(r => r.RuleActionID == objBR.Id).OrderBy(ra => ra.AssociatedActionTypeID).ToList();
+                    if (ModelReflector.Entities.Where(e => e.Name == objBR.EntityName).Count() == 0)
+                        continue;
+
                     foreach (var paragraph in generateDocument.Paragraphs.Where(p => p.Text.Contains("#Table_Business_Rules#")))
                     {
                         if (rowCnt != 1)
@@ -157,19 +160,30 @@ namespace GeneratorBase.MVC.Controllers
                         if (OldName != objBR.EntityName)
                         {
                             paragraph.FindAll("#Table_Business_Rules#").ForEach(index => paragraph.InsertParagraphBeforeSelf(Heading(entityDP(objBR.EntityName), 2, generateDocument)));
-
                         }
-                        paragraph.FindAll("#Table_Business_Rules#").ForEach(index => paragraph.InsertParagraphBeforeSelf(Heading(objBR.EntityName + " - " + objBR.RuleName, 3, generateDocument)));
+
+                        string ruleStatus = "Enabled";
+                        if (objBR.Disable)
+                            ruleStatus = "Disabled";
+                        if (objBR.Freeze)
+                            ruleStatus += " and Freezed";
+
+                        paragraph.FindAll("#Table_Business_Rules#").ForEach(index => paragraph.InsertParagraphBeforeSelf(Heading(entityDP(objBR.EntityName) + " - " + objBR.RuleName, 3, generateDocument)));
+                        paragraph.FindAll("#Table_Business_Rules#").ForEach(index => paragraph.InsertParagraphBeforeSelf(tblCaption("", "RULE STATUS: " + ruleStatus, generateDocument)));
                         paragraph.FindAll("#Table_Business_Rules#").ForEach(index => paragraph.InsertParagraphBeforeSelf(tblCaption("", "TODO: Rule Description (for example: This rule make sure that new employees get a welcome mail.)", generateDocument)));
                         paragraph.FindAll("#Table_Business_Rules#").ForEach(index => paragraph.InsertParagraphBeforeSelf(Heading("Application Roles", 4, generateDocument)));
-                        paragraph.FindAll("#Table_Business_Rules#").ForEach(index => paragraph.InsertParagraphBeforeSelf(tblCaption("", "This rule is applicable for the following roles: [" + objBR.Roles + "]. For all other roles, the rule is not invoked and the condition is not evaluated.", generateDocument)));
+                        paragraph.FindAll("#Table_Business_Rules#").ForEach(index => paragraph.InsertParagraphBeforeSelf(tblCaption("", "This rule is applicable for the following roles: [" + objBR.Roles + "].", generateDocument)));
+                        paragraph.FindAll("#Table_Business_Rules#").ForEach(index => paragraph.InsertParagraphBeforeSelf(tblCaption("", "For all other roles, the rule is not invoked and the condition is not evaluated.", generateDocument)));
+                        paragraph.FindAll("#Table_Business_Rules#").ForEach(index => paragraph.InsertParagraphBeforeSelf(Heading("When to evaluate rule", 4, generateDocument)));
+                        paragraph.FindAll("#Table_Business_Rules#").ForEach(index => paragraph.InsertParagraphBeforeSelf(tblCaption("", "The rule will be evaluated when:", generateDocument)));
+                        paragraph.FindAll("#Table_Business_Rules#").ForEach(index => paragraph.InsertParagraphBeforeSelf(tblCaption("", RuleEvaluate(objBR), generateDocument)));
                         if (Conditions.Count() > 0)
                         {
                             paragraph.FindAll("#Table_Business_Rules#").ForEach(index => paragraph.InsertParagraphBeforeSelf(Heading("Rule Conditions", 4, generateDocument)));
                             int conditionCnt = 1;
                             foreach (var condition in Conditions)
                             {
-                                string strCondtion = conditionCnt.ToString() + ".   If " + objBR.EntityName + "'s '" + propDP(objBR.EntityName, condition.PropertyName) + "' " + operatorDp(condition.Operator) + " '" + condition.Value + "'" + (conditionCnt > 1 ? " And " : " ");
+                                string strCondtion = conditionCnt.ToString() + ".   If " + entityDP(objBR.EntityName) + "'s '" + propDP(objBR.EntityName, condition.PropertyName) + "' " + operatorDp(condition.Operator) + " '" + condition.Value + "' " + ((Conditions.Count() > 1 && conditionCnt < Conditions.Count()) ? condition.LogicalConnector : " ");
                                 paragraph.FindAll("#Table_Business_Rules#").ForEach(index => paragraph.InsertParagraphBeforeSelf(tblCaption("", strCondtion, generateDocument)));
                                 conditionCnt++;
                             }
@@ -179,12 +193,15 @@ namespace GeneratorBase.MVC.Controllers
                         {
                             paragraph.FindAll("#Table_Business_Rules#").ForEach(index => paragraph.InsertParagraphBeforeSelf(Heading("Rule Actions", 4, generateDocument)));
                             int ruleactionCnt = 1;
-                            foreach (var ruleaction in RuleActions)
+                            foreach (var ruleaction in RuleActions.Where(ra => ra.AssociatedActionTypeID != 9))
                             {
-
+                                //string ruleacnDP = ;
+                                //if (string.IsNullOrEmpty(ruleacnDP))
+                                //{
                                 string actionarg = ruleactionCnt.ToString() + ".   " + RuleActionDP(ruleaction, objBR.EntityName);
                                 paragraph.FindAll("#Table_Business_Rules#").ForEach(index => paragraph.InsertParagraphBeforeSelf(tblCaption("", actionarg, generateDocument)));
                                 ruleactionCnt++;
+                                //}
                             }
 
                             generateDocument.Paragraphs.Last().Remove(false);
@@ -195,6 +212,11 @@ namespace GeneratorBase.MVC.Controllers
                             OldName = objBR.EntityName;
                             generateDocument.Paragraphs.Last().Remove(false);
                         }
+                        generateDocument.Paragraphs.Last().Remove(false);
+                        generateDocument.Paragraphs.Last().Remove(false);
+                        generateDocument.Paragraphs.Last().Remove(false);
+                        generateDocument.Paragraphs.Last().Remove(false);
+                        generateDocument.Paragraphs.Last().Remove(false);
                         generateDocument.Paragraphs.Last().Remove(false);
                         generateDocument.Paragraphs.Last().Remove(false);
                         generateDocument.Paragraphs.Last().Remove(false);
@@ -211,7 +233,7 @@ namespace GeneratorBase.MVC.Controllers
                         }
                         if (RuleActions.Count() > 0)
                         {
-                            foreach (var ruleaction in RuleActions)
+                            foreach (var ruleaction in RuleActions.Where(ra => ra.AssociatedActionTypeID != 9))
                             {
                                 generateDocument.Paragraphs.Last().Remove(false);
                             }
@@ -234,6 +256,48 @@ namespace GeneratorBase.MVC.Controllers
             }
             generateDocument.ReplaceText("#Table_Business_Rules#", "");
             return generateDocument;
+        }
+        private string RuleEvaluate(BusinessRule objBR)
+        {
+            string ruleevaluate = string.Empty;
+            switch (objBR.AssociatedBusinessRuleTypeID)
+            {
+                case 1:
+                    ruleevaluate = "-   Event is added";
+                    break;
+                case 2:
+                    ruleevaluate = "-   Event is updated";
+                    break;
+                case 3:
+                    ruleevaluate = "-   Event is added or updated";
+                    break;
+                case 4:
+                    ruleevaluate = "-   Event is at on property change";
+                    break;
+                case 5:
+                    var ruleaction = objBR.ruleaction.ToList().FirstOrDefault(p => p.AssociatedActionTypeID == 9);
+                    if (ruleaction != null)
+                    {
+                        string startOn = string.Empty;
+                        string endOn = string.Empty;
+                        string timeOn = string.Empty;
+                        foreach (var arg in ruleaction.actionarguments.ToList())
+                        {
+                            if (arg.ParameterName == "StartDate")
+                                startOn = arg.ParameterValue;
+                            if (arg.ParameterName == "EndDate")
+                                endOn = arg.ParameterValue;
+                            if (arg.ParameterName == "DailyTime")
+                                timeOn = arg.ParameterValue;
+                        }
+                        ruleevaluate = "-   Starting on " + startOn + " daily at " + timeOn + " till " + endOn + ".";
+                    }
+                    break;
+                default:
+                    break;
+            }
+
+            return ruleevaluate;
         }
         private string RuleActionDP(RuleAction objRA, string entityName)
         {
@@ -317,7 +381,17 @@ namespace GeneratorBase.MVC.Controllers
                                     actionlst.Add("'" + actparam + "' (dynamic) value = " + targetProperty);
                             }
                             else
-                                actionlst.Add("'" + actparam + "' (constant) value = " + actvalue);
+                            {
+                                if (argaction.ParameterValue.StartsWith("["))
+                                {
+                                    var targetProperty = argaction.ParameterValue;
+                                    var actionProperty = GetSubstringByString("[", "]", argaction.ParameterValue);
+                                    var actualName = propDP(entityName, actionProperty);
+                                    actionlst.Add("'" + actparam + "' (dynamic) value = " + targetProperty.Replace("[" + actionProperty + "]", actualName));
+                                }
+                                else
+                                    actionlst.Add("'" + actparam + "' (constant) value = " + actvalue);
+                            }
                         }
                         ruleaction = "Set " + string.Join(", ", actionlst);
                         break;
@@ -335,12 +409,18 @@ namespace GeneratorBase.MVC.Controllers
             }
             return ruleaction;
         }
+        public string GetSubstringByString(string a, string b, string c)
+        {
+            return c.Substring((c.IndexOf(a) + a.Length), (c.IndexOf(b) - c.IndexOf(a) - a.Length));
+        }
         private List<string> ArgActionList(List<ActionArgs> argacn, string entityName)
         {
             var actionlist = new List<string>();
             foreach (var argaction in argacn)
             {
+
                 actionlist.Add("'" + propDP(entityName, argaction.ParameterName) + "'");
+
             }
             return actionlist;
         }
@@ -377,16 +457,23 @@ namespace GeneratorBase.MVC.Controllers
         }
         private string entityDP(string entityName)
         {
-            return ModelReflector.Entities.FirstOrDefault(e => e.Name == entityName).DisplayName;
+            return ModelReflector.Entities.Where(e => e.Name == entityName).Count() > 0 ? ModelReflector.Entities.FirstOrDefault(e => e.Name == entityName).DisplayName : "";
         }
         public static string propDP(string entityName, string propName)
         {
             string propDP = string.Empty;
-            var entityInfo = ModelReflector.Entities.FirstOrDefault(e => e.Name == entityName).Properties.Where(p => p.Name == propName);
-            if (entityInfo == null)
-                propDP = ModelReflector.Entities.FirstOrDefault(e => e.Name == entityName).Associations.FirstOrDefault(p => p.AssociationProperty == propName).DisplayName;
-            else
-                propDP = ModelReflector.Entities.FirstOrDefault(e => e.Name == entityName).Properties.FirstOrDefault(p => p.Name == propName).DisplayName;
+            try
+            {
+                var entityInfo = ModelReflector.Entities.FirstOrDefault(e => e.Name == entityName).Properties.Where(p => p.Name == propName);
+                if (entityInfo == null)
+                    propDP = ModelReflector.Entities.FirstOrDefault(e => e.Name == entityName).Associations.FirstOrDefault(p => p.AssociationProperty == propName).DisplayName;
+                else
+                    propDP = ModelReflector.Entities.FirstOrDefault(e => e.Name == entityName).Properties.FirstOrDefault(p => p.Name == propName).DisplayName;
+            }
+            catch
+            {
+                propDP = propName;
+            }
             return propDP;
         }
         private DocX RoleAndPermission(DocX generateDocument, int tblCnt)
@@ -447,7 +534,7 @@ namespace GeneratorBase.MVC.Controllers
                 var isFLS = true;
                 foreach (var role in Roles)
                 {
-                    string strHead = "FLS for role â€˜" + role.Role_Name + "â€™ is as follows:";
+                    string strHead = "FLS for role ‘" + role.Role_Name + "’ is as follows:";
                     string strCaption = "Table " + tblCnt.ToString() + ": Field Level Security for ";
                     var roleFLS = permissionByRole(role.Role_Name).Where(p => !string.IsNullOrEmpty(p.NoEdit) || !string.IsNullOrEmpty(p.NoView)).ToList();
                     var roleFLSList = new List<FLS>();
@@ -644,7 +731,7 @@ namespace GeneratorBase.MVC.Controllers
                     }
 
                     var isFLS = true;
-                    string strHead = "FLS for role â€˜" + role.Role_Name + "â€™ is as follows:";
+                    string strHead = "FLS for role ‘" + role.Role_Name + "’ is as follows:";
                     strCaption = "Table " + tblCnt.ToString() + ": Field Level Security for ";
                     var roleFLS = permissionByRole(role.Role_Name).Where(p => !string.IsNullOrEmpty(p.NoEdit) || !string.IsNullOrEmpty(p.NoView)).ToList();
                     var roleFLSList = new List<FLS>();

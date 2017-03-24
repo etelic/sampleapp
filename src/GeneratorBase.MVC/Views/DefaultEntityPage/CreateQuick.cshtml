@@ -18,6 +18,7 @@
         var selectedval = ($(this).val());
         SelectPageType(selectedval, $("#SelectUrl"), $("#DirectUrl"), $("#DefaultUrl"), $("#Favorites"))
     });
+
 </script>
 <link href="~/Content/bootstrap-datetimepicker.min.css" rel="stylesheet" />
 <link href="@Url.Content("~/Content/chosen.css")" rel="stylesheet" type="text/css" />
@@ -35,42 +36,39 @@
                                                     <div class='col-sm-6'>
                                                         <div class='form-group'>
                                                             <label>@Html.LabelFor(model => model.EntityName) <span class="text-danger-reg">*</span></label>
-                                                            @Html.DropDownList("EntityName", null, "-- Select --", new { @required = "required", @class = "form-control" })
+                                                            @Html.DropDownList("EntityName", null, "-- Select --", new { @onchange = "bindpages(this,'ViewEntityPage','ListEntityPage','EditEntityPage','SearchEntityPage','CreateEntityPage')", @dataurl = Url.Action("BindtemplatesIndex", "DefaultEntityPage", null), @required = "required", @class = "form-control" })
                                                             @Html.ValidationMessageFor(model => model.EntityName)
-
                                                         </div>
                                                     </div>
                                                     <div class='col-sm-6'>
                                                         <div class='form-group' id="dvRole" name="dvRoles">
                                                             <label>@Html.LabelFor(model => model.Roles)<span class="text-danger-reg">*</span></label>
                                                             <br />
-
-                                                            @*@Html.TextBoxFor(model => model.Roles, new { style = "border:none !important;Width:0px !important;" })*@
                                                             @Html.DropDownList("RoleList", null, new { @multiple = "multiple" })
                                                             @Html.Hidden("Roles", null, new { @Value = "" })
                                                             @Html.ValidationMessageFor(model => model.Roles)
                                                         </div>
                                                     </div>
-                                                    <div class='col-sm-6' style="margin-left: 1px">
+                                                    <div class='col-sm-6'>
                                                         <div class='form-group'>
                                                             <label>@Html.LabelFor(model => model.PageType) </label>
                                                             <select id="PageType" required="required" name="PageType" class="form-control">
                                                                 <option value="">--Select Type--</option>
-                                                                <option value="Default">Default</option>
-                                                                <option value="Favorite">Favorite</option>
-                                                                <option value="Url">Url</option>
+                                                                <option value="Default">Built In Pages</option>
+                                                                <option value="Favorite">A Page Saved as Favorite</option>
+                                                                <option value="Url">External URL</option>
                                                             </select>
                                                             @Html.ValidationMessageFor(model => model.PageType)
                                                         </div>
                                                     </div>
-                                                    <div class='col-sm-6' id="SelectUrl" style="display:none;margin-left: 246px;margin-top: -55px;">
+                                                    <div class='col-sm-6' id="SelectUrl" style="display:none;">
                                                         <div class='form-group'>
                                                             <label>Select Url </label>
                                                             <select id="DefaultUrl" style="display:none;" name="DefaultUrl" class="form-control">
                                                                 <option value="">--Select Type--</option>
+                                                                <option value="Index">List Page</option>
                                                                 <option value="SetFSearch">Faceted Search</option>
-                                                                <option value="Index">List</option>
-                                                                <option value="Create">Create New</option>
+                                                                <option value="Create">Add New Record</option>
                                                             </select>
                                                             @Html.DropDownList("Favorites", null, "-- Select --", new { @style = "display:none;", @class = "form-control" })
                                                             @Html.TextBox("DirectUrl", null, new { @style = "display:none;", @class = "form-control", @required = "required" })
@@ -81,6 +79,54 @@
                                                             <label>@Html.LabelFor(model => model.PageUrl) </label>
                                                             @Html.TextBoxFor(model => model.PageUrl, new { @class = "form-control" })
                                                             @Html.ValidationMessageFor(model => model.PageUrl)
+                                                        </div>
+                                                    </div>
+                                                    <div>
+                                                        <div class='col-sm-6'>
+                                                            <label>
+                                                                View Entity  Page
+                                                            </label>
+                                                            <div class='form-group'>
+                                                                <select id="ViewEntityPage" name="ViewEntityPage" class="form-control">
+                                                                    <option value="">--Select View--</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class='col-sm-6'>
+                                                            <label>
+                                                                Create Entity Page
+                                                            </label>
+                                                            <div class='form-group'>
+                                                                <select id="CreateEntityPage" name="CreateEntityPage" class="form-control">
+                                                                    <option value="">--Select Create--</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class='col-sm-6'>
+                                                            <label>
+                                                                Edit Entity Page
+                                                            </label>
+                                                            <div class='form-group'>
+                                                                <select id="EditEntityPage" name="EditEntityPage" class="form-control">
+                                                                    <option value="">--Select Edit--</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class='col-sm-6'>
+                                                            <label>List Entity Page</label>
+                                                            <div class='form-group'>
+                                                                <select id="ListEntityPage" name="ListEntityPage" class="form-control">
+                                                                    <option value="">--Select Index--</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class='col-sm-6'>
+                                                            <label>Search Entity Page</label>
+                                                            <div class='form-group'>
+                                                                <select id="SearchEntityPage" name="SearchEntityPage" class="form-control">
+                                                                    <option value="">--Select Search--</option>
+                                                                </select>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -123,15 +169,12 @@
 
 </script>
 <script>
-
     function Add(e) {
         var selectedval = ($("#PageType").val());
         //
         SaveDefaultPage(e, selectedval, $("#DefaultUrl"), $("#PageUrl"), $("#Other"), $("#Favorites"), $("#DirectUrl"), $("#EntityName"), $("#RoleList"), $("#Roles"));
         //
-        
     }
-
 </script>
 
 

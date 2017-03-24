@@ -20,7 +20,7 @@ namespace GeneratorBase.MVC.Controllers
     public partial class FileDocumentController : BaseController
     {
         // GET: /FileDocument/
-        public ActionResult Index(string currentFilter, string searchString, string sortBy, string isAsc, int? page, int? itemsPerPage, string HostingEntity, int? HostingEntityID, string AssociatedType, bool? IsExport, bool? IsDeepSearch, bool? IsFilter, bool? RenderPartial, string BulkOperation,string parent,string Wfsearch,string caller, bool? BulkAssociate)
+        public ActionResult Index(string currentFilter, string searchString, string sortBy, string isAsc, int? page, int? itemsPerPage, string HostingEntity, int? HostingEntityID, string AssociatedType, bool? IsExport, bool? IsDeepSearch, bool? IsFilter, bool? RenderPartial, string BulkOperation,string parent,string Wfsearch,string caller, bool? BulkAssociate, string viewtype,string isMobileHome)
         {
             if (string.IsNullOrEmpty(isAsc) && !string.IsNullOrEmpty(sortBy))
             {
@@ -34,6 +34,11 @@ namespace GeneratorBase.MVC.Controllers
 			ViewData["IsFilter"] = IsFilter;
 			ViewData["BulkOperation"] = BulkOperation;
 			ViewData["caller"] = caller;
+			  if (!string.IsNullOrEmpty(viewtype))
+            {
+                viewtype = viewtype.Replace("?IsAddPop=true", "");
+                ViewBag.TemplatesName = viewtype;
+            }
 			if (searchString != null)
                 page = null;
             else
@@ -86,14 +91,35 @@ namespace GeneratorBase.MVC.Controllers
                     pageSize = _FileDocument.Count();
                 return View("ExcelExport", _FileDocument.ToPagedList(pageNumber, pageSize));
             }
+			else
+            {
+			 if (pageNumber > 1)
+			 {
+                var totalListCount = _FileDocument.Count();
+                int quotient = totalListCount / pageSize;
+                var remainder = totalListCount % pageSize;
+                var maxpagenumber = quotient + (remainder > 0 ? 1 : 0);
+                if (pageNumber > maxpagenumber)
+                {
+                    pageNumber = 1;
+                }
+			 }
+            }
 			 if (!(RenderPartial==null?false:RenderPartial.Value) && !Request.IsAjaxRequest())
+			 {
+				if (string.IsNullOrEmpty(viewtype))
+                    viewtype = "IndexPartial";
+                GetTemplatesForList(viewtype);
+                if ((ViewBag.TemplatesName != null && viewtype != null) && ViewBag.TemplatesName != viewtype)
+                    ViewBag.TemplatesName = viewtype;
 				return View(_FileDocument.ToPagedList(pageNumber, pageSize));
+			 }
 			 else
 				{
 					if (BulkOperation != null && (BulkOperation == "single" || BulkOperation == "multiple"))
 					{
 						ViewData["BulkAssociate"] = BulkAssociate;
-						if (caller != "")
+						if (!string.IsNullOrEmpty(caller))
 						{
 							FilterApplicationDropdowns _fad = new FilterApplicationDropdowns();
 							_FileDocument = _fad.FilterDropdown<FileDocument>(User,  _FileDocument, "FileDocument", caller);
@@ -114,11 +140,30 @@ namespace GeneratorBase.MVC.Controllers
 						}
 					}
 					else
-						return PartialView("IndexPartial", _FileDocument.ToPagedList(pageNumber, pageSize));
+					{
+
+					  if (ViewBag.TemplatesName == null)
+					  {
+						if (!string.IsNullOrEmpty(isMobileHome))
+                            {
+								 pageSize = _FileDocument.Count() == 0 ? 1 : _FileDocument.Count();
+                                
+                            }
+							return PartialView("IndexPartial", _FileDocument.ToPagedList(pageNumber, pageSize));
+					  }
+					  else
+					  {
+							if (!string.IsNullOrEmpty(isMobileHome))
+                            {
+                                pageSize = _FileDocument.Count() == 0 ? 1 : _FileDocument.Count();
+                            }
+							return PartialView(ViewBag.TemplatesName, _FileDocument.ToPagedList(pageNumber, pageSize));
+					  }
+					}
 				}
         }
 		 // GET: /FileDocument/Details/5
-		 		public ActionResult Details(int? id,string HostingEntityName, string AssociatedType)
+		 		public ActionResult Details(int? id,string HostingEntityName, string AssociatedType, string defaultview)
         {
             if (id == null)
             {
@@ -129,41 +174,59 @@ namespace GeneratorBase.MVC.Controllers
             {
                 return HttpNotFound();
             }
+			
+			if (string.IsNullOrEmpty(defaultview))
+                defaultview = "Details";
+            GetTemplatesForDetails(defaultview);
 			ViewData["AssociatedType"] = AssociatedType;
 		    ViewData["HostingEntityName"] = HostingEntityName;
 			LoadViewDataBeforeOnEdit(filedocument);	
 			if (!string.IsNullOrEmpty(AssociatedType))
                     LoadViewDataForCount(filedocument, AssociatedType);
-            return View(filedocument);
+            ViewBag.FileDocumentIsHiddenRule = checkHidden("FileDocument", "OnDetails");
+			ViewBag.FileDocumentIsSetValueUIRule = checkSetValueUIRule("FileDocument", "OnDetails");
+			return View(ViewBag.TemplatesName,filedocument);
+
         }
+
+
+
         // GET: /FileDocument/Create
-        public ActionResult Create(string UrlReferrer,string HostingEntityName, string HostingEntityID, string AssociatedType, bool? IsDDAdd)
+        public ActionResult Create(string UrlReferrer,string HostingEntityName, string HostingEntityID, string AssociatedType, bool? IsDDAdd, string viewtype)
         {
             if (!User.CanAdd("FileDocument"))
             {
                 return RedirectToAction("Index", "Error");
             }
-		 if (IsDDAdd != null)
+		  if (IsDDAdd != null)
                 ViewBag.IsDDAdd = Convert.ToBoolean(IsDDAdd);
+		   if (string.IsNullOrEmpty(viewtype))
+                viewtype = "Create";
+            GetTemplatesForCreate(viewtype);
 		  ViewData["FileDocumentParentUrl"] = UrlReferrer;
 		  ViewData["AssociatedType"] = AssociatedType;
 		  ViewData["HostingEntityName"] = HostingEntityName;
 		  ViewData["HostingEntityID"] = HostingEntityID;
 		  LoadViewDataBeforeOnCreate(HostingEntityName, HostingEntityID, AssociatedType);
-		  ViewBag.FileDocumentIsHiddenRule = checkHidden("FileDocument");
+		  ViewBag.FileDocumentIsHiddenRule = checkHidden("FileDocument","OnCreate");
+		  ViewBag.FileDocumentIsSetValueUIRule = checkSetValueUIRule("FileDocument", "OnCreate");
           return View();
         }
 		// GET: /FileDocument/CreateWizard
-        public ActionResult CreateWizard(string UrlReferrer,string HostingEntityName, string HostingEntityID,string AssociatedType)
+        public ActionResult CreateWizard(string UrlReferrer,string HostingEntityName, string HostingEntityID,string AssociatedType, string viewtype)
         {
             if (!User.CanAdd("FileDocument"))
             {
                 return RedirectToAction("Index", "Error");
             }
 	
+			if (string.IsNullOrEmpty(viewtype))
+                viewtype = "CreateWizard";
+            GetTemplatesForCreateWizard(viewtype);
 		    ViewData["FileDocumentParentUrl"] = UrlReferrer;
 			LoadViewDataBeforeOnCreate(HostingEntityName, HostingEntityID, AssociatedType);
-			 ViewBag.FileDocumentIsHiddenRule = checkHidden("FileDocument");
+			 ViewBag.FileDocumentIsHiddenRule = checkHidden("FileDocument", "OnCreate");
+			 ViewBag.FileDocumentIsSetValueUIRule = checkSetValueUIRule("FileDocument", "OnCreate");
             return View();
         }
 		// POST: /FileDocument/CreateWizard
@@ -182,8 +245,8 @@ namespace GeneratorBase.MVC.Controllers
 				string ticks = DateTime.Now.Ticks.ToString();
 	                if (AttachDocument != null)
                 { 
-									AttachDocument.SaveAs(path + ticks + System.IO.Path.GetFileName(AttachDocument.FileName));
-                    filedocument.AttachDocument = ticks + System.IO.Path.GetFileName(AttachDocument.FileName);
+									AttachDocument.SaveAs(path + ticks + System.IO.Path.GetFileName(AttachDocument.FileName.Trim().Replace(" ", "")));
+                    filedocument.AttachDocument = ticks + System.IO.Path.GetFileName(AttachDocument.FileName.Trim().Replace(" ", ""));
                 }
            db.FileDocuments.Add(filedocument);
            db.SaveChanges();
@@ -197,19 +260,23 @@ namespace GeneratorBase.MVC.Controllers
             return View(filedocument);
         }
 		 // GET: /FileDocument/CreateQuick
-        public ActionResult CreateQuick(string UrlReferrer, string HostingEntityName, string HostingEntityID, string AssociatedType, bool? IsAddPop)
+        public ActionResult CreateQuick(string UrlReferrer, string HostingEntityName, string HostingEntityID, string AssociatedType, bool? IsAddPop, string viewtype)
         {
             if (!User.CanAdd("FileDocument"))
             {
                 return RedirectToAction("Index", "Error");
             }
+			if (string.IsNullOrEmpty(viewtype))
+                viewtype = "CreateQuick";
+            GetTemplatesForCreateQuick(viewtype);
 			 ViewBag.IsAddPop = IsAddPop;
 		   ViewData["FileDocumentParentUrl"] = UrlReferrer;
 		   ViewData["AssociatedType"] = AssociatedType;
            ViewData["HostingEntityName"] = HostingEntityName;
 		   ViewData["HostingEntityID"] = HostingEntityID;
 		   LoadViewDataBeforeOnCreate(HostingEntityName, HostingEntityID, AssociatedType);
-		    ViewBag.FileDocumentIsHiddenRule = checkHidden("FileDocument");
+		    ViewBag.FileDocumentIsHiddenRule = checkHidden("FileDocument", "OnCreate");
+			ViewBag.FileDocumentIsSetValueUIRule = checkSetValueUIRule("FileDocument", "OnCreate");
             return View();
         }
 		  // POST: /FileDocument/CreateQuick
@@ -228,9 +295,11 @@ namespace GeneratorBase.MVC.Controllers
 				string ticks = DateTime.Now.Ticks.ToString();
 	                if (AttachDocument != null)
                 { 
-					AttachDocument.SaveAs(path + ticks + System.IO.Path.GetFileName(AttachDocument.FileName));
-                    filedocument.AttachDocument = ticks + System.IO.Path.GetFileName(AttachDocument.FileName);
-                }
+							
+					AttachDocument.SaveAs(path  + System.IO.Path.GetFileName(AttachDocument.FileName.Trim().Replace(" ", "")));
+                    filedocument.AttachDocument = System.IO.Path.GetFileName(AttachDocument.FileName.Trim().Replace(" ", ""));
+
+			                }
 				if (Request.Form["CamerafileUploadAttachDocument"] != null && Request.Form["CamerafileUploadAttachDocument"]  != "")
                 {
                     System.Drawing.Image image = System.Drawing.Image.FromStream(new MemoryStream(Convert.FromBase64String(Request.Form["CamerafileUploadAttachDocument"])));
@@ -289,8 +358,8 @@ namespace GeneratorBase.MVC.Controllers
 				string ticks = DateTime.Now.Ticks.ToString();
                 if (AttachDocument != null)
                 { 
-					AttachDocument.SaveAs(path + ticks + System.IO.Path.GetFileName(AttachDocument.FileName));
-                    filedocument.AttachDocument = ticks + System.IO.Path.GetFileName(AttachDocument.FileName);
+					AttachDocument.SaveAs(path + ticks + System.IO.Path.GetFileName(AttachDocument.FileName.Trim().Replace(" ", "")));
+                    filedocument.AttachDocument = ticks + System.IO.Path.GetFileName(AttachDocument.FileName.Trim().Replace(" ", ""));
                 }
 			    if (Request.Form["CamerafileUploadAttachDocument"] != null && Request.Form["CamerafileUploadAttachDocument"]  != "")
                 {
@@ -313,7 +382,7 @@ namespace GeneratorBase.MVC.Controllers
             return View(filedocument);
         }
 		// GET: /FileDocument/Edit/5
-        public ActionResult EditQuick(int? id, string UrlReferrer, string HostingEntityName, string AssociatedType)
+        public ActionResult EditQuick(int? id, string UrlReferrer, string HostingEntityName, string AssociatedType, string viewtype)
         {
             if (!User.CanEdit("FileDocument"))
             {
@@ -323,6 +392,9 @@ namespace GeneratorBase.MVC.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
+			if (string.IsNullOrEmpty(viewtype))
+                viewtype = "EditQuick";
+            GetTemplatesForEditQuick(viewtype);
             FileDocument filedocument = db.FileDocuments.Find(id);
             if (filedocument == null)
             {
@@ -335,7 +407,8 @@ namespace GeneratorBase.MVC.Controllers
 		 ViewData["HostingEntityName"] = HostingEntityName;
          ViewData["AssociatedType"] = AssociatedType;
 		  LoadViewDataBeforeOnEdit(filedocument);
-		   ViewBag.FileDocumentIsHiddenRule = checkHidden("FileDocument");
+		   ViewBag.FileDocumentIsHiddenRule = checkHidden("FileDocument", "OnEdit");
+		   ViewBag.FileDocumentIsSetValueUIRule = checkSetValueUIRule("FileDocument", "OnEdit");
           return View(filedocument);
         }
 		// POST: /FileDocument/Edit/5
@@ -355,8 +428,12 @@ namespace GeneratorBase.MVC.Controllers
 				string ticks = DateTime.Now.Ticks.ToString();
                 if (File_AttachDocument != null)
                 { 
-					File_AttachDocument.SaveAs(path  + ticks + System.IO.Path.GetFileName(File_AttachDocument.FileName));
-                    filedocument.AttachDocument = ticks + System.IO.Path.GetFileName(File_AttachDocument.FileName);
+
+							
+					File_AttachDocument.SaveAs(path  + System.IO.Path.GetFileName(File_AttachDocument.FileName.Trim().Replace(" ", "")));
+                    filedocument.AttachDocument = System.IO.Path.GetFileName(File_AttachDocument.FileName.Trim().Replace(" ", ""));
+
+								
                 }
 				if (Request.Form["CamerafileUploadAttachDocument"] != null && Request.Form["CamerafileUploadAttachDocument"] != "")
                 {
@@ -365,9 +442,10 @@ namespace GeneratorBase.MVC.Controllers
                     filedocument.AttachDocument = ticks + "Camera-" + ticks + "-" + User.Name + ".jpg";
                 }
                 db.Entry(filedocument).State = EntityState.Modified;
-
                db.SaveChanges();
-			   return Json(UrlReferrer, "application/json", System.Text.Encoding.UTF8, JsonRequestBehavior.AllowGet);
+
+			  var result = new { Result = "Succeed", UrlRefr =UrlReferrer };
+               return Json(result, "application/json", System.Text.Encoding.UTF8, JsonRequestBehavior.AllowGet);
             }
             else
             {
@@ -379,7 +457,8 @@ namespace GeneratorBase.MVC.Controllers
                         errors += error.ErrorMessage + ".  ";
                     }
                 }
-                return Json(errors, "application/json", System.Text.Encoding.UTF8, JsonRequestBehavior.AllowGet);
+				var result = new { Result = "fail", UrlRefr = errors };
+                return Json(result, "application/json", System.Text.Encoding.UTF8, JsonRequestBehavior.AllowGet);
             }
 			
 			LoadViewDataAfterOnEdit(filedocument);
@@ -388,7 +467,7 @@ namespace GeneratorBase.MVC.Controllers
 
 
         // GET: /FileDocument/Edit/5
-        public ActionResult Edit(int? id, string UrlReferrer, string HostingEntityName, string AssociatedType)
+        public ActionResult Edit(int? id, string UrlReferrer, string HostingEntityName, string AssociatedType, string defaultview)
         {
             if (!User.CanEdit("FileDocument"))
             {
@@ -403,6 +482,10 @@ namespace GeneratorBase.MVC.Controllers
             {
                 return HttpNotFound();
             }
+		if (string.IsNullOrEmpty(defaultview))
+                defaultview = "Edit";
+            GetTemplatesForEdit(defaultview);
+
 		if (UrlReferrer != null)
                 ViewData["FileDocumentParentUrl"] = UrlReferrer;
 		if(ViewData["FileDocumentParentUrl"] == null  && Request.UrlReferrer !=null && ! Request.UrlReferrer.AbsolutePath.EndsWith("/FileDocument")  && !Request.UrlReferrer.AbsolutePath.EndsWith("/FileDocument/Edit/" + filedocument.Id + "") && !Request.UrlReferrer.AbsolutePath.EndsWith("/FileDocument/Create"))
@@ -410,7 +493,8 @@ namespace GeneratorBase.MVC.Controllers
 		 ViewData["HostingEntityName"] = HostingEntityName;
          ViewData["AssociatedType"] = AssociatedType;
 		  LoadViewDataBeforeOnEdit(filedocument);
-		   ViewBag.FileDocumentIsHiddenRule = checkHidden("FileDocument");
+		   ViewBag.FileDocumentIsHiddenRule = checkHidden("FileDocument", "OnEdit");
+		   ViewBag.FileDocumentIsSetValueUIRule = checkSetValueUIRule("FileDocument", "OnEdit");
           return View(filedocument);
         }
         // POST: /FileDocument/Edit/5
@@ -430,8 +514,14 @@ namespace GeneratorBase.MVC.Controllers
 				string ticks = DateTime.Now.Ticks.ToString();
                 if (File_AttachDocument != null)
                 { 
-					File_AttachDocument.SaveAs(path  + ticks + System.IO.Path.GetFileName(File_AttachDocument.FileName));
-                    filedocument.AttachDocument = ticks + System.IO.Path.GetFileName(File_AttachDocument.FileName);
+
+							
+					File_AttachDocument.SaveAs(path  + System.IO.Path.GetFileName(File_AttachDocument.FileName.Trim().Replace(" ", "")));
+                    filedocument.AttachDocument =  System.IO.Path.GetFileName(File_AttachDocument.FileName.Trim().Replace(" ", ""));
+
+			
+
+					
                 }
 				if (Request.Form["CamerafileUploadAttachDocument"] != null && Request.Form["CamerafileUploadAttachDocument"] != "")
                 {
@@ -460,7 +550,7 @@ namespace GeneratorBase.MVC.Controllers
             return View(filedocument);
         }
 		// GET: /FileDocument/EditWizard/5
-         public ActionResult EditWizard(int? id, string UrlReferrer)
+         public ActionResult EditWizard(int? id, string UrlReferrer,string viewtype)
         {
             if (!User.CanEdit("FileDocument"))
             {
@@ -470,7 +560,10 @@ namespace GeneratorBase.MVC.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            FileDocument filedocument = db.FileDocuments.Find(id);
+			if (string.IsNullOrEmpty(viewtype))
+                viewtype = "EditWizard";
+            GetTemplatesForEditWizard(viewtype);
+			            FileDocument filedocument = db.FileDocuments.Find(id);
             if (filedocument == null)
             {
                 return HttpNotFound();
@@ -481,7 +574,8 @@ namespace GeneratorBase.MVC.Controllers
 		if(ViewData["FileDocumentParentUrl"] == null  && Request.UrlReferrer !=null && ! Request.UrlReferrer.AbsolutePath.EndsWith("/FileDocument"))
 			ViewData["FileDocumentParentUrl"] = Request.UrlReferrer;
 			 LoadViewDataBeforeOnEdit(filedocument);
-			 ViewBag.FileDocumentIsHiddenRule = checkHidden("FileDocument");
+			 ViewBag.FileDocumentIsHiddenRule = checkHidden("FileDocument", "OnEdit");
+			 ViewBag.FileDocumentIsSetValueUIRule = checkSetValueUIRule("FileDocument", "OnEdit");
           return View(filedocument);
         }
         // POST: /FileDocument/EditWizard/5
@@ -500,8 +594,8 @@ namespace GeneratorBase.MVC.Controllers
 				string ticks = DateTime.Now.Ticks.ToString();
 	                if (File_AttachDocument != null)
                 { 
-					File_AttachDocument.SaveAs(path  + ticks + System.IO.Path.GetFileName(File_AttachDocument.FileName));
-                    filedocument.AttachDocument = ticks + System.IO.Path.GetFileName(File_AttachDocument.FileName);
+					File_AttachDocument.SaveAs(path  + ticks + System.IO.Path.GetFileName(File_AttachDocument.FileName.Trim().Replace(" ", "")));
+                    filedocument.AttachDocument = ticks + System.IO.Path.GetFileName(File_AttachDocument.FileName.Trim().Replace(" ", ""));
                 }
                 db.Entry(filedocument).State = EntityState.Modified;
 				db.SaveChanges();
@@ -578,8 +672,8 @@ namespace GeneratorBase.MVC.Controllers
 		{
             foreach (var id in ids.Where(p => p > 0))
             {
-			 FileDocument filedocument = db.FileDocuments.Find(id);
-				                db.Entry(filedocument).State = EntityState.Deleted;
+				FileDocument filedocument = db.FileDocuments.Find(id);
+                db.Entry(filedocument).State = EntityState.Deleted;
                 db.FileDocuments.Remove(filedocument);
                 try
                 {
@@ -618,7 +712,7 @@ namespace GeneratorBase.MVC.Controllers
             {
             foreach (var id in bulkIds.Where(p => p != string.Empty))
             {
-                long objId = long.Parse(id);
+			                long objId = long.Parse(id);
                 FileDocument target = db.FileDocuments.Find(objId);
                 EntityCopy.CopyValuesForSameObjectType(filedocument, target, chkUpdate); 
                 db.Entry(target).State = EntityState.Modified;
@@ -627,7 +721,7 @@ namespace GeneratorBase.MVC.Controllers
                         db.SaveChanges();
                     }
                     catch { }
-            }
+					            }
 			}
             if (!string.IsNullOrEmpty(UrlReferrer))
                 return Redirect(UrlReferrer);

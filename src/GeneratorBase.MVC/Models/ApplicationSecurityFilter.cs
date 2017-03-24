@@ -59,7 +59,7 @@ namespace GeneratorBase.MVC
         }
 		public void ApplyBasicSecurity()
 		{
-			if (user.IsAdmin() || string.IsNullOrEmpty(user.Name))
+			if (string.IsNullOrEmpty(user.Name))
                 return;
             List<long?> doclist = new List<long?>();
 						
@@ -71,33 +71,74 @@ namespace GeneratorBase.MVC
             {
             }
 			
-            if (!user.CanView("T_School"))
+            if (!user.CanView("T_Employee"))
             {
-                DbContext.T_Schools = new FilteredDbSet<T_School>(DbContext, d => d.Id == 0);
+                DbContext.T_Employees = new FilteredDbSet<T_Employee>(DbContext, d => d.Id == 0);
+            }
+            else
+            {
+				doclist.AddRange(DbContext.T_Employees.Select(p => p.T_Picture).ToList());
+            }
+			
+            if (!user.CanView("T_Country"))
+            {
+                DbContext.T_Countrys = new FilteredDbSet<T_Country>(DbContext, d => d.Id == 0);
             }
             else
             {
             }
 			
-            if (!user.CanView("T_Student"))
+            if (!user.CanView("T_State"))
             {
-                DbContext.T_Students = new FilteredDbSet<T_Student>(DbContext, d => d.Id == 0);
+                DbContext.T_States = new FilteredDbSet<T_State>(DbContext, d => d.Id == 0);
             }
             else
             {
             }
 			
-            if (!user.CanView("T_Department"))
+            if (!user.CanView("T_City"))
             {
-                DbContext.T_Departments = new FilteredDbSet<T_Department>(DbContext, d => d.Id == 0);
+                DbContext.T_Citys = new FilteredDbSet<T_City>(DbContext, d => d.Id == 0);
             }
             else
             {
             }
 			
-            if (!user.CanView("T_StudentPerformance"))
+            if (!user.CanView("T_Address"))
             {
-                DbContext.T_StudentPerformances = new FilteredDbSet<T_StudentPerformance>(DbContext, d => d.Id == 0);
+                DbContext.T_Addresss = new FilteredDbSet<T_Address>(DbContext, d => d.Id == 0);
+            }
+            else
+            {
+            }
+			
+            if (!user.CanView("T_Employeetype"))
+            {
+                DbContext.T_Employeetypes = new FilteredDbSet<T_Employeetype>(DbContext, d => d.Id == 0);
+            }
+            else
+            {
+            }
+			
+            if (!user.CanView("T_Employeestatus"))
+            {
+                DbContext.T_Employeestatuss = new FilteredDbSet<T_Employeestatus>(DbContext, d => d.Id == 0);
+            }
+            else
+            {
+            }
+			
+            if (!user.CanView("T_Organization"))
+            {
+                DbContext.T_Organizations = new FilteredDbSet<T_Organization>(DbContext, d => d.Id == 0);
+            }
+            else
+            {
+            }
+			
+            if (!user.CanView("T_EmployeeOrganizationAssociation"))
+            {
+                DbContext.T_EmployeeOrganizationAssociations = new FilteredDbSet<T_EmployeeOrganizationAssociation>(DbContext, d => d.Id == 0);
             }
             else
             {
@@ -109,15 +150,144 @@ namespace GeneratorBase.MVC
 		}
         public void ApplyMainSecurity()
         {
+				if (string.IsNullOrEmpty(user.Name))
+                    return;	
+				List<long?> doclist = new List<long?>();			
+            var T_Organization_T_EmployeeOrganizationAssociationlist = DbContext.T_EmployeeOrganizationAssociations.Where(t => t.t_employee.t_employeeuserlogin.UserName == user.Name ).Select(p=>p.T_OrganizationID).ToList();
+			if(T_Organization_T_EmployeeOrganizationAssociationlist.Count() > 0)
+            {
+                ApplicationDbContext adb = new ApplicationDbContext();
+                var extra = adb.MultiTenantExtraAccess.Where(p => p.T_User == user.Name).Select(p=>p.T_MainEntityID).ToList();
+                T_Organization_T_EmployeeOrganizationAssociationlist = T_Organization_T_EmployeeOrganizationAssociationlist.Union(extra).Distinct().ToList();
+                var selectedlist = user.MultiTenantLoginSelected.Where(p=>p.T_MainEntity != -1).Select(p=>p.T_MainEntity).ToList();
+                if (selectedlist.Count()>0)
+                T_Organization_T_EmployeeOrganizationAssociationlist = T_Organization_T_EmployeeOrganizationAssociationlist.Intersect(selectedlist).ToList();
+            }
+            DbContext.T_Organizations = new FilteredDbSet<T_Organization>(DbContext, d => T_Organization_T_EmployeeOrganizationAssociationlist.Contains(d.Id));
+            var T_Employee_T_EmployeeOrganizationAssociation_T_Organizationlist = DbContext.T_Organizations.Select(p => p.Id).ToList();
+            var T_Employee_T_EmployeeOrganizationAssociationlist = DbContext.T_EmployeeOrganizationAssociations.Where(d => T_Employee_T_EmployeeOrganizationAssociation_T_Organizationlist.Contains(d.T_OrganizationID.Value)).Select(p => p.T_EmployeeID).ToList();
+			DbContext.T_Employees = new FilteredDbSet<T_Employee>(DbContext, d => T_Employee_T_EmployeeOrganizationAssociationlist.Contains(d.Id));
+		//document security
+		doclist.AddRange(DbContext.T_Employees.Select(p => p.T_Picture).ToList());
+
+		DbContext.Documents = new FilteredDbSet<Document>(DbContext, d => doclist.Contains(d.Id));
         }
         public void ApplyUserBasedSecurity()
         {
-            if (user.IsAdmin() || string.IsNullOrEmpty(user.Name))
+            if (string.IsNullOrEmpty(user.Name))
                 return;
             UserBasedSecurityContext UBS = new UserBasedSecurityContext();
 			if (UBS.UserBasedSecurities.Count() == 0) return;
 			string mainEntity = UBS.UserBasedSecurities.FirstOrDefault(p => p.IsMainEntity).EntityName;
 			List<long?> doclist = new List<long?>();
+		Expression<Func<T_Employee, bool>> predicateT_Employee = n => false;
+		bool flagT_Employee = false;
+		foreach (var _ubs in UBS.UserBasedSecurities.Where(p => p.EntityName == "T_Employee").OrderByDescending(p => p.IsMainEntity).ThenByDescending(p=>p.Id))
+		{
+				if (_ubs.RolesToIgnore != null && user.IsInRole(_ubs.RolesToIgnore.Split(",".ToCharArray())))
+                        continue;
+				if(!user.CanView("T_Employee"))
+					break;
+		if (_ubs.IsMainEntity)
+        {
+			//DbContext.T_Employees = new FilteredDbSet<T_Employee>(DbContext, d => (d.t_employeeuserlogin!=null && d.t_employeeuserlogin.UserName == user.Name ) );
+			predicateT_Employee = predicateT_Employee.Or(d =>  (d.t_employeeuserlogin!=null && d.t_employeeuserlogin.UserName == user.Name ) );
+			flagT_Employee = true;
+		}
+		if (!_ubs.IsMainEntity && _ubs.TargetEntityName == "T_Employeetype" && mainEntity != "T_Employee")
+        {
+				var list = DbContext.T_Employeetypes.Select(p => p.Id).ToList();
+				//DbContext.T_Employees = new FilteredDbSet<T_Employee>(DbContext, d => (d.t_associatedemployeetype!=null && list.Contains(d.T_AssociatedEmployeeTypeID.Value)) );
+				 if(list.Count()>0)
+				 {
+					 flagT_Employee = true;
+					 if (_ubs.TargetEntityName != mainEntity)
+						predicateT_Employee = predicateT_Employee.Or(d =>  (d.t_associatedemployeetype!=null && list.Contains(d.T_AssociatedEmployeeTypeID.Value)) );
+					 else
+					 {
+						predicateT_Employee = (d =>  (d.t_associatedemployeetype!=null && list.Contains(d.T_AssociatedEmployeeTypeID.Value)) );
+						break;
+					 }
+				 }
+        }
+		if (!_ubs.IsMainEntity && _ubs.TargetEntityName == "T_Employeestatus" && mainEntity != "T_Employee")
+        {
+				var list = DbContext.T_Employeestatuss.Select(p => p.Id).ToList();
+				//DbContext.T_Employees = new FilteredDbSet<T_Employee>(DbContext, d => (d.t_associatedemployeestatus!=null && list.Contains(d.T_AssociatedEmployeeStatusID.Value)) );
+				 if(list.Count()>0)
+				 {
+					 flagT_Employee = true;
+					 if (_ubs.TargetEntityName != mainEntity)
+						predicateT_Employee = predicateT_Employee.Or(d =>  (d.t_associatedemployeestatus!=null && list.Contains(d.T_AssociatedEmployeeStatusID.Value)) );
+					 else
+					 {
+						predicateT_Employee = (d =>  (d.t_associatedemployeestatus!=null && list.Contains(d.T_AssociatedEmployeeStatusID.Value)) );
+						break;
+					 }
+				 }
+        }
+		if (!_ubs.IsMainEntity && _ubs.TargetEntityName == "T_Address" && mainEntity != "T_Employee")
+        {
+				var list = DbContext.T_Addresss.Select(p => p.Id).ToList();
+				//DbContext.T_Employees = new FilteredDbSet<T_Employee>(DbContext, d => (d.t_employeeaddress!=null && list.Contains(d.T_EmployeeAddressID.Value)) );
+				 if(list.Count()>0)
+				 {
+					 flagT_Employee = true;
+					 if (_ubs.TargetEntityName != mainEntity)
+						predicateT_Employee = predicateT_Employee.Or(d =>  (d.t_employeeaddress!=null && list.Contains(d.T_EmployeeAddressID.Value)) );
+					 else
+					 {
+						predicateT_Employee = (d =>  (d.t_employeeaddress!=null && list.Contains(d.T_EmployeeAddressID.Value)) );
+						break;
+					 }
+				 }
+        }
+	}
+	if(flagT_Employee)
+		DbContext.T_Employees = new FilteredDbSet<T_Employee>(DbContext, predicateT_Employee);
+		Expression<Func<T_EmployeeOrganizationAssociation, bool>> predicateT_EmployeeOrganizationAssociation = n => false;
+		bool flagT_EmployeeOrganizationAssociation = false;
+		foreach (var _ubs in UBS.UserBasedSecurities.Where(p => p.EntityName == "T_EmployeeOrganizationAssociation").OrderByDescending(p => p.IsMainEntity).ThenByDescending(p=>p.Id))
+		{
+				if (_ubs.RolesToIgnore != null && user.IsInRole(_ubs.RolesToIgnore.Split(",".ToCharArray())))
+                        continue;
+				if(!user.CanView("T_EmployeeOrganizationAssociation"))
+					break;
+		if (!_ubs.IsMainEntity && _ubs.TargetEntityName == "T_Employee" && mainEntity != "T_EmployeeOrganizationAssociation")
+        {
+				var list = DbContext.T_Employees.Select(p => p.Id).ToList();
+				//DbContext.T_EmployeeOrganizationAssociations = new FilteredDbSet<T_EmployeeOrganizationAssociation>(DbContext, d => (d.t_employee!=null && list.Contains(d.T_EmployeeID.Value)) );
+				 if(list.Count()>0)
+				 {
+					 flagT_EmployeeOrganizationAssociation = true;
+					 if (_ubs.TargetEntityName != mainEntity)
+						predicateT_EmployeeOrganizationAssociation = predicateT_EmployeeOrganizationAssociation.Or(d =>  (d.t_employee!=null && list.Contains(d.T_EmployeeID.Value)) );
+					 else
+					 {
+						predicateT_EmployeeOrganizationAssociation = (d =>  (d.t_employee!=null && list.Contains(d.T_EmployeeID.Value)) );
+						break;
+					 }
+				 }
+        }
+		if (!_ubs.IsMainEntity && _ubs.TargetEntityName == "T_Organization" && mainEntity != "T_EmployeeOrganizationAssociation")
+        {
+				var list = DbContext.T_Organizations.Select(p => p.Id).ToList();
+				//DbContext.T_EmployeeOrganizationAssociations = new FilteredDbSet<T_EmployeeOrganizationAssociation>(DbContext, d => (d.t_organization!=null && list.Contains(d.T_OrganizationID.Value)) );
+				 if(list.Count()>0)
+				 {
+					 flagT_EmployeeOrganizationAssociation = true;
+					 if (_ubs.TargetEntityName != mainEntity)
+						predicateT_EmployeeOrganizationAssociation = predicateT_EmployeeOrganizationAssociation.Or(d =>  (d.t_organization!=null && list.Contains(d.T_OrganizationID.Value)) );
+					 else
+					 {
+						predicateT_EmployeeOrganizationAssociation = (d =>  (d.t_organization!=null && list.Contains(d.T_OrganizationID.Value)) );
+						break;
+					 }
+				 }
+        }
+	}
+	if(flagT_EmployeeOrganizationAssociation)
+		DbContext.T_EmployeeOrganizationAssociations = new FilteredDbSet<T_EmployeeOrganizationAssociation>(DbContext, predicateT_EmployeeOrganizationAssociation);
 		Expression<Func<FileDocument, bool>> predicateFileDocument = n => false;
 		bool flagFileDocument = false;
 		foreach (var _ubs in UBS.UserBasedSecurities.Where(p => p.EntityName == "FileDocument").OrderByDescending(p => p.IsMainEntity).ThenByDescending(p=>p.Id))
@@ -129,102 +299,184 @@ namespace GeneratorBase.MVC
 	}
 	if(flagFileDocument)
 		DbContext.FileDocuments = new FilteredDbSet<FileDocument>(DbContext, predicateFileDocument);
-		Expression<Func<T_School, bool>> predicateT_School = n => false;
-		bool flagT_School = false;
-		foreach (var _ubs in UBS.UserBasedSecurities.Where(p => p.EntityName == "T_School").OrderByDescending(p => p.IsMainEntity).ThenByDescending(p=>p.Id))
+		Expression<Func<T_Country, bool>> predicateT_Country = n => false;
+		bool flagT_Country = false;
+		foreach (var _ubs in UBS.UserBasedSecurities.Where(p => p.EntityName == "T_Country").OrderByDescending(p => p.IsMainEntity).ThenByDescending(p=>p.Id))
 		{
 				if (_ubs.RolesToIgnore != null && user.IsInRole(_ubs.RolesToIgnore.Split(",".ToCharArray())))
                         continue;
-				if(!user.CanView("T_School"))
+				if(!user.CanView("T_Country"))
 					break;
 	}
-	if(flagT_School)
-		DbContext.T_Schools = new FilteredDbSet<T_School>(DbContext, predicateT_School);
-		Expression<Func<T_Student, bool>> predicateT_Student = n => false;
-		bool flagT_Student = false;
-		foreach (var _ubs in UBS.UserBasedSecurities.Where(p => p.EntityName == "T_Student").OrderByDescending(p => p.IsMainEntity).ThenByDescending(p=>p.Id))
+	if(flagT_Country)
+		DbContext.T_Countrys = new FilteredDbSet<T_Country>(DbContext, predicateT_Country);
+		Expression<Func<T_State, bool>> predicateT_State = n => false;
+		bool flagT_State = false;
+		foreach (var _ubs in UBS.UserBasedSecurities.Where(p => p.EntityName == "T_State").OrderByDescending(p => p.IsMainEntity).ThenByDescending(p=>p.Id))
 		{
 				if (_ubs.RolesToIgnore != null && user.IsInRole(_ubs.RolesToIgnore.Split(",".ToCharArray())))
                         continue;
-				if(!user.CanView("T_Student"))
+				if(!user.CanView("T_State"))
 					break;
-		if (!_ubs.IsMainEntity && _ubs.TargetEntityName == "T_School" && mainEntity != "T_Student")
+		if (!_ubs.IsMainEntity && _ubs.TargetEntityName == "T_Country" && mainEntity != "T_State")
         {
-				var list = DbContext.T_Schools.Select(p => p.Id).ToList();
-				//DbContext.T_Students = new FilteredDbSet<T_Student>(DbContext, d => (d.t_schoolname!=null && list.Contains(d.T_SchoolNameID.Value)) );
+				var list = DbContext.T_Countrys.Select(p => p.Id).ToList();
+				//DbContext.T_States = new FilteredDbSet<T_State>(DbContext, d => (d.t_statecountry!=null && list.Contains(d.T_StateCountryID.Value)) );
 				 if(list.Count()>0)
 				 {
-					 flagT_Student = true;
+					 flagT_State = true;
 					 if (_ubs.TargetEntityName != mainEntity)
-						predicateT_Student = predicateT_Student.Or(d =>  (d.t_schoolname!=null && list.Contains(d.T_SchoolNameID.Value)) );
+						predicateT_State = predicateT_State.Or(d =>  (d.t_statecountry!=null && list.Contains(d.T_StateCountryID.Value)) );
 					 else
 					 {
-						predicateT_Student = (d =>  (d.t_schoolname!=null && list.Contains(d.T_SchoolNameID.Value)) );
-						break;
-					 }
-				 }
-        }
-		if (!_ubs.IsMainEntity && _ubs.TargetEntityName == "T_Department" && mainEntity != "T_Student")
-        {
-				var list = DbContext.T_Departments.Select(p => p.Id).ToList();
-				//DbContext.T_Students = new FilteredDbSet<T_Student>(DbContext, d => (d.t_departmentcode!=null && list.Contains(d.T_DepartmentCodeID.Value)) );
-				 if(list.Count()>0)
-				 {
-					 flagT_Student = true;
-					 if (_ubs.TargetEntityName != mainEntity)
-						predicateT_Student = predicateT_Student.Or(d =>  (d.t_departmentcode!=null && list.Contains(d.T_DepartmentCodeID.Value)) );
-					 else
-					 {
-						predicateT_Student = (d =>  (d.t_departmentcode!=null && list.Contains(d.T_DepartmentCodeID.Value)) );
+						predicateT_State = (d =>  (d.t_statecountry!=null && list.Contains(d.T_StateCountryID.Value)) );
 						break;
 					 }
 				 }
         }
 	}
-	if(flagT_Student)
-		DbContext.T_Students = new FilteredDbSet<T_Student>(DbContext, predicateT_Student);
-		Expression<Func<T_Department, bool>> predicateT_Department = n => false;
-		bool flagT_Department = false;
-		foreach (var _ubs in UBS.UserBasedSecurities.Where(p => p.EntityName == "T_Department").OrderByDescending(p => p.IsMainEntity).ThenByDescending(p=>p.Id))
+	if(flagT_State)
+		DbContext.T_States = new FilteredDbSet<T_State>(DbContext, predicateT_State);
+		Expression<Func<T_City, bool>> predicateT_City = n => false;
+		bool flagT_City = false;
+		foreach (var _ubs in UBS.UserBasedSecurities.Where(p => p.EntityName == "T_City").OrderByDescending(p => p.IsMainEntity).ThenByDescending(p=>p.Id))
 		{
 				if (_ubs.RolesToIgnore != null && user.IsInRole(_ubs.RolesToIgnore.Split(",".ToCharArray())))
                         continue;
-				if(!user.CanView("T_Department"))
+				if(!user.CanView("T_City"))
 					break;
-	}
-	if(flagT_Department)
-		DbContext.T_Departments = new FilteredDbSet<T_Department>(DbContext, predicateT_Department);
-		Expression<Func<T_StudentPerformance, bool>> predicateT_StudentPerformance = n => false;
-		bool flagT_StudentPerformance = false;
-		foreach (var _ubs in UBS.UserBasedSecurities.Where(p => p.EntityName == "T_StudentPerformance").OrderByDescending(p => p.IsMainEntity).ThenByDescending(p=>p.Id))
-		{
-				if (_ubs.RolesToIgnore != null && user.IsInRole(_ubs.RolesToIgnore.Split(",".ToCharArray())))
-                        continue;
-				if(!user.CanView("T_StudentPerformance"))
-					break;
-		if (!_ubs.IsMainEntity && _ubs.TargetEntityName == "T_Student" && mainEntity != "T_StudentPerformance")
+		if (!_ubs.IsMainEntity && _ubs.TargetEntityName == "T_Country" && mainEntity != "T_City")
         {
-				var list = DbContext.T_Students.Select(p => p.Id).ToList();
-				//DbContext.T_StudentPerformances = new FilteredDbSet<T_StudentPerformance>(DbContext, d => (d.t_studentcode!=null && list.Contains(d.T_StudentCodeID.Value)) );
+				var list = DbContext.T_Countrys.Select(p => p.Id).ToList();
+				//DbContext.T_Citys = new FilteredDbSet<T_City>(DbContext, d => (d.t_citycountry!=null && list.Contains(d.T_CityCountryID.Value)) );
 				 if(list.Count()>0)
 				 {
-					 flagT_StudentPerformance = true;
+					 flagT_City = true;
 					 if (_ubs.TargetEntityName != mainEntity)
-						predicateT_StudentPerformance = predicateT_StudentPerformance.Or(d =>  (d.t_studentcode!=null && list.Contains(d.T_StudentCodeID.Value)) );
+						predicateT_City = predicateT_City.Or(d =>  (d.t_citycountry!=null && list.Contains(d.T_CityCountryID.Value)) );
 					 else
 					 {
-						predicateT_StudentPerformance = (d =>  (d.t_studentcode!=null && list.Contains(d.T_StudentCodeID.Value)) );
+						predicateT_City = (d =>  (d.t_citycountry!=null && list.Contains(d.T_CityCountryID.Value)) );
+						break;
+					 }
+				 }
+        }
+		if (!_ubs.IsMainEntity && _ubs.TargetEntityName == "T_State" && mainEntity != "T_City")
+        {
+				var list = DbContext.T_States.Select(p => p.Id).ToList();
+				//DbContext.T_Citys = new FilteredDbSet<T_City>(DbContext, d => (d.t_citystate!=null && list.Contains(d.T_CityStateID.Value)) );
+				 if(list.Count()>0)
+				 {
+					 flagT_City = true;
+					 if (_ubs.TargetEntityName != mainEntity)
+						predicateT_City = predicateT_City.Or(d =>  (d.t_citystate!=null && list.Contains(d.T_CityStateID.Value)) );
+					 else
+					 {
+						predicateT_City = (d =>  (d.t_citystate!=null && list.Contains(d.T_CityStateID.Value)) );
 						break;
 					 }
 				 }
         }
 	}
-	if(flagT_StudentPerformance)
-		DbContext.T_StudentPerformances = new FilteredDbSet<T_StudentPerformance>(DbContext, predicateT_StudentPerformance);
+	if(flagT_City)
+		DbContext.T_Citys = new FilteredDbSet<T_City>(DbContext, predicateT_City);
+		Expression<Func<T_Address, bool>> predicateT_Address = n => false;
+		bool flagT_Address = false;
+		foreach (var _ubs in UBS.UserBasedSecurities.Where(p => p.EntityName == "T_Address").OrderByDescending(p => p.IsMainEntity).ThenByDescending(p=>p.Id))
+		{
+				if (_ubs.RolesToIgnore != null && user.IsInRole(_ubs.RolesToIgnore.Split(",".ToCharArray())))
+                        continue;
+				if(!user.CanView("T_Address"))
+					break;
+		if (!_ubs.IsMainEntity && _ubs.TargetEntityName == "T_Country" && mainEntity != "T_Address")
+        {
+				var list = DbContext.T_Countrys.Select(p => p.Id).ToList();
+				//DbContext.T_Addresss = new FilteredDbSet<T_Address>(DbContext, d => (d.t_addresscountry!=null && list.Contains(d.T_AddressCountryID.Value)) );
+				 if(list.Count()>0)
+				 {
+					 flagT_Address = true;
+					 if (_ubs.TargetEntityName != mainEntity)
+						predicateT_Address = predicateT_Address.Or(d =>  (d.t_addresscountry!=null && list.Contains(d.T_AddressCountryID.Value)) );
+					 else
+					 {
+						predicateT_Address = (d =>  (d.t_addresscountry!=null && list.Contains(d.T_AddressCountryID.Value)) );
+						break;
+					 }
+				 }
+        }
+		if (!_ubs.IsMainEntity && _ubs.TargetEntityName == "T_State" && mainEntity != "T_Address")
+        {
+				var list = DbContext.T_States.Select(p => p.Id).ToList();
+				//DbContext.T_Addresss = new FilteredDbSet<T_Address>(DbContext, d => (d.t_addressstate!=null && list.Contains(d.T_AddressStateID.Value)) );
+				 if(list.Count()>0)
+				 {
+					 flagT_Address = true;
+					 if (_ubs.TargetEntityName != mainEntity)
+						predicateT_Address = predicateT_Address.Or(d =>  (d.t_addressstate!=null && list.Contains(d.T_AddressStateID.Value)) );
+					 else
+					 {
+						predicateT_Address = (d =>  (d.t_addressstate!=null && list.Contains(d.T_AddressStateID.Value)) );
+						break;
+					 }
+				 }
+        }
+		if (!_ubs.IsMainEntity && _ubs.TargetEntityName == "T_City" && mainEntity != "T_Address")
+        {
+				var list = DbContext.T_Citys.Select(p => p.Id).ToList();
+				//DbContext.T_Addresss = new FilteredDbSet<T_Address>(DbContext, d => (d.t_addresscity!=null && list.Contains(d.T_AddressCityID.Value)) );
+				 if(list.Count()>0)
+				 {
+					 flagT_Address = true;
+					 if (_ubs.TargetEntityName != mainEntity)
+						predicateT_Address = predicateT_Address.Or(d =>  (d.t_addresscity!=null && list.Contains(d.T_AddressCityID.Value)) );
+					 else
+					 {
+						predicateT_Address = (d =>  (d.t_addresscity!=null && list.Contains(d.T_AddressCityID.Value)) );
+						break;
+					 }
+				 }
+        }
+	}
+	if(flagT_Address)
+		DbContext.T_Addresss = new FilteredDbSet<T_Address>(DbContext, predicateT_Address);
+		Expression<Func<T_Employeetype, bool>> predicateT_Employeetype = n => false;
+		bool flagT_Employeetype = false;
+		foreach (var _ubs in UBS.UserBasedSecurities.Where(p => p.EntityName == "T_Employeetype").OrderByDescending(p => p.IsMainEntity).ThenByDescending(p=>p.Id))
+		{
+				if (_ubs.RolesToIgnore != null && user.IsInRole(_ubs.RolesToIgnore.Split(",".ToCharArray())))
+                        continue;
+				if(!user.CanView("T_Employeetype"))
+					break;
+	}
+	if(flagT_Employeetype)
+		DbContext.T_Employeetypes = new FilteredDbSet<T_Employeetype>(DbContext, predicateT_Employeetype);
+		Expression<Func<T_Employeestatus, bool>> predicateT_Employeestatus = n => false;
+		bool flagT_Employeestatus = false;
+		foreach (var _ubs in UBS.UserBasedSecurities.Where(p => p.EntityName == "T_Employeestatus").OrderByDescending(p => p.IsMainEntity).ThenByDescending(p=>p.Id))
+		{
+				if (_ubs.RolesToIgnore != null && user.IsInRole(_ubs.RolesToIgnore.Split(",".ToCharArray())))
+                        continue;
+				if(!user.CanView("T_Employeestatus"))
+					break;
+	}
+	if(flagT_Employeestatus)
+		DbContext.T_Employeestatuss = new FilteredDbSet<T_Employeestatus>(DbContext, predicateT_Employeestatus);
+		Expression<Func<T_Organization, bool>> predicateT_Organization = n => false;
+		bool flagT_Organization = false;
+		foreach (var _ubs in UBS.UserBasedSecurities.Where(p => p.EntityName == "T_Organization").OrderByDescending(p => p.IsMainEntity).ThenByDescending(p=>p.Id))
+		{
+				if (_ubs.RolesToIgnore != null && user.IsInRole(_ubs.RolesToIgnore.Split(",".ToCharArray())))
+                        continue;
+				if(!user.CanView("T_Organization"))
+					break;
+	}
+	if(flagT_Organization)
+		DbContext.T_Organizations = new FilteredDbSet<T_Organization>(DbContext, predicateT_Organization);
 			//document security
 			if(UBS.UserBasedSecurities.Count()>0)
 			{
-				
+				doclist.AddRange(DbContext.T_Employees.Select(p => p.T_Picture).ToList());
+
 				DbContext.Documents = new FilteredDbSet<Document>(DbContext, d => doclist.Contains(d.Id));
 			}
         }
@@ -298,6 +550,24 @@ namespace GeneratorBase.MVC
         }
         public string[] AddRolesDynamic(string[] roles, string userid)
         {
+            ApplicationContext db = new ApplicationContext(new SystemUser());
+            var dynamicRoles = db.DynamicRoleMappings.ToList();
+            foreach (var adr in dynamicRoles)
+            {
+                if (roles.Contains(adr.RoleId)) continue;
+				if (adr.EntityName == "T_Employee")
+                {
+                    if (adr.UserRelation == "T_EmployeeUserLoginID")
+                    {
+                        var _Object = db.T_Employees.FirstOrDefault(p => p.T_EmployeeUserLoginID == userid);
+                        if (_Object != null)
+                        {
+                           if(CheckCondition(_Object,"T_Employee",adr.Condition,adr.Value))
+                                roles = (roles ?? Enumerable.Empty<string>()).Concat(Enumerable.Repeat(adr.RoleId, 1)).ToArray();
+                        }
+                    }
+                }
+            }
             return roles;
         }
     }
@@ -333,11 +603,119 @@ namespace GeneratorBase.MVC
 			}
 			catch{return null;}
         }
+		public bool CheckLockCondition(string EntityName, Object obj, IUser user, bool FromContext)
+        {	
+	    try{	
+            ApplicationContext db = new ApplicationContext(user);
+            bool result = false;
+            var type = obj.GetType();
+            var assolist = ModelReflector.Entities.Where(p => p.Name == EntityName).ToList()[0].Associations.ToList();
+            PropertyInfo[] properties = type.GetProperties().Where(p => p.PropertyType.FullName.StartsWith("System")).ToArray();
+            foreach(var asso in assolist)
+            {
+		if (asso.Target == null || asso.Target == "IdentityUser") continue;
+                var BR = user.businessrules.Where(p => p.EntityName == asso.Target).ToList();
+                if (BR.Count() == 0) continue;
+				object value = null;
+				if (!FromContext)
+                    value = type.GetProperty(asso.Name.ToLower()).GetValue(obj, null);
+                else
+                {
+                    obj = (System.Data.Entity.Infrastructure.DbPropertyValues)obj;
+                    var original = ((System.Data.Entity.Infrastructure.DbPropertyValues)obj)[asso.Name + "ID"];
+                    Type controller = Type.GetType("GeneratorBase.MVC.Controllers." + asso.Target + "Controller");
+                    object objController = Activator.CreateInstance(controller, null);
+                    MethodInfo mc = controller.GetMethod("GetRecordById");
+                    object[] MethodParams = new object[] { Convert.ToString(original) };
+                    value = mc.Invoke(objController, MethodParams);
+                }
+ 				if (value != null)
+                {
+					var ResultOfBusinessRules = db.LockEntityRule(value, BR, asso.Target);
+					if (ResultOfBusinessRules != null && ResultOfBusinessRules.Keys.Select(p => p.TypeNo).Contains(11))
+					{
+					    return true;
+					}
+				}
+            }
+            return result;
+}catch{return false;}
+        }
         public bool CheckOwnerPermission(string EntityName, Object obj, IUser user, bool FromContext)
         {
             var result = true;
             ApplicationContext db = new ApplicationContext(user);
             var OwnerAssociationName = user.OwnerAssociation(EntityName);
+if (EntityName == "T_Employee")
+{
+			 var entresult = true;
+                if (OwnerAssociationName.Contains("T_AssociatedEmployeeType"))
+                {
+                    Object original = getObject(user, EntityName, obj, FromContext, "T_AssociatedEmployeeType");
+					if (original != null)
+						entresult = entresult && (CheckUserCondition(user, original));
+                }
+                if (OwnerAssociationName.Contains("T_AssociatedEmployeeStatus"))
+                {
+                    Object original = getObject(user, EntityName, obj, FromContext, "T_AssociatedEmployeeStatus");
+					if (original != null)
+						entresult = entresult && (CheckUserCondition(user, original));
+                }
+                if (OwnerAssociationName.Contains("T_EmployeeUserLogin"))
+                {
+                    Object original = getObject(user, EntityName, obj, FromContext, "T_EmployeeUserLogin");
+					if (original != null)
+						entresult = entresult && (CheckUserCondition(user, original));
+                }
+                if (OwnerAssociationName.Contains("T_EmployeeAddress"))
+                {
+                    Object original = getObject(user, EntityName, obj, FromContext, "T_EmployeeAddress");
+					if (original != null)
+						entresult = entresult && (CheckUserCondition(user, original));
+                }
+ return entresult;
+}
+ if (EntityName == "T_EmployeeOrganizationAssociation")
+{
+			var entresult = true;
+                if (OwnerAssociationName.Contains("T_Employee"))
+                {
+					Object original = getObject(user, EntityName, obj, FromContext, "T_Employee");
+                    var relationobj = db.T_Employees.Find(original);
+                    if (original != null)
+                    {
+				     if (relationobj != null)
+					 {
+												foreach (var str in user.OwnerAssociation("T_Employee").Split(",".ToArray()))
+                            {
+                                var UserName = getObject(user, "T_Employee", relationobj, false, str);
+                                if (UserName != null)
+                                    entresult = entresult && (CheckUserCondition(user, UserName));
+                            }
+							//else (CheckUserCondition(user, relationobj.T_EmployeeUserLoginID) );
+										}
+				  }
+                }
+                if (OwnerAssociationName.Contains("T_Organization"))
+                {
+					Object original = getObject(user, EntityName, obj, FromContext, "T_Organization");
+                    var relationobj = db.T_Organizations.Find(original);
+                    if (original != null)
+                    {
+				     if (relationobj != null)
+					 {
+												foreach (var str in user.OwnerAssociation("T_Organization").Split(",".ToArray()))
+                            {
+                                var UserName = getObject(user, "T_Organization", relationobj, false, str);
+                                if (UserName != null)
+                                    entresult = entresult && (CheckUserCondition(user, UserName));
+                            }
+							//else ();
+										}
+				  }
+                }
+	return entresult;
+}
             return result;
         }
     }

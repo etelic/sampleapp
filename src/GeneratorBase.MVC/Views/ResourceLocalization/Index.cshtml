@@ -1,0 +1,14 @@
+﻿@model List<ModelReflector.Entity>
+    @{
+        ViewBag.Title = "Resource Localization";
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
+    <div class="row">
+        <div class="col-lg-12">
+            <h1 class="page-title">
+                <i class="glyphicon glyphicon-thumbs-up text-primary" style="margin-bottom:-20px;"></i> Entity UI Label Mapping  
+            </h1>
+        </div>
+    </div>
+    <div id="dvResourceLocalizationFilter"></div>
+    @Html.Partial("~/Views/ResourceLocalization/IndexPartial.cshtml", Model)

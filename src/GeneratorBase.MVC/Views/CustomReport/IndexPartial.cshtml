@@ -1,0 +1,330 @@
+﻿@model PagedList.IPagedList<GeneratorBase.MVC.Models.CustomReport>
+@using PagedList.Mvc;
+@{
+
+    var ActionNameUrl = "Index";
+    if (HttpContext.Current.Request.RequestContext.RouteData.Values["action"].ToString().ToUpper() == "FSEARCH")
+    {
+        ActionNameUrl = "FSearch";
+    }
+    var BackUrl = Request.Url;
+    if (ViewData["HostingEntity"] != null && (Request.QueryString["TabToken"] != null || Request.IsAjaxRequest()))
+    {
+        BackUrl = Request.UrlReferrer;
+    }
+    var EntityReflector = ModelReflector.Entities.FirstOrDefault(p => p.Name == "CustomReport");
+}
+
+<div id="CustomReport">
+    <style>
+        .table-responsive > .fixed-column {
+            position: absolute;
+            display: block;
+            width: auto;
+            border: 0px solid transparent;
+            border-top: 1px solid #c3ddec;
+        }
+
+        .fixed-column th {
+            background: #fff;
+        }
+
+        .fixed-column td {
+            background: #fff;
+        }
+    </style>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".pagination a").click(function (e) {
+                //PaginationClick(e,'CustomReport')
+                PaginationClick(e, 'CustomReport', '@User.JavaScriptEncodedName')
+            })
+            $("#SearchStringCustomReport").keypress(function (e) {
+                if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
+                    $("#CustomReportSearch").bind("click", (function () {
+                    }));
+                    $('#CustomReportSearch').trigger("click");
+                    return false;
+                }
+            })
+        });
+    </script>
+    @functions {
+        object getSortHtmlAttributes(string sortby, bool IsPaging, int? page, bool? IsExport)
+        {
+            if (IsPaging)
+            {
+                return new
+                {
+                    page,
+                    sortBy = ViewBag.CurrentSort,
+                    isAsc = ViewBag.IsAsc,
+                    currentFilter = ViewBag.CurrentFilter,
+                    HostingEntity = @Convert.ToString(ViewData["HostingEntity"]),
+                    AssociatedType = @Convert.ToString(ViewData["AssociatedType"]),
+                    HostingEntityID = ViewData["HostingEntityID"],
+                    IsExport = IsExport,
+                    FSFilter = ViewBag.FSFilter == null ? "Fsearch" : ViewBag.FSFilter,
+                    IsFilter = @Convert.ToBoolean(ViewData["IsFilter"]),
+
+                    search = Request.QueryString["search"],
+                    SortOrder = Request.QueryString["SortOrder"],
+                    viewtype = ViewBag.TemplatesName,
+                    HideColumns = ViewData["HideColumns"],
+                    GroupByColumn = ViewBag.GroupByColumn,
+                    FilterCondition = ViewBag.FilterCondition,
+                };
+            }
+            else
+            {
+                return new
+                {
+                    sortBy = sortby,
+                    currentFilter = Request.QueryString["currentFilter"],
+                    searchString = Request.QueryString["searchString"],
+                    isAsc = (ViewBag.IsAsc == "ASC" ? "DESC" : ""),
+                    page = ViewBag.Pages,
+                    HostingEntity = @Convert.ToString(ViewData["HostingEntity"]),
+                    HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),
+                    AssociatedType = @Convert.ToString(ViewData["AssociatedType"]),
+                    IsExport = IsExport,
+                    FSFilter = ViewBag.FSFilter == null ? "Fsearch" : ViewBag.FSFilter,
+                    IsFilter = @Convert.ToBoolean(ViewData["IsFilter"]),
+                    search = Request.QueryString["search"],
+                    SortOrder = Request.QueryString["SortOrder"],
+                    viewtype = ViewBag.TemplatesName,
+                    HideColumns = ViewData["HideColumns"],
+                    GroupByColumn = ViewBag.GroupByColumn,
+                    FilterCondition = ViewBag.FilterCondition,
+                };
+            }
+        }
+    }
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-sx-12">
+            <div class="panel panel-default">
+                <div class="panel-heading clearfix" style="margin:0px; padding:2px;">
+                    <div class="btn-group" id='@ViewData["HostingEntity"]_CustomReport'>
+                        @if (User.Identity.IsAuthenticated && User != null && User.CanAdd("CustomReport"))
+                        {
+
+                            <button class="btn btn-default tip-top" type="button" data-original-title="Full Add" data-placement="top" style="padding:3px 5px;" onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Create", "CustomReport", new { UrlReferrer = BackUrl, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),viewtype = Convert.ToString(ViewBag.TemplatesName) }, null) + "');")>
+                                <span class="fam-world-add"></span> Add
+                            </button>
+                        }
+                    </div>
+                    <div class="btn-group">
+                        <div class="btn btn-default  btn-default tip-top" data-original-title="Export Excel" data-placement="top" style="padding:3px 5px;" onclick=@Html.Raw("NavigateToUrl('" + Url.Action(ActionNameUrl,"CustomReport",getSortHtmlAttributes(null, false, null, true), null) + "');")>
+                            <span class="fam-page-white-put"></span>
+                        </div>
+                    </div>
+                    <div class="btn-group">
+                        <a class="btn btn-default dropdown-toggle tip-top" data-original-title="Bulk Actions" style="padding:3px 5px;" data-toggle="dropdown" href="#">
+                            <span class="fa fa-wrench"></span> Bulk
+                        </a>
+                        <ul class="dropdown-menu" role="menu">
+                            @if (User.Identity.IsAuthenticated && User != null && User.CanDelete("CustomReport") && User.CanUseVerb("BulkDelete", "CustomReport", User))
+                            {
+                                <li>
+                                    <a style="cursor:pointer;" onclick="PerformBulkOperation(this,'CustomReport','Bulk Delete','@Url.Action("DeleteBulk", "CustomReport")');">Delete</a>
+                                </li>
+
+                            }
+                        </ul>
+                    </div>
+                    <div class="pull-right" style="width:250px;">
+                        <div class="input-group">
+                            @Html.TextBox("SearchStringCustomReport", ViewBag.CurrentFilter as string, null, new { @class = "form-control fixsearchbox", @value = ViewBag.Homeval, @placeholder = "Search" })
+                            <div class="input-group-btn">
+                                <a id="CustomReportSearch" onclick="SearchClick(event, 'CustomReport', '@Html.Raw(Url.Action("Index", "CustomReport", new { IsFilter = ViewData["IsFilter"], IsDeepSearch = false, searchString = "_SearchString", HostingEntity = Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]),HideColumns = ViewData["HideColumns"], SearchTimeStamp = DateTime.Now.Ticks.ToString(),viewtype = Convert.ToString(ViewBag.TemplatesName) }))','@User.JavaScriptEncodedName');" data-original-title="Grid Search" class="btn btn-default btn-default tip-top" style="padding:3px 5px;"><span class="fam-zoom"></span></a>
+                                <button id="CustomReportCancel" type="button" class="btn btn-default btn-default collapse-data-btn tip-top" onclick="CancelSearch('CustomReport','@Html.Raw(Url.Action("Index", "CustomReport", new {IsFilter=ViewData["IsFilter"], HostingEntity = Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]), HideColumns = ViewData["HideColumns"], ClearSearchTimeStamp = DateTime.Now.Ticks.ToString(),viewtype = Convert.ToString(ViewBag.TemplatesName) }))','@User.JavaScriptEncodedName')" data-original-title="Clear Search" data-placement="top" style="padding:3px 5px;">
+                                    <span class="fam-delete"></span>
+                                </button>
+                                <button id="CustomReportSearchCancel" type="button" class="btn btn-default btn-default collapse-data-btn tip-top" onclick="CancelSearch('CustomReport','@Html.Raw(Url.Action("Index", "CustomReport", new {IsFilter=ViewData["IsFilter"], HostingEntity = Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]),HideColumns = ViewData["HideColumns"], ClearSearchTimeStamp = DateTime.Now.Ticks.ToString(),viewtype = Convert.ToString(ViewBag.TemplatesName)}))','@User.JavaScriptEncodedName')" data-original-title="Refresh Grid" data-placement="top" style="padding:3px 5px;">
+                                    <span class="fam-arrow-refresh"></span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-body" style="margin:0px; padding:8px;">
+                    <div id="Des_Table" class="table-responsive" style="overflow-x:auto;">
+                        <table class="table table-striped table-bordered table-hover table-condensed">
+                            <thead>
+                                <tr>
+
+                                    <th class="col0" style="width:20px;">
+                                        <input type="checkbox" class="tip-top" data-placement="top" data-original-title="Select All" onclick="SelectAllRows(this);" />
+                                        @Html.Hidden("SelectedItems")
+                                    </th>
+
+                                    <th class="col1" style="width:70px;">Actions</th>
+                                    @if (User.CanView("CustomReport", "ReportName"))
+                                    {
+                                        var SortPropertyName = EntityReflector.Properties.FirstOrDefault(q => q.Name == "ReportName");
+                                        <th class="col2">
+                                            @Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "CustomReport", getSortHtmlAttributes("ReportName", false, null, false), new { @onclick = "SortLinkClick(event,'CustomReport');" })
+                                            @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "ReportName")
+                                            {<i class="fa fa-sort-desc"></i>}
+                                            @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "ReportName")
+                                            {<i class="fa fa-sort-asc"></i>}
+                                        </th>
+                                    }
+                                    @if (User.CanView("CustomReport", "EntityName"))
+                                    {
+                                        var SortPropertyName = EntityReflector.Properties.FirstOrDefault(q => q.Name == "EntityName");
+                                        <th class="col3">
+                                            @Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "CustomReport", getSortHtmlAttributes("EntityName", false, null, false), new { @onclick = "SortLinkClick(event,'CustomReport');" })
+                                            @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "EntityName")
+                                            {<i class="fa fa-sort-desc"></i>}
+                                            @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "EntityName")
+                                            {<i class="fa fa-sort-asc"></i>}
+                                        </th>
+                                    }
+                                    @if (User.CanView("CustomReport", "PeportType"))
+                                    {
+                                        var SortPropertyName = EntityReflector.Properties.FirstOrDefault(q => q.Name == "PeportType");
+                                        <th class="col4">
+                                            @Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "CustomReport", getSortHtmlAttributes("PeportType", false, null, false), new { @onclick = "SortLinkClick(event,'CustomReport');" })
+                                            @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "PeportType")
+                                            {<i class="fa fa-sort-desc"></i>}
+                                            @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "PeportType")
+                                            {<i class="fa fa-sort-asc"></i>}
+                                        </th>
+                                    }
+                                    @if (User.CanView("CustomReport", "Description"))
+                                    {
+                                        var SortPropertyName = EntityReflector.Properties.FirstOrDefault(q => q.Name == "Description");
+                                        <th class="col5">
+                                            @Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "CustomReport", getSortHtmlAttributes("Description", false, null, false), new { @onclick = "SortLinkClick(event,'CustomReport');" })
+                                            @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "Description")
+                                            {<i class="fa fa-sort-desc"></i>}
+                                            @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "Description")
+                                            {<i class="fa fa-sort-asc"></i>}
+                                        </th>
+                                    }
+                                    @if (User.CanView("CustomReport", "ViewReport"))
+                                    {
+                                        var SortPropertyName = EntityReflector.Properties.FirstOrDefault(q => q.Name == "ViewReport");
+                                        <th class="col7">
+                                            @Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "CustomReport", getSortHtmlAttributes("ViewReport", false, null, false), new { @onclick = "SortLinkClick(event,'CustomReport');" })
+                                            @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "ViewReport")
+                                            {<i class="fa fa-sort-desc"></i>}
+                                            @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "ViewReport")
+                                            {<i class="fa fa-sort-asc"></i>}
+                                        </th>
+                                    }
+                                </tr>
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td>
+                                            <input type="checkbox" id="@item.Id" onclick="SelectForBulkOperation(this,'@item.Id');" />
+                                        </td>
+                                        <td>
+                                            <div style="width:60px; margin-top:-2px;">
+                                                <div class="btn-group" style="position:absolute;">
+                                                    <button data-toggle="dropdown" class="btn btn-xs dropdown-toggle btn-default">
+                                                        Action
+                                                        <span class="caret">    </span>
+                                                    </button>
+                                                    <ul class="dropdown-menu pull-left">
+                                                        <li>
+                                                            <a href="@Url.Action("Details", "CustomReport", new { id = item.Id, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"])  }, null)"><i class="glyphicon glyphicon-eye-open"></i>  View</a>
+                                                        </li>
+                                                        @if (User.CanEdit("CustomReport"))
+                                                        {
+                                                            <li>
+                                                                <a href="@Url.Action("Edit","CustomReport", new { id = item.Id,  UrlReferrer = BackUrl, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),viewtype = Convert.ToString(ViewBag.TemplatesName) },null)"><i class="glyphicon glyphicon-edit"></i>  Edit</a>
+
+                                                            </li>
+                                                        }
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        @if (User.CanView("CustomReport", "ReportName"))
+                                        {
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.ReportName)
+                                            </td>
+                                        }
+                                        @if (User.CanView("CustomReport", "EntityName"))
+                                        {
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.EntityName)
+                                            </td>
+                                        }
+                                        @if (User.CanView("CustomReport", "PeportType"))
+                                        {
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.PeportType)
+                                            </td>
+                                        }
+                                        @if (User.CanView("CustomReport", "Description"))
+                                        {
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.Description)
+                                            </td>
+                                        }
+                                        @if (User.CanView("CustomReport", "ViewReport"))
+                                        {
+                                            <td>
+                                                <a id="rptView" type="button" title="Edit Report @item.ReportName" data-placement="top" data-original-title="Show Reports" data-toggle="modal" data-target="#ShowReoprts"
+                                                   onclick="ViewReports('@item.ViewReport','@ModelReflector.Entities.FirstOrDefault(p => p.Name == item.EntityName.ToString()).DisplayName');">
+                                                    <span class="fa fam-page-gear"></span>
+                                                </a>
+                                            </td>
+                                        }
+
+                                    </tr>
+                                }
+                        </table>
+                    </div>
+                    @if (Model.Count > 0)
+                    {
+                        <div id="pagination">
+                            @Html.PagedListPager(Model, page => Url.Action(ActionNameUrl, "CustomReport", getSortHtmlAttributes(null, true, page, false)))
+                            <div class="fixPageSize">
+                                Page Size :
+                                @Html.DropDownList("PageSize", new SelectList(new Dictionary<string, int> { { "10", 10 }, { "20", 20 }, { "50", 50 }, { "100", 100 } }, "Key", "Value")
+                            , new
+                            {
+                                @id = "pagesizelistCustomReport",
+                                @onchange = @Html.Raw("pagesizelistChange(event,'CustomReport','"
+                                 + @User.JavaScriptEncodedName + "')"),
+                                @Url = Html.Raw(@Url.Action(ActionNameUrl, "CustomReport",
+                                getSortHtmlAttributes(ViewBag.CurrentSort, ViewBag.Pages == 1 ? false : true,
+                                null, false), null))
+                            })
+                                <span style="text-align:right;"> Total Count: @(Model.TotalItemCount)</span>
+                                <script>
+                                    $(document).ready(function () {
+                                        $.validator.setDefaults({
+                                            ignore: "#pagesizelistCustomReport"
+                                        })
+                                    });
+                                </script>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="ShowReoprts" tabindex="-1" role="dialog" aria-labelledby="ShowReoprtsLabel" aria-hidden="true">
+    <div class="modal-dialog" style="width:80%">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="ShowReoprtsLabel">Reports of</h4>
+            </div>
+            <div class="modal-body">
+                <div id="LoadReportsDiv"></div>
+                <div style="clear:both"></div>
+            </div>
+        </div>
+    </div>
+</div>

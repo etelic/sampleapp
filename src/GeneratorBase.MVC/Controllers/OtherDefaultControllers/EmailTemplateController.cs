@@ -70,7 +70,7 @@ namespace GeneratorBase.MVC.Controllers.OtherDefaultControllers
             return View(emailtemplate);
         }
         [HttpPost]
-        public ActionResult Edit([Bind(Include = "Id,ConcurrencyKey,AssociatedEmailTemplateTypeID,EmailContent")] EmailTemplate emailtemplate, string UrlReferrer, bool? IsAddPop)
+        public ActionResult Edit([Bind(Include = "Id,ConcurrencyKey,AssociatedEmailTemplateTypeID,EmailContent,EmailSubject")] EmailTemplate emailtemplate, string UrlReferrer, bool? IsAddPop)
         {
             if (ModelState.IsValid)
             {

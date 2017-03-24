@@ -11,6 +11,10 @@ namespace GeneratorBase.MVC.Controllers
         {
             return View();
         }
+        public ActionResult ActivationLink()
+        {
+            return View();
+        }
         public ActionResult ConcurrencyError(string UrlReferrer, string Message)
         {
             ViewData["ConcurrencyReferrer"] = UrlReferrer;
@@ -21,6 +25,10 @@ namespace GeneratorBase.MVC.Controllers
         {
             return Redirect(UrlReferrer);
            // return View();
+        }
+        public ActionResult NotFound404()
+        {
+            return View("NotFound404");
         }
     }
 }

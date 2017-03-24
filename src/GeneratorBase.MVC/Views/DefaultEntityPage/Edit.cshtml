@@ -2,6 +2,7 @@
 @using PagedList;
 @{
     ViewBag.Title = "Edit Default Entity Page";
+    var Roles = Model.Roles;
 }
 @functions {
     object getHtmlAttributes(string Property)
@@ -22,125 +23,217 @@
             }
         }
         catch (ex) { }
+
+        $("#PageType").change(function () {
+            var selectedval = ($(this).val());
+            SelectPageType(selectedval, $("#SelectUrl"), $("#DirectUrl"), $("#DefaultUrl"), $("#Favorites"))
+        });
+
+
+        fillRoles();
+
+        $("#PageType").val('@ViewBag.PageType');
+
+        SelectPageType("@ViewBag.PageType", $("#SelectUrl"), $("#DirectUrl"), $("#DefaultUrl"), $("#Favorites"))
+
+        $("#Favorites").val('@ViewBag.SelectedOtherVal');
+        if ('@ViewBag.PageType' == "Url") {
+            $("#DirectUrl").val('@ViewBag.SelectedOtherVal');
+        }
+
+        settemplateOption();
     });
+
+    function settemplateOption() {
+        var details = '@ViewBag.ViewEntityPage'
+
+        var list = '@ViewBag.ListEntityPage'
+
+        var edit = '@ViewBag.EditEntityPage'
+
+        var search = '@ViewBag.SearchEntityPage'
+
+        var create = '@ViewBag.CreateEntityPage'
+
+        bindpagesFromEdit($("#EntityName"), "ViewEntityPage", "ListEntityPage", "EditEntityPage", "SearchEntityPage","CreateEntityPage", details, list, edit, search,create);
+
+    }
+    function fillRoles() {
+        var roles = "@Roles".split(",");
+        var eleRoles = document.getElementById("RoleList");
+        for (i = 0; i < roles.length; i++) {
+            for (var o = 0; o < eleRoles.options.length; o++) {
+                if (eleRoles.options[o].value == roles[i])
+                    eleRoles.options[o].selected = true;
+            }
+        }
+
+    }
+    function ChangeEntityName(obj) {
+        if ($(obj).val() == $("#EntityNameVal").val())
+            settemplateOption()
+        else
+            bindpages(obj, 'ViewEntityPage', 'ListEntityPage', 'EditEntityPage', 'SearchEntityPage','CreateEntityPage');
+    }
 </script>
 <div class="row">
     <div class="col-lg-12">
         <h1 class="page-title">
             <i class="glyphicon glyphicon-edit text-primary"></i> Default Entity Page  <i class="glyphicon glyphicon-chevron-right small"></i> <span>Edit</span>
         </h1>
-<label id="ErrMsg" class="text-primary small pull-right" style="color:red; vertical-align:middle; font-weight:100;"></label>
-      <h2 class="text-primary">@Html.DisplayFor(model => model.DisplayValue)
-	  </h2>
+        <label id="ErrMsg" class="text-primary small pull-right" style="color:red; vertical-align:middle; font-weight:100;"></label>
+        <h2 class="text-primary">
+            @Html.DisplayFor(model => model.DisplayValue)
+        </h2>
     </div>
     <!-- /.col-lg-12 -->
 </div>
- <div class="tabbable responsive">
+<div class="tabbable responsive">
     <ul class="nav nav-tabs">
-	 <li class="active"><a href="#Details" data-toggle="tab">Details</a></li>
+        <li class="active"><a href="#Details" data-toggle="tab">Details</a></li>
     </ul>
-		<div class="tab-content">
+    <div class="tab-content">
         <div class="tab-pane fade in active" id="Details">
-@using (Html.BeginForm("Edit","DefaultEntityPage",new {UrlReferrer =Convert.ToString(ViewData["DefaultEntityPageParentUrl"])}, FormMethod.Post, new { enctype = "multipart/form-data" }))
-{
-     Html.ValidationSummary(true);
+            @using (Html.BeginForm("Edit", "DefaultEntityPage", new { UrlReferrer = Convert.ToString(ViewData["DefaultEntityPageParentUrl"]) }, FormMethod.Post, new { enctype = "multipart/form-data" }))
+            {
+                Html.ValidationSummary(true);
                 Html.EnableClientValidation();
-    @Html.HiddenFor(model => model.Id)
-	@Html.HiddenFor(model => model.ConcurrencyKey)
-                <div class="col-md-12 col-sm-12 col-xs-12" style="padding:0px; margin:0px;">
-                    <div class="panel panel-default AppForm">
-						<div class="panel-body">
-						<div class="row">
-@if(User.CanView("DefaultEntityPage","EntityName"))
-{
-						<div class='col-sm-6 col-md-6 col-xs-12'>
-							<div class='form-group'>
-								<label class="col-sm-5 col-md-5 col-xs-12" >@Html.LabelFor(model => model.EntityName)  <span class="text-danger-reg">*</span> </label>
-                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
-									@Html.TextBoxFor(model => model.EntityName,  getHtmlAttributes("EntityName"))
-									@Html.ValidationMessageFor(model => model.EntityName)
-								</div>
-                             </div>
-						</div>
-} else { @Html.HiddenFor(model => model.EntityName, new { @class = "form-control" })}
-@if(User.CanView("DefaultEntityPage","Roles"))
-{
-						<div class='col-sm-6 col-md-6 col-xs-12'>
-							<div class='form-group'>
-								<label class="col-sm-5 col-md-5 col-xs-12" >@Html.LabelFor(model => model.Roles) </label>
-                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
-								@Html.TextAreaFor(model => model.Roles, getHtmlAttributes("Roles"))
-									@Html.ValidationMessageFor(model => model.Roles)
-								</div>
-                             </div>
-						</div>
-} else { @Html.HiddenFor(model => model.Roles, new { @class = "form-control" })}
-@if(User.CanView("DefaultEntityPage","PageType"))
-{
-						<div class='col-sm-6 col-md-6 col-xs-12'>
-							<div class='form-group'>
-								<label class="col-sm-5 col-md-5 col-xs-12" >@Html.LabelFor(model => model.PageType)   </label>
-                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
-									@Html.TextBoxFor(model => model.PageType,  getHtmlAttributes("PageType"))
-									@Html.ValidationMessageFor(model => model.PageType)
-								</div>
-                             </div>
-						</div>
-} else { @Html.HiddenFor(model => model.PageType, new { @class = "form-control" })}
-@if(User.CanView("DefaultEntityPage","PageUrl"))
-{
-						<div class='col-sm-6 col-md-6 col-xs-12'>
-							<div class='form-group'>
-								<label class="col-sm-5 col-md-5 col-xs-12" >@Html.LabelFor(model => model.PageUrl) </label>
-                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
-								@Html.TextAreaFor(model => model.PageUrl, getHtmlAttributes("PageUrl"))
-									@Html.ValidationMessageFor(model => model.PageUrl)
-								</div>
-                             </div>
-						</div>
-} else { @Html.HiddenFor(model => model.PageUrl, new { @class = "form-control" })}
-@if(User.CanView("DefaultEntityPage","Other"))
-{
-						<div class='col-sm-6 col-md-6 col-xs-12'>
-							<div class='form-group'>
-								<label class="col-sm-5 col-md-5 col-xs-12" >@Html.LabelFor(model => model.Other)   </label>
-                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
-									@Html.TextBoxFor(model => model.Other,  getHtmlAttributes("Other"))
-									@Html.ValidationMessageFor(model => model.Other)
-								</div>
-                             </div>
-						</div>
-} else { @Html.HiddenFor(model => model.Other, new { @class = "form-control" })}
-@if(User.CanView("DefaultEntityPage","Flag"))
-{
-                            <div class='col-sm-6 col-md-6 col-xs-12'>
-							  <div class="form-group">
-                                <label class="col-sm-5 col-md-5 col-xs-12" >
-                                    @Html.LabelFor(model => model.Flag) 
-                                </label>
-								<div class="input-group col-sm-7 col-md-7 col-xs-12">
-                                    @*@Html.CheckBoxFor(model => model.Flag)*@
-									@Html.CheckBox("Flag", Model.Flag.HasValue ? Model.Flag : false)
-                                    @Html.ValidationMessageFor(model => model.Flag)
+                @Html.HiddenFor(model => model.Id)
+                @Html.HiddenFor(model => model.ConcurrencyKey)
+                //
+                @Html.Hidden("EntityNameVal", null, new { @Value = @Model.EntityName })
+
+                <div class="row">
+                    <div class="col-md-12 col-sm-12 col-xs-12">
+                        <div class="panel panel-default AppForm">
+                            <div class="panel-body">
+                                <div class="row">
+                                    <div class="panel-body">
+                                        <div class='col-sm-6'>
+                                            <div class='form-group'>
+                                                <label>@Html.LabelFor(model => model.EntityName) <span class="text-danger-reg">*</span></label>
+                                                @Html.DropDownList("EntityName", null, "-- Select --", new { @onchange = "ChangeEntityName(this)", @dataurl = Url.Action("BindtemplatesIndex", "DefaultEntityPage", null), @required = "required", @class = "form-control" })
+                                                @Html.ValidationMessageFor(model => model.EntityName)
+                                            </div>
+                                        </div>
+                                        <div class='col-sm-6'>
+                                            <div class='form-group' id="dvRole" name="dvRoles">
+                                                <label>@Html.LabelFor(model => model.Roles)<span class="text-danger-reg">*</span></label>
+                                                <br />
+                                                @Html.DropDownList("RoleList", null, new { @multiple = "multiple" })
+                                                @Html.Hidden("Roles", null, new { @Value = "" })
+                                                @Html.ValidationMessageFor(model => model.Roles)
+                                            </div>
+                                        </div>
+                                        <div class='col-sm-6'>
+                                            <div class='form-group'>
+                                                <label>@Html.LabelFor(model => model.PageType) </label>
+                                                <select id="PageType" required="required" name="PageType" class="form-control">
+                                                    <option value="Default">Built In Pages</option>
+                                                    <option value="Favorite">A Page Saved as Favorite</option>
+                                                    <option value="Url">Internal URL</option>
+                                                </select>
+                                                @Html.ValidationMessageFor(model => model.PageType)
+                                            </div>
+                                        </div>
+                                        <div class='col-sm-6' id="SelectUrl" style="display:none;">
+                                            <div class='form-group'>
+                                                <label>Select Url </label>
+                                                <select id="DefaultUrl" style="display:none;" name="DefaultUrl" class="form-control">
+                                                    <option value="Index">List Page</option>
+                                                    <option value="SetFSearch">Faceted Search</option>
+                                                    <option value="Create">Add New Record</option>
+                                                </select>
+                                                @Html.DropDownList("Favorites", null, null, new { @style = "display:none;", @class = "form-control" })
+                                                @Html.TextBox("DirectUrl", null, new { @style = "display:none;", @class = "form-control", @required = "required" })
+                                            </div>
+                                        </div>
+                                        <div class='col-sm-6 hidden'>
+                                            <div class='form-group'>
+                                                <label>@Html.LabelFor(model => model.PageUrl) </label>
+                                                @Html.TextBoxFor(model => model.PageUrl, new { @class = "form-control" })
+                                                @Html.ValidationMessageFor(model => model.PageUrl)
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <div class='col-sm-6'>
+                                                <label>
+                                                    View Entity  Page
+                                                </label>
+                                                <div class='form-group'>
+                                                    <select id="ViewEntityPage" name="ViewEntityPage" class="form-control"></select>
+                                                </div>
+                                            </div>
+                                            <div class='col-sm-6'>
+                                                <label>
+                                                    Create Entity Page
+                                                </label>
+                                                <div class='form-group'>
+                                                    <select id="CreateEntityPage" name="CreateEntityPage" class="form-control"></select>
+                                                </div>
+                                            </div>
+                                            <div class='col-sm-6'>
+                                                <label>
+                                                    Edit Entity Page
+                                                </label>
+                                                <div class='form-group'>
+                                                    <select id="EditEntityPage" name="EditEntityPage" class="form-control"></select>
+                                                </div>
+                                            </div>
+                                            <div class='col-sm-6'>
+                                                <label>List Entity Page</label>
+                                                <div class='form-group'>
+                                                    <select id="ListEntityPage" name="ListEntityPage" class="form-control"></select>
+                                                </div>
+                                            </div>
+                                            <div class='col-sm-6'>
+                                                <label>Search Entity Page</label>
+                                                <div class='form-group'>
+                                                    <select id="SearchEntityPage" name="SearchEntityPage" class="form-control"></select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-								</div>
                             </div>
-} else { @Html.HiddenFor(model => model.Flag, new { @class = "form-control" })}
-       </div>
-            </div>
+                        </div>
+                    </div>
+                </div>
+                //
+
+                @Html.HiddenFor(model => model.Other)
+                @Html.AntiForgeryToken();
+                @Html.ActionLink("Cancel", "Cancel", new { UrlReferrer = ViewData["DefaultEntityPageParentUrl"] }, new { @onclick = "", @class = "btn btn-default btn-sm" })
+                <input type="submit" name="command" value="Save" onclick="Add(event);" class="btn btn-primary btn-sm" />
+                <input type="submit" name="command" value="Save & Continue" onclick="Add(event);" class="btn btn-primary btn-sm" />
+                <input type="hidden" name="hdncommand" value="" />
+            }
         </div>
-		</div>
-		 @Html.AntiForgeryToken();
-		 @Html.ActionLink("Cancel", "Cancel", new { UrlReferrer = ViewData["DefaultEntityPageParentUrl"] }, new { @onclick = "", @class = "btn btn-default btn-sm" })
-				<input type="submit" name="command" value="Save" class="btn btn-primary btn-sm" />
-				<input type="submit" name="command" value="Save & Continue" class="btn btn-primary btn-sm" />
-				<input type="hidden" name="hdncommand" value="" />
-}
+    </div> <!-- /tab-content --><br />
+    <br />
 </div>
-</div> <!-- /tab-content --><br />
-<br/>
-</div>
-	<script>
+@Scripts.Render("~/bundles/jqueryval")
+<script src="~/Scripts/Common3/chosen.jquery.js" type="text/javascript"></script>
+<script type="text/javascript">
+    var config = {
+        '.chosen-select': {},
+        '.chosen-select-deselect': { allow_single_deselect: true },
+        '.chosen-select-no-single': { disable_search_threshold: 10 },
+        '.chosen-select-no-results': { no_results_text: 'Oops, nothing found!' },
+        '.chosen-select-width': { width: "95%" }
+    }
+    for (var selector in config) {
+        $(selector).chosen(config[selector]);
+    }
+    $(document).ready(function () {
+        $('select[name=RoleList]').multiselect({
+            buttonWidth: '100%'
+        });
+    });
+
+
+</script>
+<script>
     $(function () {
         var userAgent = navigator.userAgent.toLowerCase();
         // Figure out what browser is being used
@@ -159,78 +252,80 @@
         }
     });
 </script>
-	<script>
-    $("input[type='submit']").click(function () {
-        var $this = $(this);
-        $('input:hidden[name="hdncommand"]').val($this.val());
-    });
-	</script>
-@{
-var busineesrule = User.businessrules.Where(p => p.EntityName == "DefaultEntityPage").ToList();
-if ((busineesrule != null && busineesrule.Count > 0))
-{
-    <script>
-    $(document).ready(function () {
-        $.ajax({
-            async: false,
-            type: "GET",
-            url: "@Url.Action("GetLockBusinessRules", "DefaultEntityPage")",
-            data: $("form").serialize(),
-        success: function (data) {
-            if (data.length > 0) {
-                $(':input:not([readonly])', 'form').attr('disabled', 'disabled').attr('readonly', 'readonly').trigger("chosen:updated");
-                document.getElementById('ErrMsg').innerHTML = data + " Rules applied";
-            }
-        },
-        error: function (jqXHR, textStatus, errorThrown) {
-        }
-    });
-	$.ajax({
-            async: false,
-            type: "GET",
-            url: "@Url.Action("GetReadOnlyProperties", "DefaultEntityPage")",
-            data: $("form").serialize(),
-            success: function (data) {
-                for (var key in data) {
-                    $('#' + key).attr('disabled', 'disabled').attr('readonly', 'readonly').trigger("chosen:updated");
-                }
-            },
-            error: function (jqXHR, textStatus, errorThrown) {
-            }
-        });
-    });
-</script>
 <script>
-    $("form").submit(function () {
-            var flag = true;
-            $.ajax({
-                async: false,
-                type: "GET",
-                url: "@Url.Action("GetMandatoryProperties", "DefaultEntityPage")",
-                data: $(this).serialize(),
-                success: function (data) {
-				 document.getElementById('ErrMsg').innerHTML = "";
-						 $('[businessrule="mandatory"]').each(function () {
-                                $(this).removeAttr('required');
-                            });
-                         for (var key in data) {
-                             if ($.trim($('#' + key).val()).length == 0) {
-                                 $('#' + key).attr('required', 'required');
-								  $('#' + key).attr('businessrule', 'mandatory');
-                                 flag = false;
-                                 document.getElementById('ErrMsg').innerHTML += data[key] + " is Mandatory.<br/>";
-                             }
-                         }
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                }
-            });
-			 if (flag)
-                    $("form").find(':input').removeAttr('disabled');
-            return flag;
-    });
+
+    function Add(e, obj) {
+        var selectedval = ($("#PageType").val());
+        $('input:hidden[name="hdncommand"]').val($(obj).val());
+        //
+        SaveDefaultPage(e, selectedval, $("#DefaultUrl"), $("#PageUrl"), $("#Other"), $("#Favorites"), $("#DirectUrl"), $("#EntityName"), $("#RoleList"), $("#Roles"));
+        //
+    }
 </script>
+@{
+    var busineesrule = User.businessrules.Where(p => p.EntityName == "DefaultEntityPage").ToList();
+    if ((busineesrule != null && busineesrule.Count > 0))
+    {
+        <script>
+            $(document).ready(function () {
+                $.ajax({
+                    async: false,
+                    type: "GET",
+                    url: "@Url.Action("GetLockBusinessRules", "DefaultEntityPage")",
+                    data: $("form").serialize(),
+                    success: function (data) {
+                        if (data.length > 0) {
+                            $(':input:not([readonly])', 'form').attr('disabled', 'disabled').attr('readonly', 'readonly').trigger("chosen:updated");
+                            document.getElementById('ErrMsg').innerHTML = data + " Rules applied";
+                        }
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                    }
+                });
+                $.ajax({
+                    async: false,
+                    type: "GET",
+                    url: "@Url.Action("GetReadOnlyProperties", "DefaultEntityPage")",
+                    data: $("form").serialize(),
+                    success: function (data) {
+                        for (var key in data) {
+                            $('#' + key).attr('disabled', 'disabled').attr('readonly', 'readonly').trigger("chosen:updated");
+                        }
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                    }
+                });
+            });
+        </script>
+        <script>
+            $("form").submit(function () {
+                var flag = true;
+                $.ajax({
+                    async: false,
+                    type: "GET",
+                    url: "@Url.Action("GetMandatoryProperties", "DefaultEntityPage")",
+                    data: $(this).serialize(),
+                    success: function (data) {
+                        document.getElementById('ErrMsg').innerHTML = "";
+                        $('[businessrule="mandatory"]').each(function () {
+                            $(this).removeAttr('required');
+                        });
+                        for (var key in data) {
+                            if ($.trim($('#' + key).val()).length == 0) {
+                                $('#' + key).attr('required', 'required');
+                                $('#' + key).attr('businessrule', 'mandatory');
+                                flag = false;
+                                document.getElementById('ErrMsg').innerHTML += data[key] + " is Mandatory.<br/>";
+                            }
+                        }
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                    }
+                });
+                if (flag)
+                    $("form").find(':input').removeAttr('disabled');
+                return flag;
+            });
+        </script>
+    }
 }
-}
-
-

@@ -53,6 +53,7 @@ namespace GeneratorBase.MVC.Controllers
                 }
                 _Condition = _Condition.Where(p => p.RuleConditionsID == hostid);
             }
+            _Condition = _Condition.OrderBy(p=>p.Id);
             if (!(RenderPartial == null ? false : RenderPartial.Value) && !Request.IsAjaxRequest())
                 return View(_Condition.ToPagedList(pageNumber, pageSize));
             else

@@ -3,6 +3,106 @@
 @{
     ViewBag.Title = "View Business Rule";
 }
+@functions {
+    object getHtmlAttributes(string Property)
+    {
+        if (User.CanEdit("BusinessRule", Property))
+        {
+            return new { @class = "form-control" };
+        } return new { @class = "form-control", @readonly = "readonly" };
+    }
+}
+<script>
+    function RepeatTypeChange() {
+        // value = $("#t_schedulertask.T_AssociatedRecurringScheduleDetailsTypeID:checked").val();
+        var $obj = $('input:radio[name="t_schedulertask.T_AssociatedRecurringScheduleDetailsTypeID"]:checked');
+        var value = $obj.val();
+        var text = $obj.next('span:first').html();
+        //alert(text);
+        $("#RepeatOnWeekly").hide();
+        $("#dvT_RepeatByID").hide();
+        if (text == "Weekly") {
+            $("#RepeatOnWeekly").show();
+        }
+        if (text == "Monthly") {
+            $("#dvT_RepeatByID").show();
+        }
+    }
+    function ChangeScheduleType() {
+        var $obj = $('input:radio[name="t_schedulertask.T_AssociatedScheduleTypeID"]:checked');
+        var SelectedVal = $obj.val();
+        var text = $obj.next('span:first').html()
+        $("#dvRepeat").hide();
+        if (text == "Repeat") {
+            $("#dvRepeat").show();
+            RepeatTypeChange();
+            ChangeEndType();
+        }
+    }
+    function ChangeEndType() {
+        var $obj = $('input:radio[name="t_schedulertask.T_RecurringTaskEndTypeID"]:checked');
+        var SelectedVal = $obj.val();
+        var text = $obj.next('span:first').html()
+        $("#dvT_EndDate").hide();
+        $("#dvT_OccurrenceLimitCount").hide();
+
+        if (text == "After Specified Occurrences") {
+            $("#dvT_OccurrenceLimitCount").show();
+        }
+        if (text == "On Specified Date") {
+            $("#dvT_EndDate").show();
+        }
+    }
+</script>
+<script type="text/javascript" language="javascript">
+    $(document).ready(function () {
+        var ruleType = $('#AssociatedBusinessRuleTypeID').val();
+        if (ruleType == "4") {
+            $('#OnUpdate').attr('checked', false);
+            $('#OnAdd').attr('checked', false);
+            $('#OnPropertyChange').attr('checked', true);
+        }
+        else if (ruleType == "3") {
+            $('#OnUpdate').attr('checked', true);
+            $('#OnAdd').attr('checked', true);
+            $('#OnPropertyChange').attr('checked', false);
+        }
+        else if (ruleType == "2") {
+            $('#OnUpdate').attr('checked', true);
+            $('#OnAdd').attr('checked', false);
+            $('#OnPropertyChange').attr('checked', false);
+        }
+        else if (ruleType == "1") {
+            $('#OnUpdate').attr('checked', false);
+            $('#OnAdd').attr('checked', true);
+            $('#OnPropertyChange').attr('checked', false);
+        }
+        else if (ruleType == "5") {
+            $('#OnUpdate').attr('checked', true);
+            $('#OnAdd').attr('checked', true);
+            $('#Scheduled').attr('checked', true);
+            $('#Scheduled').trigger("change");
+            $('#ScheduledDateTimeStart').val('@ViewData["ScheduledDateTimeStart"]');
+            $('#ScheduledDateTimeEnd').val('@ViewData["ScheduledDateTimeEnd"]');
+            $('#ScheduledDailyTime').val('@ViewData["ScheduledDailyTime"]');
+            $("#ScheduleCalendar").show();
+            ChangeScheduleType();
+        }
+        else if (ruleType == "6") {
+            $('#OnUpdate').attr('checked', false);
+            $('#OnAdd').attr('checked', false);
+            $('#OnPropertyChange').attr('checked', false);
+            $('#Scheduled').attr('checked', false);
+            $('#BeforeSave').attr('checked', true);
+        }
+        if ($('#idAlways').length == 1)
+            $('#chkAlways').prop('checked', true);
+        else
+            $('#chkAlways').prop('checked', false);
+        $('#chkAlways').checked = false;
+    });
+</script>
+
 <div class="row">
     <div class="col-lg-12">
         <h1 class="page-title">
@@ -21,122 +121,492 @@
     </div>
     <!-- /.col-lg-12 -->
 </div>
-<div class="tabbable responsive">
-    <ul class="nav nav-tabs">
-        <li class="active"><a href="#Details" data-toggle="tab">Details</a></li>
-        <li @(!User.CanView("Condition") ? "style=display:none;" : "")><a href="#RuleConditions" data-toggle="tab">Conditions</a></li>
-        <li @(!User.CanView("RuleAction") ? "style=display:none;" : "")><a href="#RuleAction" data-toggle="tab">Actions</a></li>
-        <li @(!User.CanView("JournalEntry") ? "style=display:none;" : "")><a href="#JournalEntryToBusinessRuleRelation" data-toggle="tab">Business Rule Journal</a></li>
-    </ul>
-    <div class="tab-content">
-        <div class="tab-pane fade in active" id="Details">
-            <div class="panel panel-default AppForm">
-                <div class="panel-body">
-                    <div class="row">
-                        <div class="col-sm-12 col-md-12 col-xs-12">
-                            <div class="row">
-                                @if (User.CanView("BusinessRule", "RuleName"))
-                                {
-                                    <div class='col-sm-6'>
-                                        <div class='form-group'>
-                                            <label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.RuleName)</label>
-                                            <div class="input-group col-sm-7 col-md-7 col-xs-12">
-                                                <p class="viewlabel">@Model.RuleName</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                }
-                                @if (User.CanView("BusinessRule", "EntityName"))
-                                {
-                                    <div class='col-sm-6'>
-                                        <div class='form-group'>
-                                            <label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.EntityName)</label>
-                                            <div class="input-group col-sm-7 col-md-7 col-xs-12">
-                                                <p class="viewlabel">@Model.EntityName</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                }
-                                @if (User.CanView("BusinessRule", "Roles"))
-                                {
-                                    <div class='col-sm-6'>
-                                        <div class='form-group'>
-                                            <label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.Roles)</label>
-                                            <div class="input-group col-sm-7 col-md-7 col-xs-12">
-                                                <p class="viewlabel">@Model.Roles</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                }
-                                @if (User.CanView("BusinessRule", "DateCreated1"))
-                                {
-                                    <div class='col-sm-6'>
-                                        <div class='form-group'>
-                                            <label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.DateCreated1)</label>
-                                            <div class="input-group col-sm-7 col-md-7 col-xs-12">
-                                                <p class="viewlabel">@Model.DateCreated1</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                }
-                                @if (User.CanView("BusinessRule", "AssociatedBusinessRuleTypeID"))
-                                {
-                                    <div class='col-sm-6'>
-                                        <div class='form-group'>
-                                            <label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.AssociatedBusinessRuleTypeID)</label>
-                                            <div class="input-group col-sm-7 col-md-7 col-xs-12">
-                                                @if (@Model.AssociatedBusinessRuleTypeID == 0 || @Model.AssociatedBusinessRuleTypeID == null || @Model.associatedbusinessruletype == null)
-                                                {
-                                                    <p class="viewlabel"></p>
-                                                }
-                                                else
-                                                {
-                                                    <p class="viewlabel">@Model.associatedbusinessruletype.DisplayValue</p>
-                                                }
-                                            </div>
-                                        </div>
-                                    </div>
-                                }
-                                @if (User.CanView("BusinessRule", "EntitySubscribe"))
-                                {
-                                    <div class='col-sm-6'>
-                                        <div class='form-group'>
-                                            <label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.EntitySubscribe)</label>
-                                            <div class="input-group col-sm-7 col-md-7 col-xs-12">
-                                                <p class="viewlabel">@Model.EntitySubscribe</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                }
-                            </div>
+<div class="panel-group" id="accordion">
+    @*Business Rule trip*@
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h4 class="panel-title" style="float:none;">
+                <a data-toggle="collapse" data-parent="#accordion" href="#BusinessRule">Business Rule</a>
+            </h4>
+        </div>
+        <div id="BusinessRule" class="panel-collapse collapse in">
+            <div class="panel-body">
+                @*tabs start*@
+                <div class="tabbable responsive">
+                    <ul class="nav nav-tabs">
+                        <li class="active"><a href="#Details" data-toggle="tab">Details</a></li>
+                        @if (Model.AssociatedBusinessRuleTypeID == 5)
+                        {
+                            <li><a href="#TaskHistory" data-toggle="tab">Task History</a></li>
+                        }
+                        <li @(!User.CanView("JournalEntry") ? "style=display:none;" : "")><a href="#JournalEntryToBusinessRuleRelation" data-toggle="tab">Business Rule Journal</a></li>
+                    </ul>
+                    <div class="tab-content">
+                        @*details tab*@
+                        <div class="tab-pane fade in active" id="Details">
+                            @using (Html.BeginForm("Edit", "BusinessRule", new { UrlReferrer = Convert.ToString(ViewData["BusinessRuleParentUrl"]) }, FormMethod.Post, new { enctype = "multipart/form-data" }))
+                            {
+                                @Html.AntiForgeryToken();
+                                                        Html.ValidationSummary(true);
+                                                        Html.EnableClientValidation();
+                                                        <div class="col-md-12 col-sm-12 col-xs-12" style="padding:0px; margin:0px; margin-bottom:10px;">
+                                                            <div class="panel panel-default">
+                                                                <div class="panel-heading clearfix">
+                                                                    <i class="fam-script-lightning pull-left"></i>
+                                                                    <h3 style="padding-left:10px;" class="panel-title">Rule Details</h3>
+                                                                </div>
+
+
+
+                                                                <div class="panel-body">
+                                                                    <div class="row">
+                                                                        @if (User.CanView("BusinessRule", "RuleName"))
+                                                                        {
+                                                                            <div class="col-sm-12 col-md-12 col-xs-12">
+                                                                                <div class='form-group'>
+                                                                                    <label class="col-sm-2 col-md-2 col-xs-12">@Html.LabelFor(model => model.RuleName) </label>
+                                                                                    <div class="input-group col-sm-10 col-md-10 col-xs-12">
+                                                                                        @Html.TextBoxFor(model => model.RuleName, new { @class = "form-control", @disabled = "disabled" })
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        }
+                                                                        else
+                                                                        { @Html.HiddenFor(model => model.RuleName, new { @class = "form-control" })}
+                                                                        @if (User.CanView("BusinessRule", "Description"))
+                                                                        {
+                                                                            <div class="col-sm-12 col-md-12 col-xs-12">
+                                                                                <div class='form-group'>
+                                                                                    <label class="col-sm-2 col-md-2 col-xs-12">@Html.LabelFor(model => model.Description)  </label>
+                                                                                    <div class="input-group col-sm-10 col-md-10 col-xs-12">
+                                                                                        @Html.TextAreaFor(model => model.Description, new { @class = "form-control", @disabled = "disabled" })
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        }
+                                                                        else
+                                                                        { @Html.HiddenFor(model => model.Description, new { @class = "form-control" })}
+                                                                    </div>
+                                                                </div>
+
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-12 col-sm-12 col-xs-12" style="margin-bottom: 10px;">
+                                                                <div class="panel panel-default">
+                                                                    <div class="panel-heading clearfix">
+                                                                        <i class="fam-script-lightning pull-left"></i>
+                                                                        <h3 style="padding-left:10px;" class="panel-title">Define Entity and Roles </h3>
+                                                                    </div>
+
+                                                                    <div class="panel-body">
+                                                                        <div class="row">
+                                                                            @if (User.CanView("BusinessRule", "EntityName"))
+                                                                            {
+                                                                                <div class="col-sm-6 col-md-6 col-xs-12" style="padding-left:22px;">
+                                                                                    <div class='form-group'>
+                                                                                        <label class="col-sm-4 col-md-4 col-xs-12">@Html.LabelFor(model => model.EntityName) </label>
+                                                                                        <div class="input-group col-sm-8 col-md-8 col-xs-12">
+                                                                                            @Html.TextBoxFor(model => model.EntityName, new { @class = "form-control", @disabled = "disabled" })
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            }
+                                                                            else
+                                                                            { @Html.HiddenFor(model => model.EntityName, new { @class = "form-control" })}
+                                                                            @if (User.CanView("BusinessRule", "Roles"))
+                                                                            {
+                                                                                <div class="col-sm-6 col-md-6 col-xs-12">
+                                                                                    <div class='form-group'>
+                                                                                        <label class="col-sm-4 col-md-4 col-xs-12">Apply to roles</label>
+                                                                                        <div class="input-group col-sm-8 col-md-8 col-xs-12" id="dvRole" name="dvRoles">
+                                                                                            @Html.TextBoxFor(model => model.Roles, new { @class = "form-control", @disabled = "disabled" })
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="col-sm-6 col-md-6 col-xs-12" style="padding-left:22px;">
+                                                                                    <div class='form-group'>
+                                                                                        <label class="col-sm-4 col-md-4 col-xs-12">Disable Rule </label>
+                                                                                        <div class="input-group col-sm-8 col-md-8 col-xs-12">
+                                                                                            @Html.CheckBoxFor(model => model.Disable)
+                                                                                            @Html.ValidationMessageFor(model => model.Disable)
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="col-sm-6 col-md-6 col-xs-12">
+                                                                                    <div class='form-group'>
+                                                                                        <label class="col-sm-4 col-md-4 col-xs-12">Freeze Rule </label>
+                                                                                        <div class="input-group col-sm-8 col-md-8 col-xs-12">
+                                                                                            @Html.CheckBoxFor(model => model.Freeze)
+                                                                                            @Html.ValidationMessageFor(model => model.Freeze)
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            }
+                                                                            else
+                                                                            { @Html.HiddenFor(model => model.Roles, new { @class = "form-control" })}
+
+                                                                        </div>
+                                                                    </div>
+
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-12 col-sm-12 col-xs-12" style="margin-bottom: 10px;">
+                                                                <div class="panel panel-default">
+                                                                    <div class="panel-heading clearfix">
+                                                                        <i class="fam-script-lightning pull-left"></i>
+                                                                        <h3 style="padding-left:10px;" class="panel-title">When to evaluate?</h3>
+                                                                    </div>
+
+                                                                    <div class="panel-body">
+                                                                        <div class="row">
+                                                                            @if (User.CanView("BusinessRule", "AssociatedBusinessRuleTypeID"))
+                                                                            {
+                                                                                <div class="col-sm-10 col-md-12 col-xs-12" style="padding-left:10px; margin-top:10px; ">
+                                                                                    <label class="col-sm-2"></label>
+                                                                                    <div class='form-group'>
+                                                                                        @*<label class="col-sm-5 col-md-5 col-xs-12">When to apply?</label>*@
+                                                                                        <div style="margin-top:-5px;">
+
+                                                                                            @Html.DropDownList("AssociatedBusinessRuleTypeID", null, new { @class = "form-control hidden" })
+
+                                                                                            @foreach (var person in ViewBag.AssociatedBusinessRuleTypeID)
+                                                                                            {
+                                                                                                if (person.Value == "1" || person.Value == "2" || person.Value == "4" || person.Value == "5" || person.Value == "6")
+                                                                                                {
+                                                                                                    <input type="checkbox" name="@person.Text" value="@person.Value" id="@person.Text" class="tcheckbox" />
+                                                                                                    <label>
+                                                                                                        @person.Text
+                                                                                                    </label>
+                                                                                                }
+                                                                                            }
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div id="ScheduleCalendar" style="display:none;">
+                                                                                        <div class="row">
+                                                                                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                                                                                <div class="panel panel-default">
+                                                                                                    <div class="panel-heading clearfix">
+                                                                                                        <i class="icon-calendar"></i>
+
+                                                                                                        <h3 class="panel-title">Basic Details</h3>
+                                                                                                    </div>
+                                                                                                    <div class="panel-body">
+                                                                                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_Name">
+                                                                                                            <div class='form-group' title="Name">
+                                                                                                                <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.t_schedulertask.T_Name) <span class="text-danger-reg">*</span></label>
+                                                                                                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+
+                                                                                                                    @Html.TextBoxFor(model => model.t_schedulertask.T_Name, new { @class = "form-control" })
+                                                                                                                    @Html.ValidationMessageFor(model => model.t_schedulertask.T_Name)
+                                                                                                                </div>
+                                                                                                            </div>
+                                                                                                        </div>
+
+
+
+
+                                                                                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_Description">
+                                                                                                            <div class='form-group' title="Description">
+                                                                                                                <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.t_schedulertask.T_Description) </label>
+                                                                                                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                                                                                    @Html.TextAreaFor(model => model.t_schedulertask.T_Description, new { @class = "form-control" })
+                                                                                                                    @Html.ValidationMessageFor(model => model.t_schedulertask.T_Description)
+                                                                                                                </div>
+                                                                                                            </div>
+                                                                                                        </div>
+
+                                                                                                        <div class='col-sm-6 col-md-6  col-xs-12' id="dvT_AssociatedScheduleTypeID" style="min-height:35px;">
+                                                                                                            <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.t_schedulertask.T_AssociatedScheduleTypeID)  <span class="text-danger-reg">*</span></label>
+                                                                                                            <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                                                                                <div class="input-group radiocontainer">
+                                                                                                                    @Html.RadioButtonListFor(model => model.t_schedulertask.T_AssociatedScheduleTypeID, (SelectList)ViewBag.T_AssociatedScheduleTypeID, new { @onclick = "ChangeScheduleType();", @required = "required", @dataurl = Url.Action("GetAllValueForRB", "T_Scheduletype", new { caller = "T_AssociatedScheduleTypeID" }) })
+                                                                                                                    @Html.ValidationMessageFor(model => model.t_schedulertask.T_AssociatedScheduleTypeID)
+                                                                                                                </div>
+                                                                                                            </div>
+                                                                                                        </div>
+
+
+                                                                                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_StartDateTime">
+                                                                                                            <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.t_schedulertask.T_StartDateTime) <span class="text-danger-reg">*</span></label>
+                                                                                                            <div class="form-group" title="Start Date Time">
+                                                                                                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                                                                                    <div class="input-group date" id="datetimepickerT_StartDateTime">
+                                                                                                                        @Html.TextBoxFor(model => model.t_schedulertask.T_StartDateTime, "{0:MM/dd/yyyy hh:mm tt}", new { @class = "form-control", @format = "MM/DD/YYYY hh:mm" })
+                                                                                                                        <span class="input-group-addon btn-default calendar">
+                                                                                                                            <i class="fa fa-calendar"></i>
+                                                                                                                        </span>
+                                                                                                                    </div>
+                                                                                                                    @Html.ValidationMessageFor(model => model.t_schedulertask.T_StartDateTime)
+                                                                                                                </div>
+                                                                                                            </div>
+                                                                                                            <script type="text/javascript">
+                                                                                                                $(function () {
+                                                                                                                    $('#datetimepickert_schedulertask_T_StartDateTime').datetimepicker({});
+                                                                                                                    $('#t_schedulertask_T_StartDateTime').datetimepicker({});
+                                                                                                                });
+                                                                                                            </script>
+                                                                                                        </div>
+
+
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                        <div class="row" id="dvRepeat" style="display:none;">
+                                                                                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                                                                                <div class="panel panel-default">
+                                                                                                    <div class="panel-heading clearfix">
+                                                                                                        <i class="icon-calendar"></i>
+
+                                                                                                        <h3 class="panel-title">Recurrence Detail</h3>
+                                                                                                    </div>
+                                                                                                    <div class="panel-body">
+
+                                                                                                        <div class='col-sm-6 col-md-6  col-xs-12' id="dvT_AssociatedRecurringScheduleDetailsTypeID" style="min-height:35px;">
+                                                                                                            <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.t_schedulertask.T_AssociatedRecurringScheduleDetailsTypeID)  </label>
+                                                                                                            <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                                                                                <div class="input-group radiocontainer">
+                                                                                                                    @Html.RadioButtonListFor(model => model.t_schedulertask.T_AssociatedRecurringScheduleDetailsTypeID, (SelectList)ViewBag.T_AssociatedRecurringScheduleDetailsTypeID, new { @onchange = "RepeatTypeChange();", @dataurl = Url.Action("GetAllValueForRB", "T_RecurringScheduleDetailstype", new { caller = "T_AssociatedRecurringScheduleDetailsTypeID" }) })
+                                                                                                                    @Html.ValidationMessageFor(model => model.t_schedulertask.T_AssociatedRecurringScheduleDetailsTypeID)
+                                                                                                                </div>
+                                                                                                            </div>
+                                                                                                        </div>
+
+
+                                                                                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_RecurringRepeatFrequencyID">
+                                                                                                            <div class='form-group'>
+                                                                                                                <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.t_schedulertask.T_RecurringRepeatFrequencyID) </label>
+                                                                                                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                                                                                    <div class="input-group" style="width:100%;">
+                                                                                                                        @Html.DropDownListFor(model => model.t_schedulertask.T_RecurringRepeatFrequencyID, (SelectList)ViewBag.T_RecurringRepeatFrequencyID, "--Select--", new { @class = "chosen-select form-control", @HostingName = "T_RecurringFrequency", @dataurl = Url.Action("GetAllValue", "T_RecurringFrequency", new { caller = "T_RecurringRepeatFrequencyID" }) })
+                                                                                                                        @*@Html.DropDownList("T_RecurringRepeatFrequencyID", null, "-- Select --", new { @class = "chosen-select form-control", @HostingName = "T_RecurringFrequency", @dataurl = Url.Action("GetAllValue", "T_RecurringFrequency", new { caller = "T_RecurringRepeatFrequencyID" }) })*@
+                                                                                                                        @Html.ValidationMessageFor(model => model.t_schedulertask.T_RecurringRepeatFrequencyID)
+
+                                                                                                                    </div>
+                                                                                                                </div>
+                                                                                                            </div>
+                                                                                                        </div>
+                                                                                                        <div class='col-sm-6 col-md-6  col-xs-12' id="RepeatOnWeekly" style="display:none;">
+                                                                                                            <label class="col-sm-5 col-md-5 col-xs-12"> Repeat On</label>
+                                                                                                            <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                                                                                <div class="input-group" style="width:100%;">
+
+                                                                                                                    @Html.DropDownListFor(model => model.t_schedulertask.SelectedT_RecurrenceDays_T_RepeatOn, (MultiSelectList)ViewBag.SelectedT_RecurrenceDays_T_RepeatOn, new { @multiple = "multiple", @HostingName = "T_RecurrenceDays", @dataurl = Url.Action("GetAllMultiSelectValue", "T_RecurrenceDays", null) })
+                                                                                                                    @*@Html.DropDownList("SelectedT_RecurrenceDays_T_RepeatOn", null, new { @multiple = "multiple", @HostingName = "T_RecurrenceDays", @dataurl = Url.Action("GetAllMultiSelectValue", "T_RecurrenceDays", null) })*@
+                                                                                                                </div>
+                                                                                                            </div>
+                                                                                                        </div>
+
+                                                                                                        <div class='col-sm-6 col-md-6  col-xs-12' id="dvT_RepeatByID" style="min-height:35px;display:none;">
+                                                                                                            <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.t_schedulertask.T_RepeatByID)  </label>
+                                                                                                            <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                                                                                <div class="input-group radiocontainer">
+                                                                                                                    @Html.RadioButtonListFor(model => model.t_schedulertask.T_RepeatByID, (SelectList)ViewBag.T_RepeatByID, new { @dataurl = Url.Action("GetAllValueForRB", "T_MonthlyRepeatType", new { caller = "T_RepeatByID" }) })
+                                                                                                                    @Html.ValidationMessageFor(model => model.t_schedulertask.T_RepeatByID)
+                                                                                                                </div>
+                                                                                                            </div>
+                                                                                                        </div>
+
+                                                                                                        <div class="clearfix"></div>
+
+                                                                                                        <div class='col-sm-6 col-md-6  col-xs-12' id="dvT_RecurringTaskEndTypeID" style="min-height:35px;">
+                                                                                                            <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.t_schedulertask.T_RecurringTaskEndTypeID)  </label>
+                                                                                                            <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                                                                                <div class="input-group radiocontainer">
+                                                                                                                    @Html.RadioButtonListFor(model => model.t_schedulertask.T_RecurringTaskEndTypeID, (SelectList)ViewBag.T_RecurringTaskEndTypeID, new { @onclick = "ChangeEndType()", @dataurl = Url.Action("GetAllValueForRB", "T_RecurringEndType", new { caller = "T_RecurringTaskEndTypeID" }) })
+                                                                                                                    @Html.ValidationMessageFor(model => model.t_schedulertask.T_RecurringTaskEndTypeID)
+                                                                                                                </div>
+                                                                                                            </div>
+                                                                                                        </div>
+
+
+                                                                                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_EndDate">
+                                                                                                            <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.t_schedulertask.T_EndDate) </label>
+                                                                                                            <div class="form-group" title="End Date">
+                                                                                                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                                                                                    <div class="input-group date" id="datetimepickerT_EndDate">
+                                                                                                                        @Html.TextBoxFor(model => model.t_schedulertask.T_EndDate, new { @class = "form-control" })
+                                                                                                                        <span class="input-group-addon btn-default calendar">
+                                                                                                                            <i class="fa fa-calendar"></i>
+                                                                                                                        </span>
+                                                                                                                    </div>
+                                                                                                                    @Html.ValidationMessageFor(model => model.t_schedulertask.T_EndDate)
+                                                                                                                </div>
+                                                                                                            </div>
+                                                                                                            <script type="text/javascript">
+                                                                                                                $(function () {
+                                                                                                                    $('#datetimepickerT_EndDate').datetimepicker({ pickTime: false });
+                                                                                                                    $('#T_EndDate').datetimepicker({ pickTime: false });
+                                                                                                                });
+                                                                                                            </script>
+                                                                                                        </div>
+
+
+                                                                                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_OccurrenceLimitCount">
+                                                                                                            <div class='form-group' title="Occurrence Limit Count">
+                                                                                                                <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.t_schedulertask.T_OccurrenceLimitCount) </label>
+                                                                                                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+
+                                                                                                                    @Html.TextBoxFor(model => model.t_schedulertask.T_OccurrenceLimitCount, new { @class = "form-control" })
+                                                                                                                    @Html.ValidationMessageFor(model => model.t_schedulertask.T_OccurrenceLimitCount)
+                                                                                                                </div>
+                                                                                                            </div>
+                                                                                                        </div>
+
+
+
+
+                                                                                                        @*<div class='col-sm-6 col-md-6 col-xs-12' id="dvT_Summary">
+                                                                                                                <div class='form-group' title="Summary">
+                                                                                                                    <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.t_schedulertask.T_Summary) </label>
+                                                                                                                    <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                                                                                        @Html.TextAreaFor(model => model.t_schedulertask.T_Summary, new { @class = "form-control" })
+                                                                                                                        @Html.ValidationMessageFor(model => model.t_schedulertask.T_Summary)
+                                                                                                                    </div>
+                                                                                                                </div>
+                                                                                                            </div>*@
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </div>
+
+
+
+
+
+
+
+                                                                                    </div>
+
+
+
+                                                                                </div>
+                                                                            }
+                                                                            else
+                                                                            { @Html.HiddenFor(model => model.AssociatedBusinessRuleTypeID, new { @class = "form-control" })}
+                                                                        </div>
+                                                                    </div>
+
+                                                                </div>
+                                                            </div>
+
+                                                        </div>
+
+                                                        <div class="row">
+                                                            <div class="col-md-12 col-sm-12 col-xs-12" style="margin-bottom: 10px;">
+                                                                <div class="panel panel-default">
+                                                                    <div class="panel-heading clearfix">
+                                                                        <i class="fam-script-lightning pull-left"></i>
+                                                                        <h3 style="padding-left:10px;" class="panel-title">Define condition to apply rule</h3>
+                                                                    </div>
+                                                                    <div id="rulecondition">
+                                                                        <div class="panel-body">
+                                                                            <div class="row">
+                                                                                <div class="col-sm-12 col-md-12 col-xs-12">
+                                                                                    <div class='form-group'>
+                                                                                        <label class="col-sm-2 col-md-2 col-xs-12">Always </label>
+                                                                                        <div class="input-group col-sm-10 col-md-10 col-xs-12">
+                                                                                            <input type="checkbox" name="Always" value="Always" id="chkAlways" />
+                                                                                            <label>  (Action will always execute and will not require any condition.)</label>
+                                                                                        </div>
+
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div id="Des_Table" style="padding-top:5px;" class="table-responsive" style="overflow-x:auto;">
+                                                                        @if (User.Identity.IsAuthenticated && User != null && User.CanView("Condition"))
+                                                                        {
+                                                                            Html.RenderAction("Index", "Condition", new { RenderPartial = true, HostingEntity = "BusinessRule", HostingEntityID = @Model.Id, AssociatedType = "RuleConditions" });
+                                                                        }
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        @*Action trip*@
+                                                        <div class="row">
+                                                            <div class="col-md-12 col-sm-12 col-xs-12" style="margin-bottom: 10px;">
+                                                                <div class="panel panel-default">
+                                                                    <div class="panel-heading clearfix">
+                                                                        <i class="fam-lightbulb pull-left"></i>
+                                                                        <h3 style="padding-left:10px;" class="panel-title"><label class="alert-warning">Define Actions</label></h3>
+                                                                    </div>
+
+                                                                    <div id="Des_Table" style="padding-top:5px;" class="table-responsive" style="overflow-x:auto;">
+                                                                        @if (User.Identity.IsAuthenticated && User != null && User.CanView("RuleAction"))
+                                                                        {
+                                                                            Html.RenderAction("Index", "RuleAction", new { RenderPartial = true, HostingEntity = "BusinessRule", HostingEntityID = @Model.Id, AssociatedType = "RuleAction", EntityNameRuleAction = ViewBag.EntityNameRuleAction });
+                                                                        }
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        @*DisplayMessage For Rules*@
+                                                        <div class="row">
+                                                            <div class="col-md-12 col-sm-12 col-xs-12 ">
+                                                                <div class="panel panel-default AppForm">
+                                                                    <div class="panel-heading clearfix">
+                                                                        <i class="fam-script-lightning pull-left"></i>
+                                                                        <h3 style="padding-left:10px;" class="panel-title">Define Messages</h3>
+                                                                    </div>
+                                                                    <div class="panel-body">
+                                                                        <div class="col-sm-12 col-md-12 col-xs-12 hidden">
+                                                                            <div class='form-group'>
+                                                                                <label class="col-sm-2 col-md-2 col-xs-12">Information Message</label>
+                                                                                <div class="input-group col-sm-10 col-md-10 col-xs-12">
+                                                                                    @Html.TextBoxFor(model => model.InformationMessage, new { @class = "form-control", @disabled = "disabled" })
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-sm-12 col-md-12 col-xs-12">
+                                                                            <div class='form-group'>
+                                                                                <label class="col-sm-2 col-md-2 col-xs-12">Custom Message</label>
+                                                                                <div class="input-group col-sm-10 col-md-10 col-xs-12">
+                                                                                    @Html.TextBoxFor(model => model.FailureMessage, new { @class = "form-control", @disabled = "disabled" })
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                            }
                         </div>
+                        @*Journal tab*@
+                        <div class="tab-pane fade in" id="JournalEntryToBusinessRuleRelation">
+                            @{Html.RenderAction("Index", "JournalEntry", new { RenderPartial = true, HostingEntity = "BusinessRule", HostingEntityID = @Model.Id, AssociatedType = "JournalEntry" });}
+                        </div>
+                        <div class="tab-pane fade in" id="TaskHistory">
+                            @{Html.RenderAction("TaskHistory", "BusinessRule", new { RenderPartial = true, HostingEntity = "BusinessRule", HostingEntityID = @Model.Id });}
+                        </div>
+
                     </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col-md-12 col-sm-12 col-xs-12">
-                    @Html.ActionLink("Back to List", "Index", null, new { @class = "btn btn-default btn-sm" })
-                    @if (User.Identity.IsAuthenticated && User != null && User.CanEdit("BusinessRule"))
-                    {
-                        @Html.ActionLink("Edit", "Edit", new { id = Model.Id }, new { @class = "btn btn-primary btn-sm" })
-                    }
-                </div>
+                @*tabs end*@
             </div>
         </div>
-        <div class="tab-pane fade in" id="JournalEntryToBusinessRuleRelation">
-            @{Html.RenderAction("Index", "JournalEntry", new { RenderPartial = true, HostingEntity = "BusinessRule", HostingEntityID = @Model.Id, AssociatedType = "JournalEntry" });}
-        </div>
-        <div class="tab-pane fade in" id="RuleConditions">
-            @if (User.Identity.IsAuthenticated && User != null && User.CanView("Condition"))
+        @*Business Rule Journal trip*@
+    </div>
+    <div class="row" style="margin-top:10px;">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            @Html.ActionLink("Back to List", "Index", null, new { @class = "btn btn-default btn-sm" })
+            @if (User.Identity.IsAuthenticated && User != null && User.CanEdit("BusinessRule") && !Model.Freeze)
             {
-                Html.RenderAction("Index", "Condition", new { RenderPartial = true, HostingEntity = "BusinessRule", HostingEntityID = @Model.Id, AssociatedType = "RuleConditions" });
+                @Html.ActionLink("Edit", "Edit", new { id = Model.Id }, new { @class = "btn btn-primary btn-sm" })
             }
         </div>
-        <div class="tab-pane fade in" id="RuleAction">
-            @if (User.Identity.IsAuthenticated && User != null && User.CanView("RuleAction"))
-            {
-                Html.RenderAction("Index", "RuleAction", new { RenderPartial = true, HostingEntity = "BusinessRule", HostingEntityID = @Model.Id, AssociatedType = "RuleAction",EntityNameRuleAction=ViewBag.EntityNameRuleAction });
-            }
-        </div>
-    </div> <!-- /tab-content --><br />
+    </div>
+
 </div>
+<script>
+    $(document).ready(function () {
+        $("#ScheduleCalendar *").attr("disabled", "disabled").off('click');
+        $('select[multiple="multiple"]').each(function () {
+            $(this).multiselect({ buttonWidth: '100%' });
+        });
+    })
+</script>

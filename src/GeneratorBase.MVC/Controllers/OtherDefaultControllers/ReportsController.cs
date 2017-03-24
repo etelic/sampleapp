@@ -21,19 +21,24 @@ namespace GeneratorBase.MVC.Controllers
         public ActionResult ResultShow(string ReportName, string id)
         {
             ViewBag.Name = ReportName.Split('&')[0];
-            ViewBag.ReportName = ConfigurationManager.AppSettings["ReportFolder"] + "/" + ReportName;
+            int param = ReportName.Split('&').Length;
+            if (param == 1)
+                ViewBag.ReportName = ReportName;
+            else
+                ViewBag.ReportName = ConfigurationManager.AppSettings["ReportFolder"] + "/" + ReportName;
             return View();
         }
         public ActionResult Index(int? page, string searchString, int? itemsPerPage)
         {
+
             var items = new HashSet<CatalogItem>();
             int pageSize = 10;
             int pageNumber = (page ?? 1);
             try
             {
                 ReportingService2005 rs = new ReportingService2005();
-                rs.Credentials = new System.Net.NetworkCredential(CommonFunction.Instance.ReportUser(), CommonFunction.Instance.ReportPass(),CommonFunction.Instance.ReportPath());
-                var children = rs.ListChildren(CommonFunction.Instance.ReportFolder(), true); 
+                rs.Credentials = new System.Net.NetworkCredential(CommonFunction.Instance.ReportUser(), CommonFunction.Instance.ReportPass(), CommonFunction.Instance.ReportPath());
+                var children = rs.ListChildren(CommonFunction.Instance.ReportFolder(), true);
                 if (!String.IsNullOrEmpty(searchString))
                 {
                     var matches = children.Where(m => m.Type == ItemTypeEnum.Report && m.Hidden == false);
@@ -61,6 +66,7 @@ namespace GeneratorBase.MVC.Controllers
             var _Reports = items.OrderBy(o => o.Name);
             return View(_Reports.ToPagedList(pageNumber, pageSize));
         }
+       
     }
 }
 

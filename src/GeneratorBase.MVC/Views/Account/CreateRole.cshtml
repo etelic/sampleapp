@@ -51,43 +51,44 @@
     <div id="errorContainer" class="alert alert-danger" style="display: none">
         <div id="errors"></div>
     </div>
-    <div class="row">
-        <div class="col-md-12 col-sm-12 col-xs-12">
-            <div class="panel panel-default AppForm">
-                <div class="panel-body">
-                    <div class="row">
-                        <div class='col-sm-6'>
-                            <label>@Html.LabelFor(m => m.Name) <span class="text-danger-reg">*</span> </label>
-                                @Html.TextBoxFor(m => m.Name, new { @class = "form-control" })
-                        </div>
-                    </div>
-                </div>
+
+    <div class="container-page">
+        <div class="col-md-6" style="padding-left:0px;">
+            <p>To create a new role, enter the information in the form below.</p>
+
+            <div class="form-group col-lg-12">
+                <label>@Html.LabelFor(m => m.Name)  <span class="text-danger-reg">*</span></label>
+                @Html.TextBoxFor(m => m.Name, new { @class = "form-control" })
             </div>
+
+
+            <div class="form-group col-lg-12" style="padding-top:8px;">
+                <button type="button" class="btn btn-default btn-sm" data-dismiss="modal" aria-hidden="true">Cancel</button>
+                @if (User.CanAddAdminFeature("Role"))
+                {
+                    <input type="submit" class="btn btn-primary btn-sm" value="Create" onclick="return bindForm();" />
+                }
+            </div>
+
+
         </div>
+        <div class="col-md-6" style="display:none" >
+            <h4 class="dark-grey" style="margin-top:0px;">Some role related information</h4>
+            <p>
+                Lorem ipsum dolor sit amet, gravida nostra erat ante, suspendisse nec massa, sem suspendisse luctus, felis at, in ipsum lectus posuere.
+            </p>
+
+
+
+        </div>
+
+
+
     </div>
-    @*<div class="row">
-        <div class="col-md-12 col-sm-12 col-xs-12">
-            <div class="panel panel-default AppForm">
-                <div class="panel-body">
-                    <div class="row">
-                        <div class="col-md-12 col-sm-12 col-xs-12">
-                            <div class="row">
-                                <div class='col-sm-4'>
-                                    <div class='form-group'>
-                                        <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(m => m.Name) <span class="text-danger-reg">*</span> </label>
-                                        <div class="input-group col-sm-7 col-md-7 col-xs-12">
-                                            @Html.TextBoxFor(m => m.Name, new { @class = "form-control" })
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>*@
-    <button type="button" class="btn btn-default btn-sm" data-dismiss="modal" aria-hidden="true">Cancel</button>
-    <input type="submit" class="btn btn-primary btn-sm" value="Create" onclick="return bindForm();" />
+    <div style="clear:both;"></div>
+
+
+
+
 }
 

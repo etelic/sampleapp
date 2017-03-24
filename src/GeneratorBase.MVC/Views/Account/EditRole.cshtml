@@ -38,7 +38,10 @@
             </div>
         </div>
         @Html.ActionLink("Back to List", "RoleList", null, new { @class = "btn btn-default" })
-        <input type="submit" value="Save" class="btn btn-primary" />
+        if (User.CanEditAdminFeature("Role"))
+        {
+            <input type="submit" value="Save" class="btn btn-primary" />
+        }
     }
 </div>
 @section Scripts {

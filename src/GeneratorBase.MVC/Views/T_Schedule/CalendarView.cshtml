@@ -1,0 +1,127 @@
+﻿@model List<long>
+<div class="row">
+    <div class="col-md-12 col-sm-12 col-xs-12">
+        <div>
+            <script src="~/Scripts/moment.min.js"></script>
+            <script src="@Url.Content("~/Scripts/fullcalendar.js")" type="text/javascript"></script>
+            @Styles.Render("~/Content/fullcalendar.css")
+            <script>
+                $(document).ready(function () {
+                    $('#calendar').fullCalendar({
+                        header: {
+                            left: 'prev,next',
+                            center: 'title',
+                            right: 'month,agendaWeek,agendaDay,listWeek,listMonth,listYear'
+                        },
+                        allDaySlot: true,
+			            scrollTime:'09:00:00',
+                        defaultView: 'agendaWeek',
+                        defaultDate: $.datepicker.formatDate('yy/mm/dd', new Date()),
+                        data: "{}",
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        navLinks: true, // can click day/week names to navigate views
+                        editable: true,
+                        eventLimit: true, // allow "more" link when too many events
+                        events: function (start, end, timezone, callback) {
+                            $.ajax({
+                                url: '@Url.Action("getEvents", "T_Schedule", new { ids =string.Join(",",Model)})',
+                                type: "GET",
+                                async:false,
+                                success: function (jsonObj) {
+                                    var events = [];
+                                    for (i in jsonObj) {
+                                        if (jsonObj[i].StartTime != undefined) {
+                                            events.push({
+                                                title: jsonObj[i].Title,
+                                                start: Datechange(jsonObj[i].StartTime),
+                                                end: Datechange(jsonObj[i].EndTime),
+                                                tooltip: jsonObj[i].Title,
+                                                id: jsonObj[i].Id,
+                                                iscancelled: jsonObj[i].IsCancelled,
+                                                scheduleid: jsonObj[i].ScheduleID,
+                                                entityname: jsonObj[i].EntityName
+                                            });
+                                        }
+                                    }
+                                    callback(events);
+                                },
+                                error: function (jqXHR, textStatus, errorThrown) {
+                                   // alert(errorThrown);
+                                }
+                            });
+                        },
+                        viewRender:function(event,element)
+                        {
+                            if (event.name == 'listMonth')
+                            {
+                               
+                            }
+                        },
+                        eventAfterAllRender:function(event,element)
+                        {
+                            if (event.name == 'listMonth' || event.name == 'listYear' || event.name == 'listWeek') {
+                                $(".fc-list-item").each(function () {
+                                    var attr = $(this).attr("style");
+                                    $(this).attr("style", attr+"color:white;");
+                                })
+                            }
+                        },
+                        views: {
+                            listMonth: {
+                                type: 'listMonth',
+                                buttonText: 'MonthList'
+                            },
+                            listYear: {
+                                type: 'listYear',
+                            buttonText: 'YearList'
+                            },
+                            listWeek: {
+                                type: 'listWeek',
+                                buttonText: 'WeekList'
+                            }
+                        },
+                        eventRender: function (event, element) {
+                            element.attr('title', event.tooltip);
+                            if (event.iscancelled) {
+                                element.css('background-color', 'red');
+                            }
+                            else
+                            {
+                                var color = getColor(event.scheduleid);
+                                element.css('background-color', color);
+                            }
+                        },
+                        eventClick: function (calEvent, jsEvent, view) {
+                            $(this).css('border-color', 'red');
+                            OpenPopUpEntity('addPopup', 'Edit Event', 'dvPopup', '@Url.Action("EventsUpdate", "T_Schedule", new
+                            {
+                                id = "_id",
+                                EntityName="_entityname"
+                            })'.replace("_id", calEvent.id).replace("_entityname", calEvent.entityname)
+                        )
+                        },
+                        dayClick: function (date, jsEvent, view) {
+                            OpenPopUpEntity('addPopup', 'Event', 'dvPopup', '@Url.Action("CreateEvent", "T_Schedule")');
+                        }
+                    });
+                });
+                function Datechange(Caldate) {
+                    var date = new Date(parseInt(Caldate.substr(6)));
+                    localDateString = moment(date.toString()).format("MM/DD/YYYY hh:mm A");
+                    return localDateString
+                }
+                function getColor(num) {
+                    var letters = (num*826837).toString();
+                    var color = '#';
+                    for (var i = 0; i < 6; i++) {
+                        color += letters[i];
+                    }
+                    return color;
+                }
+                //
+            </script>
+            <center><div id="calendar" style="padding:20px 10px 10px 10px;"></div></center>
+        </div>
+    </div>
+</div>

@@ -7,6 +7,8 @@ using System.Web.Security;
 using System.Data.Entity;
 using System.Web;
 using System.Linq;
+using System.Threading.Tasks;
+using System.Data.Entity.Infrastructure;
 namespace GeneratorBase.MVC.Models
 {
     public class ApplicationUser : IdentityUser
@@ -47,6 +49,7 @@ namespace GeneratorBase.MVC.Models
     }
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
+		IUser user;
         public ApplicationDbContext()
             : base("DefaultConnection", throwIfV1Schema: false)
         {
@@ -59,12 +62,57 @@ namespace GeneratorBase.MVC.Models
             : base("DefaultConnection", throwIfV1Schema: false)
         {
         }
+		public ApplicationDbContext(IUser user)
+            : base("DefaultConnection", throwIfV1Schema: false)
+        {
+           this.user = user;          
+        }
 		public IDbSet<LoginAttempts> LoginAttempts { get; set; }
 		public IDbSet<PasswordHistory> PasswordHistorys { get; set; }
+		public IDbSet<MultiTenantExtraAccess> MultiTenantExtraAccess { get; set; }
+        public IDbSet<MultiTenantLoginSelected> MultiTenantLoginSelected { get; set; }
+		public override async Task<int> SaveChangesAsync()
+        {
+            var test  = System.Threading.SynchronizationContext.Current;
+            var result = 0;
+            var entries = this.ChangeTracker.Entries().Where(e => e.State.HasFlag(EntityState.Added) ||
+                                                                   e.State.HasFlag(EntityState.Modified) ||
+                                                                   e.State.HasFlag(EntityState.Deleted));
+            var originalStates = new Dictionary<DbEntityEntry, EntityState>();
+            foreach (var entry in entries)
+            {
+				try{
+					 if (entry.State == EntityState.Modified)
+						 DoAuditEntry.MakeUpdateJournalEntry(user,entry);
+					if (entry.State == EntityState.Added || entry.State == EntityState.Deleted)
+						DoAuditEntry.MakeAddJournalEntry(user,this,entry);
+				  }catch{ continue; }
+            }
+            result = await base.SaveChangesAsync();
+            return result;
+        }
+        public override int SaveChanges()
+        {
+            var result = 0;
+            var entries = this.ChangeTracker.Entries().Where(e => e.State.HasFlag(EntityState.Added) ||
+                                                                   e.State.HasFlag(EntityState.Modified) ||
+                                                                   e.State.HasFlag(EntityState.Deleted));
+            var originalStates = new Dictionary<DbEntityEntry, EntityState>();
+            foreach (var entry in entries)
+            {
+				if (entry.Entity is GeneratorBase.MVC.Models.LoginAttempts) continue;
+                if (entry.State == EntityState.Modified)
+                    DoAuditEntry.MakeUpdateJournalEntry(user, entry);
+                if (entry.State == EntityState.Added || entry.State == EntityState.Deleted)
+                    DoAuditEntry.MakeAddJournalEntry(user, this, entry);
+            }
+            result = base.SaveChanges();
+            return result;
+        }
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-	    modelBuilder.Entity<JournalEntry>().HasKey(au => au.Id).ToTable("tbl_JournalEntry");
+			modelBuilder.Entity<JournalEntry>().HasKey(au => au.Id).ToTable("tbl_JournalEntry");
              var user = modelBuilder.Entity<IdentityUser>()
          .ToTable("AspNetUsers");
             user.HasMany(u => u.Roles).WithRequired().HasForeignKey(ur => ur.UserId);
@@ -83,10 +131,10 @@ namespace GeneratorBase.MVC.Models
                 .ToTable("AspNetRoles");
             role.Property(r => r.Name).IsRequired();
             role.HasMany(r => r.Users).WithRequired().HasForeignKey(ur => ur.RoleId);
-			modelBuilder.Entity<T_Student>().ToTable("tbl_T_Student");
-            modelBuilder.Entity<T_Student>().HasOptional<T_School>(p => p.t_schoolname).WithMany().WillCascadeOnDelete(false); ;
-			modelBuilder.Entity<T_StudentPerformance>().ToTable("tbl_T_StudentPerformance");
-            modelBuilder.Entity<T_StudentPerformance>().HasOptional<T_Student>(p => p.t_studentcode).WithMany().WillCascadeOnDelete(false); ;
+			modelBuilder.Entity<T_Employee>().ToTable("tbl_T_Employee");
+            modelBuilder.Entity<T_Employee>().HasOptional<IdentityUser>(p=>p.t_employeeuserlogin).WithMany().WillCascadeOnDelete(false);;
+			modelBuilder.Entity<T_Employee>().ToTable("tbl_T_Employee");
+            modelBuilder.Entity<T_Employee>().HasOptional<T_Address>(p => p.t_employeeaddress).WithMany().WillCascadeOnDelete(false); ;
         }
 		public void ApplyFilters(IList<IFilter<ApplicationDbContext>> filters)
         {
@@ -107,7 +155,7 @@ namespace GeneratorBase.MVC.Models
             }
             public void ApplyUserBasedSecurity()
             {
-                if (((CustomPrincipal)HttpContext.Current.User).IsAdmin() || string.IsNullOrEmpty(((CustomPrincipal)HttpContext.Current.User).Identity.Name))
+                if (HttpContext.Current != null && (((CustomPrincipal)HttpContext.Current.User).IsAdmin || string.IsNullOrEmpty(((CustomPrincipal)HttpContext.Current.User).Identity.Name)))
                     return;
                 UserBasedSecurityContext UBS = new UserBasedSecurityContext();
                 if(UBS.UserBasedSecurities.Where(p=>p.IsMainEntity).Count()>0)
@@ -120,7 +168,7 @@ namespace GeneratorBase.MVC.Models
             }
         }
     }
- public class IdentityManager
+	  public class IdentityManager
     {
         public bool RoleExists(string name)
         {
@@ -128,33 +176,36 @@ namespace GeneratorBase.MVC.Models
                 new RoleStore<IdentityRole>(new ApplicationDbContext()));
             return rm.RoleExists(name);
         }
-        public bool CreateRole(string name)
+        public bool CreateRole(IUser LogggedInUser, string name)
         {
             var rm = new RoleManager<IdentityRole>(
-                new RoleStore<IdentityRole>(new ApplicationDbContext()));
+                new RoleStore<IdentityRole>(new ApplicationDbContext(LogggedInUser)));
             var idResult = rm.Create(new IdentityRole(name));
             return idResult.Succeeded;
         }
-        public bool CreateUser(ApplicationUser user, string password)
+        public bool CreateUser(IUser LogggedInUser, ApplicationUser user, string password)
         {
             var um = new UserManager<ApplicationUser>(
-                new UserStore<ApplicationUser>(new ApplicationDbContext()));
+                new UserStore<ApplicationUser>(new ApplicationDbContext(LogggedInUser)));
             um.UserValidator = new UserValidator<ApplicationUser>(um) { AllowOnlyAlphanumericUserNames = false };
             var idResult = um.Create(user, password);
             return idResult.Succeeded;
         }
-        public bool AddUserToRole(string userId, string roleName)
+        public bool AddUserToRole(IUser LogggedInUser, string userId, string roleName)
         {
             var um = new UserManager<ApplicationUser>(
-                new UserStore<ApplicationUser>(new ApplicationDbContext()));
+            new UserStore<ApplicationUser>(new ApplicationDbContext(LogggedInUser)));
+
+            roleName = (new ApplicationDbContext()).Roles.Find(roleName) == null ? roleName : (new ApplicationDbContext()).Roles.Find(roleName).Name;
+
             um.UserValidator = new UserValidator<ApplicationUser>(um) { AllowOnlyAlphanumericUserNames = false };
             var idResult = um.AddToRole(userId, roleName);
             return idResult.Succeeded;
         }
-        public void ClearUserRoles(string userId)
+        public void ClearUserRoles(IUser LogggedInUser, string userId)
         {
             var um = new UserManager<ApplicationUser>(
-                new UserStore<ApplicationUser>(new ApplicationDbContext()));
+                new UserStore<ApplicationUser>(new ApplicationDbContext(LogggedInUser)));
             um.UserValidator = new UserValidator<ApplicationUser>(um) { AllowOnlyAlphanumericUserNames = false };
             var user = um.FindById(userId);
             using (var ctx = new ApplicationDbContext())
@@ -165,10 +216,13 @@ namespace GeneratorBase.MVC.Models
                 um.RemoveFromRoles(userId, roles.ToArray());
             }
         }
-        public void ClearUsersFromRole(string userId, string roleName)
+        public void ClearUsersFromRole(IUser LogggedInUser, string userId, string roleName)
         {
             var um = new UserManager<ApplicationUser>(
-               new UserStore<ApplicationUser>(new ApplicationDbContext()));
+            new UserStore<ApplicationUser>(new ApplicationDbContext(LogggedInUser)));
+
+            roleName = (new ApplicationDbContext()).Roles.Find(roleName) == null ? roleName : (new ApplicationDbContext()).Roles.Find(roleName).Name;
+
             um.UserValidator = new UserValidator<ApplicationUser>(um) { AllowOnlyAlphanumericUserNames = false };
             um.RemoveFromRole(userId, roleName);
         }

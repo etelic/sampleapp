@@ -1,0 +1,30 @@
+@using System.Web.Http
+@using GeneratorBase.MVC.Models
+@model HelpPageApiModel
+
+@{
+    Layout = "~/Views/Shared/_LayoutWebApi.cshtml";
+    
+    var description = Model.ApiDescription;
+    ViewBag.Title = description.HttpMethod.Method + " " + description.RelativePath;
+}
+@*@Scripts.Render("~/bundles/WebApi")*@
+
+<div id="body">
+    <section class="featured">
+        <div class="content-wrapper hidden">
+            <p>
+                @Html.ActionLink("Api Help Page", "Index")
+            </p>
+        </div>
+    </section>
+    <section class="content-wrapper main-content clear-fix">
+      @Html.DisplayFor(m => Model)
+    </section>
+</div>
+
+@Html.DisplayForModel("TestClientDialogs",ViewData["Token"])
+@section Scripts {
+    @Html.DisplayForModel("TestClientReferences", ViewData["Token"])
+    <link type="text/css" href="~/Content/HelpPage.css" rel="stylesheet" />
+}

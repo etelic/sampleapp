@@ -55,49 +55,7 @@
                                 <th>Property</th>
                                 <th>Set Value</th>
                             </tr>
-							<tr>
-                <td align="center"><input type="checkbox" name="chkUpdate" value="DocumentName" /></td>
-                <td>@Html.LabelFor(model => model.DocumentName)</td>
-				<td> @Html.TextBoxFor(model => model.DocumentName, new { @class = "form-control" })</td></tr>
-<tr>
-                <td align="center"><input type="checkbox" name="chkUpdate" value="Description" /></td>
-                <td>@Html.LabelFor(model => model.Description)</td>
-				<td> @Html.TextBoxFor(model => model.Description, new { @class = "form-control" })</td></tr>
-			<tr>
-                <td align="center"><input type="checkbox" name="chkUpdate" value="DateCreated" /></td>
-                <td>@Html.LabelFor(model => model.DateCreated)</td>
-                <td> <div class="input-group date" id="datetimepickerDateCreated">
-                    @Html.TextBoxFor(model => model.DateCreated, new {@class = "form-control" })
-                    <span class="input-group-addon btn-default calendar">
-                        <i class="fa fa-calendar"></i>
-                    </span>
-                </div>
-            <script type="text/javascript">
-                $(function () {
-                    $('#datetimepickerDateCreated').datetimepicker();
-					$('#DateCreated').datetimepicker();
-                });
-            </script>
-			</td>
-            </tr>
-			<tr>
-                <td align="center"><input type="checkbox" name="chkUpdate" value="DateLastUpdated" /></td>
-                <td>@Html.LabelFor(model => model.DateLastUpdated)</td>
-                <td> <div class="input-group date" id="datetimepickerDateLastUpdated">
-                    @Html.TextBoxFor(model => model.DateLastUpdated, new {@class = "form-control" })
-                    <span class="input-group-addon btn-default calendar">
-                        <i class="fa fa-calendar"></i>
-                    </span>
-                </div>
-            <script type="text/javascript">
-                $(function () {
-                    $('#datetimepickerDateLastUpdated').datetimepicker();
-					$('#DateLastUpdated').datetimepicker();
-                });
-            </script>
-			</td>
-            </tr>
-                        </thead>
+							                        </thead>
                     </table>
  </div> 
  </div>

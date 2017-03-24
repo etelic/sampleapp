@@ -1,0 +1,43 @@
+
+.udplink {
+    position: relative;
+    display: block;
+    padding: 10px 15px;
+    margin-bottom: -1px;
+    background-color: #ffffff;
+    border: 1px solid #dddddd;
+    border-top-color: rgb(221, 221, 221); border-right-width: 1px; border-bottom-width: 1px; border-left-width: 1px; border-top-left-radius: 4px; border-top-right-radius: 4px;
+    color:#000;
+}
+
+    .udplink:first-child {
+        border-top-right-radius: 0px;
+        border-top-left-radius: 0px;
+    }
+
+    .udplink:last-child {
+        margin-bottom: 0;
+        border-bottom-right-radius: 0px;
+        border-bottom-left-radius: 0px;
+    }
+
+    .udplink a {
+        color: #024d8e;
+        text-decoration: underline;
+    }
+
+
+    .udplink:hover,
+    udplink:focus {
+        text-decoration: none;
+        background-color: #edf5fa;
+    }
+
+    .udplink.active,
+    .udplink.active:hover,
+    .udplink.active:focus {
+        z-index: 2;
+        color: #ffffff;
+        background-color: #428bca;
+        border-color: #428bca;
+    }

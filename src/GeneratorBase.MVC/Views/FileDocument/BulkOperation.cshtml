@@ -7,7 +7,10 @@
         ActionNameUrl = "FSearch";
     }
 }
+@Scripts.Render("~/bundles/select2js")
+@Styles.Render("~/Content/select2css")
 <script>
+	$(".js-example-basic-multiple").select2({ placeholder: "Select/Search", allowClear: true });
     function SetSingle(source, id, DisplayValue) {
         var dropdown = ($('#PopupBulkOperationLabel').attr('class'));
         if ($('#' + dropdown + ' option[value="' + id + '"]').length == 0) {
@@ -18,37 +21,6 @@
         $("#" + dropdown).trigger('chosen:updated');
 		 $("#" + dropdown).change();
         $("#closePopupBulkOperation").click();
-    }
-    function Set(source, id,DisplayValue) {
-        var dropdown = ($('#PopupBulkOperationLabel').attr('class'));
-        if (source.checked) {
-            if ($('#' + dropdown).attr('multiple') == 'multiple') {
-			    var obj = document.getElementById(dropdown);
-			    var found = false;
-			    for (var o = 0; o < obj.options.length; o++) {
-			        if (obj.options[o].value == id) {
-			            found = true;
-			            obj.options[o].setAttribute('selected', "selected");
-			        }
-			    } 
-			    if (!found) {
-			        $('#' + dropdown).append($('<option selected=\'selected\'></option>').val(id).html(DisplayValue));
-			    }
-			    $('#' + dropdown).multiselect('rebuild');
-            }
-        }
-        else
-        {
-            if ($('#' + dropdown).attr('multiple') == 'multiple') {
-                var obj = document.getElementById(dropdown);
-                for (var o = 0; o < obj.options.length; o++) {
-                    if (obj.options[o].value == id) {
-                        obj.options[o].removeAttribute("selected");
-                        $('#' + dropdown).multiselect('deselect', id);
-                    }
-                }
-            }
-        }
     }
 	function Update(source, id, DisplayValue) {
         val1 = $("#idvalues").val();
@@ -62,6 +34,8 @@
     function UpdateRecords() {
         var selectedvalues = $("#idvalues").val().substr(1).split(",");
         var url1 = '@Url.Action("BulkAssociate")';
+		 var entity = 'FileDocument';
+        var host = '@ViewData["AssociatedType"]';
         $.ajax({
             type: "POST",
             data: { ids: selectedvalues, AssociatedType: '@ViewData["AssociatedType"]', HostingEntity: '@ViewData["HostingEntity"]', HostingEntityID: '@ViewData["HostingEntityID"]' },
@@ -70,7 +44,10 @@
                 $("#closePopupBulkOperation").click();
             },
             success: function (msg) {
-				$("#FileDocument" + "SearchCancel").click();
+				 if (host != undefined && host.length > 0 && $('#' + host).length > 0) {
+                    $('#' + entity + 'SearchCancel', $('#' + host)).click();
+                    $('#dvcnt_' + host).load(location.href + " #dvcnt_" + host);
+                }
             }
         });
     }

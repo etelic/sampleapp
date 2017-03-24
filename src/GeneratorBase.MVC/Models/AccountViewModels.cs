@@ -12,8 +12,7 @@ namespace GeneratorBase.MVC.Models
         [Display(Name = "Current password")]
         public string OldPassword { get; set; }
         [Required]
-        [StringLength(100, ErrorMessage =
-            "The {0} must be at least {2} characters long.", MinimumLength = 6)]
+        //[StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 6)]
         [DataType(DataType.Password)]
         [Display(Name = "New password")]
         public string NewPassword { get; set; }
@@ -22,12 +21,15 @@ namespace GeneratorBase.MVC.Models
         [Compare("NewPassword", ErrorMessage =
             "The new password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
+        public string token { get; set; }
+        public string provider { get; set; }
     }
     public class ForgotPasswordViewModel
     {
-        [Required]
         [Display(Name = "User name")]
         public string Username { get; set; }
+        [EmailAddress(ErrorMessage = "Please enter valid email-id.")]
+        public string Email { get; set; }
     }
     public class LoginViewModel
     {
@@ -64,8 +66,7 @@ namespace GeneratorBase.MVC.Models
         [StringLength(50, ErrorMessage = "Less than 50 characters")]
         public string UserName { get; set; }
         [Required]
-        [StringLength(100, ErrorMessage =
-            "The {0} must be at least {2} characters long.", MinimumLength = 6)]
+        //[StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 6)]
         [DataType(DataType.Password)]
         [Display(Name = "Password")]
         public string Password { get; set; }
@@ -105,9 +106,11 @@ namespace GeneratorBase.MVC.Models
         {
             this.Name = Role.Name;
             this.OriginalName = Role.Name;
+            this.id = Role.Id;
         }
         [Required]
         [Display(Name = "Role Name")]
+        public string id { get; set; }
         public string Name { get; set; }
         public string OriginalName { get; set; }
     }
@@ -135,6 +138,7 @@ namespace GeneratorBase.MVC.Models
         [Display(Name = "Last Name")]
         public string LastName { get; set; }
         [Required]
+        [EmailAddress(ErrorMessage = "Please enter valid email-id.")]
         public string Email { get; set; }
         public string Id { get; set; }
         public DateTime? LockoutEndDateUtc { get; set; }
@@ -201,6 +205,30 @@ namespace GeneratorBase.MVC.Models
                 allUsers = Db.Users.Where(p => p.UserName.ToUpper().Contains(searchkey.ToUpper()) || p.FirstName.ToUpper().Contains(searchkey.ToUpper()) || p.LastName.ToUpper().Contains(searchkey.ToUpper())).OrderBy(p => p.UserName).Take(50).ToList();
             }
             
+            foreach (var user in allUsers)
+            {
+                // An EditorViewModel will be used by Editor Template:
+                var rvm = new SelectUserEditorViewModel(user);
+                this.Users.Add(rvm);
+            }
+            // Set the Selected property to true for those roles for 
+            // which the current user is a member:
+            foreach (var user in allUsers)
+            {
+                var checkUsersInRole = this.Users.Find(r => r.UserName == user.UserName);
+                var roleIds = user.Roles.Select(r => r.RoleId);
+                checkUsersInRole.Selected = Db.Roles.Where(r => roleIds.Contains(r.Id))
+                                                    .Any(r => r.Name == RoleName);
+            }
+        }
+        // Enable initialization with an instance of ApplicationUser:
+        public SelectUsersInRoleViewModel(IdentityRole role)
+            : this()
+        {
+            this.RoleName = role.Name;
+            var Db = new ApplicationDbContext();
+            // Add all available users to the list of EditorViewModels:
+            var allUsers = Db.Users.ToList();
             foreach (var user in allUsers)
             {
                 // An EditorViewModel will be used by Editor Template:

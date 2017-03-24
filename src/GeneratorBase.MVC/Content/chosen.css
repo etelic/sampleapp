@@ -72,7 +72,7 @@
 .chosen-container-single .chosen-single span {
     display: block;
     overflow: hidden;
-    margin-right: 26px;
+    margin-right: 6px;
     text-overflow: ellipsis;
     white-space: normal;
 }
@@ -157,6 +157,7 @@
     padding: 0 0 0 4px;
     max-height: 240px;
     -webkit-overflow-scrolling: touch;
+    list-style-position: inside;
 }
     .chosen-container .chosen-results li {
         display: none;
@@ -164,6 +165,9 @@
         padding: 5px 6px;
         list-style: none;
         line-height: 15px;
+         white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
     }
         .chosen-container .chosen-results li.active-result {
             display: list-item;

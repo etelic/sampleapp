@@ -1,0 +1,483 @@
+﻿@model GeneratorBase.MVC.Models.T_Schedule
+@using PagedList;
+@{
+    ViewBag.Title = "Edit Schedule";
+    var EditPermission = User.CanEditItem("T_Schedule", Model, User);
+    var DeletePermission = User.CanDeleteItem("T_Schedule", Model, User);
+}
+@functions {
+    object getHtmlAttributes(string Property)
+    {
+        if (User.CanEdit("T_Schedule", Property))
+        {
+            return new { @class = "form-control" };
+        } return new { @class = "form-control", @readonly = "readonly" };
+    }
+}
+<script>
+    $(document).ready(function () {
+        try {
+            var hostingEntityName = "";
+            if ('@Convert.ToString(ViewData["AssociatedType"])'.length > 0) {
+                hostingEntityName = '@Convert.ToString(ViewData["AssociatedType"])';
+                $('#' + hostingEntityName + 'ID').attr("lock", "true");
+                $('#' + hostingEntityName + 'ID').trigger("change");
+            }
+            if ($.cookie('@User.JavaScriptEncodedName@Model.Id' + 'TabCookie') != null) {
+                $('a[href="#' + $.cookie('@User.JavaScriptEncodedName@Model.Id' + 'TabCookie') + '"]').click();
+            }
+        }
+        catch (ex) { }
+    });
+</script>
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_ScheduleIsHiddenRule))
+    {
+        @Html.Raw(ViewBag.T_ScheduleIsHiddenRule);
+    }
+}
+@Scripts.Render("~/bundles/select2js")
+@Styles.Render("~/Content/select2css")
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $('#T_AssociatedRecurringScheduleDetailsTypeID').val('@Model.T_AssociatedRecurringScheduleDetailsTypeID');
+        $('#T_RecurringTaskEndTypeID').val('@Model.T_RecurringTaskEndTypeID');
+        $('#T_RepeatByID').val('@Model.T_RepeatByID')
+        $('select[multiple="multiple"]').each(function () {
+            $(this).multiselect({ buttonWidth: '100%' });
+        });
+        var ids = ('@String.Join(",",Model.SelectedT_RecurrenceDays_T_RepeatOn.Select(p=>p.Value.ToString()).ToList())')
+        var eleT_AssociatedRecurringScheduleDetailsType = document.getElementById("SelectedT_RecurrenceDays_T_RepeatOn");
+        for (i = 0; i < ids.split(",").length; i++) {
+            for (var o = 0; o < eleT_AssociatedRecurringScheduleDetailsType.options.length; o++) {
+                if (eleT_AssociatedRecurringScheduleDetailsType.options[o].value == ids[i])
+                    eleT_AssociatedRecurringScheduleDetailsType.options[o].selected = true;
+            }
+        }
+        $("#SelectedT_RecurrenceDays_T_RepeatOn").multiselect("rebuild");
+    });
+    function RepeatTypeChange() {
+        var $obj = $('#T_AssociatedRecurringScheduleDetailsTypeID');
+        var value = $obj.val();
+        text = ($('#T_AssociatedRecurringScheduleDetailsTypeID :selected').text());
+        $("#RepeatOnWeekly").hide();
+        $("#dvT_RepeatByID").hide();
+        if (text == "Weekly") {
+            $("#RepeatOnWeekly").show();
+        }
+        if (text == "Monthly") {
+            $("#dvT_RepeatByID").show();
+        }
+    }
+    function ChangeScheduleType() {
+        var $obj = $('input:radio[name="T_AssociatedScheduleTypeID"]:checked');
+        var SelectedVal = $obj.val();
+        var text = $obj.next('span:first').html()
+        $("#dvRepeat").hide();
+        $('#T_RecurringTaskEndTypeID').removeAttr("Required");
+        if (text == "Repeat") {
+            $("#dvRepeat").show();
+            $('#T_RecurringTaskEndTypeID').attr("Required", "Required");
+            RepeatTypeChange();
+            ChangeEndType();
+        }
+    }
+    function ChangeEndType() {
+        var $obj = $('#T_RecurringTaskEndTypeID');
+        var SelectedVal = $obj.val();
+        text = ($('#T_RecurringTaskEndTypeID :selected').text());
+        $("#dvT_EndDate").hide();
+        $("#dvT_OccurrenceLimitCount").hide();
+        $('#T_EndDate').removeAttr("Required");
+        $('#T_OccurrenceLimitCount').removeAttr("Required");
+        if (text == "After Specified Occurrences") {
+            $("#dvT_OccurrenceLimitCount").show();
+            $('#T_OccurrenceLimitCount').attr("Required", "Required");
+        }
+        if (text == "On Specified Date") {
+            $("#dvT_EndDate").show();
+            $('#T_EndDate').attr("Required", "Required");
+        }
+    }
+</script>
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-title">
+            <i class="glyphicon glyphicon-edit text-primary"></i> Schedule  <i class="glyphicon glyphicon-chevron-right small"></i> <span>Edit</span>
+        </h1>
+        <label id="ErrMsg" class="text-primary small pull-right" style="color:red; vertical-align:middle; font-weight:100;"></label>
+        <div id="errorContainerEdit" style="display: none">
+            <div id="errorsMsgEdit"></div>
+            <div id="errorsEdit"></div>
+        </div>
+        <h2 class="text-primary">
+            <span id="HostingEntityDisplayValue">@Html.DisplayFor(model => model.DisplayValue)</span>
+            <div class="btn-group pull-right fixactionbut">
+                <button data-toggle="dropdown" class="btn btn-xs dropdown-toggle btn-default pull-right">
+                    Action
+                    <span class="caret">    </span>
+                </button>
+                <ul class="dropdown-menu pull-left">
+                    <li>
+                        <a href="@Url.Action("Details", "T_Schedule", new { id = Model.Id, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"])  }, null)"><i class="glyphicon glyphicon-eye-open"></i>  View</a>
+                    </li>
+                    <li>
+                        @if (User.Identity.IsAuthenticated && User != null && User.CanEdit("T_Schedule"))
+                        {
+                            <a href="@Url.Action("Edit","T_Schedule", new { id = Model.Id,  UrlReferrer = Request.Url, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) },null)"><i class="glyphicon glyphicon-edit"></i>  Edit</a>
+                        }
+                    </li>
+                    <li>
+                        @if (User.Identity.IsAuthenticated && User != null && User.CanEdit("T_Schedule"))
+                        {
+                            <a href="@Url.Action("EditWizard","T_Schedule", new { id = Model.Id,  UrlReferrer = Request.Url, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) },null)"><i class="glyphicon glyphicon-share"></i>  Wizard</a>
+                        }
+                    </li>
+                    <li>
+                        @if (User.Identity.IsAuthenticated && User != null && User.CanDelete("T_Schedule"))
+                        {
+                            <a href="@Url.Action("Delete", "T_Schedule", new { id = Model.Id, UrlReferrer = Request.Url, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null)"><i class="glyphicon glyphicon-remove-sign"></i>  Delete</a>
+                        }
+                    </li>
+                </ul>
+            </div>
+            
+        </h2>
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+<div class="tabbable responsive">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="#Details" onclick="ClearTabCookie('@User.JavaScriptEncodedName@Model.Id');" data-toggle="tab">Details</a></li>
+    </ul>
+    <div class="tab-content">
+        <div class="tab-pane fade in active" id="Details">
+            @using (Html.BeginForm("Edit", "T_Schedule", new { UrlReferrer = Convert.ToString(ViewData["T_ScheduleParentUrl"]) }, FormMethod.Post, new { enctype = "multipart/form-data", @id = "frmT_Schedule" }))
+            {
+                Html.ValidationSummary(true);
+                Html.EnableClientValidation();
+                @Html.HiddenFor(model => model.Id)
+                @Html.HiddenFor(model => model.ConcurrencyKey)
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12" style="padding:0px; margin:0px;">
+            <div class="panel panel-default AppForm">
+                <div class="panel-body">
+                    @Html.Hidden("AssociatedEntity", Convert.ToString(ViewData["AssociatedType"]))
+                    <div>
+                        <div class="col-md-12 col-sm-12 col-xs-12">
+                            <div class="panel panel-default">
+                                <div class="panel-heading clearfix">
+                                    <i class="icon-calendar"></i>
+                                    <h3 class="panel-title">Basic Details</h3>
+                                </div>
+                                <div class="panel-body">
+                                    @Html.HiddenFor(model => model.T_Name)
+                                    @Html.HiddenFor(model => model.T_Description)
+                                    @Html.HiddenFor(model => model.T_EntityName)
+                                    <div class='col-sm-8 col-md-8  col-xs-12' id="dvT_AssociatedScheduleTypeID">
+                                        <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.T_AssociatedScheduleTypeID)  <span class="text-danger-reg">*</span></label>
+                                        <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                            <div class="input-group radiocontainer">
+                                                @Html.RadioButtonListFor(model => model.T_AssociatedScheduleTypeID, (SelectList)ViewBag.T_AssociatedScheduleTypeID, new { @onclick = "ChangeScheduleType();", @required = "required", @dataurl = Url.Action("GetAllValueForRB", "T_Scheduletype", new { caller = "T_AssociatedScheduleTypeID" }) })
+                                                @Html.ValidationMessageFor(model => model.T_AssociatedScheduleTypeID)
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_StartDateTime">
+                                        <label class="col-sm-5 col-md-5 col-xs-12"> Start Date <span class="text-danger-reg">*</span></label>
+                                        <div class="form-group" title="Start Date Time">
+                                            <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                <div class="input-group date" id="datetimepickerT_StartDateTime">
+                                                    @Html.TextBoxFor(model => model.T_StartDateTime, "{0:MM/dd/yyyy}", new { @id = "T_StartDateTime", @class = "form-control" })
+                                                    <span class="input-group-addon btn-default calendar">
+                                                        <i class="fa fa-calendar"></i>
+                                                    </span>
+                                                </div>
+                                                @Html.ValidationMessageFor(model => model.T_StartDateTime)
+                                            </div>
+                                        </div>
+                                        <script type="text/javascript">
+                                            $(function () {
+                                                $('#datetimepickerT_StartDateTime').datetimepicker({ pickTime: false });
+                                                $('#T_StartDateTime').datetimepicker({ pickTime: false });
+                                            });
+                                        </script>
+                                    </div>
+                                    <div class="clearfix"></div>
+                                    <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_StartTime">
+                                        <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.T_StartTime) <span class="text-danger-reg">*</span> </label>
+                                        <div class="form-group" title="Start Time">
+                                            <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                <div class="input-group date" id="datetimepickerT_StartTime">
+                                                    @Html.TextBoxFor(model => model.T_StartTime, "{0:HH:mm}", User.CanEdit("T_Schedule", "T_StartTime") ? (object)new { @id = "T_StartTime", @class = "form-control", @format = "hh:mm" } : (object)new { @id = "T_StartTime", @class = "form-control", @readonly = "readonly", @format = "hh:mm" })
+                                                    <span class="input-group-addon btn-default calendar">
+                                                        <i class="fa fa-calendar"></i>
+                                                    </span>
+                                                </div>
+                                                @Html.ValidationMessageFor(model => model.T_StartTime)
+                                            </div>
+                                        </div>
+                                        <script type="text/javascript">
+                                            $(function () {
+                                                $('#T_StartTime').datetimepicker({ pickDate: false, minuteStepping: 15 });
+                                                $('#datetimepickerT_StartTime').datetimepicker({ pickDate: false, minuteStepping: 15 });
+                                            });
+                                        </script>
+                                    </div>
+                                    <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_EndTime">
+                                        <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.T_EndTime) <span class="text-danger-reg">*</span> </label>
+                                        <div class="form-group" title="Start Time">
+                                            <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                <div class="input-group date" id="datetimepickerT_EndTime">
+                                                    @Html.TextBoxFor(model => model.T_EndTime, "{0:HH:mm}", User.CanEdit("T_Schedule", "T_EndTime") ? (object)new { @id = "T_EndTime", @class = "form-control", @format = "hh:mm" } : (object)new { @id = "T_EndTime", @class = "form-control", @readonly = "readonly", @format = "hh:mm" })
+                                                    <span class="input-group-addon btn-default calendar">
+                                                        <i class="fa fa-calendar"></i>
+                                                    </span>
+                                                </div>
+                                                @Html.ValidationMessageFor(model => model.T_EndTime)
+                                            </div>
+                                        </div>
+                                        <script type="text/javascript">
+                                            $(function () {
+                                                $('#T_EndTime').datetimepicker({ pickDate: false, minuteStepping: 15 });
+                                                $('#datetimepickerT_EndTime').datetimepicker({ pickDate: false, minuteStepping: 15 });
+                                            });
+                                        </script>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="dvRepeat" style="display:none;">
+                        <div class="col-md-12 col-sm-12 col-xs-12">
+                            <div class="panel panel-default">
+                                <div class="panel-heading clearfix">
+                                    <i class="icon-calendar"></i>
+
+                                    <h3 class="panel-title">Recurrence Detail</h3>
+                                </div>
+                                <div class="panel-body">
+                                    <div class='col-sm-6 col-md-6  col-xs-12' id="dvT_AssociatedRecurringScheduleDetailsTypeID">
+                                        <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.T_AssociatedRecurringScheduleDetailsTypeID)  </label>
+                                        <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                            <div class="input-group" style="width:100%;">
+                                                @Html.DropDownListFor(model => model.T_AssociatedRecurringScheduleDetailsTypeID, (SelectList)ViewBag.T_AssociatedRecurringScheduleDetailsTypeID, new { @class = "form-control", @onchange = "RepeatTypeChange();", @dataurl = Url.Action("GetAllValueForRB", "T_RecurringScheduleDetailstype", new { caller = "T_AssociatedRecurringScheduleDetailsTypeID" }) })
+                                                @Html.ValidationMessageFor(model => model.T_AssociatedRecurringScheduleDetailsTypeID)
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_RecurringRepeatFrequencyID">
+                                        <div class='form-group'>
+                                            <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.T_RecurringRepeatFrequencyID) </label>
+                                            <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                <div class="input-group" style="width:100%;">
+                                                    @Html.DropDownListFor(model => model.T_RecurringRepeatFrequencyID, (SelectList)ViewBag.T_RecurringRepeatFrequencyID, new { @class = "chosen-select form-control", @HostingName = "T_RecurringFrequency", @dataurl = Url.Action("GetAllValue", "T_RecurringFrequency", new { caller = "T_RecurringRepeatFrequencyID" }) })
+                                                    @Html.ValidationMessageFor(model => model.T_RecurringRepeatFrequencyID)
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class='col-sm-6 col-md-6  col-xs-12' id="dvT_RepeatByID">
+                                        <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.T_RepeatByID)  </label>
+                                        <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                            <div class="input-group" style="width:100%;">
+                                                @Html.DropDownListFor(model => model.T_RepeatByID, (SelectList)ViewBag.T_RepeatByID, new { @class = "form-control", @dataurl = Url.Action("GetAllValueForRB", "T_MonthlyRepeatType", new { caller = "T_RepeatByID" }) })
+                                                @Html.ValidationMessageFor(model => model.T_RepeatByID)
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class='col-sm-6 col-md-6  col-xs-12' id="dvT_RecurringTaskEndTypeID">
+                                        <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.T_RecurringTaskEndTypeID)  </label>
+                                        <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                            <div class="input-group" style="width:100%;">
+                                                @Html.DropDownListFor(model => model.T_RecurringTaskEndTypeID, (SelectList)ViewBag.T_RecurringTaskEndTypeID, "--Select--", new { @class = "form-control", @onchange = "ChangeEndType()", @dataurl = Url.Action("GetAllValueForRB", "T_RecurringEndType", new { caller = "T_RecurringTaskEndTypeID" }) })
+                                                @Html.ValidationMessageFor(model => model.T_RecurringTaskEndTypeID)
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_EndDate">
+                                        <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.T_EndDate) </label>
+                                        <div class="form-group" title="End Date">
+                                            <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                <div class="input-group date" id="datetimepickerT_EndDate">
+                                                    @Html.TextBoxFor(model => model.T_EndDate, new { @id = "T_EndDate", @class = "form-control" })
+                                                    <span class="input-group-addon btn-default calendar">
+                                                        <i class="fa fa-calendar"></i>
+                                                    </span>
+                                                </div>
+                                                @Html.ValidationMessageFor(model => model.T_EndDate)
+                                            </div>
+                                        </div>
+                                        <script type="text/javascript">
+                                            $(function () {
+                                                $('#datetimepickerT_EndDate').datetimepicker({ pickTime: false });
+                                                $('#T_EndDate').datetimepicker({ pickTime: false });
+                                            });
+                                        </script>
+                                    </div>
+                                    <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_OccurrenceLimitCount">
+                                        <div class='form-group' title="Occurrence Limit Count">
+                                            <label class="col-sm-5 col-md-5 col-xs-12">Occurrence Count</label>
+                                            <div class="input-group col-sm-7 col-md-7 col-xs-12">
+
+                                                @Html.TextBoxFor(model => model.T_OccurrenceLimitCount, new { @class = "form-control" })
+                                                @Html.ValidationMessageFor(model => model.T_OccurrenceLimitCount)
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_Summary" style="display:none;">
+                                        <div class='form-group' title="Summary">
+                                            <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.T_Summary) </label>
+                                            <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                @Html.TextAreaFor(model => model.T_Summary, new { @class = "form-control" })
+                                                @Html.ValidationMessageFor(model => model.T_Summary)
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="RepeatOnWeekly" style="display:none;">
+                                        <div class="col-sm-6 col-md-6 col-sx-12" id="dvT_Schedule">
+
+                                            <label class="col-sm-5 col-md-5 col-xs-12">
+                                                Recurrence Days
+                                            </label>
+                                            <div>
+                                                @Html.DropDownList("SelectedT_RecurrenceDays_T_RepeatOn", (MultiSelectList)ViewBag.SelectedT_RecurrenceDays_T_RepeatOn, new { @multiple = "multiple", @HostingName = "T_RecurrenceDays", @dataurl = Url.Action("GetAllMultiSelectValue", "T_RecurrenceDays", null) })
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+                @Html.HiddenFor(model => model.T_EntityName)
+                @Html.AntiForgeryToken();
+                @Html.ActionLink("Cancel", "Cancel", new { UrlReferrer = ViewData["T_ScheduleParentUrl"] }, new { @onclick = "", @class = "btn btn-default btn-sm" })
+                if (EditPermission)
+                {
+                    <input type="submit" name="command" value="Save" class="btn btn-primary btn-sm" />
+                    <input type="submit" name="command" value="Save & Continue" class="btn btn-primary btn-sm" />
+                }
+                <input type="hidden" name="hdncommand" value="" />
+            }
+
+        </div>
+        
+    </div> <!-- /tab-content --><br />
+
+    <br />
+</div>
+<script>
+    $(document).ready(function () {
+        ChangeScheduleType();
+    });
+    $(".js-example-basic-multiple").select2({ placeholder: "Select/Search", allowClear: true });
+    $(function () {
+        var userAgent = navigator.userAgent.toLowerCase();
+        // Figure out what browser is being used
+        var browser = {
+            version: (userAgent.match(/.+(?:rv|it|ra|ie)[\/: ]([\d.]+)/) || [])[1],
+            safari: /webkit/.test(userAgent),
+            opera: /opera/.test(userAgent),
+            msie: /msie/.test(userAgent) && !/opera/.test(userAgent),
+            mozilla: /mozilla/.test(userAgent) && !/(compatible|webkit)/.test(userAgent)
+        };
+        if (!browser.msie) {
+            $('form').areYouSure();
+        }
+        else if (browser.version > 8.0) {
+            $('form').areYouSure();
+        }
+    });
+</script>
+<script>
+    $("input[type='submit']").click(function () {
+        var $this = $(this);
+        SetCalendarStartDate('T_StartDateTime', 'T_StartTime');
+        SaveServerTime(this);
+        
+        $('input:hidden[name="hdncommand"]').val($this.val());
+    });
+</script>
+@{
+    var busineesrule = User.businessrules.Where(p => p.EntityName == "T_Schedule").ToList();
+    if ((busineesrule != null && busineesrule.Count > 0))
+    {
+        <script>
+            $(document).ready(function () {
+                $.ajax({
+                    async: false,
+                    type: "GET",
+                    url: "@Url.Action("GetLockBusinessRules", "T_Schedule")",
+                    data: $("form").serialize(),
+                    success: function (data) {
+                        if (data.length > 0) {
+                            $(':input:not([readonly])', 'form').attr('disabled', 'disabled').attr('readonly', 'readonly').trigger("chosen:updated");
+                            document.getElementById('ErrMsg').innerHTML = data + " Rules applied";
+                        }
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                    }
+                });
+                $.ajax({
+                    async: false,
+                    type: "GET",
+                    url: "@Url.Action("GetReadOnlyProperties", "T_Schedule")",
+                    data: $("form").serialize(),
+                    success: function (data) {
+                        for (var key in data) {
+                            $('#' + key).attr('disabled', 'disabled').attr('readonly', 'readonly').trigger("chosen:updated");
+                            $("input[type='radio'][name='" + key + "']").attr('disabled', 'disabled').attr('readonly', 'readonly');
+                            $('form').append('<input type="hidden" name="' + key + '" id="' + key + '" value="' + $('#' + key).val() + '" />');
+                        }
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                    }
+                });
+            });
+        </script>
+        <script>
+            $("form").submit(function () {
+                var flag = true;
+
+                $.ajax({
+                    async: false,
+                    type: "GET",
+                    url: "@Url.Action("GetMandatoryProperties", "T_Schedule", new { ruleType = "OnEdit" })",
+                    data: $(this).serialize(),
+                    success: function (data) {
+                        $('[businessrule="mandatory"]').each(function () {
+                            $(this).removeAttr('required');
+                        });
+                        document.getElementById('ErrMsg').innerHTML = "";
+                        for (var key in data) {
+                            if ($.trim($('#' + key).val()).length == 0 && $.trim($("input[type='radio'][name='" + key + "']:checked").val()).length == 0) {
+                                $('#' + key).attr('required', 'required');
+                                $('#' + key).attr('businessrule', 'mandatory');
+                                $("input[type='radio'][name='" + key + "']").attr('required', 'required');
+                                $("input[type='radio'][name='" + key + "']").attr('businessrule', 'mandatory');
+                                flag = false;
+                                document.getElementById('ErrMsg').innerHTML += data[key] + " is Mandatory.<br/>";
+                            }
+                        }
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                    }
+                });
+                if (flag)
+                    $("form").find(':input').removeAttr('disabled');
+                return flag;
+            });
+        </script>
+    }
+    else
+    {
+
+    }
+}
+
+

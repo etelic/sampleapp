@@ -1,27 +1,14 @@
 ﻿@model GeneratorBase.MVC.Models.RegisterViewModel
+@{
+    ViewBag.Title = "Register";
+    Layout = null;
+}
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <title>
-        @{
-            ViewBag.Title = "Register";
-            Layout = null;
-        }
-    </title>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="">
-    <meta name="author" content="">
-    @Styles.Render("~/Content/css")
-    @Scripts.Render("~/bundles/modernizr")
-    <link href="@Url.Content("~/Content/Site.css")" rel="stylesheet" type="text/css" />
-    <script src="@Url.Content("~/Scripts/jquery-1.10.2.min.js")" type="text/javascript"></script>
-    <script>
-        function onRefreshChange(e) {
-            $("#captchaimage").attr("src", $("#captchaimage").attr("src") + "?timestamp=" + new Date().getTime());
-        }
-    </script>
+    <meta name="viewport" content="width=device-width" />
+    <title>Register</title>
+
     <style>
         .colorgraph {
             height: 5px;
@@ -31,105 +18,142 @@
             background-color: #428BCA;
         }
     </style>
+
 </head>
-<body class="Loginbody" style="background:white;">
-    <div id="wrapper">
-        <div class="navbar navbar-inverse navbar-static-top" role="navigation">
-            @Html.ActionLink(GeneratorBase.MVC.Models.CommonFunction.Instance.AppName().ToString(), "Index", "Home", null, new { @class = "navbar-brand" })
-        </div>
-        <div class="container">
-            <br />
-            <div class="col-xs-12 col-sm-8 col-md-6 col-sm-offset-2 col-md-offset-3">
-                @using (Html.BeginForm("Register", "Account", FormMethod.Post, new { role = "form" }))
-                {
-                    @Html.AntiForgeryToken()
-                    @Html.ValidationSummary()
-                    <h2 style="font-size:24px">Please Register <small>Create New Account</small></h2>
-                    <hr class="colorgraph">
-                    <p class="text-danger-reg">@ViewBag.DuplicacyMessage</p>
-if (ViewBag.Success != null)
-{
-<p class="text-success">@ViewBag.Success @Html.ActionLink("Login", "Login")</p>
-}
-                    <label>Account Information</label>
-                    <div class="form-group">
-                        @Html.TextBoxFor(m => m.UserName, new { @class = "form-control input-lg", @placeholder = "User Name" })
-                    </div>
-                    <div class="row">
-                        <div class="col-xs-12 col-sm-6 col-md-6">
-                            <div class="form-group">
-                                @Html.PasswordFor(m => m.Password, new { @class = "form-control input-lg", @placeholder = "Password" })
-                            </div>
-                        </div>
-                        <div class="col-xs-12 col-sm-6 col-md-6">
-                            <div class="form-group">
-                                @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control input-lg", @placeholder = "Confirm Password" })
-                            </div>
-                        </div>
-                    </div>
-                    <label>Personal Information</label>
-                    <div class="row">
-                        <div class="col-xs-12 col-sm-6 col-md-6">
-                            <div class="form-group">
-                                @Html.TextBoxFor(m => m.FirstName, new { @class = "form-control input-lg", placeholder = "First Name" })
-                            </div>
-                        </div>
-                        <div class="col-xs-12 col-sm-6 col-md-6">
-                            <div class="form-group">
-                                @Html.TextBoxFor(m => m.LastName, new { @class = "form-control input-lg", placeholder = "Last Name" })
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        @Html.TextBoxFor(m => m.Email, new { @class = "form-control input-lg", @placeholder = "Email Address" })
-                    </div>
-                    <label>
-                        Captcha letters are case sensitive
-                    </label>
-                    <div class="row">
-                        <div class="col-xs-12 col-sm-6 col-md-6">
-                            @Html.TextBox("CaptchaText", null, new { @class = "form-control input-lg", @placeholder = "Captcha" })
-                            <span class="field- validation-error" data-valmsg-for="captchaID" data-valmsg-replace="true">
-                                <span for="captchaID" style="color:red">@ViewBag.Message</span>
-                            </span>
-                        </div>
-                        <div class="col-xs-12 col-sm-6 col-md-6">
-                            <div class="form-group">
-                                <img id="captchaimage" src="@Url.Action("generateCaptcha", "Account")" />
-                                <a id="refresh" onclick="onRefreshChange(event);">
-                                    &nbsp;<i class="glyphicon glyphicon-refresh"></i>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-xs-12 col-sm-12 col-md-12">
-                            By clicking <strong class="label label-primary">Create My Account</strong>, you
-                            agree to the <a href="#" data-toggle="modal" data-target="#t_and_c_m">Terms and Conditions</a> set out by this
-                            site, including our Cookie Use.
-                        </div>
-                    </div>
-                    <hr class="colorgraph">
-                    <div class="row">
-                        <div class="col-xs-12 col-md-6">
-                            <input type="submit" value="Create My Account" class="btn btn-primary btn-block btn-lg">
-                        </div>
-                        <div class="col-xs-12 col-md-6">
-                            <a href="login" class="btn btn-default btn-block btn-lg">
-                                Cancel
-                            </a>
-                        </div>
-                    </div>
-                }
-            </div>
-        </div>
+<body>
+
+    <script src="@Url.Content("~/Scripts/jquery-1.10.2.min.js")" type="text/javascript"></script>
+    <script src="~/Scripts/bootstrap.js"></script>
+    <script src="~/Scripts/jquery-1.10.2.min.js"></script>
+    @Scripts.Render("~/bundles/jqueryval")
+    <script>
+        function onRefreshChange(e) {
+            $("#captchaimage").attr("src", $("#captchaimage").attr("src") + "?timestamp=" + new Date().getTime());
+        }
+    </script>
+    <div class="CreateAccount_Wrapper">
+        @using (Html.BeginForm("Register", "Account", FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {
+
+            @Html.AntiForgeryToken();
+                                    Html.ValidationSummary(true);
+                                    Html.EnableClientValidation();
+                                    <p class="text-danger-reg" id="DuplicacyMsg"></p>
+                                    <p class="text-success" id="successMsg"></p>
+                                    <div id="mainDiv">
+                                        <label>Account Information</label>
+                                        <div class="form-group">
+                                            @Html.TextBoxFor(m => m.UserName, new { @class = "form-control input-lg", @placeholder = "User Name" })
+                                            @Html.ValidationMessageFor(model => model.UserName, null, new { @Style = "font-size:8pt;vertical-align: text-top;" })
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-xs-12 col-sm-6 col-md-6">
+                                                <div class="form-group">
+                                                    @Html.PasswordFor(m => m.Password, new { @class = "form-control input-lg", @placeholder = "Password" })
+                                                    @Html.ValidationMessageFor(model => model.Password, null, new { @Style = "font-size:8pt;vertical-align: text-top;" })
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-12 col-sm-6 col-md-6">
+                                                <div class="form-group">
+                                                    @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control input-lg", @placeholder = "Confirm Password" })
+                                                    @Html.ValidationMessageFor(model => model.ConfirmPassword, null, new { @Style = "font-size:8pt;vertical-align: text-top;" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <label>Personal Information</label>
+                                        <div class="row">
+                                            <div class="col-xs-12 col-sm-6 col-md-6">
+                                                <div class="form-group">
+                                                    @Html.TextBoxFor(m => m.FirstName, new { @class = "form-control input-lg", placeholder = "First Name" })
+                                                    @Html.ValidationMessageFor(model => model.FirstName, null, new { @Style = "font-size:8pt;vertical-align: text-top;" })
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-12 col-sm-6 col-md-6">
+                                                <div class="form-group">
+                                                    @Html.TextBoxFor(m => m.LastName, new { @class = "form-control input-lg", placeholder = "Last Name" })
+                                                    @Html.ValidationMessageFor(model => model.LastName, null, new { @Style = "font-size:8pt;vertical-align: text-top;" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            @Html.TextBoxFor(m => m.Email, new { @class = "form-control input-lg", @placeholder = "Email Address" })
+                                            @Html.ValidationMessageFor(model => model.Email, null, new { @Style = "font-size:8pt;vertical-align: text-top;" })
+                                        </div>
+                                        <label>
+                                            Captcha letters are case sensitive
+                                        </label>
+                                        <div class="row">
+                                            <div class="col-xs-12 col-sm-6 col-md-6">
+                                                @Html.TextBox("CaptchaText", null, new { @class = "form-control input-lg", @placeholder = "Captcha" })
+                                                <span class="field- validation-error" data-valmsg-for="captchaID" data-valmsg-replace="true">
+                                                    <span for="captchaID" id="CaptchaverificationMsg" style="color: red; font-size: 8pt; vertical-align: text-top;"></span>
+                                                </span>
+                                            </div>
+                                            <div class="col-xs-12 col-sm-6 col-md-6">
+                                                <div class="form-group">
+                                                    <img id="captchaimage" src="@Url.Action("generateCaptcha", "Account")" />
+                                                    <a id="refresh" onclick="onRefreshChange(event);">
+                                                        &nbsp;<i class="glyphicon glyphicon-refresh"></i>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-xs-12 col-sm-12 col-md-12">
+                                                By clicking <strong class="label label-primary">Create My Account</strong>, you
+                                                agree to the <a href="#" data-toggle="modal" data-target="#t_and_c_m">Terms and Conditions</a> set out by this
+                                                site, including our Cookie Use.
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-xs-12 col-md-6">
+                                                <input type="submit" value="Create My Account" onclick="QuickCreateAccount(event, 'DuplicacyMsg', 'successMsg', 'CaptchaverificationMsg', '');" class="btn btn btn-primary">
+                                            </div>
+                                            <div class="col-xs-12 col-md-6">
+                                                <button type="button" class="btn btn-default btn-block" data-dismiss="modal" aria-hidden="true">Cancel</button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+        }
     </div>
-    <!-- /container -->
-    <!-- Bootstrap core JavaScript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    @section Scripts {
-        @Scripts.Render("~/bundles/jqueryval")
-    }
+    <script>
+        function QuickCreateAccount(e) {
+            e.preventDefault();
+            var form = $(e.currentTarget).closest('form');
+            if (!form.valid()) return;
+            var url = $(e.currentTarget).closest('form').attr("action");
+            var formData = $(e.currentTarget).closest('form').serialize();
+            $.ajax({
+                url: url,
+                type: "POST",
+                data: formData,
+                dataType: "json",
+                success: function (result) {
+                    if (result == "Ok") {
+                        var buttontext = " <a data-dismiss='modal' aria-hidden='true'>Login</a>";
+                        form.find('#DuplicacyMessage').text('');
+                        form.find('#successMsg').text("You are registered successfully, Email has been sent to registered email id.");
+                        form.find('#successMsg').append(buttontext);
+                        form.find("#mainDiv").hide();
+                    }
+                    else if (result == "emailExist") {
+                        form.find('#DuplicacyMessage').text('');
+                        form.find('#DuplicacyMessage').text("E-Mail already exist. Please try another one.");
+                    }
+                    else if (result == "Captchaverification") {
+                        form.find('#CaptchaverificationMsg').text('');
+                        form.find('#CaptchaverificationMsg').text("Captcha verification failed!");
+                    }
+                    else if (result == "UserExist") {
+                        form.find('#DuplicacyMessage').text("Username already exist. Please try another one.");
+                    }
+                    else {
+                        form.find('#DuplicacyMsg').text('');
+                        form.find('#DuplicacyMsg').text(result);
+                    }
+                }
+            });
+        }</script>
 </body>
 </html>

@@ -46,6 +46,7 @@ THE SOFTWARE.
     pMoment = moment,
 // ReSharper disable once InconsistentNaming
     DateTimePicker = function (element, options) {
+        datetimepickerLoad($(element), options);
         var defaults = {
             pickDate: true,
             pickTime: true,
@@ -481,33 +482,33 @@ THE SOFTWARE.
             timeComponents.filter('[data-time-component=minutes]').text(padLeft(picker.date.minutes()));
             timeComponents.filter('[data-time-component=seconds]').text(padLeft(picker.date.second()));
         },
-            keypress= function(e){
+            keypress = function (e) {
                 var dateChanged = false,
                     dir, newDate, newViewDate,
                     focusDate = this.focusDate || this.viewDate;
-                switch(e.keyCode){
+                switch (e.keyCode) {
                     case 27: // escape
                         picker.hide();
                         e.preventDefault();
                         break;
-                    case 32: // spacebar
-                        fillDate();
-                        set();
-                        picker.hide();
-                        break;
-                    case 13: // enter
-                            fillDate();
-                            set();
-                            picker.hide();
-                            e = $.event.fix(e);
-                            e.preventDefault();
-                            e.stopPropagation();
-                        break;
+                        //case 32: // spacebar
+                        //    fillDate();
+                        //    set();
+                        //    picker.hide();
+                        //    break;
+                        //case 13: // enter
+                        //    fillDate();
+                        //    set();
+                        //    picker.hide();
+                        //    e = $.event.fix(e);
+                        //    e.preventDefault();
+                        //    e.stopPropagation();
+                        //    break;
                     case 9: // tab
                         picker.hide();
                         break;
                 }
-                if (dateChanged){
+                if (dateChanged) {
                     if (this.dates.length)
                         this._trigger('changeDate');
                     else
@@ -515,7 +516,7 @@ THE SOFTWARE.
                     var element;
                     if (this.isInput) {
                         element = this.element;
-                    } else if (this.component){
+                    } else if (this.component) {
                         element = this.element.find('input');
                     }
                     if (element) {
@@ -727,8 +728,8 @@ THE SOFTWARE.
                 picker.element.on({
                     'focus': $.proxy(picker.show, this),
                     'change': $.proxy(change, this),
-                    'keydown':  $.proxy(keypress, this)
-					// To Support IE8 Browser
+                    'keydown': $.proxy(keypress, this)
+                    // To Support IE8 Browser
                     // Modified to allow DateTime pickers to hide on clicking out of the picker
                     //'blur': $.proxy(picker.hide, this)
                 });
@@ -750,18 +751,18 @@ THE SOFTWARE.
             // Modified to allow DateTime pickers to hide on clicking out of the picker
             // when the picker is configured for both Date and Time
             //if (!picker.isInput) {
-                $(document).on(
-                    'mousedown.datetimepicker' + picker.id, $.proxy(picker.hide, this));
+            $(document).on(
+                'mousedown.datetimepicker' + picker.id, $.proxy(picker.hide, this));
             //}
-                //$(document).on(
-                //          'keydown.datetimepicker' + picker.id, $.proxy(picker.hide, this));
-                //$(document).keydown(function (e) {
-                //    if (e.keyCode == 13) {
-                //        e.stopPropagation();
-                //        e.preventDefault();
-                //        return false;
-                //    }
-                //});
+            //$(document).on(
+            //          'keydown.datetimepicker' + picker.id, $.proxy(picker.hide, this));
+            //$(document).keydown(function (e) {
+            //    if (e.keyCode == 13) {
+            //        e.stopPropagation();
+            //        e.preventDefault();
+            //        return false;
+            //    }
+            //});
         },
         detachDatePickerEvents = function () {
             picker.widget.off('click', '.datepicker *', picker.click);
@@ -1120,6 +1121,326 @@ THE SOFTWARE.
         return this.each(function () {
             var $this = $(this), data = $this.data('DateTimePicker');
             if (!data) $this.data('DateTimePicker', new DateTimePicker(this, options));
+            //
+            if ($(this).val() == "") {
+                if ($(this).attr("id").includes("datetimepicker")) {
+                    datetimepickerLoad(this, options)
+                }
+            }
+            //
         });
     };
+    $.fn.datetimepickerIndex = function (options) {
+        if (options.divid != undefined)
+            datetimepickerLoadIndex(options)
+
+    };
 }));
+
+function datetimepickerLoadIndex(options) {
+    var localDateString = "";
+    var amPm = "";
+    if (options.val != "") {
+        if (options.format != undefined) {
+            var format = options.format;
+            if (format.trim() == "MM/DD/YYYY hh:mm".trim()) {
+                var date = new Date(options.val);
+                var convertedTime = convertLocalDateToUTCDateOnload(date, false);
+                localDateString = moment(convertedTime).format(options.format + " A");
+                $("#" + options.divid).html(localDateString);
+            }
+            else if (format.trim() == "MM/DD/YYYY HH:mm".trim()) {
+                var date = new Date(options.val);
+                var convertedTime = convertLocalDateToUTCDateOnload(date, false);
+                localDateString = moment(convertedTime).format(format);
+                $("#" + options.divid).html(localDateString);
+            }
+            else if (format.trim() == "HH:mm".trim() || format.trim() == "hh:mm".trim()) {
+                var time = options.val;
+                var convertedTime = ConvertTimeOnlyToDateTime(time, false);
+                if (format.trim() == "hh:mm".trim())
+                    localDateString = moment(convertedTime).format(format + " A");
+                else
+                    localDateString = moment(convertedTime).format(format);
+                $("#" + options.divid).html(localDateString);
+            }
+        }
+    }
+}
+function datetimepickerLoad(textBox, options) {
+
+    var localDateString = "";
+    var amPm = "";
+    if ($(textBox).val() != "") {
+        if ($(textBox).attr("format") != undefined) {
+            var format = $(textBox).attr("format");
+            if (format.trim() == "MM/DD/YYYY hh:mm".trim()) {
+                var date = new Date($(textBox).val());
+                var convertedTime = "";
+                if (options != undefined) {
+                    if (options.IsRequired != undefined)
+                        convertedTime = new Date();
+                    else
+                        convertedTime = convertLocalDateToUTCDateOnload(date, false);
+                }
+                else
+                    convertedTime = convertLocalDateToUTCDateOnload(date, false);
+                localDateString = moment(convertedTime).format(format + " A");
+                $(textBox).val(localDateString);
+            }
+            else if (format.trim() == "MM/DD/YYYY HH:mm".trim()) {
+                var date = new Date($(textBox).val());
+                var convertedTime = "";
+                if (options.IsRequired != undefined)
+                    convertedTime = new Date();
+                else
+                    convertedTime = convertLocalDateToUTCDateOnload(date, false);
+                localDateString = moment(convertedTime).format(format);
+                $(textBox).val(localDateString);
+
+            }
+            else if (format.trim() == "HH:mm".trim() || format.trim() == "hh:mm".trim()) {
+                var time = $(textBox).val();
+                var convertedTime = "";
+                if (options.IsRequired != undefined) {
+                    convertedTime = new Date();
+                    if (format.trim() == "hh:mm".trim())
+                        localDateString = moment(convertedTime).format(format + " A");
+                    else
+                        localDateString = moment(convertedTime).format(format);
+                }
+                else {
+                    convertedTime = ConvertTimeOnlyToDateTime(time, false);
+                    if (format.trim() == "hh:mm".trim())
+                        localDateString = moment(convertedTime).format(format + " A");
+                    else
+                        localDateString = moment(convertedTime).format(format);
+                }
+                $(textBox).val(localDateString);
+            }
+
+        }
+    }
+}
+function ConvertTimeOnlyToDateTimeSave(time, toUTC) {
+
+    var temp = time;
+    var TimeOnly = new Date();
+    var time = time.match(/(\d+)(?::(\d\d))?\s*(p?)/);
+    TimeOnly.setHours(parseInt(time[1]));
+    if (temp.match("PM$")) {
+        TimeOnly.setHours(0, 0, 0, 0)
+        if (!temp.match("^12")) {
+            TimeOnly.setHours(parseInt(time[1]) + 12);
+        }
+        else {
+            TimeOnly.setHours(parseInt(time[1]));
+        }
+    }
+    else if (temp.match("AM$")) {
+        TimeOnly.setHours(0, 0, 0, 0)
+        if (temp.match("^12")) {
+            TimeOnly.setHours(parseInt(time[1]) - 12);
+        }
+        else {
+            TimeOnly.setHours(parseInt(time[1]));
+        }
+    }
+    TimeOnly.setMinutes(parseInt(time[2]));
+    return new Date(TimeOnly);
+}
+function ConvertTimeOnlyToDateTime(time, toUTC) {
+    var temp = time;
+    var TimeOnly = new Date();
+    var time = time.match(/(\d+)(?::(\d\d))?\s*(p?)/);
+    TimeOnly.setHours(parseInt(time[1]));
+
+
+    if (temp.match("PM$")) {
+        TimeOnly.setHours(0, 0, 0, 0)
+        if (!temp.match("^12")) {
+            TimeOnly.setHours(parseInt(time[1]) + 12);
+        }
+        else {
+            TimeOnly.setHours(parseInt(time[1]));
+        }
+    }
+    else if (temp.match("AM$")) {
+        TimeOnly.setHours(0, 0, 0, 0)
+        if (temp.match("^12")) {
+            TimeOnly.setHours(parseInt(time[1]) - 12);
+        }
+        else {
+            TimeOnly.setHours(parseInt(time[1]));
+        }
+    }
+    TimeOnly.setMinutes(parseInt(time[2]));
+    //Local time converted to UTC
+    var localOffset = TimeOnly.getTimezoneOffset() * 60000;
+    var localTime = TimeOnly.getTime();
+    if (localOffset == 0) {
+        TimeOnly = localTime;
+    }
+    else {
+        TimeOnly = localTime - localOffset;
+    }
+    return new Date(TimeOnly);
+}
+function convertLocalDateToUTCDateOnloadTimeOnly(date, toUTC) {
+    date = new Date(date);
+    //Local time converted to UTC
+    var localOffset = date.getTimezoneOffset() * 60000;
+    //var localOffset =-new Date().getTimezoneOffset() / 60000;
+    var localTime = date.getTime();
+    if (localOffset == 0) {
+        date = localTime;
+    }
+    else {
+        date = localTime - localOffset;
+    }
+    return date;
+}
+function convertLocalDateToUTCDateOnload(date, toUTC) {
+    date = new Date(date);
+    //Local time converted to UTC
+    var localOffset = date.getTimezoneOffset() * 60000;
+    //var localOffset = new Date().getTimezoneOffset() / 60000;
+    var localTime = date.getTime();
+    if (localOffset == 0) {
+        date = localTime;
+    }
+    else {
+        date = localTime - localOffset;
+    }
+    date = new Date(date);
+    return date;
+
+}
+function SaveServerTime(thisform, isbr) {
+    if (isbr) {
+        if (!$(thisform).valid()) return
+        $(thisform).find("div").each(function () {
+            if ($(this).attr("id") != undefined && $(this).attr("id").includes("datetimepicker")) {
+                var datefieldId = $(this).attr("id").replace("datetimepicker", "").trim();
+                if (datefieldId != undefined) {
+                    var inputbox = $("#" + datefieldId);
+                    if (inputbox.attr("id") != undefined && inputbox.val() != "") {
+                        if (inputbox.attr("readonly") == undefined && inputbox.attr("format") != undefined)
+                            convertLocalDateToUTCServerTime(inputbox, false);
+                    }
+                }
+            }
+        });
+    }
+    else {
+        if (!$(thisform.form).valid()) return
+        $(thisform.form).find("div").each(function () {
+            if ($(this).attr("id") != undefined && $(this).attr("id").includes("datetimepicker")) {
+                var datefieldId = $(this).attr("id").replace("datetimepicker", "").trim();
+                if (datefieldId != undefined) {
+                    var inputbox = $("#" + datefieldId);
+                    if (inputbox.attr("id") != undefined && inputbox.val() != "") {
+                        if (inputbox.attr("readonly") == undefined && inputbox.attr("format") != undefined)
+                            convertLocalDateToUTCServerTime(inputbox, false);
+                    }
+                }
+            }
+        });
+    }
+}
+function SaveServerTimeQuickAdd(thisform) {
+    $(thisform).find("div").each(function () {
+        if ($(this).attr("id") != undefined && $(this).attr("id").includes("datetimepicker")) {
+            var datefieldId = $(this).attr("id").replace("datetimepicker", "").trim();
+            if (datefieldId != undefined) {
+                var inputbox = $("#" + datefieldId);
+                if (inputbox.attr("id") != undefined && inputbox.val() != "") {
+                    if (inputbox.attr("readonly") == undefined && inputbox.attr("format") != undefined)
+                        convertLocalDateToUTCServerTime(inputbox, false);
+                }
+            }
+        }
+    });
+}
+function SaveServerTimeQuickEdit(thisform) {
+    $(thisform).find("div").each(function () {
+        if ($(this).attr("id") != undefined && $(this).attr("id").includes("datetimepicker")) {
+            var datefieldId = $(this).attr("id").replace("datetimepicker", "").trim();
+            if (datefieldId != undefined) {
+                var inputbox = $("#" + datefieldId);
+                if (inputbox.attr("id") != undefined && inputbox.val() != "") {
+                    if (inputbox.attr("readonly") == undefined && inputbox.attr("format") != undefined)
+                        convertLocalDateToUTCServerTime(inputbox, false);
+                }
+            }
+        }
+    });
+}
+function convertLocalDateToUTCServerTime(dateval, toUTC) {
+    var offset = new Date().getTimezoneOffset();
+    var format = dateval.attr("format")
+    var localDateString = "";
+    if (format.trim() == "MM/DD/YYYY HH:mm".trim()) {
+        var date = new Date(dateval.val());
+        localDateString = toUTCDate(date)
+        dateval.val(localDateString);
+    }
+    else if (format == "MM/DD/YYYY hh:mm") {
+        var date = new Date(dateval.val());
+        localDateString = toUTCDate(date)
+        dateval.val(localDateString);
+    }
+    else if (format == "HH:mm" || format == "hh:mm") {
+
+
+        var time = dateval.val();
+        var shortdate = ConvertTimeOnlyToDateTimeSave(time, false)
+        localDateString = toUTCDate(shortdate)
+        dateval.val(localDateString);
+    }
+}
+function toUTCDate(datetime) {
+    var month = datetime.getUTCMonth() + 1;
+    var day = datetime.getUTCDate();
+    var year = datetime.getUTCFullYear();
+    var hours = datetime.getUTCHours(); //returns 0-23
+    var minutes = datetime.getUTCMinutes(); //returns 0-59
+    var seconds = datetime.getUTCSeconds();
+    return (month + "/" + day + "/" + year + " " + hours + ":" + minutes);
+
+}
+function SaveDateTimeBR(startdate) {
+    var dateval = $("#" + startdate)
+    var datetime = new Date(dateval.val());
+    var month = datetime.getUTCMonth() + 1;
+    var day = datetime.getUTCDate();
+    var year = datetime.getUTCFullYear();
+    var hours = datetime.getUTCHours(); //returns 0-23
+    var minutes = datetime.getUTCMinutes(); //returns 0-59
+    var seconds = datetime.getUTCSeconds();
+    dateval.val(month + "/" + day + "/" + year + " " + hours + ":" + minutes);
+
+}
+
+String.prototype.includes = function (search, start) {
+    'use strict';
+    if (typeof start !== 'number') {
+        start = 0;
+    }
+
+    if (start + search.length > this.length) {
+        return false;
+    } else {
+        return this.indexOf(search, start) !== -1;
+    }
+};
+function SetCalendarStartDate(value1, value2) {
+    $('#' + value1).attr("format", "MM/DD/YYYY hh:mm");
+    var date = new Date($('#' + value1).val());
+    var mm = date.getMonth() + 1;
+    var dd = date.getDate();
+    var yy = date.getFullYear();
+    var time = $('#' + value2).val();
+    var finaldate = mm + "/" + dd + "/" + yy + " " + time;
+    $('#' + value1).val(finaldate);
+}

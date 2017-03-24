@@ -1,8 +1,4 @@
 $(function () {
-    if ($('#GA-SideBar').value != undefined)
-        $('#GA-SideBar').metisMenu();
-});
-$(function () {
     $(window).bind("load resize", function () {
         if ($(this).width() < 768) {
             $('div.sidebar-collapse').addClass('collapse')
@@ -11,7 +7,7 @@ $(function () {
         }
     })
 })
-function FacetedSearch(Entity, Asso, Prop, sortby, isAsc, currentFilter, page) {
+function FacetedSearch(Entity, Asso, Prop, viewtype, sortby, isAsc, currentFilter, page) {
     var urlstring = $("#" + "fSearch" + Entity).attr("dataurl");
     var association = Asso.split(",");
     var property = Prop.split(",");
@@ -49,6 +45,9 @@ function FacetedSearch(Entity, Asso, Prop, sortby, isAsc, currentFilter, page) {
         if (isAsc != "")
             page_sortstring += "&isAsc=" + isAsc;
     }
+    // if (viewtype != '') {
+    //    page_sortstring += "&viewtype=" + viewtype;
+    // }
     if (currentFilter != '') {
         if (firstparam == 0)
             urlstring += "?searchString=" + currentFilter + page_sortstring;
@@ -56,26 +55,32 @@ function FacetedSearch(Entity, Asso, Prop, sortby, isAsc, currentFilter, page) {
             urlstring += "&searchString=" + currentFilter + page_sortstring;
     }
     if (firstparam == 0)
-        urlstring += "?search=" + document.getElementById("FSearch").value + page_sortstring;
+        urlstring += "?search=" + SanitizeURLString(document.getElementById("FSearch").value) + page_sortstring;
     else
-        urlstring += "&search=" + document.getElementById("FSearch").value + page_sortstring;
+        urlstring += "&search=" + SanitizeURLString(document.getElementById("FSearch").value) + page_sortstring;
+    urlstring = addParameterToURL(urlstring, "SortOrder", $("#SortOrder").val());
+    urlstring = addParameterToURL(urlstring, "GroupByColumn", $("#hdnGroupByColumn").val());
+    urlstring = addParameterToURL(urlstring, "HideColumns", $("#HideColumns").val());
+    urlstring = addParameterToURL(urlstring, "viewtype", $("#DisplayLayout").val());
+    urlstring = addParameterToURL(urlstring, "FilterCondition", $("#FilterCondition").val());
     window.location = (urlstring);
 }
-function ClearChildDD(child, obj,isreverse) {
+function ClearChildDD(child, obj, isreverse) {
     $("#" + child).html("<option value=''>--Select--</option>");
     $("#" + child).val('');
     var IsReverse = isreverse;//$(obj).attr("IsReverse");
     if (IsReverse == "true" || IsReverse == "True" && $(obj).val().length > 0) {
         $("#" + child).removeAttr("lock");
+        $("#" + child).trigger('chosen:updated');
         $("#" + child).trigger('chosen:open');
         $("#" + child).trigger('change');
         $("#" + child).attr("lock", "true");
     }
     else {
-       // if ($(obj).val().length > 0)
-            $("#" + child).removeAttr("lock");
-       // else
-          //  $("#" + child).attr("lock", "true");
+        // if ($(obj).val().length > 0)
+        $("#" + child).removeAttr("lock");
+        // else
+        //  $("#" + child).attr("lock", "true");
     }
     $("#" + child).trigger('chosen:updated');
 }
@@ -157,20 +162,41 @@ function OpenDashBoard(dvName) {
     var url = $("#" + dvName).data("url");//+"?TS="+Date.now();
     $("#" + dvName).load(url);
 }
-function OpenDashBoardFromHome(obj, dvName,entName) {
+function OpenDashBoardFromHome(obj, dvName, entName) {
     var url = $(obj).attr("dataurl");//+"?TS="+Date.now();
     $("#EntityGraphLabel").html(entName)
+    $("#" + dvName).load(url);
+}
+function OpenPopUpGraph(Popup, dvName, url) {
+    $("#" + Popup).modal('show');
+    $("#" + Popup).find('.modal-dialog.ui-draggable').attr("style", "width:90%");
+    $("#" + dvName).html('');
     $("#" + dvName).load(url);
 }
 //Refresh index list 
 function RefreshGrid(dvName, url) {
     $("#" + dvName).load(url);
 }
-function LoadTab(dvName, url) {
+function ClearTabCookie(username) {
+    $.cookie(username + "TabCookie", null);
+}
+function LoadTab(dvName, username, url) {
+    if (dvName.length > 0)
+        $.cookie(username + "TabCookie", dvName);
     if ($.trim($("#" + dvName).html()).length == 0) {
         $("#" + dvName).html('Please wait..');
         $("#" + dvName).load(url);
     }
+}
+function LoadTabMobile(dvName, url) {
+    if ($.trim($("#" + dvName).html()).length == 0) {
+        $("#" + dvName).html('Please wait..');
+        $("#" + dvName).load(url);
+    }
+}
+function LoadTabTemplate(dvName, url) {
+    $("#" + dvName).html('Please wait..');
+    $("#" + dvName).load(url);
 }
 //Refresh index list 
 function CancelSearch(dvName, url, UserName) {
@@ -187,16 +213,16 @@ function CancelSearch(dvName, url, UserName) {
             if (data != null) {
                 if (host != undefined && IsFilter != "True" && $('#' + host).length > 0) {
                     $('#' + dvName, $('#' + host)).html(data);
-		if (IsdrivedTab) {
+                    if (IsdrivedTab) {
                         $("a[href='" + host + "']").trigger("click");
-                   }
+                    }
                 }
                 else {
                     try {
                         $('#' + dvName).html(data);
-		  if (IsdrivedTab) {
-                        $("a[href='" + host + "']").trigger("click");
-                   }
+                        if (IsdrivedTab) {
+                            $("a[href='" + host + "']").trigger("click");
+                        }
                     } catch (ex) { }
                 }
             }
@@ -251,7 +277,7 @@ function OpenPopUpEntity(Popup, EntityName, dvName, url) {
     $("#" + dvName + "Error").html('');
     $("#" + dvName).load(url);
 }
-function OpenPopUpEntity1M(obj,Popup, EntityName, dvName, url) {
+function OpenPopUpEntity1M(obj, Popup, EntityName, dvName, url) {
     $("#" + Popup + 'Label').html();
     var HostingDispVal = ($("#HostingEntityDisplayValue").html());
     var value1 = $(obj).attr("data-original-title");
@@ -271,7 +297,7 @@ function OpenPopUpCopyEntity(Popup, EntityName, dvName, url) {
 }
 function OpenPopUpEntityMobile(Popup, EntityName, dvName, ddname, url) {
     $("#" + Popup + 'Label').html();
-    $("#" + Popup + 'Label').css({ 'color': "black" });	
+    $("#" + Popup + 'Label').css({ 'color': "black" });
     $("#" + Popup + 'Label').html("Add " + EntityName);
     $("#" + Popup).modal('show');
     $("#" + dvName).html('');
@@ -287,7 +313,16 @@ function OpenPopUpBulkOperation(Popup, EntityName, DispName, dvName, url) {
     $("#" + dvName).html('');
     $("#" + dvName).load(url);
 }
-function QuickAdd(e, bisrule, biscount) {
+function OpenPopUpBulkOperationBR(Popup, EntityName, DispName, dvName, url) {
+    $("#" + Popup + 'Label').html();
+    $("#" + Popup + 'Label').attr('class', "SuggestedPropertyValue");
+    $("#" + Popup + 'Label').html(DispName);
+    $("#" + Popup).modal('show');
+    $("#" + dvName).html('');
+    $("#" + dvName).load(url);
+}
+function QuickAdd(e, EntityName, bisrule, biscount, ruleType, lblerrormsg, isinline, lstinlineassocname, lstinlineassocdispname, lstinlineentityname) {
+    $(e.currentTarget).attr('disabled', 'disabled');
     var target;
     if (e.srcElement) target = e.srcElement;
     e = $.event.fix(e);
@@ -296,8 +331,12 @@ function QuickAdd(e, bisrule, biscount) {
     var form = $(target).closest('form');
     var fd = $(target).closest('form').serialize();
     var url = $(target).closest('form').attr("action");
-    BusineesRule(fd, url, bisrule, biscount, form)
-    if (!form.valid()) return;
+    //var p = BusineesRule(fd, url, bisrule, biscount, form);
+    var p = BusineesRule(fd, url, bisrule, biscount, form, ruleType, EntityName, lblerrormsg, isinline, lstinlineassocname, lstinlineassocdispname, lstinlineentityname);
+    if (!p)
+        $(target).removeAttr("disabled");
+    if (!form.valid()) { $(target).removeAttr("disabled"); return; }
+    SaveServerTimeQuickAdd(form);
     try {
         var fd = new FormData(form[0]);
         $('input[type="file"]').each(function () {
@@ -315,8 +354,7 @@ function QuickAdd(e, bisrule, biscount) {
             contentType: false,
             success: function (result) {
                 if (result == "FROMPOPUP") {
-                    if (form.find('button').attr('aria-hidden') == "true")
-                        form.find('button').click();
+                    form.find('button[aria-hidden="true"]').click();
                 }
             }
         });
@@ -330,8 +368,7 @@ function QuickAdd(e, bisrule, biscount) {
             data: fd,
             success: function (result) {
                 if (result == "FROMPOPUP") {
-                    if (form.find('button').attr('aria-hidden') == "true")
-                        form.find('button').click();
+                    form.find('button[aria-hidden="true"]').click();
                 }
             }
         });
@@ -365,9 +402,8 @@ function QuickAddMobile(e, bisrule, biscount) {
             contentType: false,
             success: function (result) {
                 if (result == "FROMPOPUP") {
-                    if (form.find('button').attr('aria-hidden') == "true")
-                        form.find('button').click();
-			FillDropdownMobile(dropdown);
+                    form.find('button[aria-hidden="true"]').click();
+                    FillDropdownMobile(dropdown);
                 }
             }
         });
@@ -381,9 +417,8 @@ function QuickAddMobile(e, bisrule, biscount) {
             data: fd,
             success: function (result) {
                 if (result == "FROMPOPUP") {
-                    if (form.find('button').attr('aria-hidden') == "true")
-                        form.find('button').click();
-			FillDropdownMobile(dropdown);
+                    form.find('button[aria-hidden="true"]').click();
+                    FillDropdownMobile(dropdown);
                 }
             }
         });
@@ -394,7 +429,7 @@ function QuickAddMobile(e, bisrule, biscount) {
         $("#" + dropdown).change();
     }
 }
-function QuickAddFromIndex(e, isrefresh, Entity, host, bisrule, biscount) {
+function QuickAddFromIndex(e, isrefresh, Entity, host, bisrule, biscount, ruleType, lblerrormsg, isinline, lstinlineassocname, lstinlineassocdispname, lstinlineentityname) {
     $(e.currentTarget).attr('disabled', 'disabled')
     var target;
     if (e.srcElement) target = e.srcElement;
@@ -404,15 +439,14 @@ function QuickAddFromIndex(e, isrefresh, Entity, host, bisrule, biscount) {
     var form = $(target).closest('form');
     var fd = $(target).closest('form').serialize();
     var url = $(target).closest('form').attr("action");
-    
-    var p = BusineesRule(fd, url, bisrule, biscount, form);
-
-    if (!p)
+    var p = BusineesRule(fd, url, bisrule, biscount, form, ruleType, Entity, lblerrormsg, isinline, lstinlineassocname, lstinlineassocdispname, lstinlineentityname);
+    if (!p) {
         $(target).removeAttr("disabled");
-
+        return false;
+    }
     if (!form.valid()) { $(target).removeAttr("disabled"); return; }
+    SaveServerTimeQuickAdd(form);
     try {
-
         fd = new FormData(form[0]);
         $('input[type="file"]').each(function () {
             var file = $('#' + $(this)[0].id)[0].files;
@@ -431,8 +465,7 @@ function QuickAddFromIndex(e, isrefresh, Entity, host, bisrule, biscount) {
             success: function (result) {
                 $(target).removeAttr("disabled");
                 if (result == "FROMPOPUP") {
-                    if (form.find('button').attr('aria-hidden') == "true")
-                        form.find('button').click();
+                    form.find('button[aria-hidden="true"]').click();
                     if (isrefresh) {
                         if (host != undefined && host.length > 0 && $('#' + host).length > 0) {
                             $('#' + Entity + 'SearchCancel', $('#' + host)).click();
@@ -456,8 +489,7 @@ function QuickAddFromIndex(e, isrefresh, Entity, host, bisrule, biscount) {
             data: fd,
             success: function (result) {
                 if (result == "FROMPOPUP") {
-                    if (form.find('button').attr('aria-hidden') == "true")
-                        form.find('button').click();
+                    form.find('button[aria-hidden="true"]').click();
                     if (isrefresh) {
                         if (host != undefined && host.length > 0 && $('#' + host).length > 0) {
                             $('#' + Entity + 'SearchCancel', $('#' + host)).click();
@@ -472,33 +504,42 @@ function QuickAddFromIndex(e, isrefresh, Entity, host, bisrule, biscount) {
             }
         });
     }
+    if (Entity.indexOf('Events') > -1) {
+        location.reload();
+    }
 }
-function BusineesRule(fd, url, bisrule, bisCount, form) {
-    var BruleUrl = url.replace("CreateQuick", "GetMandatoryProperties")
+function BusineesRule(fd, url, bisrule, bisCount, form, ruleType, entityname, lblerrormsg, isinline, lstinlineassocname, lstinlineassocdispname, lstinlineentityname) {
+
+    var BruleUrlMandatory = url;
+    var BruleUrlValidate = url;
+    var BruleUrl = url;
+    if (url.indexOf("CreateQuick") >= 0) {
+        BruleUrl = url.replace("CreateQuick", "businessruletype");
+        BruleUrl = BruleUrl + "?ruleType=" + ruleType;
+    }
+    else if (url.indexOf("EditQuick") >= 0) {
+        BruleUrl = url.replace("EditQuick", "businessruletype");
+        BruleUrl = BruleUrl + "?ruleType=" + ruleType;
+    }
     var flag = true;
+    
     if (bisrule != null && bisCount > 0) {
-        $.ajax({
-            async: false,
-            type: "GET",
-            url: BruleUrl,
-            data: fd,
-            success: function (data) {
-                $('[businessrule="mandatory"]').each(function () {
-                    $(this).removeAttr('required');
-                });
-                for (var key in data)
-                {
-                        if ($.trim($('#' + key).val()).length == 0 && $.trim($("input[type='radio'][name='" + key + "']:checked").val()).length == 0) {
-                            $('#' + key).attr('required', 'required');
-                            $('#' + key).attr('businessrule', 'mandatory');
-                            $("input[type='radio'][name='" + key + "']").attr('required', 'required');
-                            $("input[type='radio'][name='" + key + "']").attr('businessrule', 'mandatory');
-                            flag = false;
-                        }
-                 }
-            },
-            error: function (jqXHR, textStatus, errorThrown) {
-            }
+        flag = ApplyBusinessRuleOnSubmit(BruleUrl, entityname, isinline, lblerrormsg, fd, "", "");
+    }
+    if (lstinlineassocname != "" && lstinlineassocname != null) {
+        lstinlineassocname = lstinlineassocname.trim(',');
+        var arrassoc = lstinlineassocname.split(',');
+
+        lstinlineassocdispname = lstinlineassocdispname.trim(',');
+        var arrassocdispname = lstinlineassocdispname.split(',');
+
+        lstinlineentityname = lstinlineentityname.trim(',');
+        var arrassocentityname = lstinlineentityname.split(',');
+
+        $.each(arrassoc, function (index, value) {
+            var formdiv = form.find('#dv' + value + 'ID :input').serialize();
+            formdiv = formdiv.replaceAll(value.toLowerCase() + ".", "");
+            flag = flag && ApplyBusinessRuleOnSubmit(BruleUrl.replace(entityname, arrassocentityname[index]), arrassocentityname[index], true, lblerrormsg, formdiv, value, arrassocdispname[index]);
         });
     }
     return flag;
@@ -521,9 +562,11 @@ function getHostingEntityID(url) {
 function EntityFilter(EntityName, url, dataurl, UserName) {
     var _username = UserName;
     UserName = (encodeURI(UserName));
+
     if ($.cookie("pagination" + _username + EntityName) != null)
         $.removeCookie("pagination" + _username + EntityName);
     var FilterHostingEntityID = (dataurl.indexOf("FirstCall=True") > 0) ? undefined : getHostingEntityID(dataurl)["FilterHostingEntityID"];
+
     var IsWorkFlow = getHostingEntityID(dataurl)["IsWorkFlow"] == undefined ? false : true;
     var html = "<ul class=\"nav nav-tabs\">";
     var otherhtml = "<li><a class=\"hidden\" id=\"hiddendatatoggle\" data-toggle=\"tab\"></a><a onclick=\"$('#hiddendatatoggle').click();\" data-original-title=\"Filter-Groupby\" data-toggle=\"dropdown\" href=\"#\"> <span id=\"filtertabOther\">Other</span></a>";
@@ -533,6 +576,8 @@ function EntityFilter(EntityName, url, dataurl, UserName) {
         type: "GET",
         cache: false,
         dataType: "json",
+        async: false,
+        complete: function (result) { ClickFilterTabBtn(); },
         success: function (result) {
             var firstClick = "";
             var isother = false;
@@ -573,16 +618,16 @@ function EntityFilter(EntityName, url, dataurl, UserName) {
                 }
                 if (isother) {
                     if (IsWorkFlow)
-                        otherhtml += "<a onclick=\"$('#filtertabOther').html('Other-" + result[i].Name + "');CancelSearch('" + EntityName + "','" + dataurl + "&HostingEntityID=" + result[i].Id + "&Wfsearch=" + result[i].Name + "')\">" + result[i].Name + "</a>";
+                        otherhtml += "<a id=\"flt" + result[i].Id + "\" onclick=\"SetCookieFltTab('flt" + result[i].Id + "');$('#filtertabOther').html('Other-" + result[i].Name + "');CancelSearch('" + EntityName + "','" + dataurl + "&HostingEntityID=" + result[i].Id + "&Wfsearch=" + result[i].Name + "')\">" + result[i].Name + "</a>";
                     else
-                        otherhtml += "<a onclick=\"$('#filtertabOther').html('Other-" + result[i].Name + "');CancelSearch('" + EntityName + "','" + dataurl + "&HostingEntityID=" + result[i].Id + "')\">" + result[i].Name + "</a>";
+                        otherhtml += "<a id=\"flt" + result[i].Id + "\" onclick=\"SetCookieFltTab('flt" + result[i].Id + "');$('#filtertabOther').html('Other-" + result[i].Name + "');CancelSearch('" + EntityName + "','" + dataurl + "&HostingEntityID=" + result[i].Id + "')\">" + result[i].Name + "</a>";
                 }
                 else {
                     if (IsWorkFlow) {
-                        html += "<a data-toggle=\"tab\"  onclick=\"CancelSearch('" + EntityName + "','" + dataurl + "&HostingEntityID=" + result[i].Id + "&Wfsearch=" + result[i].Name + "','" + UserName + "')\">" + result[i].Name + "</a>";
+                        html += "<a id=\"flt" + result[i].Id + "\" data-toggle=\"tab\"  onclick=\"SetCookieFltTab('flt" + result[i].Id + "');CancelSearch('" + EntityName + "','" + dataurl + "&HostingEntityID=" + result[i].Id + "&Wfsearch=" + result[i].Name + "','" + UserName + "')\">" + result[i].Name + "</a>";
                     }
                     else
-                        html += "<a data-toggle=\"tab\"  onclick=\"CancelSearch('" + EntityName + "','" + dataurl + "&HostingEntityID=" + result[i].Id + "','" + UserName + "')\">" + result[i].Name + "</a>";
+                        html += "<a id=\"flt" + result[i].Id + "\" data-toggle=\"tab\"  onclick=\"SetCookieFltTab('flt" + result[i].Id + "');CancelSearch('" + EntityName + "','" + dataurl + "&HostingEntityID=" + result[i].Id + "','" + UserName + "')\">" + result[i].Name + "</a>";
                 }
                 html += "</li>";
                 if (isother)
@@ -596,7 +641,7 @@ function EntityFilter(EntityName, url, dataurl, UserName) {
                 }
             }
             html += "<li name=\"" + "null" + "\">";
-            html += "<a data-toggle=\"tab\"  onclick=\"CancelSearch('" + EntityName + "','" + dataurl + "','" + UserName + "')\">" + "None" + "</a>";
+            html += "<a data-toggle=\"tab\" id='None'  onclick=\"SetCookieFltTab('None');CancelSearch('" + EntityName + "','" + dataurl + "','" + UserName + "')\">" + "None" + "</a>";
             html += "</li>";
             //
             if (isother) {
@@ -615,9 +660,9 @@ function EntityFilter(EntityName, url, dataurl, UserName) {
     });
 }
 
+
 //Entity Filter For BizRule
 function EntityFilterBizRuleDisable(EntityName, dataurl, UserName) {
-
     var html = "<ul class=\"nav nav-tabs\">" +
     "<li name='false' class='active'>" +
     "<a data-toggle='tab'  onclick=\"CancelSearchBizRuleDisable('" + EntityName + "','" + dataurl + "&IsDisable=False','" + UserName + "')\">Enabled</a></li>" +
@@ -683,7 +728,6 @@ function EntityFilterBizRule(EntityName, url, dataurl, UserName) {
                         isother = true;
                     }
                 }
-
                 if (isother) {
                     otherhtml += "<a onclick=\"$('#filtertabOther').html('Other-" + value + "');CancelSearchBizRule('" + EntityName + "','" + dataurl + "&HostingEntityName=" + key + "')\">" + value + "</a>";
                 }
@@ -750,7 +794,7 @@ function Associate(e, entityName) {
     var selectedItems = $(selectFrom + " :selected").toArray();
     $(moveTo).append(selectedItems);
     selectedItems.remove;
-    $(idSelected + " option").attr("selected", "selected");
+    $(idSelected + " option").prop("selected", "selected");
 }
 function SearchList(id, val, selectCtrl) {
     if (val == "") {
@@ -805,14 +849,66 @@ function SearchListNew(obj, searchstring, hostingentityname, hostingentityid, as
         success: function (data) {
             searchstr = searchstring;
             $('#' + selectCtrl + ' > option[val!=""]').remove();
-            $.each(data, function (index, value) {
+            $.each(data.data, function (index, value) {
                 $('#' + selectCtrl).append('<option value="' + value.Value + '">' + value.Text + '</option>');
             });
+            if (data.Results)
+                $('#lbl' + selectCtrl).css('display', 'block');
+            else
+                $('#lbl' + selectCtrl).css('display', 'none');
         },
         error: function (jqXHR, textStatus, errorThrown) {
             //alert(errorThrown + '-' + textStatus);
         }
     });
+}
+function SearchListNew1(obj, dataurl, searchstring, hostingentityname, hostingentityid, associatedtype, selectCtrl, Asso) {
+    var srchstring = $(obj).val();
+    var url1 = dataurl;
+    url1 = addParameterToURL(url1, "SearchString", searchstring);
+    url1 = addParameterToURL(url1, "HostingEntityName", hostingentityname);
+    url1 = addParameterToURL(url1, "HostingEntityID", hostingentityid);
+    url1 = addParameterToURL(url1, "AssociatedType", associatedtype);
+    var association = Asso.split(",");
+    var firstparam = 0;
+    for (i = 0; i < association.length; i++) {
+        var vals = "";
+        ele = document.getElementById(association[i]);
+        if (ele != null)
+            for (var o = 0; o < ele.options.length; o++) {
+                if (ele.options[o].selected)
+                    vals += ele.options[o].value + ",";
+            }
+        if (vals.length > 0) {
+            //if (firstparam == 0)
+            url1 += "&" + association[i] + "=" + vals;
+            //else
+            //    url1 += "&" + association[i] + "=" + vals;
+            //firstparam = 1;
+        }
+    }
+
+
+    $.ajax({
+        async: false,
+        type: "GET",
+        url: url1,
+        success: function (data) {
+            searchstr = searchstring;
+            $('#' + selectCtrl + ' > option[val!=""]').remove();
+            $.each(data.data, function (index, value) {
+                $('#' + selectCtrl).append('<option value="' + value.Value + '">' + value.Text + '</option>');
+            });
+            if (data.Results)
+                $('#lbl' + selectCtrl).css('display', 'block');
+            else
+                $('#lbl' + selectCtrl).css('display', 'none');
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            //alert(errorThrown + '-' + textStatus);
+        }
+    });
+
 }
 function check1MThresholdValueQuickAdd(e, entityName) {
     var target;
@@ -827,33 +923,7 @@ function check1MThresholdValueQuickAdd(e, entityName) {
     $("#errors").html("");
     $("#errorsMsg").html("");
     var flag = true;
-    $.ajax({
-        async: false,
-        type: "GET",
-        //url: "@Url.Action("Check1MThresholdValue", entityName)",
-        url: url,
-        data: fd,
-        success: function (data) {
-            document.getElementById('ErrMsgQuickAdd').innerHTML = "";
-            var list = document.createElement('ul');
-            $.each(data, function (key, value) {
-                flag = false;
-                document.getElementById('ErrMsgQuickAdd').innerHTML += "Threshold limit <u>[" + value + "]</u> is reached for <u>[" + key + "]</u><br/>";
-            });
-        },
-        error: function (jqXHR, textStatus, errorThrown) {
-            //alert(errorThrown + '-' + textStatus);
-        }
-    });
-    if (!flag) {
-        e.preventDefault();
-        $("#errorContainerQuickAdd").show();
-        $("#errorsQuickAdd").html("<input  name='hdntxt' type='text' style='border:none;width:0px;height:0px' readonly required>");
-    }
-    else {
-        $("#errorContainerQuickAdd").hide();
-        $("#errorsQuickAdd").html("");
-    }
+	flag = Check1MThresholdLimit(e, fd, url, entityName, "ErrMsgQuickAdd");
     return flag;
 }
 function check1MThresholdValue(e, entityName) {
@@ -869,23 +939,7 @@ function check1MThresholdValue(e, entityName) {
     $("#errors").html("");
     $("#errorsMsg").html("");
     var flag = true;
-    $.ajax({
-        async: false,
-        type: "GET",
-        url: url,
-        data: fd,
-        success: function (data) {
-            document.getElementById('ErrMsg').innerHTML = "";
-            var list = document.createElement('ul');
-            $.each(data, function (key, value) {
-                flag = false;
-                document.getElementById('ErrMsg').innerHTML += "Threshold limit <u>[" + value + "]</u> is reached for <u>[" + key + "]</u><br/>";
-            });
-        },
-        error: function (jqXHR, textStatus, errorThrown) {
-            //alert(errorThrown + '-' + textStatus);
-        }
-    });
+    flag = Check1MThresholdLimit(e, fd, url, entityName, "ErrMsg");
     return flag;
 }
 // Radio Button List
@@ -996,13 +1050,10 @@ function QuickAddFromGrid(e, isrefresh, Entity, host) {
     if (e.currentTarget) target = e.currentTarget;
     e.preventDefault();
     var form = $(target).closest('form');
-
     var fd = $(target).closest('form').serialize();
     var url = $(target).closest('form').attr("action");
-
     if (!form.valid()) return;
     try {
-
         fd = new FormData(form[0]);
         $('input[type="file"]').each(function () {
             var file = $('#' + $(this)[0].id)[0].files;
@@ -1020,8 +1071,7 @@ function QuickAddFromGrid(e, isrefresh, Entity, host) {
             contentType: false,
             success: function (result) {
                 if (result == "FROMPOPUP") {
-                    if (form.find('button').attr('aria-hidden') == "true")
-                        form.find('button').click();
+                    form.find('button[aria-hidden="true"]').click();
                     if (isrefresh) {
                         if (host != undefined && host.length > 0 && $('#' + host).length > 0) {
                             $('#' + Entity + 'SearchCancel', $('#' + host)).click();
@@ -1044,8 +1094,7 @@ function QuickAddFromGrid(e, isrefresh, Entity, host) {
             data: fd,
             success: function (result) {
                 if (result == "FROMPOPUP") {
-                    if (form.find('button').attr('aria-hidden') == "true")
-                        form.find('button').click();
+                    form.find('button[aria-hidden="true"]').click();
                     if (isrefresh) {
                         if (host != undefined && host.length > 0 && $('#' + host).length > 0) {
                             $('#' + Entity + 'SearchCancel', $('#' + host)).click();
@@ -1061,20 +1110,29 @@ function QuickAddFromGrid(e, isrefresh, Entity, host) {
         });
     }
 }
-function QuickEditFromGrid(e, isrefresh, Entity, host) {
+function QuickEditFromGrid(e, isrefresh, Entity, host, IsWf, bisrule, biscount, ruleType, lblerrormsg, isinline, lstinlineassocname, lstinlineassocdispname, lstinlineentityname) {
+    if (IsWf) {
+        $('input:hidden[name="hdncommand"]').val(e.currentTarget.value);
+    }
+    $("textarea.richtext").each(function () {
+        $(this).val($(this).code());
+    });
     var target;
     if (e.srcElement) target = e.srcElement;
     e = $.event.fix(e);
     if (e.currentTarget) target = e.currentTarget;
     e.preventDefault();
     var form = $(target).closest('form');
-
     var fd = $(target).closest('form').serialize();
     var url = $(target).closest('form').attr("action");
-   
-    if (!form.valid()) return;
+    var p = BusineesRule(fd, url, bisrule, biscount, form, ruleType, Entity, lblerrormsg, isinline, lstinlineassocname, lstinlineassocdispname, lstinlineentityname);
+    if (!p) {
+        $(target).removeAttr("disabled");
+        return false;
+    }
+    if (!form.valid()) { $(target).removeAttr("disabled"); return; }
+    SaveServerTimeQuickEdit(form);
     try {
-
         fd = new FormData(form[0]);
         $('input[type="file"]').each(function () {
             var file = $('#' + $(this)[0].id)[0].files;
@@ -1082,39 +1140,35 @@ function QuickEditFromGrid(e, isrefresh, Entity, host) {
                 fd.append($(this)[0].id, file[0]);
             }
         });
+        url = addParameterToURL(url, "IsAddPop", true);
+        url = addParameterToURL(url, "RenderPartial", true);
+
         $.ajax({
-            url: url+ "?IsAddPop=" + true,
+            url: url,
             type: "POST",
             cache: false,
             data: fd,
             dataType: "json",
             processData: false,
             contentType: false,
-            success: function (result)
-            {
-                url = result;
-                if (result == "FROMPOPUP")
-                {
-                    if (form.find('button').attr('aria-hidden') == "true")
-                        form.find('button').click();
-                    if (isrefresh)
-                    {
-                        if (host != undefined && host.length > 0 && $('#' + host).length > 0)
-                        {
+            success: function (result) {
+
+                if (result.Result.trim().toLowerCase() == "succeed") {
+                    form.find('button[aria-hidden="true"]').click();
+                    if (isrefresh) {
+                        if (host != undefined && host.length > 0 && $('#' + host).length > 0) {
                             $('#' + Entity + 'SearchCancel', $('#' + host)).click();
                             $('#dvcnt_' + host).load(location.href + " #dvcnt_" + host);
                         }
                         else
-                            $('#' + Entity + 'SearchCancel').click();
+                            $('#' + Entity).load(result.UrlRefr);
                     }
-                } else
-                {
-                    if (form.find('button').attr('aria-hidden') == "true")
-                        form.find('button').click();
-                    if (isrefresh)
-                    {
-                        CancelSearch(Entity, url, host);
-                    }
+                } else {
+                    $('#dvPopupError').html(result.UrlRefr);
+                    //form.find('button[aria-hidden="true"]').click();
+                    //if (isrefresh) {
+                    //    CancelSearch(Entity, url, host);
+                    //}
                 }
             }
         });
@@ -1127,8 +1181,7 @@ function QuickEditFromGrid(e, isrefresh, Entity, host) {
             data: fd,
             success: function (result) {
                 if (result == "FROMPOPUP") {
-                    if (form.find('button').attr('aria-hidden') == "true")
-                        form.find('button').click();
+                    form.find('button[aria-hidden="true"]').click();
                     if (isrefresh) {
                         if (host != undefined && host.length > 0 && $('#' + host).length > 0) {
                             $('#' + Entity + 'SearchCancel', $('#' + host)).click();
@@ -1138,20 +1191,27 @@ function QuickEditFromGrid(e, isrefresh, Entity, host) {
                             $('#' + Entity + 'SearchCancel').click();
                     }
                 } else {
-                    $('#dvPopupError').html(result);
+                    form.find('button[aria-hidden="true"]').click();
+                    if (isrefresh) {
+                        $('#' + Entity + 'SearchCancel').click();
+                    }
+
                 }
             }
         });
     }
+    //alert(Entity);
+    if (Entity.indexOf('Events') > -1 || Entity == 'T_Schedule') {
+        location.reload();
+    }
 }
-function QuickCancelFromGrid(e, isrefresh, Entity, host)
-{
+function QuickCancelFromGrid(e, isrefresh, Entity, host) {
     $('#' + Entity + 'SearchCancel').click();
 }
 // End
-
 //Default Entity Page Js...
 function SelectPageType(selectedval, SelectUrl, DirectUrl, DefaultUrl, Favorites) {
+    DirectUrl.removeProp("required");
     SelectUrl.hide();
     DefaultUrl.hide();
     Favorites.hide();
@@ -1171,7 +1231,7 @@ function SelectPageType(selectedval, SelectUrl, DirectUrl, DefaultUrl, Favorites
     } else if (selectedval == "Url") {
         DirectUrl.show();
         SelectUrl.show();
-        DefaultUrl.attr("required", "required");
+        DirectUrl.attr("required", "required");
     }
 }
 function SaveDefaultPage(e, selectedval, DefaultUrl, PageUrl, Other, Favorites, DirectUrl, EntityName, RoleList, Roles) {
@@ -1182,46 +1242,45 @@ function SaveDefaultPage(e, selectedval, DefaultUrl, PageUrl, Other, Favorites, 
     e.preventDefault();
     var form = $(target).closest('form');
     if (!form.valid()) return;
-
     if (RoleList.val() != null) {
         Roles.val(RoleList.val());
-if (selectedval == "Default") {
-        if (DefaultUrl.val() == undefined || DefaultUrl.val().length == 0)
-        { alert("Default Value Required.."); return false; }
-        var defaultselected = DefaultUrl.val();
-        var pageurl = '/_ControllerName/_ActionName';
-        PageUrl.val(pageurl.replace("_ActionName", defaultselected).replace("_ControllerName", EntityName.val()));
-        Other.val($("option:selected", DefaultUrl).text());
-    }
-    else if (selectedval == "Favorite") {
-        if (Favorites.val() == undefined || Favorites.val().length == 0)
-        { alert("Favorites Value Required.."); return false; }
-        PageUrl.val(Favorites.val());
-        Other.val($("option:selected", Favorites).text());
-    } else if (selectedval == "Url") {
-        if (DirectUrl.val() == undefined || DirectUrl.val().length == 0)
-        { alert("Url Value Required.."); return false; }
-        PageUrl.val(DirectUrl.val());
-        Other.val("Link");
-    }
+        if (selectedval == "Default") {
+            if (DefaultUrl.val() == undefined || DefaultUrl.val().length == 0)
+            { alert("Default Value Required.."); return false; }
+            var defaultselected = DefaultUrl.val();
+            var pageurl = '/_ControllerName/_ActionName';
+            PageUrl.val(pageurl.replace("_ActionName", defaultselected).replace("_ControllerName", EntityName.val()));
+            Other.val($("option:selected", DefaultUrl).text());
+        }
+        else if (selectedval == "Favorite") {
+            if (Favorites.val() == undefined || Favorites.val().length == 0)
+            { alert("Favorites Value Required.."); return false; }
+            PageUrl.val(Favorites.val());
+            Other.val($("option:selected", Favorites).text());
+        } else if (selectedval == "Url") {
+            if (DirectUrl.val() == undefined || DirectUrl.val().length == 0)
+            { alert("Url Value Required.."); return false; }
+            PageUrl.val(DirectUrl.val());
+            Other.val("Link");
+        }
         form.submit();
     }
     else {
         alert("Roles Value Required..");
         return false;
     }
-   }
+}
 //
-function GetCalculationValue(e,url) {
+function GetCalculationValue(e, url) {
     var target;
     if (e.srcElement) target = e.srcElement;
     e = $.event.fix(e);
     if (e.currentTarget) target = e.currentTarget;
-    e.preventDefault();
+   // e.preventDefault();
     var form = $(target).closest('form');
     var fd = $(target).closest('form').serialize();
     // var url = $(target).closest('form').attr("action");
-    try{
+    try {
         fd = new FormData(form[0]);
         $.ajax({
             url: url,
@@ -1231,7 +1290,8 @@ function GetCalculationValue(e,url) {
             dataType: "json",
             processData: false,
             contentType: false,
-            success: function (result) {
+            async:false,
+            success: function (result) {               
                 $.each(result, function (key, value) {
                     $("#" + key).val(value);
                 })
@@ -1253,9 +1313,78 @@ function GetCalculationValue(e,url) {
                 })
             }
         });
-    } 
+    }
 }
-function FillDerivedDetails(obj,e) {
+function FillDerivedDetailsInline(obj, e, suffix, host) {
+    var url = $(obj).attr("derivedurl");
+    var hostvalue = $(obj).val();
+    var target;
+    if (e.srcElement) target = e.srcElement;
+    e = $.event.fix(e);
+    if (e.currentTarget) target = e.currentTarget;
+    //if popup
+    if (e.target) target = e.target;
+    //
+    e.preventDefault();
+    var form = $(target).closest('form');
+    var fd = $(target).closest('form').serialize();
+    url = addParameterToURL(url, "host", host);
+    url = addParameterToURL(url, "value", hostvalue);
+    try {
+        fd = new FormData(form[0]);
+        //fd $("#dvT_mainlineitemassociationID").find("select, textarea, input").serialize();
+        $.ajax({
+            url: url,
+            type: "POST",
+            cache: false,
+            data: fd,
+            dataType: "json",
+            processData: false,
+            contentType: false,
+            success: function (result) {
+                $.each(result, function (key, value) {
+                    if (suffix != undefined && suffix.length > 0) {
+
+                        key = suffix + "_" + key;
+
+                    }
+                    if ($("#" + key).is('select')) {
+                        $("#" + key).trigger("chosen:open");
+                        $("#" + key).val(value);
+                        $("#" + key).trigger("chosen:updated");
+                        $("#" + key).trigger("click.chosen");
+                        $("#" + key).trigger("change");
+                    }
+                    else $("#" + key).val(value);
+                })
+            }
+        });
+    } catch (ex) {
+        fd = $(target).closest('form').serialize();
+        $.ajax({
+            url: url,
+            type: "POST",
+            cache: false,
+            data: fd,
+            dataType: "json",
+            processData: false,
+            contentType: false,
+            success: function (result) {
+                $.each(result, function (key, value) {
+                    if ($("#" + key).is('select')) {
+                        $("#" + key).trigger("chosen:open");
+                        $("#" + key).val(value);
+                        $("#" + key).trigger("chosen:updated");
+                        $("#" + key).trigger("click.chosen");
+                        $("#" + key).trigger("change");
+                    }
+                    else $("#" + key).val(value);
+                })
+            }
+        });
+    }
+}
+function FillDerivedDetails(obj, e) {
     var url = $(obj).attr("derivedurl");
     var target;
     if (e.srcElement) target = e.srcElement;
@@ -1279,7 +1408,14 @@ function FillDerivedDetails(obj,e) {
             contentType: false,
             success: function (result) {
                 $.each(result, function (key, value) {
-                    $("#" + key).val(value);
+                    if ($("#" + key).is('select')) {
+                        $("#" + key).trigger("chosen:open");
+                        $("#" + key).val(value);
+                        $("#" + key).trigger("chosen:updated");
+                        $("#" + key).trigger("click.chosen");
+                        $("#" + key).trigger("change");
+                    }
+                    else $("#" + key).val(value);
                 })
             }
         });
@@ -1295,9 +1431,161 @@ function FillDerivedDetails(obj,e) {
             contentType: false,
             success: function (result) {
                 $.each(result, function (key, value) {
-                    $("#" + key).val(value);
+                    if ($("#" + key).is('select')) {
+                        $("#" + key).trigger("chosen:open");
+                        $("#" + key).val(value);
+                        $("#" + key).trigger("chosen:updated");
+                        $("#" + key).trigger("click.chosen");
+                        $("#" + key).trigger("change");
+                    }
+                    else $("#" + key).val(value);
                 })
             }
         });
     }
+}
+function ListBoxPagination(obj, searchstring, hostingentityname, hostingentityid, associatedtype, selectCtrl) {
+    var url1 = ($(obj).attr("dataurl"));
+    size = $(obj).val();
+    url1 = addParameterToURL(url1, "SearchString", searchstring);
+    url1 = addParameterToURL(url1, "HostingEntityName", hostingentityname);
+    url1 = addParameterToURL(url1, "HostingEntityID", hostingentityid);
+    url1 = addParameterToURL(url1, "AssociatedType", associatedtype);
+    url1 = addParameterToURL(url1, "Size", size);
+    $.ajax({
+        async: false,
+        type: "GET",
+        url: url1,
+        success: function (data) {
+            searchstr = searchstring;
+            $('#' + selectCtrl + ' > option[val!=""]').remove();
+            $.each(data.data, function (index, value) {
+                $('#' + selectCtrl).append('<option value="' + value.Value + '">' + value.Text + '</option>');
+            });
+            if (data.Results)
+                $('#lbl' + selectCtrl).css('display', 'block');
+            else
+                $('#lbl' + selectCtrl).css('display', 'none');
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            //alert(errorThrown + '-' + textStatus);
+        }
+    });
+}
+
+// Filter Tab Cookies
+function ClickFilterBtn() {
+    if ($.cookie('fltCookie') != null) {
+        var _fltId = $.cookie('fltCookie');
+        SetCookieFlt("0");
+        $("#" + _fltId + "").click();
+    }
+}
+function ClickFilterTabBtn() {
+    if ($.cookie('fltCookieFltTabId') != null) {
+        var _fltTabId = $.cookie('fltCookieFltTabId');
+        SetCookieFltTab("0");
+        $("#" + _fltTabId).click();
+    }
+}
+function SetCookieFlt(fltId) {
+    if (fltId != "0") {
+        $.cookie("fltCookie", fltId);
+    }
+    else {
+        $.cookie("fltCookie", null)
+    }
+}
+function ClearFilterCookies() {
+    $.cookie("fltCookie", null);
+    $.cookie("fltCookieFltTabId", null);
+    var cookies = document.cookie.split(";");
+    for (var i = 0; i < cookies.length; i++) {
+        var equals = cookies[i].indexOf("=");
+        var name = equals > -1 ? cookies[i].substr(0, equals) : cookies[i];
+        document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+    }
+}
+function SetCookieFltTab(FltTabId) {
+    if (FltTabId != "0") {
+        $.cookie("fltCookieFltTabId", FltTabId);
+    }
+    else {
+        $.cookie("fltCookieFltTabId", null)
+    }
+}
+//
+function togglesidebar(e, obj,user) {
+   e.preventDefault();
+    $("#wrapper").toggleClass("toggled-2");
+    $.cookie("sidebartoggle" + user, $("#wrapper").attr("class"));
+    $('#menu ul').hide();
+}
+function LoadReports(rptId, LoadReportsDiv, Entity, Asso, Prop, sortby, isAsc, currentFilter, page) {
+
+    var urlstring = SetReportUrl(rptId, LoadReportsDiv, Entity, Asso, Prop, sortby, isAsc, currentFilter, page);
+    $("#ShowReoprts").modal('show');
+    $("#ShowReoprts").find('.modal-dialog.ui-draggable').attr("style", "width:90%");
+    $("#" + LoadReportsDiv).html('Please wait..');
+    $("#" + LoadReportsDiv).load(urlstring);
+}
+function SetReportUrl(rptId, LoadReportsDiv, Entity, Asso, Prop, sortby, isAsc, currentFilter, page) {
+    var urlstring = $("#" + "fSearch" + Entity).attr("dataurl");
+    var association = Asso.split(",");
+    var property = Prop.split(",");
+    var firstparam = 0;
+    for (i = 0; i < association.length; i++) {
+        var vals = "";
+        ele = document.getElementById(association[i]);
+        if (ele != null)
+            for (var o = 0; o < ele.options.length; o++) {
+                if (ele.options[o].selected)
+                    vals += ele.options[o].value + ",";
+            }
+        if (vals.length > 0) {
+            if (firstparam == 0)
+                urlstring += "?" + association[i] + "=" + vals;
+            else
+                urlstring += "&" + association[i] + "=" + vals;
+            firstparam = 1;
+        }
+    }
+    for (i = 0; i < property.length; i++) {
+        ele = document.getElementById(property[i]);
+        if (ele != null)
+            if (ele.value.length > 0) {
+                if (firstparam == 0)
+                    urlstring += "?" + property[i] + "=" + ele.value;
+                else
+                    urlstring += "&" + property[i] + "=" + ele.value;
+                firstparam = 1;
+            }
+    }
+    var page_sortstring = "";
+    if (sortby != "") {
+        page_sortstring = "&sortBy=" + sortby;
+        if (isAsc != "")
+            page_sortstring += "&isAsc=" + isAsc;
+    }
+
+    if (currentFilter != '') {
+        if (firstparam == 0)
+            urlstring += "?searchString=" + currentFilter + page_sortstring;
+        else
+            urlstring += "&searchString=" + currentFilter + page_sortstring;
+    }
+    if (firstparam == 0)
+        urlstring += "?search=" + SanitizeURLString(document.getElementById("FSearch").value) + page_sortstring;
+    else
+        urlstring += "&search=" + SanitizeURLString(document.getElementById("FSearch").value) + page_sortstring;
+    urlstring = addParameterToURL(urlstring, "SortOrder", $("#SortOrder").val());
+    urlstring = addParameterToURL(urlstring, "GroupByColumn", $("#hdnGroupByColumn").val());
+    urlstring = addParameterToURL(urlstring, "HideColumns", $("#HideColumns").val());
+    urlstring = addParameterToURL(urlstring, "IsReports", true);
+    urlstring = addParameterToURL(urlstring, "FilterCondition", $("#FilterCondition").val());
+    if (rptId != "")
+        urlstring = addParameterToURL(urlstring, "rptId", rptId);
+    if ($("#ViewReport") != undefined)
+        $("#ViewReport").val(urlstring);
+    return urlstring;
 }

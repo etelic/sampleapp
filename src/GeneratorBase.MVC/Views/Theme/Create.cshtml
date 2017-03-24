@@ -1,6 +1,7 @@
 ﻿@model GeneratorBase.MVC.Models.Theme
 @{
     ViewBag.Title = "Theme";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 @functions {
     object getHtmlAttributes(string Property)
@@ -8,6 +9,7 @@
         return new { @class = "form-control" };
     }
 }
+<link href="@Url.Content("~/Content/dist/css/bootstrap-colorpicker.min.css")" rel="stylesheet" type="text/css" />
 <div class="row">
     <div class="col-lg-12">
         <h1 class="page-title">
@@ -258,7 +260,7 @@
                         <label>Preview</label>
                         <nav class="navbar-default navbar-static-side" role="navigation">
                             <div class="sidebar-collapse">
-                                <ul class="nav nav-list" id="GA-SideBar">
+                                <ul class="nav nav-list">
                                     <li><a href="#"><i class="glyphicon glyphicon-home icon-small"></i>Home</a></li>
                                     <li><a href="#"><i class="glyphicon glyphicon-list icon-small"></i>Link 1</a></li>
                                     <li><a href="#"><i class="glyphicon glyphicon-user icon-small"></i>Link 2</a></li>

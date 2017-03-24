@@ -16,60 +16,112 @@
 @using (Html.BeginForm("EditSetting", "AppSetting", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
     @Html.AntiForgeryToken();
-    Html.ValidationSummary(true);
-    Html.EnableClientValidation();
-    @Html.HiddenFor(model => model.Id)
-    @Html.HiddenFor(model => model.ConcurrencyKey)
-    <div class="row">
-        <div class="col-md-12 col-sm-12 col-xs-12">
-            <div class="panel panel-default AppForm">
-                <div class="panel-body">
-                    <div class="row">
-                        <div class='col-sm-6'>
-                            <div class='form-group'>
-                                <label>@Html.LabelFor(model => model.Key) <span class="text-danger-reg">*</span></label>
-                                @Html.TextBoxFor(model => model.Key, getHtmlAttributes())
-                                @Html.ValidationMessageFor(model => model.Key)
-                            </div>
-                        </div>
-                        <div class='col-sm-6'>
-                            <div class='form-group'>
-                                <label>@Html.LabelFor(model => model.Value) <span class="text-danger-reg">*</span></label>
-                                @Html.TextBoxFor(model => model.Value, new { @class = "form-control" })
-                                @Html.ValidationMessageFor(model => model.Value)
-                            </div>
-                        </div>
-                        <div class='col-sm-6'>
-                            <div class='form-group'>
-                                <label>@Html.LabelFor(model => model.AssociatedAppSettingGroupID) </label>
-                                <div class="input-group" style="width: 100%;">
-                                    @Html.DropDownList("AssociatedAppSettingGroupID", null, "-- Select --", new { @class = "chosen-select form-control", @HostingName = "AppSetting", @dataurl = Url.Action("GetAllValue", "AppSetting", new { caller = "AssociatedAppSettingGroupID" }) })
-                                    @Html.ValidationMessageFor(model => model.AssociatedAppSettingGroupID)
+                            Html.ValidationSummary(true);
+                            Html.EnableClientValidation();
+                            @Html.HiddenFor(model => model.Id)
+                            @Html.HiddenFor(model => model.ConcurrencyKey)
+                            <div class="row">
+                                <div class="col-md-12 col-sm-12 col-xs-12">
+                                    <div class="panel panel-default AppForm">
+                                        <div class="panel-body">
+                                            <div class="row">
+                                                <div class='col-sm-6'>
+                                                    <div class='form-group'>
+                                                        <label>@Html.LabelFor(model => model.Key) <span class="text-danger-reg">*</span></label>
+                                                        @Html.TextBoxFor(model => model.Key, getHtmlAttributes())
+                                                        @Html.ValidationMessageFor(model => model.Key)
+                                                    </div>
+                                                </div>
+                                                <div class='col-sm-6'>
+                                                    <div class='form-group'>
+                                                        <label>@Html.LabelFor(model => model.Value) <span class="text-danger-reg">*</span></label>
+                                                        @if (@Model.Key.ToLower() == "reportpass")
+                                                        {
+                                                            @Html.PasswordFor(model => model.Value, new { @value = Model.Value, @class = "form-control" })
+                                                        }
+                                                        else
+                                                        {
+                                                            if (Model.Value.ToLower() == "yes")
+                                                            {
+
+                                                                <select class="form-control" id="appsettingSelectBox" >
+                                                                    <option value="@Model.Value">@Model.Value</option>
+                                                                    <option value="No">No</option>
+                                                                </select>
+                                                                @Html.Hidden("Value")
+                                                            }
+                                                            else if (Model.Value.ToLower() == "no")
+                                                            {
+                                                                <select class="form-control" id="appsettingSelectBox" >
+                                                                    <option  value="@Model.Value">@Model.Value</option>
+                                                                    <option value="Yes">Yes</option>
+                                                                </select>
+                                                                @Html.Hidden("Value")
+                                                            }
+                                                            else if (Model.Value.ToLower() == "true")
+                                                            {
+                                                                <select class="form-control" id="appsettingSelectBox" >
+                                                                    <option value="@Model.Value">@Model.Value</option>
+                                                                    <option value="false">false</option>
+                                                                </select>
+                                                                @Html.Hidden("Value")
+                                                            }
+                                                            else if (Model.Value.ToLower() == "false")
+                                                            {
+                                                                <select class="form-control" id="appsettingSelectBox" >
+                                                                    <option value="@Model.Value">@Model.Value</option>
+                                                                    <option value="true">true</option>
+                                                                </select>
+                                                                @Html.Hidden("Value")
+                                                            }
+                                                            else if (Model.Value.ToLower() == "on")
+                                                            {
+                                                                <select class="form-control" id="appsettingSelectBox" >
+                                                                    <option value="@Model.Value">@Model.Value</option>
+                                                                    <option value="Off">Off</option>
+                                                                </select>
+                                                                @Html.Hidden("Value")
+                                                            }
+                                                            else if (Model.Value.ToLower() == "off")
+                                                            {
+                                                                <select class="form-control" id="appsettingSelectBox" >
+                                                                    <option value="@Model.Value">@Model.Value</option>
+                                                                    <option value="On">On</option>
+                                                                </select>
+                                                                @Html.Hidden("Value")
+                                                            }
+                                                            else
+                                                            {
+                                                                @Html.TextBoxFor(model => model.Value, new { @class = "form-control" })
+                                                            }
+                                                        }
+                                                        @Html.ValidationMessageFor(model => model.Value)
+                                                    </div>
+                                                </div>
+                                                <div class='col-sm-6'>
+                                                    <div class='form-group'>
+                                                        <label>@Html.LabelFor(model => model.AssociatedAppSettingGroupID) </label>
+                                                        <div class="input-group" style="width: 100%;">
+                                                            @Html.DropDownList("AssociatedAppSettingGroupID", null, "-- Select --", new { @class = "chosen-select form-control", @HostingName = "AppSetting", @dataurl = Url.Action("GetAllValue", "AppSetting", new { caller = "AssociatedAppSettingGroupID" }) })
+                                                            @Html.ValidationMessageFor(model => model.AssociatedAppSettingGroupID)
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class='col-sm-6'>
+                                                    <div class='form-group'>
+                                                        <label>@Html.LabelFor(model => model.Description)</label>
+                                                        @Html.TextAreaFor(model => model.Description, new { @class = "form-control" })
+                                                        @Html.ValidationMessageFor(model => model.Description)
+                                                    </div>
+                                                </div>
+                                                @Html.HiddenFor(model => model.IsDefault)
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class='col-sm-6'>
-                            <div class='form-group'>
-                                <label>@Html.LabelFor(model => model.Description)</label>
-                                @Html.TextAreaFor(model => model.Description, new { @class = "form-control" })
-                                @Html.ValidationMessageFor(model => model.Description)
-                            </div>
-                        </div>
-                        @Html.HiddenFor(model => model.IsDefault)
-                        @*<div class='col-sm-6'>
-                            <div class='form-group'>
-                                <label>@Html.LabelFor(model => model.IsDefault)</label>
-                                @Html.CheckBoxFor(model => model.IsDefault, new { @class = "form-control" })
-                                @Html.ValidationMessageFor(model => model.IsDefault)
-                            </div>
-                        </div>*@
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <button id="CancelQuickAdd" type="button" class="btn btn-default btn-sm" data-dismiss="modal" aria-hidden="true">Cancel</button>
-    <input type="submit" value="Save" class="btn btn-primary btn-sm" onclick="QuickAddFromIndex(event,true,'AppSetting','null','null',0);" />
+                            <button id="CancelQuickAdd" type="button" class="btn btn-default btn-sm" data-dismiss="modal" aria-hidden="true">Cancel</button>
+                            <input type="submit" value="Save" class="btn btn-primary btn-sm" onclick="QuickAddFromIndex(event,true,'AppSetting','null','null',0);" />
 }
 @Scripts.Render("~/bundles/jqueryval")
 <script src="~/Scripts/Common3/chosen.jquery.js" type="text/javascript"></script>
@@ -85,3 +137,15 @@
         $(selector).chosen(config[selector]);
     }
 </script>
+@if (Model.Value.ToLower() == "yes" || Model.Value.ToLower() == "no" || Model.Value.ToLower() == "true" || Model.Value.ToLower() == "false" || Model.Value.ToLower() == "on" || Model.Value.ToLower() == "off")
+{
+    <script>
+        $(document).ready(function () {
+            $("#Value").val($("#appsettingSelectBox option:selected").text());
+            $("#appsettingSelectBox").on("change", function () {
+                $("#Value").val($("#appsettingSelectBox option:selected").text());
+            });
+        });
+    </script>
+
+}

@@ -17,6 +17,8 @@ namespace GeneratorBase.MVC.Models
         [DisplayName("Email Content")]
         [System.Web.Mvc.AllowHtml]
         public string EmailContent { get; set; }
+        [DisplayName("Email Subject")]
+        public string EmailSubject { get; set; }
         DateTime? m_LastUpdatedBy = DateTime.Now;
         [DataType(DataType.DateTime)]
         [DisplayFormat(DataFormatString = "{0:MM/dd/yyyy hh:mm tt}", ApplyFormatInEditMode = true)]
@@ -46,7 +48,7 @@ namespace GeneratorBase.MVC.Models
         }
         public  string getDisplayValue() {
 
-            var dispValue = (this.AssociatedEmailTemplateTypeID != null ? (new ApplicationContext((CustomPrincipal)HttpContext.Current.User)).EmailTemplateTypes.Find(this.AssociatedEmailTemplateTypeID).DisplayValue + "  " : ""); 
+            var dispValue = (this.AssociatedEmailTemplateTypeID != null ? (new ApplicationContext(new SystemUser())).EmailTemplateTypes.Find(this.AssociatedEmailTemplateTypeID).DisplayValue + "  " : ""); 
             dispValue = dispValue.TrimEnd(" - ".ToCharArray());
             this.m_DisplayValue = dispValue;
             return dispValue;
@@ -54,7 +56,7 @@ namespace GeneratorBase.MVC.Models
         public override string getDisplayValueModel() {
             if (!string.IsNullOrEmpty(m_DisplayValue))
                 return m_DisplayValue;
-            return (this.AssociatedEmailTemplateTypeID != null ? (new ApplicationContext((CustomPrincipal)HttpContext.Current.User)).EmailTemplateTypes.Find(this.AssociatedEmailTemplateTypeID).DisplayValue + "  " : ""); 
+            return (this.AssociatedEmailTemplateTypeID != null ? (new ApplicationContext(new SystemUser())).EmailTemplateTypes.Find(this.AssociatedEmailTemplateTypeID).DisplayValue + "  " : ""); 
         }
     }
 }

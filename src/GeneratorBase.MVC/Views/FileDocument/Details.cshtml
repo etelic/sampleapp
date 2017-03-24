@@ -2,11 +2,32 @@
 @using PagedList;
 @{
     ViewBag.Title = "View Document";
+	var EntityDisplayNameReflector = ModelReflector.Entities.FirstOrDefault(p => p.Name == "FileDocument");
+    var EntityDisplayName = EntityDisplayNameReflector != null ? EntityDisplayNameReflector.DisplayName : "Document";
+}
+<script>
+    $(document).ready(function () {
+			 if ($.cookie('@User.JavaScriptEncodedName@Model.Id' + 'TabCookie') != null) {
+				$('a[href="#' + $.cookie('@User.JavaScriptEncodedName@Model.Id' + 'TabCookie') + '"]').click();
+			 }
+    });
+</script>
+@{
+    if (!string.IsNullOrEmpty(ViewBag.FileDocumentIsHiddenRule))
+    {
+        @Html.Raw(ViewBag.FileDocumentIsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.FileDocumentIsSetValueUIRule))
+    {
+        @Html.Raw(ViewBag.FileDocumentIsSetValueUIRule);
+    }
 }
 <div class="row">
     <div class="col-lg-12">
         <h1 class="page-title">
-            <i class="glyphicon glyphicon-hand-down text-primary"></i> Document  <i class="glyphicon glyphicon-chevron-right small"></i> <span>View</span>
+            <i class="glyphicon glyphicon-hand-down text-primary"></i> @EntityDisplayName  <i class="glyphicon glyphicon-chevron-right small"></i> <span>View</span>
         </h1>
         <h2 class="text-primary"><span id="HostingEntityDisplayValue">@Html.DisplayFor(model => model.DisplayValue)</span>
 			<div class="btn-group pull-right fixactionbut">
@@ -35,7 +56,8 @@
 </div>
 <div class="tabbable responsive">
     <ul class="nav nav-tabs">
-	 <li class="active"><a href="#Details" data-toggle="tab">Details</a></li>
+	 <li class="active"><a href="#Details" onclick="ClearTabCookie('@User.JavaScriptEncodedName@Model.Id');" data-toggle="tab">Details</a></li>
+
     </ul>
 	    <div class="tab-content">
 		   <div class="tab-pane fade in active" id="Details">
@@ -47,39 +69,44 @@
 			<div class="row">
 @if(User.CanView("FileDocument","DocumentName"))
 {
-<div class='col-sm-6 col-md-6 col-xs-12'>
-	<div class='form-group'>
+<div class='col-sm-6 col-md-6 col-xs-12' id="dvDocumentName">
+	<div class='form-group' title="@Model.DocumentName">
 		<label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.DocumentName) </label>
 		<div class="input-group col-sm-7 col-md-7 col-xs-12">
 		
+				
 				<p class="viewlabel">@Model.DocumentName</p>
-		</div>
+					
+					</div>
 	</div>
 </div>
 }
 @if(User.CanView("FileDocument","Description"))
 {
-<div class='col-sm-6 col-md-6 col-xs-12'>
-	<div class='form-group'>
+<div class='col-sm-6 col-md-6 col-xs-12' id="dvDescription">
+	<div class='form-group' title="@Model.Description">
 		<label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.Description) </label>
 		<div class="input-group col-sm-7 col-md-7 col-xs-12">
 		
+				
 				<p class="viewlabel">@Model.Description</p>
-		</div>
+					
+					</div>
 	</div>
 </div>
 }
 @if(User.CanView("FileDocument","AttachDocument") && User.CanView("Document"))
 {
-<div class='col-sm-6 col-md-6 col-xs-12'>
-	<div class='form-group'>
+<div class='col-sm-6 col-md-6 col-xs-12' id="dvAttachDocument">
+	<div class='form-group' title="">
 		<label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.AttachDocument)</label>
 		<div class="input-group col-sm-7 col-md-7 col-xs-12">
 		<p class="text-primary">
 		@if(!string.IsNullOrEmpty(Model.AttachDocument))
 		{
-			<a href="@(!string.IsNullOrEmpty(Html.DisplayFor(model => model.AttachDocument).ToString()) ? Url.Content("~/Files/") + Url.Content(Html.DisplayFor(model => model.AttachDocument).ToString()) : "#")" @(!string.IsNullOrEmpty(Html.DisplayFor(model => model.AttachDocument).ToString()) ? "download = " + Html.DisplayFor(model => model.AttachDocument).ToString() : "")>Download</a> 
-		}else{<label>NA</label>}
+				 @Html.ActionLink(Model.AttachDocument, "Download", new { filename = Model.AttachDocument }) 
+			 
+				}else{<label>NA</label>}
 		</p>
 		</div>
 	</div>
@@ -87,25 +114,31 @@
 }
 @if(User.CanView("FileDocument","DateCreated"))
 {
-<div class='col-sm-6 col-md-6 col-xs-12'>
-	<div class='form-group'>
+<div class='col-sm-6 col-md-6 col-xs-12' id="dvDateCreated">
+	<div class='form-group' title="@String.Format("{0:MM/dd/yyyy hh:mm tt}", Model.DateCreated)">
 		<label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.DateCreated) </label>
 		<div class="input-group col-sm-7 col-md-7 col-xs-12">
 		
-				<p class="viewlabel">@String.Format("{0:MM/dd/yyyy hh:mm tt}", Model.DateCreated)</p>
-		</div>
+				
+				<p class="viewlabel" id="timeDateCreated">@String.Format("{0:MM/dd/yyyy hh:mm tt}", Model.DateCreated)</p>
+		@Html.Raw("<script> $(function () {$('timeDateCreated').datetimepickerIndex({divid:'timeDateCreated',format: 'MM/DD/YYYY hh:mm',val:'" +@Html.DisplayFor(model => model.DateCreated) + "'})});</script>")        
+				
+					</div>
 	</div>
 </div>
 }
 @if(User.CanView("FileDocument","DateLastUpdated"))
 {
-<div class='col-sm-6 col-md-6 col-xs-12'>
-	<div class='form-group'>
+<div class='col-sm-6 col-md-6 col-xs-12' id="dvDateLastUpdated">
+	<div class='form-group' title="@String.Format("{0:MM/dd/yyyy hh:mm tt}", Model.DateLastUpdated)">
 		<label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.DateLastUpdated) </label>
 		<div class="input-group col-sm-7 col-md-7 col-xs-12">
 		
-				<p class="viewlabel">@String.Format("{0:MM/dd/yyyy hh:mm tt}", Model.DateLastUpdated)</p>
-		</div>
+				
+				<p class="viewlabel" id="timeDateLastUpdated">@String.Format("{0:MM/dd/yyyy hh:mm tt}", Model.DateLastUpdated)</p>
+		@Html.Raw("<script> $(function () {$('timeDateLastUpdated').datetimepickerIndex({divid:'timeDateLastUpdated',format: 'MM/DD/YYYY hh:mm',val:'" +@Html.DisplayFor(model => model.DateLastUpdated) + "'})});</script>")        
+				
+					</div>
 	</div>
 </div>
 }
@@ -116,15 +149,16 @@
 			</div>
 			<div class="row">
 				<div class="col-md-12 col-sm-12 col-xs-12">
-					@Html.ActionLink("Back", "Cancel", new { UrlReferrer = Request.UrlReferrer }, new { @class = "btn btn-default btn-sm" })
+					@Html.ActionLink("Back", "Cancel", new { UrlReferrer = Request.UrlReferrer }, new { @class = "btn btn-default btn-sm pull-left formbuttonfix" })
 					 @if (User.Identity.IsAuthenticated && User != null && User.CanEdit("FileDocument"))
                      {
-                          @Html.ActionLink("Edit", "Edit", new { id = Model.Id, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, new { @class = "btn btn-primary btn-sm" })
+                          @Html.ActionLink("Edit", "Edit", new { id = Model.Id, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, new { @class = "btn btn-primary btn-sm pull-left formbuttonfix" })
                      }
 				</div>
 			</div>    
 	</div>    
 	</div> <!-- /tab-content --><br />
+
 <br/>
 </div>
  

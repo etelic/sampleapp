@@ -1,0 +1,753 @@
+﻿@model PagedList.IPagedList<GeneratorBase.MVC.Models.T_Employee>
+@using PagedList.Mvc;
+@{
+	
+    var ActionNameUrl = "Index";
+    if (HttpContext.Current.Request.RequestContext.RouteData.Values["action"].ToString().ToUpper() == "FSEARCH")
+    {
+        ActionNameUrl = "FSearch";
+    }
+	var BackUrl =  Request.Url;
+	if (ViewData["HostingEntity"] != null && (Request.QueryString["TabToken"] != null || Request.IsAjaxRequest()))
+	{
+		BackUrl =  Request.UrlReferrer;
+	}
+	var EntityReflector = ModelReflector.Entities.FirstOrDefault(p => p.Name == "T_Employee");
+}
+
+<div id="T_Employee">
+<style>
+    .table-responsive > .fixed-column {
+        position: absolute;
+        display: block;
+        width: auto;
+        border: 0px solid transparent;
+        border-top: 1px solid #c3ddec;
+    }
+    .fixed-column th {
+        background: #fff;
+    }
+    .fixed-column td {
+        background: #fff;
+    }
+</style>
+<script type="text/javascript">
+    $(document).ready(function () {
+	 $(".pagination a").click(function (e) {
+            //PaginationClick(e,'T_Employee')
+			PaginationClick(e, 'T_Employee','@User.JavaScriptEncodedName')
+        })
+	    if("@HttpContext.Current.Request.RequestContext.RouteData.Values["action"].ToString().ToUpper()" == "FSEARCH")
+        {
+            $("#fsearchT_Employee").addClass('in');
+			if('@ViewData["HostingEntity"]'.length>0)
+	        {
+                $("#" + "@ViewData["HostingEntity"]" + "_T_Employee").hide();
+	        }
+			FSearchColumnsShowHide('@ViewData["HideColumns"]', 'T_Employee');
+        }
+	    $("#SearchStringT_Employee").keypress(function (e) {
+			if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
+				 $("#T_EmployeeSearch").bind("click", (function () {
+                        }));
+                $('#T_EmployeeSearch').trigger("click");
+                return false;
+			}
+        })
+        $("#btnShowHideT_Employee").mouseup(function () {
+            if (document.getElementById('ColumnShowHideT_Employee').className == 'collapse') {
+				 $('#lblT_Employee').css('display', 'none');
+            }
+        })
+    });
+</script>
+@functions {
+    object getSortHtmlAttributes(string sortby, bool IsPaging, int? page, bool? IsExport)
+    {
+        if (IsPaging)
+        {
+            return new
+            {
+                page,
+                sortBy = ViewBag.CurrentSort,
+                isAsc = ViewBag.IsAsc,
+                currentFilter = ViewBag.CurrentFilter,
+                HostingEntity = @Convert.ToString(ViewData["HostingEntity"]),
+                AssociatedType = @Convert.ToString(ViewData["AssociatedType"]),
+                HostingEntityID = ViewData["HostingEntityID"],
+				IsExport = IsExport,
+				FSFilter = ViewBag.FSFilter == null ? "Fsearch" : ViewBag.FSFilter,
+				IsFilter = @Convert.ToBoolean(ViewData["IsFilter"]),
+  t_employeeorganizationassociation = Request.QueryString["t_employeeorganizationassociation"],
+              
+ t_associatedemployeetype = Request.QueryString["t_associatedemployeetype"],
+ t_associatedemployeestatus = Request.QueryString["t_associatedemployeestatus"],
+ t_employeeaddress = Request.QueryString["t_employeeaddress"],
+				search=Request.QueryString["search"],
+				SortOrder = Request.QueryString["SortOrder"],
+				viewtype = ViewBag.TemplatesName,
+				HideColumns = ViewData["HideColumns"],
+				 GroupByColumn = ViewBag.GroupByColumn,
+				 FilterCondition = ViewBag.FilterCondition,
+            };
+        }
+        else
+        {
+            return new
+            {
+                sortBy = sortby,
+                currentFilter = Request.QueryString["currentFilter"],
+                searchString = Request.QueryString["searchString"],
+                isAsc = (ViewBag.IsAsc == "ASC" ? "DESC" : ""),
+                page = ViewBag.Pages,
+                HostingEntity = @Convert.ToString(ViewData["HostingEntity"]),
+                HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),
+                AssociatedType = @Convert.ToString(ViewData["AssociatedType"]),
+				IsExport = IsExport,
+				FSFilter = ViewBag.FSFilter == null ? "Fsearch" : ViewBag.FSFilter,
+				IsFilter = @Convert.ToBoolean(ViewData["IsFilter"]),
+ t_associatedemployeetype = Request.QueryString["t_associatedemployeetype"],
+ t_associatedemployeestatus = Request.QueryString["t_associatedemployeestatus"],
+ t_employeeaddress = Request.QueryString["t_employeeaddress"],
+		search=Request.QueryString["search"],
+		SortOrder = Request.QueryString["SortOrder"],
+		viewtype = ViewBag.TemplatesName,
+		HideColumns = ViewData["HideColumns"],
+		 GroupByColumn = ViewBag.GroupByColumn,
+		 FilterCondition = ViewBag.FilterCondition,
+            };
+        }
+    }
+}
+<div class="row">
+    <div class="col-md-12 col-sm-12 col-sx-12">
+        <div class="panel panel-default">
+            <div class="panel-heading clearfix" style="margin:0px; padding:2px;">
+                 <div class="btn-group" id='@ViewData["HostingEntity"]_T_Employee'>
+				  @if (User.Identity.IsAuthenticated && User != null && User.CanAdd("T_Employee"))
+				  {
+						
+					<button class="btn btn-default tip-top" data-placement="top" data-original-title="Quick Add" style="padding:3px 5px;" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Employee','dvPopup','" + Url.Action("CreateQuick", "T_Employee", new { UrlReferrer = BackUrl, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), TS=DateTime.Now,viewtype = Convert.ToString(ViewBag.TemplatesName) }) + "')")">
+						<span class="fam-add"></span>
+                    </button>
+					<button class="btn btn-default tip-top" type="button" data-original-title="Full Add" data-placement="top" style="padding:3px 5px;" onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Create", "T_Employee", new { UrlReferrer = BackUrl, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),viewtype = Convert.ToString(ViewBag.TemplatesName) }, null) + "');")>
+						<span class="fam-world-add"></span> Add
+					</button>
+			}
+			@if (ViewData["HostingEntity"] != null && User.CanEdit(ViewData["HostingEntity"].ToString()))
+			{
+				<button class="btn btn-default tip-top" data-placement="top" data-original-title="Associate Employee with @GeneratorBase.MVC.Models.ModelConversion.GetDisplayNameOfEntity(ViewData["HostingEntity"].ToString())" style="padding:3px 5px;" data-toggle="modal" data-target="#dvPopupBulkOperation" onclick="@Html.Raw("OpenPopUpEntity1M(this,'PopupBulkOperation','Employee','dvPopupBulkOperation','" + Url.Action("Index", "T_Employee", new { BulkOperation = "multiple", BulkAssociate = true, UrlReferrer = BackUrl, AssociatedType = ViewData["AssociatedType"], HostingEntity = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), TS = DateTime.Now,viewtype = Convert.ToString(ViewBag.TemplatesName) }) + "')")">
+					<span class="fam-chart-organisation"></span>
+				</button>
+			}
+                </div>
+				<div class="btn-group">
+
+				@if (User.Identity.IsAuthenticated && User != null && User.CanAdd("T_Employee"))
+			{
+				if (ViewData["HostingEntity"]==null)
+				{ 
+				 <button type="button" class="btn btn-default btn-default tip-top" data-original-title="Import Excel" data-placement="top" style="padding:3px 5px;" onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Upload", "T_Employee") + "');")>
+                        <span class="fam-page-excel"></span>               
+                 </button>
+				}
+			}
+				 <div class="btn btn-default  btn-default tip-top" data-original-title="Export Excel" data-placement="top" style="padding:3px 5px;" onclick=@Html.Raw("NavigateToUrl('" + Url.Action(ActionNameUrl,"T_Employee",getSortHtmlAttributes(null, false, null, true), null) + "');")>
+				    <span class="fam-page-white-put"></span>
+                </div>
+		 </div>
+		<div class="btn-group">
+               @if (ViewData["HostingEntity"] == null)
+			   {
+                        <button class="btn btn-default tip-top" data-placement="top" data-original-title="Show Graph" style="padding:3px 5px;" data-toggle="modal" data-target="#ShowGraphT_Employee" onclick=@Html.Raw("OpenDashBoard('dvShowGraphT_Employee');")>
+                            <span class="fam-chart-bar"></span>
+                        </button>
+				}
+             <button type="button" class="btn btn-default btn-default collapse-data-btn tip-top" id="btnShowHideT_Employee" data-original-title="Show/Hide Column" data-placement="top" style="padding:3px 5px;" onclick=@Html.Raw("showhideColumns(event,'T_Employee');")>
+                        <span class="fam-table-row-delete"></span>
+                    </button>
+	@if (ViewData["HostingEntity"] == null || Convert.ToBoolean(ViewData["IsFilter"]) == true)
+	{
+		<div class="btn-group">
+		<a class="btn btn-default btn-default dropdown-toggle tip-top" data-original-title="Filter-Groupby" style="padding:3px 5px;" data-toggle="dropdown" href="#">
+		<span class="glyphicon glyphicon-filter"></span>
+		</a>
+		<ul class="dropdown-menu" role="menu">
+            <li>
+                <a id="fltT_Employeetype" data-placement="top" onclick=@Html.Raw("SetCookieFlt('fltT_Employeetype');EntityFilter('T_Employee','" + Url.Action("GetAllValueForFilter", "T_Employeetype") + "','" + Html.Raw(Url.Action("Index", "T_Employee", new {FirstCall=true,FilterHostingEntityID = ViewData["HostingEntityID"], IsFilter = true, HostingEntity = "T_Employeetype", AssociatedType = "T_AssociatedEmployeeType", ClearSearchTimeStamp = DateTime.Now.Ticks.ToString(),viewtype = Convert.ToString(ViewBag.TemplatesName)})) + "','" + User.JavaScriptEncodedName + "');")>
+                    <span>Employee Type</span>
+                </a>
+            </li>
+            <li>
+                <a id="fltT_Employeestatus" data-placement="top" onclick=@Html.Raw("SetCookieFlt('fltT_Employeestatus');EntityFilter('T_Employee','" + Url.Action("GetAllValueForFilter", "T_Employeestatus") + "','" + Html.Raw(Url.Action("Index", "T_Employee", new {FirstCall=true,FilterHostingEntityID = ViewData["HostingEntityID"], IsFilter = true, HostingEntity = "T_Employeestatus", AssociatedType = "T_AssociatedEmployeeStatus", ClearSearchTimeStamp = DateTime.Now.Ticks.ToString(),viewtype = Convert.ToString(ViewBag.TemplatesName)})) + "','" + User.JavaScriptEncodedName + "');")>
+                    <span>Employee Status</span>
+                </a>
+            </li>
+     <li>@Html.ActionLink("Clear", "Index", new { viewtype = Convert.ToString(ViewBag.TemplatesName) }, new { onclick = "ClearFilterCookies();", @class = "label label-primary pull-left filterLabel", @Style = "margin-left:20px;color: white" })</li>
+		</ul>
+		</div>
+	}
+                </div>
+ <div class="btn-group">
+    <a class="btn btn-default dropdown-toggle tip-top" data-original-title="Bulk Actions" style="padding:3px 5px;" data-toggle="dropdown" href="#">
+           <span class="fa fa-wrench"></span> Bulk
+        </a>
+        <ul class="dropdown-menu" role="menu">
+	
+	@if (User.Identity.IsAuthenticated && User != null && User.CanEdit("T_Employee")&&  User.CanUseVerb("BulkUpdate","T_Employee",User))
+	{
+	<li>
+		<a data-placement="top" style="cursor:pointer;" data-toggle="modal" data-target="#dvPopup"
+			onclick="@Html.Raw("OpenPopUpBulKUpdate('addPopup','Bulk Update Employee','dvPopup','" + Url.Action("BulkUpdate", "T_Employee", new { UrlReferrer = BackUrl, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), TS = DateTime.Now }) + "')")">Update</a>
+	</li>
+	
+	}
+	
+ 
+	 @if (User.Identity.IsAuthenticated && User != null && User.CanDelete("T_Employee") && User.CanUseVerb("BulkDelete","T_Employee",User))
+     {
+	 <li>
+		<a style="cursor:pointer;" onclick="PerformBulkOperation(this,'T_Employee','Bulk Delete','@Url.Action("DeleteBulk", "T_Employee")');">Delete</a>
+	 </li>
+	
+	 }
+                        </ul>
+                    </div>
+					 <div class="btn-group">
+                        <a class="btn btn-default dropdown-toggle tip-top" data-original-title="View Grid As" style="padding:3px 5px;" data-toggle="dropdown">
+                            <span class="fa fa fa-table"></span>
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu" role="menu" style="min-width:110px">
+                            <li>
+                                <a data-placement="top" style="cursor:pointer;"
+                                   onclick="@Html.Raw("LoadTabTemplate('T_Employee','" + Url.Action("Index", "T_Employee", new { UrlReferrer = BackUrl, AssociatedType = ViewData["AssociatedType"], HostingEntity = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), TS = DateTime.Now, viewtype = "IndexPartialGallery" }) + "')")">
+                                    <span class="fa fa-th"></span> Gallery
+                                </a>
+                            </li>
+                            <li>
+                                <a style="display:block; margin:0px;"
+                                   onclick="@Html.Raw("LoadTabTemplate('T_Employee','" + Url.Action("Index", "T_Employee", new { UrlReferrer = BackUrl, AssociatedType = ViewData["AssociatedType"], HostingEntity = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), TS = DateTime.Now, viewtype = "IndexPartialList" }) + "')")">
+                                    <span class="fa fa-list"></span> List
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+					
+
+				<div class="pull-right" style="width:250px;">
+                        <div class="input-group">
+                            @Html.TextBox("SearchStringT_Employee", ViewBag.CurrentFilter as string, null, new { @class = "form-control fixsearchbox", @value = ViewBag.Homeval, @placeholder = "Search" })
+                            <div class="input-group-btn">
+                              <a id="T_EmployeeSearch" onclick="SearchClick(event, 'T_Employee', '@Html.Raw(Url.Action("Index", "T_Employee", new { IsFilter = ViewData["IsFilter"], IsDeepSearch = false, searchString = "_SearchString", HostingEntity = Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]),HideColumns = ViewData["HideColumns"], SearchTimeStamp = DateTime.Now.Ticks.ToString(),viewtype = Convert.ToString(ViewBag.TemplatesName) }))','@User.JavaScriptEncodedName');" data-original-title="Grid Search" class="btn btn-default btn-default tip-top" style="padding:3px 5px;"><span class="fam-zoom"></span></a>
+ @if (ViewData["HostingEntity"]==null)
+	{ 
+			 <a href="@(Url.Action("SetFSearch", "T_Employee")+Request.Url.Query)" data-original-title="Faceted Search" class="btn btn-default btn-default tip-top" style="padding:3px 5px;"><span class="fam-page-find"></span></a>
+	}
+								<button id="T_EmployeeCancel" type="button" class="btn btn-default btn-default collapse-data-btn tip-top" onclick="CancelSearch('T_Employee','@Html.Raw(Url.Action("Index", "T_Employee", new {IsFilter=ViewData["IsFilter"], HostingEntity = Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]), HideColumns = ViewData["HideColumns"], ClearSearchTimeStamp = DateTime.Now.Ticks.ToString(),viewtype = Convert.ToString(ViewBag.TemplatesName) }))','@User.JavaScriptEncodedName')" data-original-title="Clear Search" data-placement="top" style="padding:3px 5px;">
+                                    <span class="fam-delete"></span>
+                                </button>
+                                <button id="T_EmployeeSearchCancel" type="button" class="btn btn-default btn-default collapse-data-btn tip-top" onclick="CancelSearch('T_Employee','@Html.Raw(Url.Action("Index", "T_Employee", new {IsFilter=ViewData["IsFilter"], HostingEntity = Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]),HideColumns = ViewData["HideColumns"], ClearSearchTimeStamp = DateTime.Now.Ticks.ToString(),viewtype = Convert.ToString(ViewBag.TemplatesName)}))','@User.JavaScriptEncodedName')" data-original-title="Refresh Grid" data-placement="top" style="padding:3px 5px;">
+                                    <span class="fam-arrow-refresh"></span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+            </div>
+            <div class="panel-body" style="margin:0px; padding:8px;">
+ @if (ViewData["HostingEntity"]==null)
+	{ 
+	if (ViewBag.SearchResult != "" )
+                            {
+			<div id="fsearchT_Employee" class="collapse MessageFSearch">
+                        @Html.Raw(Html.Encode(ViewBag.SearchResult).Replace(Environment.NewLine, "<br/>"))
+						 <a href="@Url.Action("Index", "T_Employee",new{viewtype = Convert.ToString(ViewBag.TemplatesName)})" style="margin-left:5px;float:right"><span class="glyphicon glyphicon-remove-sign"></span> Clear</a>
+						  <a href="@(Url.Action("SetFSearch", "T_Employee")+Request.Url.Query)" style="float:right" ><span class="glyphicon glyphicon-edit"></span> Modify</a>
+            </div>
+	}
+}
+	@Html.Partial("~/Views/T_Employee/ShowHideColumns.cshtml") 
+    <div id="Des_Table" class="table-responsive" style="overflow-x:auto;">
+        <table class="table table-striped table-bordered table-hover table-condensed">
+            <thead>
+                <tr>
+
+	 <th class="col0" style="width:20px;">
+		<input type="checkbox" class="tip-top" data-placement="top" data-original-title="Select All" onclick="SelectAllRows(this);" />
+        @Html.Hidden("SelectedItems")
+	</th>
+
+					<th class="col1" style="width:70px;">Actions</th>
+@if(User.CanView("T_Employee","T_Title") )
+{	
+			var SortPropertyName = EntityReflector.Properties.FirstOrDefault(q => q.Name == "T_Title");
+			<th class="col2">
+			@Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "T_Employee",getSortHtmlAttributes("T_Title", false, null, false),new {  @onclick = "SortLinkClick(event,'T_Employee');" }) 
+				@if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "T_Title")
+                {<i class="fa fa-sort-desc"></i>}
+                @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "T_Title")
+                {<i class="fa fa-sort-asc"></i>}
+			</th>
+}
+@if(User.CanView("T_Employee","T_FirstName") )
+{	
+			var SortPropertyName = EntityReflector.Properties.FirstOrDefault(q => q.Name == "T_FirstName");
+			<th class="col3">
+			@Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "T_Employee",getSortHtmlAttributes("T_FirstName", false, null, false),new {  @onclick = "SortLinkClick(event,'T_Employee');" }) 
+				@if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "T_FirstName")
+                {<i class="fa fa-sort-desc"></i>}
+                @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "T_FirstName")
+                {<i class="fa fa-sort-asc"></i>}
+			</th>
+}
+@if(User.CanView("T_Employee","T_MiddleName") )
+{	
+			var SortPropertyName = EntityReflector.Properties.FirstOrDefault(q => q.Name == "T_MiddleName");
+			<th class="col4">
+			@Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "T_Employee",getSortHtmlAttributes("T_MiddleName", false, null, false),new {  @onclick = "SortLinkClick(event,'T_Employee');" }) 
+				@if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "T_MiddleName")
+                {<i class="fa fa-sort-desc"></i>}
+                @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "T_MiddleName")
+                {<i class="fa fa-sort-asc"></i>}
+			</th>
+}
+@if(User.CanView("T_Employee","T_LastName") )
+{	
+			var SortPropertyName = EntityReflector.Properties.FirstOrDefault(q => q.Name == "T_LastName");
+			<th class="col5">
+			@Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "T_Employee",getSortHtmlAttributes("T_LastName", false, null, false),new {  @onclick = "SortLinkClick(event,'T_Employee');" }) 
+				@if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "T_LastName")
+                {<i class="fa fa-sort-desc"></i>}
+                @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "T_LastName")
+                {<i class="fa fa-sort-asc"></i>}
+			</th>
+}
+@if(User.CanView("T_Employee","T_Email") )
+{	
+			var SortPropertyName = EntityReflector.Properties.FirstOrDefault(q => q.Name == "T_Email");
+			<th class="col6">
+			@Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "T_Employee",getSortHtmlAttributes("T_Email", false, null, false),new {  @onclick = "SortLinkClick(event,'T_Employee');" }) 
+				@if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "T_Email")
+                {<i class="fa fa-sort-desc"></i>}
+                @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "T_Email")
+                {<i class="fa fa-sort-asc"></i>}
+			</th>
+}
+@if(User.CanView("T_Employee","T_PhoneNo") )
+{	
+			var SortPropertyName = EntityReflector.Properties.FirstOrDefault(q => q.Name == "T_PhoneNo");
+			<th class="col7">
+			@Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "T_Employee",getSortHtmlAttributes("T_PhoneNo", false, null, false),new {  @onclick = "SortLinkClick(event,'T_Employee');" }) 
+				@if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "T_PhoneNo")
+                {<i class="fa fa-sort-desc"></i>}
+                @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "T_PhoneNo")
+                {<i class="fa fa-sort-asc"></i>}
+			</th>
+}
+@if(User.CanView("T_Employee","T_IdentificationNo") )
+{	
+			var SortPropertyName = EntityReflector.Properties.FirstOrDefault(q => q.Name == "T_IdentificationNo");
+			<th class="col8">
+			@Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "T_Employee",getSortHtmlAttributes("T_IdentificationNo", false, null, false),new {  @onclick = "SortLinkClick(event,'T_Employee');" }) 
+				@if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "T_IdentificationNo")
+                {<i class="fa fa-sort-desc"></i>}
+                @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "T_IdentificationNo")
+                {<i class="fa fa-sort-asc"></i>}
+			</th>
+}
+@if(User.CanView("T_Employee","T_Picture") && User.CanView("Document"))
+{	
+			var SortPropertyName = EntityReflector.Properties.FirstOrDefault(q => q.Name == "T_Picture");
+			<th class="col9">
+			@Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "T_Employee",getSortHtmlAttributes("T_Picture", false, null, false),new {  @onclick = "SortLinkClick(event,'T_Employee');" }) 
+				@if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "T_Picture")
+                {<i class="fa fa-sort-desc"></i>}
+                @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "T_Picture")
+                {<i class="fa fa-sort-asc"></i>}
+			</th>
+}
+@if(User.CanView("T_Employee","T_AssociatedEmployeeTypeID"))
+{
+			var SortPropertyName = EntityReflector.Properties.FirstOrDefault(q => q.Name == "T_AssociatedEmployeeTypeID");
+			<th class="col10" @(Convert.ToString(ViewData["HostingEntity"]) == "T_Employeetype" && Convert.ToString(ViewData["AssociatedType"]) == "T_AssociatedEmployeeType"?"hidden":"")>
+				@Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "T_Employee",getSortHtmlAttributes("T_AssociatedEmployeeTypeID", false, null, false),new {  @onclick = "SortLinkClick(event,'T_Employee');" })
+				@if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "T_AssociatedEmployeeTypeID")
+				{<i class="fa fa-sort-desc"></i>}
+				@if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "T_AssociatedEmployeeTypeID")
+				{<i class="fa fa-sort-asc"></i>}
+			 </th>
+}
+@if(User.CanView("T_Employee","T_AssociatedEmployeeStatusID"))
+{
+			var SortPropertyName = EntityReflector.Properties.FirstOrDefault(q => q.Name == "T_AssociatedEmployeeStatusID");
+			<th class="col11" @(Convert.ToString(ViewData["HostingEntity"]) == "T_Employeestatus" && Convert.ToString(ViewData["AssociatedType"]) == "T_AssociatedEmployeeStatus"?"hidden":"")>
+				@Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "T_Employee",getSortHtmlAttributes("T_AssociatedEmployeeStatusID", false, null, false),new {  @onclick = "SortLinkClick(event,'T_Employee');" })
+				@if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "T_AssociatedEmployeeStatusID")
+				{<i class="fa fa-sort-desc"></i>}
+				@if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "T_AssociatedEmployeeStatusID")
+				{<i class="fa fa-sort-asc"></i>}
+			 </th>
+}
+@if(User.CanView("T_Employee","T_EmployeeUserLoginID"))
+{
+			var SortPropertyName = EntityReflector.Properties.FirstOrDefault(q => q.Name == "T_EmployeeUserLoginID");
+			<th class="col12" @(Convert.ToString(ViewData["HostingEntity"]) == "User" && Convert.ToString(ViewData["AssociatedType"]) == "T_EmployeeUserLogin"?"hidden":"")>
+				@Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "T_Employee",getSortHtmlAttributes("T_EmployeeUserLoginID", false, null, false),new {  @onclick = "SortLinkClick(event,'T_Employee');" })
+				@if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "T_EmployeeUserLoginID")
+				{<i class="fa fa-sort-desc"></i>}
+				@if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "T_EmployeeUserLoginID")
+				{<i class="fa fa-sort-asc"></i>}
+			 </th>
+}
+@if(User.CanView("T_Employee","T_EmployeeAddressID"))
+{
+			var SortPropertyName = EntityReflector.Properties.FirstOrDefault(q => q.Name == "T_EmployeeAddressID");
+			<th class="col13" @(Convert.ToString(ViewData["HostingEntity"]) == "T_Address" && Convert.ToString(ViewData["AssociatedType"]) == "T_EmployeeAddress"?"hidden":"")>
+				@Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "T_Employee",getSortHtmlAttributes("T_EmployeeAddressID", false, null, false),new {  @onclick = "SortLinkClick(event,'T_Employee');" })
+				@if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "T_EmployeeAddressID")
+				{<i class="fa fa-sort-desc"></i>}
+				@if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "T_EmployeeAddressID")
+				{<i class="fa fa-sort-asc"></i>}
+			 </th>
+}
+       </tr>
+@{ bool isFirst = true; var oldKey = string.Empty; }
+                                @foreach (var item in Model)
+                                {
+                                    if (ViewBag.IsGroupBy != null && Convert.ToBoolean(ViewBag.IsGroupBy))
+                                    {
+                                        var groupKey = item.m_DisplayValue;
+                                        if (oldKey != groupKey)
+                                        {
+                                            isFirst = true;
+                                            oldKey = item.m_DisplayValue;
+                                        }
+                                        if (isFirst || (string.IsNullOrEmpty(oldKey)))
+                                        {
+                                            isFirst = false;
+											var groupCnt = Model.Where(grp => grp.m_DisplayValue == groupKey).Count();
+                                            string groupString = string.Empty;
+                                            if (groupCnt > 1)
+                                            {
+                                                groupString = "(" + groupCnt + " Records)";
+                                            }
+                                            else
+                                            {
+                                                groupString = "(" + groupCnt + " Record)";
+                                            }
+                                            <tr>
+                                                <td colspan="14" style="background: #EDF5FA; font-weight:bold"> @groupKey @groupString</td>
+                                            </tr>
+                                        }
+                                    }
+      <tr  ondblclick="DoubleClickRow(@item.Id,'@Url.Action("Details", "T_Employee", new { id = item.Id, UrlReferrer = BackUrl, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null)');">
+	
+	 <td>
+			 <input type="checkbox" id="@item.Id" onclick="SelectForBulkOperation(this,'@item.Id');" />
+	</td>
+	
+		   <td>
+	   <div style="width:60px; margin-top:-2px;">
+		<div class="btn-group" style="position:absolute;">
+                                                <button data-toggle="dropdown" class="btn btn-xs dropdown-toggle btn-default">
+                                                    Action
+                                                    <span class="caret">    </span>
+                                                </button>
+			<ul class="dropdown-menu pull-left">
+				<li>
+                    <a href="@Url.Action("Details", "T_Employee", new { id = item.Id, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"])  }, null)"><i class="glyphicon glyphicon-eye-open"></i>  View</a>
+                </li>
+								@if (User.CanEdit("T_Employee"))
+					{
+				 <li>
+					
+						<a   id='aBtnQuickEditT_Employee_@item.Id' style="cursor:pointer;" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Edit Employee','dvPopup','" + Url.Action("EditQuick", "T_Employee", new
+																			{
+																				id = item.Id,
+																				UrlReferrer = Request.Url,
+																				AssociatedType = ViewData["AssociatedType"],
+																				HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]),
+																				HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),
+																				TS = DateTime.Now,viewtype = Convert.ToString(ViewBag.TemplatesName)
+																			}) + "')")"> <i class="fa fa-pencil"></i> Quick Edit</a>
+					
+				</li>
+				}
+				@if (User.CanEdit("T_Employee"))
+                {
+				<li>
+                        <a href="@Url.Action("Edit","T_Employee", new { id = item.Id,  UrlReferrer = BackUrl, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),viewtype = Convert.ToString(ViewBag.TemplatesName) },null)"><i class="glyphicon glyphicon-edit"></i>  Edit</a>
+                    
+                </li>             
+				}
+			@if (User.CanDelete("T_Employee"))
+                 {
+				 <li class="divider" style="clear:both"></li>
+				<li>
+                    <a href="@Url.Action("Delete", "T_Employee", new { id = item.Id, UrlReferrer = BackUrl, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),viewtype = Convert.ToString(ViewBag.TemplatesName) }, null)"><i class="glyphicon glyphicon-remove-sign" style="color: #E7574B;"></i> Delete</a>
+                </li>
+				}
+			</ul>
+		</div>
+		</div>
+	</td>
+	@if(User.CanView("T_Employee","T_Title"))
+{
+		<td onclick="OpenQuickEdit('T_Employee','@item.Id',event);">
+            @Html.DisplayFor(modelItem => item.T_Title)
+        </td>
+}
+@if(User.CanView("T_Employee","T_FirstName"))
+{
+		<td onclick="OpenQuickEdit('T_Employee','@item.Id',event);">
+            @Html.DisplayFor(modelItem => item.T_FirstName)
+        </td>
+}
+@if(User.CanView("T_Employee","T_MiddleName"))
+{
+		<td onclick="OpenQuickEdit('T_Employee','@item.Id',event);">
+            @Html.DisplayFor(modelItem => item.T_MiddleName)
+        </td>
+}
+@if(User.CanView("T_Employee","T_LastName"))
+{
+		<td onclick="OpenQuickEdit('T_Employee','@item.Id',event);">
+            @Html.DisplayFor(modelItem => item.T_LastName)
+        </td>
+}
+@if(User.CanView("T_Employee","T_Email"))
+{
+		<td onclick="OpenQuickEdit('T_Employee','@item.Id',event);">
+            @Html.DisplayFor(modelItem => item.T_Email)
+        </td>
+}
+@if(User.CanView("T_Employee","T_PhoneNo"))
+{
+		<td onclick="OpenQuickEdit('T_Employee','@item.Id',event);">
+            @Html.DisplayFor(modelItem => item.T_PhoneNo)
+        </td>
+}
+@if(User.CanView("T_Employee","T_IdentificationNo"))
+{
+		<td onclick="OpenQuickEdit('T_Employee','@item.Id',event);">
+            @Html.DisplayFor(modelItem => item.T_IdentificationNo)
+        </td>
+}
+	@if(User.CanView("T_Employee","T_Picture") && User.CanView("Document"))
+	{
+		<td width="30px">
+			@if(!string.IsNullOrEmpty(Html.DisplayFor(modelItem => item.T_Picture).ToString())){
+			<ul class="gallery" style="margin: 0px; padding: 0px;">
+                <li style="list-style:none; margin:0px; padding:0px;">
+                    <a href="@Url.Action("DisplayImageAfterhover", "Document", new { id = item.T_Picture })" rel="prettyPhoto" title="" style="margin: 0px; padding: 0px;"><img src="@Url.Action("DisplayImage", "Document", new { id = item.T_Picture , maxSize=30  })" width="30" height="30" alt="T_Picture" style="margin: 0px; padding: 0px;" /></a>
+                </li>
+				
+            </ul>
+			<div class="modal fade" id="image-gallery" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                                        <div class="modal-dialog">
+                                                            <div class="modal-content">
+                                                                <div class="modal-header">
+                                                                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true" class="fa fa-close"></span><span class="sr-only">Close</span></button>
+                                                                    <h4 class="modal-title" id="image-gallery-title">@item.DisplayValue</h4>
+                                                                </div>
+                                                                <div class="modal-body">
+                                                                    <img id="image-gallery-image" class="img-responsive" src="@(Url.Content("~/Files/")+Url.Content(Html.DisplayFor(modelItem => item.T_Picture).ToString()))">
+                                                                </div>
+
+                                                            </div>
+                                                        </div>
+                                                    </div>
+			}else{<label>NA</label>}
+        </td>
+}
+@if(User.CanView("T_Employee","T_AssociatedEmployeeTypeID"))
+{
+		
+		
+					<td  @(Convert.ToString(ViewData["HostingEntity"]) == "T_Employeetype" && Convert.ToString(ViewData["AssociatedType"]) == "T_AssociatedEmployeeType"?"hidden":"") onclick="OpenQuickEdit('T_Employee','@item.Id',event);">
+            @Html.DisplayFor(modelItem => item.t_associatedemployeetype.DisplayValue)
+			        </td>
+}
+@if(User.CanView("T_Employee","T_AssociatedEmployeeStatusID"))
+{
+		
+		
+					<td  @(Convert.ToString(ViewData["HostingEntity"]) == "T_Employeestatus" && Convert.ToString(ViewData["AssociatedType"]) == "T_AssociatedEmployeeStatus"?"hidden":"") onclick="OpenQuickEdit('T_Employee','@item.Id',event);">
+            @Html.DisplayFor(modelItem => item.t_associatedemployeestatus.DisplayValue)
+			        </td>
+}
+@if(User.CanView("T_Employee","T_EmployeeUserLoginID"))
+{
+		
+		
+					<td  @(Convert.ToString(ViewData["HostingEntity"]) == "User" && Convert.ToString(ViewData["AssociatedType"]) == "T_EmployeeUserLogin"?"hidden":"") onclick="OpenQuickEdit('T_Employee','@item.Id',event);">
+            @Html.DisplayFor(modelItem => item.t_employeeuserlogin.UserName)
+			        </td>
+}
+@if(User.CanView("T_Employee","T_EmployeeAddressID"))
+{
+		
+		
+					<td  @(Convert.ToString(ViewData["HostingEntity"]) == "T_Address" && Convert.ToString(ViewData["AssociatedType"]) == "T_EmployeeAddress"?"hidden":"")>
+@if (item.t_employeeaddress != null  && !string.IsNullOrEmpty(item.t_employeeaddress.DisplayValue))
+{
+		 @Html.ActionLink(HttpUtility.HtmlDecode(Html.DisplayFor(modelItem => item.t_employeeaddress.DisplayValue).ToString()), "Details", "T_Address", new { Id = Html.DisplayFor(modelItem => item.t_employeeaddress.Id).ToString() },null)
+}
+		         </td>
+}
+
+                                </tr>
+                            }
+                    </table>
+                </div>
+				 <ul id="Mob_List" class="list-group">
+                    @foreach (var item in Model)
+                    {
+                        <li class="list-group-item">
+@if(User.CanView("T_Employee","T_Title"))
+{
+		<p><span class="text-primary"> Title </span> : <span>
+            @Html.DisplayFor(modelItem => item.T_Title)
+         </span> </p>	
+		 }
+@if(User.CanView("T_Employee","T_FirstName"))
+{
+		<p><span class="text-primary"> First Name </span> : <span>
+            @Html.DisplayFor(modelItem => item.T_FirstName)
+         </span> </p>	
+		 }
+@if(User.CanView("T_Employee","T_MiddleName"))
+{
+		<p><span class="text-primary"> Middle Name </span> : <span>
+            @Html.DisplayFor(modelItem => item.T_MiddleName)
+         </span> </p>	
+		 }
+@if(User.CanView("T_Employee","T_LastName"))
+{
+		<p><span class="text-primary"> Last Name </span> : <span>
+            @Html.DisplayFor(modelItem => item.T_LastName)
+         </span> </p>	
+		 }
+@if(User.CanView("T_Employee","T_Email"))
+{
+		<p><span class="text-primary"> Email </span> : <span>
+            @Html.DisplayFor(modelItem => item.T_Email)
+         </span> </p>	
+		 }
+@if(User.CanView("T_Employee","T_PhoneNo"))
+{
+		<p><span class="text-primary"> Phone No </span> : <span>
+            @Html.DisplayFor(modelItem => item.T_PhoneNo)
+         </span> </p>	
+		 }
+@if(User.CanView("T_Employee","T_IdentificationNo"))
+{
+		<p><span class="text-primary"> Identification No </span> : <span>
+            @Html.DisplayFor(modelItem => item.T_IdentificationNo)
+         </span> </p>	
+		 }
+@if(User.CanView("T_Employee","T_Picture") && User.CanView("Document"))
+{
+		<p>
+			<span class="text-primary"> Picture </span> : <span>
+				 @if (!string.IsNullOrEmpty(Html.DisplayFor(modelItem => item.T_Picture).ToString()))
+					{
+                    <a href="@Url.Action("DisplayImageAfterhover", "Document", new { id = item.T_Picture })" rel="prettyPhoto" title="" style="margin: 0px; padding: 0px;"><img src="@Url.Action("DisplayImage", "Document", new { id = item.T_Picture  , maxSize=30 })" width="30" height="30" alt="T_Picture" style="margin: 0px; padding: 0px;" /></a>
+					}
+					else
+					{<label>NA</label>}
+			</span> 
+	   </p>
+}
+@if(User.CanView("T_Employee","T_AssociatedEmployeeTypeID"))
+{
+		<p @(Convert.ToString(ViewData["HostingEntity"]) == "T_Employeetype" && Convert.ToString(ViewData["AssociatedType"]) == "T_AssociatedEmployeeType"?"hidden":"")>
+		<span class="text-primary"> Associated  Employee Type </span> : <span>
+		            @Html.DisplayFor(modelItem => item.t_associatedemployeetype.DisplayValue)
+			         </span> </p>
+		 }
+@if(User.CanView("T_Employee","T_AssociatedEmployeeStatusID"))
+{
+		<p @(Convert.ToString(ViewData["HostingEntity"]) == "T_Employeestatus" && Convert.ToString(ViewData["AssociatedType"]) == "T_AssociatedEmployeeStatus"?"hidden":"")>
+		<span class="text-primary"> Associated  Employee Status </span> : <span>
+		            @Html.DisplayFor(modelItem => item.t_associatedemployeestatus.DisplayValue)
+			         </span> </p>
+		 }
+@if(User.CanView("T_Employee","T_EmployeeUserLoginID"))
+{
+		<p @(Convert.ToString(ViewData["HostingEntity"]) == "User" && Convert.ToString(ViewData["AssociatedType"]) == "T_EmployeeUserLogin"?"hidden":"")>
+		<span class="text-primary"> Employee User Login </span> : <span>
+		            @Html.DisplayFor(modelItem => item.t_employeeuserlogin.UserName)
+			         </span> </p>
+		 }
+@if(User.CanView("T_Employee","T_EmployeeAddressID"))
+{
+		<p @(Convert.ToString(ViewData["HostingEntity"]) == "T_Address" && Convert.ToString(ViewData["AssociatedType"]) == "T_EmployeeAddress"?"hidden":"")>
+		<span class="text-primary"> Employee Address </span> : <span>
+		            @Html.DisplayFor(modelItem => item.t_employeeaddress.DisplayValue)
+			         </span> </p>
+		 }
+<span class="label label-primary text-linkwhite"> 
+@Html.ActionLink("View", "Details","T_Employee", new { id = item.Id },null)
+</span>
+<span class="label label-warning text-linkwhite"> 
+@if (User.CanEdit("T_Employee"))
+				 {
+					@Html.ActionLink("Edit", "Edit","T_Employee", new { id = item.Id, UrlReferrer = BackUrl, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) },null)  
+				 }
+				 </span>
+				<span class="label label-danger text-linkwhite"> 
+				@if (User.CanDelete("T_Employee"))
+				 {
+					@Html.ActionLink("Delete", "Delete", "T_Employee", new { id = item.Id, UrlReferrer = BackUrl, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null)    
+				 }
+				 </span>
+				   </li>
+                    }
+                </ul>
+  			   @if (Model.Count > 0)
+                {
+                    <div id="pagination">
+                        @Html.PagedListPager(Model, page => Url.Action(ActionNameUrl, "T_Employee", getSortHtmlAttributes(null, true, page, false)))
+                        <div class="fixPageSize">
+                            Page Size :
+                            @Html.DropDownList("PageSize", new SelectList(new Dictionary<string, int> { { "10", 10 }, { "20", 20 }, { "50", 50 }, { "100", 100 } }, "Key", "Value")
+							, new { @id = "pagesizelistT_Employee",
+							 @onchange = @Html.Raw("pagesizelistChange(event,'T_Employee','"
+							  + @User.JavaScriptEncodedName + "')"),
+							 @Url = Html.Raw(@Url.Action(ActionNameUrl, "T_Employee",
+							 getSortHtmlAttributes(ViewBag.CurrentSort, ViewBag.Pages == 1 ? false : true,
+							 null, false), null)) })
+							<span style="text-align:right;"> Total Count: @(Model.TotalItemCount)</span>
+							<script>
+                                    $(document).ready(function () {
+                                        $.validator.setDefaults({
+                                            ignore: "#pagesizelistT_Employee"
+                                        })
+                                    }); 
+                                </script>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div> 
+ </div>
+    <div class="modal fade" id="ShowGraphT_Employee" tabindex="-1" role="dialog" aria-labelledby="ShowGraphT_EmployeeLabel" aria-hidden="true">
+        <div class="modal-dialog" style="width:80%">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="ShowGraphT_EmployeeLabel">Dashboard Employee</h4>
+                </div>
+				 <div  class="modal-body" >
+						<div id="dvShowGraphT_Employee" data-url="@Url.Action("ShowGraph", "T_Employee", new { type = "all" })">
+						</div>
+						<div style="clear:both"></div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
+

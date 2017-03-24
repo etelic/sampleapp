@@ -26,7 +26,7 @@ namespace GeneratorBase.MVC.Controllers
         }
         public ActionResult Edit()
         {
-            if (((CustomPrincipal)User).IsAdmin())
+            if (((CustomPrincipal)User).IsAdmin)
             {
                 ThirdPartyLogin cp = _repository.GetThirdPartyLogin();
                 if (cp == null)
@@ -38,7 +38,7 @@ namespace GeneratorBase.MVC.Controllers
         [HttpPost]
         public ActionResult Edit(ThirdPartyLogin cp)
         {
-            if (((CustomPrincipal)User).IsAdmin())
+            if (((CustomPrincipal)User).IsAdmin)
             {
                 if (ModelState.IsValid)
                 {

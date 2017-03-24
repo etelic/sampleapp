@@ -61,10 +61,11 @@ namespace GeneratorBase.MVC
             var names = ActiveDirectoryLookup.GetNames(this.identity.RoleClaimType, this.identity.Claims);
                        
             //Radio button options to login user in multiple roles
-            var UserCurrentRole = HttpContext.Current.Request.Cookies["CurrentRole"] == null ? string.Empty : HttpContext.Current.Request.Cookies["CurrentRole"].Value;
+            string AppUrl = System.Configuration.ConfigurationManager.AppSettings["AppUrl"];
+            var UserCurrentRole = HttpContext.Current.Request.Cookies[AppUrl+"CurrentRole"] == null ? string.Empty : HttpContext.Current.Request.Cookies["CurrentRole"].Value;
             if (!string.IsNullOrEmpty(UserCurrentRole))
             {
-                string[] splittedarray = UserCurrentRole.Split(",".ToCharArray());
+                string[] splittedarray = UserCurrentRole.Split(",".ToCharArray()).Select(p=>p.Trim()).ToArray();
                 names = names.Where(u => splittedarray.Contains(u.Trim()));
             }
 

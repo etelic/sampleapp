@@ -1,0 +1,291 @@
+﻿@model GeneratorBase.MVC.Models.CustomReport
+@using PagedList;
+@{
+    ViewBag.Title = "Edit Custom Report";
+    var EditPermission = User.CanEditItem("CustomReport", Model, User);
+    var DeletePermission = User.CanDeleteItem("CustomReport", Model, User);
+    var EntityDisplayNameReflector = ModelReflector.Entities.FirstOrDefault(p => p.Name == "CustomReport");
+    var EntityDisplayName = EntityDisplayNameReflector != null ? EntityDisplayNameReflector.DisplayName : "Custom Report";
+}
+@functions {
+    object getHtmlAttributes(string Property)
+    {
+        if (User.CanEdit("CustomReport", Property))
+        {
+            return new { @class = "form-control" };
+        } return new { @class = "form-control", @readonly = "readonly" };
+    }
+}
+<script>
+    $(document).ready(function () {
+        try {
+            var hostingEntityName = "";
+            if ('@Convert.ToString(ViewData["AssociatedType"])'.length > 0) {
+                hostingEntityName = '@Convert.ToString(ViewData["AssociatedType"])';
+                $('#' + hostingEntityName + 'ID').attr("lock", "true");
+                $('#' + hostingEntityName + 'ID').trigger("change");
+                $("input[type='radio'][name='" + hostingEntityName + "ID']").each(function () {
+                    if (!this.checked)
+                        this.closest("li").style.display = "none";
+                });
+            }
+        }
+        catch (ex) { }
+    });
+</script>
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-title">
+            <i class="glyphicon glyphicon-edit text-primary"></i> @EntityDisplayName  <i class="glyphicon glyphicon-chevron-right small"></i> <span>Edit</span>
+
+            <div class="btn-group pull-right" style="margin-top:3px;">
+                <button data-toggle="dropdown" class="btn btn-xs dropdown-toggle btn-default">
+                    Action
+                    <span class="caret">    </span>
+                </button>
+                <ul class="dropdown-menu pull-left">
+                    <li>
+                        <a href="@Url.Action("Details", "CustomReport", new { id = Model.Id, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"])  }, null)"><i class="glyphicon glyphicon-eye-open"></i>  View</a>
+                    </li>
+                    <li>
+                        @if (User.Identity.IsAuthenticated && User != null && User.CanEdit("CustomReport"))
+                        {
+                            <a href="@Url.Action("Edit","CustomReport", new { id = Model.Id,  UrlReferrer = Request.Url, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) },null)"><i class="glyphicon glyphicon-edit"></i>  Edit</a>
+                        }
+                    </li>
+                </ul>
+            </div>
+        </h1>
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+<input type="hidden" id="ErrMsg" />
+<div id="errorContainerEdit" style="display: none">
+    <div id="errorsMsgEdit"></div>
+    <div id="errorsEdit"></div>
+</div>
+<div class="tabbable responsive">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="#Details" data-toggle="tab">Details</a></li>
+    </ul>
+    <div class="tab-content">
+        <div class="tab-pane fade in active" id="Details">
+            @using (Html.BeginForm("Edit", "CustomReport", new { UrlReferrer = Convert.ToString(ViewData["CustomReportParentUrl"]) }, FormMethod.Post, new { enctype = "multipart/form-data", @id = "frmCustomReport" }))
+            {
+                Html.ValidationSummary(true);
+                Html.EnableClientValidation();
+                @Html.HiddenFor(model => model.Id)
+                @Html.HiddenFor(model => model.ConcurrencyKey)
+                <div class="col-md-12 col-sm-12 col-xs-12" style="padding:0px; margin:0px;">
+                    <div class="panel panel-default AppForm">
+                        <div class="panel-body">
+                            <div class="row">
+                                @if (User.CanView("CustomReport", "ReportName"))
+                                {
+                                    <div class='col-sm-6 col-md-6 col-xs-12' id="dvReportName">
+                                        <div class='form-group' title="Report Name">
+                                            <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.ReportName)  <span class="text-danger-reg">*</span> </label>
+                                            <div class="input-group col-sm-7 col-md-7 col-xs-12">
+
+                                                @Html.TextBoxFor(model => model.ReportName, getHtmlAttributes("ReportName"))
+                                                @Html.ValidationMessageFor(model => model.ReportName)
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                }
+                                else
+                                { @Html.HiddenFor(model => model.ReportName, new { @class = "form-control" })}
+                                @if (User.CanView("CustomReport", "EntityName"))
+                                {
+                                    <div class='col-sm-6 col-md-6 col-xs-12' id="dvEntityName">
+                                        <div class='form-group' title="Entity Name">
+                                            <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.EntityName)   </label>
+                                            <div class="input-group col-sm-7 col-md-7 col-xs-12">
+
+                                                @Html.DropDownList("EntityNameDD", null, "-- Select --", new { @required = "Required", @onchange = "ShowReportGrid('" + Html.Raw(Url.Action("SetFsearch", "_Entity", new { RenderPartial = true, TabToken = DateTime.Now.Ticks, })) + "');", @class = "form-control" })
+                                                @Html.Hidden("EntityName", Model.EntityName == null ? "" : Model.EntityName.ToString())
+                                                @Html.ValidationMessageFor(model => model.EntityName)
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                }
+                                else
+                                { @Html.HiddenFor(model => model.EntityName, new { @class = "form-control" })}
+                                @if (User.CanView("CustomReport", "PeportType"))
+                                {
+                                    <div class='col-sm-6 col-md-6 col-xs-12' id="dvPeportType">
+                                        <div class='form-group' title="Peport Type">
+                                            <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.PeportType)  <span class="text-danger-reg">*</span> </label>
+                                            <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                <select class="form-control" id="PeportTypeDD" required="required" onchange="SetPeportType(this);">
+                                                    <option value="">-- Select --</option>
+                                                    <option value="Simple">Simple</option>
+                                                    <option value="Cross Tab">Cross Tab</option>
+                                                </select>
+                                                @Html.Hidden("PeportType", Model.PeportType == null ? "" : Model.PeportType.ToString())
+                                                @Html.ValidationMessageFor(model => model.PeportType)
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                { @Html.HiddenFor(model => model.PeportType, new { @class = "form-control" })}
+
+                                @if (User.CanView("CustomReport", "ViewReport"))
+                                {
+                                    <div class='col-sm-6 col-md-6 col-xs-12' id="dvViewReport">
+                                        <div class='form-group' title="View Report">
+                                            <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.ViewReport)  <span class="text-danger-reg">*</span> </label>
+                                            <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                <a id="rptView" type="button" title="Edit Report @Model.ReportName" data-placement="top" data-original-title="Show Reports" data-toggle="modal" data-target="#ShowReoprts"
+                                                   onclick="ViewReports('@Model.ViewReport','@ModelReflector.Entities.FirstOrDefault(p => p.Name == Model.EntityName.ToString()).DisplayName');">
+                                                    <span class="fa fam-page-gear"></span>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                }
+                                else
+                                { @Html.HiddenFor(model => model.ViewReport, new { @class = "form-control" })}
+
+                                @if (User.CanView("CustomReport", "Description"))
+                                {
+                                    <div class='col-sm-6 col-md-6 col-xs-12' id="dvDescription">
+                                        <div class='form-group' title="Description">
+                                            <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.Description) </label>
+                                            <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                @Html.TextAreaFor(model => model.Description, getHtmlAttributes("Description"))
+                                                @Html.ValidationMessageFor(model => model.Description)
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                { @Html.HiddenFor(model => model.Description, new { @class = "form-control" })}
+
+                                @Html.Hidden("OtherProperty", Model.OtherProperty == null ? "" : Model.OtherProperty.ToString())
+                                @Html.Hidden("ViewReport", Model.ViewReport == null ? "" : Model.ViewReport.ToString())
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @Html.AntiForgeryToken();
+                @Html.ActionLink("Cancel", "Cancel", new { UrlReferrer = ViewData["CustomReportParentUrl"] }, new { @onclick = "", @class = "btn btn-default btn-sm pull-left formbuttonfix" })
+                if (EditPermission)
+                {
+                    <input type="submit" name="command" value="Save" class="btn btn-primary btn-sm pull-left formbuttonfix" />
+                    <input type="submit" name="command" value="Save & Continue" class="btn btn-primary btn-sm pull-left formbuttonfix" />
+                }
+                <input type="hidden" name="hdncommand" value="" />
+            }
+            <button id="rptEdit" type="button" hidden="hidden"
+                    onclick="EditReoprts('@Html.Raw(Model.ViewReport + "&RenderPartial=true")','@Model.EntityName','@Model.Id');"></button>
+            <div class="clearfix" style="clear:both"></div>
+        </div>
+    </div> <!-- /tab-content --><br />
+
+    <br />
+    <div class="row" id="dvShowReportFilter" style="display:none;">
+        <div class="col-md-12 col-sm-12 col-sx-12">
+            <div class="panel panel-default">
+                <div class="panel-heading clearfix" style="margin:0px; padding:8px;">
+                    Custom Report Filter
+                    <a href="#" class="btn btn-default closeall pull-right btn-sm" title="close all"><i class="glyphicon glyphicon-chevron-up small"></i></a> <a href="#" class="btn btn-default openall pull-right btn-sm" title="open all" style="margin-right:5px;"><i class="glyphicon glyphicon-chevron-down small"></i></a>
+                </div>
+                <div class="panel-body" style="margin:0px; padding:8px;">
+                    <div class='col-sm-12 col-md-12 col-xs-12'>
+                        <div style="clear:both"></div>
+                        <div id="FilterReports"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $("input[type='submit']").click(function (event) {
+        var $this = $(this);
+        $('input:hidden[name="hdncommand"]').val($this.val());
+        $("#hdnReportButton").click();
+    });
+    $(function () {
+        var userAgent = navigator.userAgent.toLowerCase();
+        // Figure out what browser is being used
+        var browser = {
+            version: (userAgent.match(/.+(?:rv|it|ra|ie)[\/: ]([\d.]+)/) || [])[1],
+            safari: /webkit/.test(userAgent),
+            opera: /opera/.test(userAgent),
+            msie: /msie/.test(userAgent) && !/opera/.test(userAgent),
+            mozilla: /mozilla/.test(userAgent) && !/(compatible|webkit)/.test(userAgent)
+        };
+        if (!browser.msie) {
+            $('form').areYouSure();
+        }
+        else if (browser.version > 8.0) {
+            $('form').areYouSure();
+        }
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        $('#PeportTypeDD').val($('#PeportType').val());
+        $('#rptEdit').click();
+    });
+    function SetPeportType(obj) {
+        var peporttypeValue = $('#PeportTypeDD option:selected').val();
+        if (peporttypeValue.length != 0) {
+            $("#PeportType").val(peporttypeValue);
+        }
+        if (peporttypeValue.length == 0) {
+            $("#PeportType").val('');
+        }
+    }
+    function ShowReportGrid(url) {
+        var _Entity = $('#EntityNameDD option:selected').val();;
+        $("#FilterReports").html('');
+        url = url.replace('_Entity', _Entity);
+        if (_Entity.length != 0) {
+            $("#EntityName").val(_Entity);
+            $("#dvShowReportFilter").attr("style", "display:;");
+            $("#ShowReoprtsLabel").html("Report Of " + $('#EntityName option:selected').text())
+            $("#FilterReports").html('Please wait..');
+            $("#FilterReports").load(url);
+        }
+        if (_Entity.length == 0) {
+            $("#EntityName").val('');
+            $("#dvShowReportFilter").attr("style", "display:none;");
+        }
+    }
+    function EditReoprts(url, entityName, rptId) {
+        debugger;
+        $("#dvShowReportFilter").attr("style", "display:;");
+        url = url.replace("FSearch", "SetFSearch")
+        var _Entity = entityName;
+        $("#FilterReports").html('');
+        $("#FilterReports").html('Please wait..');
+        $("#FilterReports").load(url);
+    }
+
+</script>
+
+
+
+<div class="modal fade" id="ShowReoprts" tabindex="-1" role="dialog" aria-labelledby="ShowReoprtsLabel" aria-hidden="true">
+    <div class="modal-dialog" style="width:80%">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="ShowReoprtsLabel">Reports of</h4>
+            </div>
+            <div class="modal-body">
+                <div id="LoadReportsDiv"></div>
+                <div style="clear:both"></div>
+            </div>
+
+        </div>
+    </div>
+</div>

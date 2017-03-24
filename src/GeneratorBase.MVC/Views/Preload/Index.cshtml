@@ -11,7 +11,7 @@
         $(document).ready(function () {
             $.get("@Url.Action("Start", "Preload")")
             .done(function () {
-                if (window.location.search.substring(0) == "?Android=1") {
+                if (window.location.search.substring(0) == "?Android=1&Android=1" || window.location.search.substring(0) == "?Android=1") {
                     window.localStorage.setItem("fromapk", "true");
                 }
                 else

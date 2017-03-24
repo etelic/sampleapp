@@ -6,8 +6,15 @@
 <link href="@Url.Content("~/Content/chosen.css")" rel="stylesheet" type="text/css" />
 <script type="text/javascript">
     function bindForm() {
+        debugger;
+        var selectedRoles = "";
+        $('#ulRoleId input:checked').each(function () {
+            selectedRoles += $(this).attr('name') + ",";
+        });
+
+
         $.ajax({
-            url: '@Url.Action("RegisterUser", "Account")',
+            url: '@Url.Action("RegisterUser", "Account")' + '?selectedRoles=' + selectedRoles,
             data: $('#createForm').serialize(),
             type: 'post',
             success: function (data) {
@@ -51,62 +58,113 @@
     <div id="errorContainer" class="alert alert-danger" style="display: none">
         <div id="errors"></div>
     </div>
-    <div class="row">
-        <div class="col-md-12 col-sm-12 col-xs-12">
-            <div class="panel panel-default AppForm">
-                <div class="panel-body">
-                    <div class="row">
-                        <div class="col-md-12 col-sm-12 col-xs-12">
-                            <div class="row">
-                                <div class='col-sm-4'>
-                                    <div class='form-group'>
-                                        <label>@Html.LabelFor(m => m.UserName)</label>
-                                        @Html.TextBoxFor(m => m.UserName, new { @class = "form-control" })
-                                    </div>
-                                </div>
-                                <div class='col-sm-4'>
-                                    <div class='form-group'>
-                                        <label>
-                                            @Html.LabelFor(m => m.Password)
-                                        </label>
-                                        @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
-                                    </div>
-                                </div>
-                                <div class='col-sm-4'>
-                                    <div class='form-group'>
-                                        <label>
-                                            @Html.LabelFor(m => m.ConfirmPassword)
-                                        </label>
-                                        @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control" })
-                                    </div>
-                                </div>
-                                <div class='col-sm-4'>
-                                    <div class='form-group'>
-                                        <label>  @Html.LabelFor(m => m.FirstName)</label>
-                                        @Html.TextBoxFor(m => m.FirstName, new { @class = "form-control" })
-                                    </div>
-                                </div>
-                                <div class='col-sm-4'>
-                                    <div class='form-group'>
-                                        <label>
-                                            @Html.LabelFor(m => m.LastName)
-                                        </label>
-                                        @Html.TextBoxFor(m => m.LastName, new { @class = "form-control" })
-                                    </div>
-                                </div>
-                                <div class='col-sm-4'>
-                                    <div class='form-group'>
-                                        <label>  @Html.LabelFor(m => m.Email)</label>
-                                        @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+
+
+    <div class="container-page">
+        <div class="col-md-6 col-sm-6 col-lg-6" style="padding-left:0px;">
+            <p>To create a new user, enter the information in the form below.</p>
+            <div class="row">
+                <div class="form-group col-lg-12">
+                    <label>Username</label>
+                    @Html.TextBoxFor(m => m.UserName, new { @class = "form-control" })
+                </div>
+
+                <div class="form-group col-md-6 col-sm-6 col-lg-6">
+                    <label>Password</label>
+                    @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
+                </div>
+
+                <div class="form-group col-md-6 col-sm-6 col-lg-6">
+                    <label>Confirm Password</label>
+                    @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control" })
+                </div>
+                <div class="form-group col-md-6 col-sm-6 col-lg-6">
+                    <label>First Name</label>
+                    @Html.TextBoxFor(m => m.FirstName, new { @class = "form-control" })
+                </div>
+
+                <div class="form-group col-md-6 col-sm-6 col-lg-6">
+                    <label>Last Name</label>
+                    @Html.TextBoxFor(m => m.LastName, new { @class = "form-control" })
+                </div>
+                <div class="form-group col-lg-12">
+                    <label>Email Address</label>
+                    @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
+                </div>
+                <div class="form-group col-lg-12" style="padding-top:8px;">
+                    <button type="button" class="btn btn-default btn-sm" data-dismiss="modal" aria-hidden="true">Cancel</button>
+                    @if (User.CanAddAdminFeature("User"))
+                    {
+                    <input type="submit" value="Create" onclick="return bindForm();" class="btn btn-primary btn-sm" />
+                    }
                 </div>
             </div>
         </div>
+        <div class="col-md-6 col-sm-6 col-lg-6">
+            <h4 class="dark-grey" style="margin-top:0px;">Assign Roles</h4>
+            <p>To <strong>assign roles</strong> to the user, Switch on corresponding to the new user.</p>
+            <ul id="ulRoleId" class="list-group" style="height:200px; overflow-y:auto;">
+                @foreach (var role in ViewBag.RoleList)
+                {
+                    <li class="list-group-item">
+                        @role.Name
+                        <div class="material-switch pull-left">
+                            <input id="@role.Name" name="@role.Name" type="checkbox" />
+                            <label for="someSwitchOptionSuccess2" class="label-success"></label>
+                        </div>
+                    </li>
+                }
+                @*
+                <li class="list-group-item">
+                    CO Administrator
+                    <div class="material-switch pull-left">
+                        <input id="someSwitchOptionSuccess2" name="someSwitchOption001" type="checkbox" />
+                        <label for="someSwitchOptionSuccess2" class="label-success"></label>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    Facility Report Administrator
+                    <div class="material-switch pull-left">
+                        <input id="someSwitchOptionSuccess3" name="someSwitchOption001" type="checkbox" />
+                        <label for="someSwitchOptionSuccess3" class="label-success"></label>
+                    </div>
+                </li>
+
+                <li class="list-group-item">
+                    Facility Public Contact
+                    <div class="material-switch pull-left">
+                        <input id="someSwitchOptionSuccess4" name="someSwitchOption001" type="checkbox" />
+                        <label for="someSwitchOptionSuccess4" class="label-success"></label>
+                    </div>
+                </li>
+
+                <li class="list-group-item">
+                    Facility Updater
+                    <div class="material-switch pull-left">
+                        <input id="someSwitchOptionSuccess5" name="someSwitchOption001" type="checkbox" />
+                        <label for="someSwitchOptionSuccess5" class="label-success"></label>
+                    </div>
+                </li>
+
+                <li class="list-group-item">
+                    Facility Searcher
+                    <div class="material-switch pull-left">
+                        <input id="someSwitchOptionSuccess6" name="someSwitchOption001" type="checkbox" />
+                        <label for="someSwitchOptionSuccess6" class="label-success"></label>
+                    </div>
+                </li>
+
+                <li class="list-group-item">
+                    Facility Searcher Administrator
+                    <div class="material-switch pull-left">
+                        <input id="someSwitchOptionSuccess7" name="someSwitchOption001" type="checkbox" />
+                        <label for="someSwitchOptionSuccess7" class="label-success"></label>
+                    </div>
+                </li>*@
+            </ul>
+        </div>
+
     </div>
-    <button type="button" class="btn btn-default btn-sm" data-dismiss="modal" aria-hidden="true">Cancel</button>
-    <input type="submit" value="Create" onclick="return bindForm();" class="btn btn-primary btn-sm" />
+    <div style="clear:both;"></div>
+
 }

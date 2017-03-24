@@ -1,0 +1,265 @@
+﻿@using Microsoft.AspNet.Identity
+@{
+     DisplayModeProvider.Instance.RequireConsistentDisplayMode = true;
+	var currentController = ViewContext.RouteData.Values["controller"].ToString();
+    var commonObj = GeneratorBase.MVC.Models.CommonFunction.Instance;
+    var AppName = commonObj.AppName();
+    var Compprofile = commonObj.getCompanyProfile();
+    var timeoutAlert = commonObj.ApplicationSessionTimeOutAlert();
+    var onloadEvent = timeoutAlert == "true" ? "onload=initSession()".ToString() : "";
+
+	var MainEntityValue = "All";
+    if (User.MultiTenantLoginSelected != null && User.MultiTenantLoginSelected.Count() > 0)
+    { 
+        MainEntityValue = User.MultiTenantLoginSelected[0].T_MainEntityValue;
+    }
+    var url = Url.Content("~/logo/logo.gif");
+    if (HttpContext.Current.Request.Url.Host == "localhost")
+    { url = Url.Content("~/logo/logo.gif"); }
+    var AppIcon = Compprofile.Icon == null || Compprofile.Icon == "logo.gif" ? url : "data:image/jpeg;base64," + Compprofile.Icon;
+    var AppIconWidth = Compprofile.IconWidth == null ? "28px" : Compprofile.IconWidth;
+    var AppIconHeight = Compprofile.IconHeight == null ? "28px" : Compprofile.IconHeight;
+} 
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+	    <meta http-equiv="x-ua-compatible" content="IE=Edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title-@AppName.ToString()</title>
+	    <link rel="icon" href="~/Content/images/turanto.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="~/Content/images/turanto.ico" type="image/x-icon">
+    @Styles.Render("~/Content/css")
+    @Styles.Render("~/Content/fontawesome")
+    @Styles.Render("~/Content/csstheme")
+    @Scripts.Render("~/bundles/modernizr")
+	 <script src="@Url.Content("~/Scripts/jquery-1.10.2.min.js")" type="text/javascript"></script>
+	  <script src="@Url.Content("~/Scripts/Entity.js")" type="text/javascript"></script>
+	<script src="~/Scripts/jquery-ui.js"></script>
+	   @Scripts.Render("~/bundles/common1")
+	   	 
+    <!--[if IE 8]>
+            <link href="@Url.Content("~/Content/IE8/ie8.css")" rel="stylesheet" type="text/css" />
+    <![endif]-->
+    <script>
+		 var isClose = false;
+        $(document).ready(function () {
+            $(window).resize(responsive);
+            $(window).trigger('resize');
+			if ('@ViewBag.ApplicationError'.length > 0) {
+				//alert('@ViewBag.ApplicationError');
+				$("#ErrMsg").text('@ViewBag.ApplicationError');
+				$("#ErrMsgQuickAdd").text('@ViewBag.ApplicationError');
+
+				$("#divDisplayCodeFragment").removeAttr("style");
+			    $("#divDisplayCodeFragment").html(getMsgTableCodeFragment());
+			    $("#ErrmsgtrCodeFragment").text('@ViewBag.ApplicationError');
+			}
+        });
+		$.ajaxSetup({
+					beforeSend: function () {
+					    $('body').css({ 'cursor': 'wait' })
+					   
+					},
+					complete: function (xhr, status) {
+					    $('body').css({ 'cursor': 'default' });
+					    
+                LoginRequired(xhr.status);
+            }
+        });
+
+        function LoginRequired(response_data) {
+            if (response_data == "400")
+                window.location.href = "@Url.Action("Login","Account")";
+
+        }
+		function favorite() {
+            var thelink = "@Url.Action("FavoriteSave", "Home")";
+            var data = $('#Favorite').val();
+            $.ajax({
+                url: thelink,
+                cache: false,
+                data: { Id: $('#hdnFavorite').val(), Name: $('#Favorite').val() },
+                success: function (data) {
+                    if (data == "success") {
+                        $('.fa.fa-1x.fa-star').css('color', '#F90');
+                        $('#liFavorite').addClass("dropdown").removeClass("dropdown open");
+                    }
+                    if (data == "error") {
+                        $('.fa.fa-1x.fa-star').css('color', '#FFF');
+                        $('#lblFavoriteSuceeess').addClass("warning").removeClass("success");
+                        $('#lblFavoriteSuceeess').text("Url not added in favourite.");
+                    }
+                }
+            })
+            return false;
+        }
+    </script>
+	  <script>
+        $(function () {
+            $(".limit").each(function (i) {
+                len = $(this).text().length;
+                if (len > 2) {
+                    $(this).text($(this).text().substr(0, 1));
+                }
+            });
+        });
+       
+    </script>
+</head>
+<body id="@ViewBag.CurrentPage" @onloadEvent style="background-color:white;">
+    @if (commonObj.EnablePrototypingTool() == "true" && User.Identity.IsAuthenticated && User != null && User.CanAdd("ApplicationFeedback"))
+    {
+        var EntName = GeneratorBase.MVC.Controllers.BaseController.FavoriteUrlEntityName;
+        var PageUrl = GeneratorBase.MVC.Controllers.BaseController.FavoriteUrl;
+        string actionName = HttpContext.Current.Request.RequestContext.RouteData.Values["action"].ToString();
+        var prototypeurl = Url.Action("CreateQuick", "ApplicationFeedback", new { EntityName = EntName, FieldName = "_FieldName", PageName = actionName, UIControlName = "_UIControlName", TS = DateTime.Now });
+        <script src="@Url.Content("~/Scripts/PrototypeCommenting.js")" type="text/javascript"></script>
+         <script>
+            document.onmousedown = function (e) {
+                e = e || window.event;
+                if (e.which == 3) {
+                    PrototypeCommenting('@Html.Raw(prototypeurl)', isClose, e);
+                }
+            }
+        </script>
+    }
+  		
+        <div class="navbar navbar-inverse navbar-static-top" role="navigation">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".sidebar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+					<img src="@AppIcon" style="width:@AppIconWidth; height:@AppIconHeight;" class="logoimg" />
+                    @Html.ActionLink(AppName.ToString(), "Index", "Home", null, new { @class = "navbar-brand" })
+                </div>
+               
+            </div>
+        </div>	
+
+    <div >
+        <div class="container-fluid xyz">
+            <div class="row">
+                <div class="col-lg-12">
+                    <br />
+                    @RenderBody()
+                    <br /> <br />
+                </div>
+            </div>
+        </div>
+    </div>
+		
+    <div style="clear:both"></div>
+    @if (commonObj.IsPrivacyPolicy())
+    {
+        <div id="footer">
+            <footer class="footer">
+                <div class="container-fluid">
+                    <span class="text-muted pull-left">
+                        @commonObj.CreatedBy() <a href="@commonObj.CreatedByLink()" target="_blank">@commonObj.CreatedByName()</a> |
+                        @commonObj.Emailto():<a href="@Html.Raw("mailto:" + commonObj.EmailtoAddress())">@commonObj.EmailtoAddress()</a>
+                    </span>
+                    <span class="text-muted pull-right">
+                        <a href="@Html.Raw(commonObj.getBaseUri() + commonObj.LegalLink())" target="_blank">@commonObj.Legal()</a>
+                        | <a href="@Html.Raw(commonObj.getBaseUri() + commonObj.TermsLink())" target="_blank">
+                            @commonObj.Terms()
+                        </a> | <a href="@Html.Raw(commonObj.getBaseUri() + commonObj.PolicyLink())" target="_blank">
+                            @commonObj.Policy()
+                        </a>
+                    </span>
+                </div>
+            </footer>
+        </div>
+    }
+    else
+    {
+        <div id="footer">
+            <ul class="footer">
+                <li>Created With <a href="http://www.turanto.com" target="_blank">Turanto</a></li>&nbsp;&nbsp; | &nbsp;&nbsp;
+                <li>Email:<a href="mailto:contact@turanto.com">contact@turanto.com</a></li>
+            </ul>
+        </div>
+    }
+    @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/bundles/jqueryval")
+	@Scripts.Render("~/bundles/common2")
+    @Scripts.Render("~/bundles/common3")
+	<script src="~/Content/dist/js/bootstrap-colorpicker.js"></script>
+    <script src="~/Content/src/js/docs.js"></script>
+    <script type="text/javascript">
+        var config = {
+            '.chosen-select': {},
+            '.chosen-select-deselect': { allow_single_deselect: true },
+            '.chosen-select-no-single': { disable_search_threshold: 10 },
+            '.chosen-select-no-results': { no_results_text: 'Oops, nothing found!' },
+            '.chosen-select-width': { width: "95%" }
+        }
+        for (var selector in config) {
+            $(selector).chosen(config[selector]);
+        }
+    </script>
+	
+	 <script>
+    
+    document.onkeydown = checkKeycode
+    function checkKeycode(e) {
+        var keycode;
+        if (window.event)
+            keycode = window.event.keyCode;
+        else if (e)
+            keycode = e.which;
+        if (keycode == 116) {
+            isClose = true;
+        }
+    }
+    function SetClose() {
+        isClose = true;
+    }
+    function bodyUnload() {
+        if (isClose == false) {
+            var request = GetRequest();
+            request.open("GET", "@Url.Action("BrowserClose", "Account")", false);
+            request.send();
+        }
+    }
+    function GetRequest() {
+        var xmlhttp;
+        if (window.XMLHttpRequest) {
+            xmlhttp = new XMLHttpRequest();
+        }
+        else {
+            xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+        }
+        return xmlhttp;
+    }
+    </script>
+	  @if (timeoutAlert == "true")
+    {
+        var expirationMinutes =commonObj.ApplicationSessionTimeOut();
+        <script>
+            var sess_expirationMinutes = parseInt(@expirationMinutes)
+            var sess_warningMinutes = sess_expirationMinutes - 5;
+            var sess_pollInterval = 60000;
+            if (sess_expirationMinutes <= 5)
+                sess_warningMinutes = sess_expirationMinutes - 1;
+
+        </script>
+    }
+<script>
+    jQuery('body').on('focus', '.chosen-container-single input', function () {
+        if (!jQuery(this).closest('.chosen-container').hasClass('chosen-container-active')) {
+            jQuery(this).closest('.chosen-container').prev().trigger('chosen:open');
+        }
+    });
+        $('.modal-dialog').draggable({
+            handle: ".modal-title"
+        });
+    </script>
+</body>
+</html>
+

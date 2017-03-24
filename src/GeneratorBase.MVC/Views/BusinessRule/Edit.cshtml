@@ -3,6 +3,21 @@
 @{
     ViewBag.Title = "Edit Business Rule";
 }
+@{
+    var actionListItems = new List<SelectListItem>()
+    {
+        new SelectListItem() {Text="Make Record Readonly", Value="1"},
+         new SelectListItem() {Text="Make Record & Associations Readonly", Value="11"},
+        new SelectListItem() {Text="Make Fields Readonly", Value="2"},
+        new SelectListItem() {Text="Make Fields Mandatory", Value="3"},
+        new SelectListItem() {Text="Email Notification", Value="4"},
+        new SelectListItem() {Text="Filter Dropdown", Value="5"},
+        new SelectListItem() {Text="Make Fields Hidden", Value="6"},
+        new SelectListItem() {Text="Set Value", Value="7"},
+        new SelectListItem() {Text="Invoke Action", Value="8"},
+        new SelectListItem() {Text="Validate Before Save", Value="10"},
+    };
+}
 @functions {
     object getHtmlAttributes(string Property)
     {
@@ -14,31 +29,135 @@
 }
 <link href='@Url.Content("~/Scripts/summernote.css")' rel="stylesheet" type="text/css" />
 <script src="@Url.Content("~/Scripts/summernote.js")" type="text/javascript"></script>
+<script>
+    function RepeatTypeChange() {
+        // value = $("#t_schedulertask.T_AssociatedRecurringScheduleDetailsTypeID:checked").val();
+        var $obj = $('input:radio[name="t_schedulertask.T_AssociatedRecurringScheduleDetailsTypeID"]:checked');
+        var value = $obj.val();
+        var text = $obj.next('span:first').html();
+        //alert(text);
+        $("#RepeatOnWeekly").hide();
+        $("#dvT_RepeatByID").hide();
+        if (text == "Weekly") {
+            $("#RepeatOnWeekly").show();
+        }
+        if (text == "Monthly") {
+            $("#dvT_RepeatByID").show();
+        }
+    }
+    function ChangeScheduleType() {
+        var $obj = $('input:radio[name="t_schedulertask.T_AssociatedScheduleTypeID"]:checked');
+        var SelectedVal = $obj.val();
+        var text = $obj.next('span:first').html()
+        $("#dvRepeat").hide();
+        if (text == "Repeat") {
+            $("#dvRepeat").show();
+            RepeatTypeChange();
+            ChangeEndType();
+        }
+    }
+    function ChangeEndType() {
+        var $obj = $('input:radio[name="t_schedulertask.T_RecurringTaskEndTypeID"]:checked');
+        var SelectedVal = $obj.val();
+        var text = $obj.next('span:first').html()
+        $("#dvT_EndDate").hide();
+        $("#dvT_OccurrenceLimitCount").hide();
+
+        if (text == "After Specified Occurrences") {
+            $("#dvT_OccurrenceLimitCount").show();
+        }
+        if (text == "On Specified Date") {
+            $("#dvT_EndDate").show();
+        }
+    }
+</script>
 <script type="text/javascript">
     $(document).ready(function () {
-        $('#AlertMessage').summernote();
+        //$('#AlertMessage').summernote();
 
     });
 </script>
 <script type="text/javascript" language="javascript">
-    function FillSugestedValues() {
-        var text = $("#" + "SuggestedPropertyValue option:selected").text();
-        $("#" + "ConditionValue").val(text);
+    //Start Code for use of dynamic in Condition
+
+    function GetSecondLevelAttributeInCondition() {
+        var SelectedEntity = $('#EntityName').val();
+        var SelectedProperty = $("#" + "SuggestedDynamicValueInCondition7").val();
+
+        $("#" + "SuggestedDynamicValueInCondition71").hide();
+        $("#" + "SuggestedDynamicValueInCondition71").html('');
+
+        $.ajax({
+            url: '@Url.Action("GetAttributesofTargetEntity", "BusinessRule")' + '?Entity=' + SelectedEntity + '&AttributeName=' + SelectedProperty,
+            type: "GET",
+            cache: false,
+            success: function (result) {
+                var optionDOM = '<option value="SelectProperty">--Select Association Property--</option>';
+                for (i = 0; i < result.length; i++) {
+                    // optionDOM += '<option value="' + result[i].Name + '">' + result[i].DisplayName + '</option>';
+                    optionDOM += '<option class="' + result[i].DataType + '" value="' + result[i].Name + '">' + result[i].DisplayName + '</option>';
+                }
+
+                if (result.length == 0) {
+                    $("#" + "SuggestedDynamicValueInCondition71").html('');
+                    $("#" + "SuggestedDynamicValue71").hide();
+                }
+                else {
+                    $("#" + "SuggestedDynamicValueInCondition71").show();
+                    $("#" + "SuggestedDynamicValueInCondition71").html(optionDOM);
+                }
+                //FillSugestedDynamicValuesInCondition7();
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                alert("error");
+            }
+        })
     }
+    function FillSugestedDynamicValuesInCondition7() {
+
+        $("#" + "ConditionValue").hide();
+        $("#" + "ConditionValue").val('');
+        if ($("#ValueTypeList option:selected").text() == "Dynamic") {
+            var text = $("#" + "SuggestedDynamicValueInCondition7 option:selected").text();
+            if ($("#" + "SuggestedDynamicValueInCondition71").val() != null && $("#" + "SuggestedDynamicValueInCondition71").val().length > 0) {
+                var value = "[" + $("#" + "SuggestedDynamicValueInCondition7").val() + "." + $("#" + "SuggestedDynamicValueInCondition71").val() + "]";
+                $("#" + "ConditionValue").val(value);
+            }
+            else {
+                var value = "[" + $("#" + "SuggestedDynamicValueInCondition7").val() + "]";
+                $("#" + "ConditionValue").val(value);
+            }
+        }
+    }
+    //End Code for use of dynamic in Condition
     function FillSugestedValues7() {
         var text = $("#" + "SuggestedPropertyValue7 option:selected").text();
         $("#" + "Rule7Value").val(text);
     }
     function FillSugestedDynamicValues7() {
         $("#" + "Rule7Value").val('');
-        var text = $("#" + "SuggestedDynamicValue7 option:selected").text();
-        if ($("#" + "SuggestedDynamicValue71").val() != null && $("#" + "SuggestedDynamicValue71").val().length > 0) {
-            var value = "[" + $("#" + "SuggestedDynamicValue7").val() + "." + $("#" + "SuggestedDynamicValue71").val() + "]";
-            $("#" + "Rule7Value").val(value);
+        if ($("#Rule7Operator").val() == 3) {
+            var text = $("#" + "SuggestedDynamicValue7 option:selected").text();
+            if ($("#" + "SuggestedDynamicValue71").val() != null && $("#" + "SuggestedDynamicValue71").val().length > 0) {
+                var value = "[" + $("#" + "SuggestedDynamicValue7").val() + "." + $("#" + "SuggestedDynamicValue71").val() + "]";
+                $("#" + "Rule7Value").val(value);
+            }
+            else {
+                var value = "[" + $("#" + "SuggestedDynamicValue7").val() + "]";
+                $("#" + "Rule7Value").val(value);
+            }
+        }
+    }
+    function FillSugestedDynamicValuesForCondition() {
+        //$("#" + "Rule7Value").val('');
+        var text = $("#" + "PropertyList option:selected").text();
+        if ($("#" + "AssociationPropertyList").val() != null && $("#" + "AssociationPropertyList").val().length > 0) {
+            var value = "[" + $("#" + "PropertyList").val() + "." + $("#" + "AssociationPropertyList").val() + "]";
+            //$("#" + "Rule7Value").val(value);
         }
         else {
-            var value = "[" + $("#" + "SuggestedDynamicValue7").val() + "]";
-            $("#" + "Rule7Value").val(value);
+            var value = "[" + $("#" + "PropertyList").val() + "]";
+            //$("#" + "Rule7Value").val(value);
         }
     }
     function GetConstantValue() {
@@ -68,12 +187,16 @@
                 success: function (result) {
                     if (result != "Failure") {
                         $("#" + "dvRule7Value").show();
+                        //$("#SuggestedPropertyValue7 option:selected").removeAttr("selected");
+                        $("#SuggestedPropertyValue7 :nth(0)").prop("selected", "selected").change();
                         $("#" + "SuggestedPropertyValue7").addClass('chosen-select form-control');
                         $("#" + "SuggestedPropertyValue7").attr("HostingName", result);
                         $("#" + "SuggestedPropertyValue7").attr("dataurl", '@Url.Action("GetAllValue", "_Entity", null)'.replace("_Entity", result));
+                        //$("#SuggestedPropertyValue7").trigger('chosen:updated').change();
                     }
                     else {
                         alert("Supports only association values.");
+                        //$("#Rule7Operator :nth(0)").prop("selected", "selected").change();
                         $("#" + "Rule7Value").show();
                         $("#" + "SuggestedPropertyValue7").removeClass = "chosen-select form-control";
                         $("#" + "SuggestedPropertyValue7").removeAttr("HostingName");
@@ -102,9 +225,10 @@
             type: "GET",
             cache: false,
             success: function (result) {
-                var optionDOM = "";
+                var optionDOM = '<option value="SelectProperty">--Select Association Property--</option>';
                 for (i = 0; i < result.length; i++) {
-                    optionDOM += '<option value="' + result[i].Name + '">' + result[i].DisplayName + '</option>';
+                    //optionDOM += '<option value="' + result[i].Name + '">' + result[i].DisplayName + '</option>';
+                    optionDOM += '<option class="' + result[i].DataType + '" value="' + result[i].Name + '">' + result[i].DisplayName + '</option>';
                 }
 
                 if (result.length == 0) {
@@ -122,8 +246,54 @@
             }
         })
     }
+    function GetSecondLevelAttributeForCondition() {
+        var SelectedEntity = $('#EntityName').val();
+        var SelectedProperty = $("#" + "PropertyList").val();
+
+        $("#" + "AssociationPropertyList").hide();
+        $("#" + "AssociationPropertyList").html('');
+
+        $.ajax({
+            url: '@Url.Action("GetAttributesofTargetEntity", "BusinessRule")' + '?Entity=' + SelectedEntity + '&AttributeName=' + SelectedProperty,
+            type: "GET",
+            cache: false,
+            success: function (result) {
+                var optionDOM = '<option value="SelectProperty">--Select Association Property--</option>';
+                for (i = 0; i < result.length; i++) {
+                    //optionDOM += '<option value="' + result[i].Name + '">' + result[i].DisplayName + '</option>';
+                    optionDOM += '<option class="' + result[i].DataType + '" value="' + result[i].Name + '">' + result[i].DisplayName + '</option>';
+                }
+
+                if (result.length == 0) {
+                    $("#" + "AssociationPropertyList").html('');
+                    $("#" + "AssociationPropertyList").hide();
+                }
+                else {
+                    $("#" + "AssociationPropertyList").show();
+                    $("#" + "AssociationPropertyList").html(optionDOM);
+                }
+                FillSugestedDynamicValuesForCondition();
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                alert("error");
+            }
+        });
+    }
+    function SetValueType(obj) {
+        if (obj.id == "OperatorList") {
+            if ($("#" + obj.id).val() == "Match")
+                $("#ValueTypeList").val('Regular Expression').change();
+            else if ($("#" + obj.id).val() == "Changes to anything")
+                $("#ValueTypeList").val('Changes to anything').change();
+            else
+                $("#ValueTypeList").val('Constant').change();
+        }
+    }
     function GetSuggestedValues(obj) {
-        if ($("#OperatorList option:selected").text() == "Pick From List") {
+        $("#dvRule7DynamicValueInCondition").hide();
+        $("#" + "ConditionValue").val('');
+
+        if ($("#ValueTypeList option:selected").text() == "Pick From List") {
             var SelectedProperty = $("#" + "PropertyList").val();
             var SelectedEntity = $('#EntityName').val();
             if (SelectedEntity.length == 0) {
@@ -134,6 +304,14 @@
                 alert("Please select a Property !");
                 return false;
             }
+
+            var assocProp = $("#AssociationPropertyList").val();
+            if (assocProp == "SelectProperty") {
+                alert("Please select Association Property.");
+                return false;
+            }
+            var hostingEntity = "";
+            propType = "Property";
             $.ajax({
                 url: '@Url.Action("GetDropdown", "BusinessRule")' + '?Entity=' + SelectedEntity + '&Property=' + SelectedProperty,
                 type: "GET",
@@ -142,12 +320,52 @@
                     if (result != "Failure") {
                         $("#" + "dvSuggestedPropertyValue").show();
                         $("#" + "ConditionValue").hide();
-                        $("#" + "SuggestedPropertyValue").addClass('chosen-select form-control');
-                        $("#" + "SuggestedPropertyValue").attr("HostingName", result);
-                        $("#" + "SuggestedPropertyValue").attr("dataurl", '@Url.Action("GetAllValue", "_Entity", null)'.replace("_Entity", result));
+                        var selectedoptionclass = $('option:selected', $('#AssociationPropertyList')).attr('class');
+                        if (selectedoptionclass != undefined && selectedoptionclass == "Int64") {
+
+                            $.ajax({
+                                url: '@Url.Action("GetTargetEntityOfAssociationProperty", "BusinessRule")' + '?Entity=' + result + '&AttributeName=' + assocProp,
+                                type: "GET",
+                                cache: false,
+                                async: false,
+                                success: function (data) {
+                                    result = data.Name;
+                                    assocProp = "DisplayValue";
+                                    propType = "Association";
+                                }
+                            });
+                        }
+                        hostingEntity = result;
+                        $("#SuggestedPropertyValue").attr("dataurl", '@Url.Action("GetAllMultiSelectValueForBR", "_Entity", null)'.replace("_Entity", result) + '?propNameBR=' + assocProp);
+                        //$("#SuggestedPropertyValue").attr("dataurl", '@Url.Action("GetAllValueBR", "_Entity", null)'.replace("_Entity", result) + '?propNameBR=' + assocProp);
+                        if (hostingEntity != "") {
+                            var dataurl = '@Url.Action("GetAllMultiSelectValueForBR", "_Entity", null)'.replace("_Entity", result) + '?propNameBR=' + assocProp;
+                            $.ajax({
+                                url: dataurl,
+                                type: "GET",
+                                cache: false,
+                                async: false,
+                                success: function (result) {
+                                    var countItems = 0
+                                    var optionDOM = "";
+                                    for (i = 0; i < result.length; i++) {
+                                        if (result[i] != null)
+                                            optionDOM += '<option class="' + propType + '" value="' + result[i].Id + '">' + result[i].value + '</option>';
+                                        countItems++;
+                                    }
+                                    $("#SuggestedPropertyValue").html(optionDOM);
+                                    $("#SuggestedPropertyValue").multiselect('rebuild');
+                                },
+                                error: function (jqXHR, textStatus, errorThrown) {
+                                    alert("error");
+                                }
+                            });
+                        }
                     }
                     else {
-                        alert("Supports only association values.")
+                        alert("Supports only association values.");
+                        $("#ValueTypeList :nth(0)").prop("selected", "selected").change();
+                        hostingEntity = "";
                         $("#" + "dvSuggestedPropertyValue").hide();
                         $("#" + "ConditionValue").show();
                         $("#" + "SuggestedPropertyValue").removeClass = "chosen-select form-control";
@@ -160,11 +378,28 @@
                 }
             });
         }
-        else { $("#" + "dvSuggestedPropertyValue").hide(); $("#" + "ConditionValue").show(); }
+        else if ($("#ValueTypeList option:selected").text() == "Changes to anything") {
+            $("#" + "ConditionValue").prop("disabled", true);
+            $("#" + "ConditionValue").val('');
+        }
+        else if ($("#ValueTypeList option:selected").text() == "Dynamic") {
+            $("#dvSuggestedPropertyValue").hide();
+            $("#ConditionValue").val('');
+            $("#ConditionValue").hide();
+            GetSecondLevelAttributeInCondition();
+            $("#dvRule7DynamicValueInCondition").show();
+        }
+        else { $("#" + "dvSuggestedPropertyValue").hide(); $("#" + "ConditionValue").show(); $("#" + "ConditionValue").prop("disabled", false); }
     }
     function deleteRow(obj) {
         var obj_tr = $(obj).closest("tr");
         $("#" + $(obj).attr("name")).val("");
+        obj_tr.remove();
+    }
+    function deleteRowCondition(obj, val) {
+        var obj_tr = $(obj).closest("tr");
+        var newobj = $("#" + $(obj).attr("name")).val().replace(val, "");
+        $("#" + $(obj).attr("name")).val(newobj);
         obj_tr.remove();
     }
     function closealert() {
@@ -172,32 +407,291 @@
         $('#dvalert').attr("aria-hidden", "true");
         $('#dvalert').attr("style", "display:none;");
     }
+    function FillDateInConditionValue(obj) {
+        var event = "";
+        if (obj.id == "PropertyList")
+            event = "condition";
+        else if (obj.id == "PropertyList7") {
+            event = "action";
+            if ($("#Rule7Operator").val() != "1") {
+                //$("#Rule7Operator option:eq(1)");
+                //$("#Rule7Operator :nth(0)").prop("selected", "selected").change();
+                $("#dvRule7Value").hide();
+                //return false;
+            }
+        }
+
+        if (event == "condition") {
+            $("#OperatorList :nth(0)").prop("selected", "selected").change();
+            $("#ValueTypeList :nth(0)").prop("selected", "selected").change();
+            $("#dvSuggestedPropertyValue").hide();
+        }
+
+        var propertyName = $("#" + obj.id).val();
+        var entityName = $("#EntityList").val();
+
+        $.ajax({
+            url: '@Url.Action("GetDateType", "BusinessRule")' + '?entityName=' + entityName + '&propertyName=' + propertyName,
+            type: "GET",
+            cache: false,
+            async: false,
+            success: function (result) {
+                if (result == "DateTime") {
+                    if (event == "condition") {
+                        $("#ConditionValue").val("Today");
+                        $("#dvDurationInCondition").show();
+                    }
+                    else if (event == "action") {
+                        $("#Rule7Value").val("Today");
+                        $("#dvDurationInAction").show();
+                    }
+                }
+                else {
+                    if (event == "condition") {
+                        $("#ConditionValue").val('');
+                        $("#dvDurationInCondition").hide();
+                    }
+                    else if (event == "action") {
+                        $("#Rule7Value").val('');
+                        $("#DurationCountInAction").val('');
+                    }
+                    $("#dvDurationInAction").hide();
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+
+            }
+        });
+    }
+    function FillDateInConditionForAssociation() {
+        var entityName = $("#EntityList").val();
+        var assocName = $("#PropertyList").val();
+        var propertyName = $("#AssociationPropertyList").val();
+        $.ajax({
+            url: '@Url.Action("GetDateTypeForAssociationProperties", "BusinessRule")' + '?entityName=' + entityName + '&assocName=' + assocName + '&propertyName=' + propertyName,
+            type: "GET",
+            cache: false,
+            async: false,
+            success: function (result) {
+                if (result == "DateTime") {
+                    $("#ConditionValue").val("Today");
+                    $("#dvDurationInCondition").show();
+                }
+                else {
+                    $("#ConditionValue").val('');
+                    $("#dvDurationInCondition").hide();
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+            }
+        });
+    }
+    function AddAlwaysConditionInGrid(event) {
+        if (event.checked) {
+            if ($('#tblConditionList tr').length > 1) {
+                $('#chkAlways').prop('checked', false);
+                alert("Please remove condition first and then select always.");
+                return false;
+            }
+            var str = "<tr id='idAlways' style='display:none' >";
+            var val1 = "Id";
+            var val2 = ">";
+            var val3 = "0";
+            var val4 = "AND";
+            str += "<td>" + val1 + "</td>";
+            str += "<td>" + val2 + "</td>";
+            str += "<td>" + val3 + "</td>";
+            str += "<td>" + val4 + "</td>";
+            str += "<td><i name=\"lblrulecondition\" onclick=\"deleteRow(this);\" class=\"fam-delete\"></i></td>";
+            var val = $("#lblrulecondition").val();
+            val += val1 + "," + val2 + "," + val3 + "," + val4 + "?";
+            $("#lblrulecondition").val(val);
+            $('#tblConditionList').append(str);
+        }
+        else {
+            $('table#tblConditionList tr#idAlways').remove();
+            $("#lblrulecondition").val('');
+        }
+    }
+    function VerifyPropertyAndValueDataType(entityName, propertyName, conditionValue, valueType, actionType) {
+        var propDataType = "";
+        $.ajax({
+            url: '@Url.Action("VerifyPropertyAndValueDataType", "BusinessRule")' + '?entityName=' + entityName + '&propertyName=' + propertyName + "&conditionValue=" + conditionValue + "&valueType=" + valueType + "&actionType=" + actionType,
+            type: "GET",
+            cache: false,
+            async: false,
+            success: function (result) {
+                propDataType = result;
+            }
+        });
+        return propDataType;
+    }
     function AddConditionInGrid() {
-        if ($("#ConditionValue").val() == undefined || $("#ConditionValue").val().length == 0) {
-            //alert("Provide criteria value");
-            $('#dvalert').attr("class", "modal fade in");
-            $('#dvalert').attr("aria-hidden", "false");
-            $('#dvalert').attr("style", "display:block;");
-            $('#alertbody').html("<li>Provide Property value</li>");
+        if ($("#OperatorList").val() == "Match" || $("#ValueTypeList").val() == "Regular Expression") {
+            if ($("#OperatorList").val() != "Match" || $("#ValueTypeList").val() != "Regular Expression") {
+                alert("Operator should be \"Match\" and Value Type should be \"Regular Expression\".");
+                return false;
+            }
+        }
+
+        if ($("#OperatorList").val() == "Changes to anything" || $("#ValueTypeList").val() == "Changes to anything") {
+            if ($("#OperatorList").val() != "Changes to anything" || $("#ValueTypeList").val() != "Changes to anything") {
+                alert("Operator and Value Type both should be \"Changes to anything\".");
+                return false;
+            }
+        }
+
+        if ($("#PropertyList option:selected").val() == "SelectProperty") {
+            alert("Please select Property.");
             return false;
         }
+
+        if ($('#chkAlways').is(":checked")) {
+            alert("Please remove Always condition first and then create condition.");
+            return false;
+        }
+
+        if ($("#AssociationPropertyList").val() != null && $("#AssociationPropertyList").val() != "") {
+            if ($("#AssociationPropertyList option:selected").val() == "SelectProperty") {
+                alert("Please select Association Property.");
+                return false;
+            }
+            var option_all = $("#SuggestedPropertyValue option:selected").map(function () {
+                //change for a.b.c
+                if ($(this).attr("class") == "Association")
+                    return $(this).val();
+                else
+                    return $(this).text();
+            }).get().join();
+            if (option_all != "")
+                $("#ConditionValue").val(option_all);
+            $("#SuggestedPropertyValue option:selected").removeAttr("selected");
+            $("#SuggestedPropertyValue").multiselect('rebuild');
+        }
+        //Dynamic
+        var dynamicPropertyDispValue = "";
+        if ($("#ValueTypeList option:selected").text() == "Dynamic") {
+            if ($("#" + "SuggestedDynamicValueInCondition71").val() != null && $("#" + "SuggestedDynamicValueInCondition71").val().length > 0) {
+                var value = "[" + $("#" + "SuggestedDynamicValueInCondition7").val() + "." + $("#" + "SuggestedDynamicValueInCondition71").val() + "]";
+                dynamicPropertyDispValue = "[" + $("#" + "SuggestedDynamicValueInCondition7 option:selected").text() + "." + $("#" + "SuggestedDynamicValueInCondition71 option:selected").text() + "]";
+                $("#" + "ConditionValue").val(value);
+            }
+            else {
+                var value = "[" + $("#" + "SuggestedDynamicValueInCondition7").val() + "]";
+                dynamicPropertyDispValue = "[" + $("#" + "SuggestedDynamicValueInCondition7 option:selected").text() + "]";
+                $("#" + "ConditionValue").val(value);
+            }
+        }
+
+        //Dynamic
+        var condValue = $("#ConditionValue").val();
+
+        if ($("#DurationCount").val() != undefined && $("#DurationCount").val().length != 0 && $("#ConditionValue").val() != undefined && $("#ConditionValue").val().length != 0) {
+            if ($("#DurationCount").val().match(/[0-9]/g) == null) {
+                alert("Please enter correct value in Count.");
+                return false;
+            }
+            condValue = condValue + " " + $("#DateOperatorList").val() + " " + $("#DurationCount").val() + " " + $("#DurationList").val();
+            dynamicPropertyDispValue += " " + $("#DateOperatorList").val() + " " + $("#DurationCount").val() + " " + $("#DurationList").val();
+            $("#DurationCount").val('');
+        }
+        $("#ConditionValue").val(condValue);
+
+        if ($("#ConditionValue").val() == undefined || $("#ConditionValue").val().length == 0) {
+            if ($('#OperatorList :selected').val() != "Changes to anything") {
+                $('#dvalert').attr("class", "modal fade in");
+                $('#dvalert').attr("aria-hidden", "false");
+                $('#dvalert').attr("style", "display:block;");
+                $('#alertbody').html("<li>Provide Property value</li>");
+                return false;
+            }
+        }
+
         var str = "<tr>";
+        var entityName = $("#EntityList").val();
         var val1Text = $("#PropertyList option:selected").text();
         var val1 = $("#PropertyList").val();
         var val2 = $("#OperatorList").val();
-        var OpVal = $("#OperatorList").text()
         var val3 = $("#ConditionValue").val();
+        var val4 = $("#LogicalConnectorList option:selected").text();
+        var val5 = $("#ValueTypeList").val();
+
+        if ($("#AssociationPropertyList").val() != null && $("#AssociationPropertyList").val() != "") {
+            val1 = "[" + val1 + "." + $("#AssociationPropertyList").val() + "]";
+            val1Text = "[" + val1Text + "." + $("#AssociationPropertyList option:selected").text() + "]";
+            CreateConditionForAssociation(entityName, condValue, val1, val1Text, val5, dynamicPropertyDispValue);
+            return true;
+        }
+
+        if (val2 == "Regular Expression") {
+            val3 = val3.replaceAll("?", "&#63;").replace(",", "&#44;");
+        }
+
+        var funcval = val1 + "," + val2 + "," + val3 + "," + val4 + "?";
+        var val = $("#lblrulecondition").val();
+        val += val1 + "," + val2 + "," + val3 + "," + val4 + "?";
+
+        if ($("#ValueTypeList option:selected").text() == "Dynamic" && dynamicPropertyDispValue != "") {
+            val3 = dynamicPropertyDispValue;
+        }
+
         str += "<td>" + val1Text + "</td>";
         str += "<td>" + val2 + "</td>";
         str += "<td>" + val3 + "</td>";
-        str += "<td><i name=\"lblrulecondition\" onclick=\"deleteRow(this);\" class=\"fam-delete\"></i></td>";
-        var val = $("#lblrulecondition").val();
-        val += val1 + "," + val2 + "," + val3 + "?";
+        str += "<td>" + val4 + "</td>";
+        str += "<td><i name=\"lblrulecondition\" onclick=\"deleteRowCondition(this,'" + funcval + "');\" class=\"fam-delete\"></i></td>";
+
+        var exMsg = VerifyPropertyAndValueDataType(entityName, val1, $("#ConditionValue").val(), val5, 'condition');
+        if (exMsg != "" && exMsg != null) {
+            $("#ConditionValue").val('');
+            alert('Please enter correct Property Value. ' + exMsg);
+            return false;
+        }
+
         $("#lblrulecondition").val(val);
         $('#tblConditionList').show();
         $('#tblConditionList').append(str);
+        $("#DurationCount").val('');
+        $("#ConditionValue").val('');
     }
+    String.prototype.replaceAll = function (search, replace) {
+        //if replace is not sent, return original string otherwise it will
+        //replace search string with 'undefined'.
+        if (replace === undefined) {
+            return this.toString();
+        }
+        return this.replace(new RegExp('[' + search + ']', 'g'), replace);
+    };
+    function CreateConditionForAssociation(entityName, param, assocName, assocDispName, valueType, dynamicDispName) {
+        var arrCond = param.split(",");
+        var val = $("#lblrulecondition").val();
+        var operator = $("#OperatorList").val();
 
+        var exMsg = VerifyPropertyAndValueDataType(entityName, assocName, param, valueType, 'condition');
+        if (valueType != "Pick From List") {
+            if (exMsg != "" && exMsg != null) {
+                $("#ConditionValue").val('');
+                alert('Data types of selected properties did not match. Please select compatible properties. ' + exMsg);
+                return false;
+            }
+        }
+        var logicalConnector = $("#LogicalConnectorList").val();
+        if (valueType == "Pick From List") {
+            logicalConnector = "OR";
+        }
+
+        for (i = 0; i < arrCond.length; i++) {
+            if (valueType != "Dynamic")
+                dynamicDispName = arrCond[i];
+            val += assocName + ',' + operator + ',' + arrCond[i] + ',' + logicalConnector + '?';
+            var str = "<tr><td>" + assocDispName + "</td><td>" + operator + "</td><td>" + dynamicDispName + "</td><td>" + logicalConnector + "</td>";
+            str += "<td><i name=\"lblrulecondition\" onclick=\"deleteRowCondition(this,'" + assocName + ',' + operator + ',' + arrCond[i] + ',' + logicalConnector + '' + "');\" class=\"fam-delete\"></i></td>";
+            $("#lblrulecondition").val(val);
+            $('#tblConditionList').show();
+            $('#tblConditionList').append(str);
+            $("#ConditionValue").val('');
+        }
+    }
     function FillPropertyOnLoad(entityname) {
         // Time based
         $.ajax({
@@ -222,13 +716,31 @@
             type: "GET",
             cache: false,
             success: function (result) {
-                var optionDOM = "";
+                var optionDOM = '<option value="SelectProperty">--Select Property--</option>';
                 for (i = 0; i < result.length; i++) {
                     optionDOM += '<option value="' + result[i].Name + '">' + result[i].DisplayName + '</option>';
                 }
                 $("#" + "PropertyList").html(optionDOM);
                 $("#" + "SuggestedDynamicValue7").html(optionDOM);
+                $("#" + "SuggestedDynamicValueInCondition7").html(optionDOM);
                 $("#" + "PropertyList7").html(optionDOM);
+                //$("#" + "PropertyList1").html(optionDOM);
+                //$("#" + "PropertyList1").multiselect('rebuild');
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                alert("error");
+            }
+        })
+        $.ajax({
+            url: '@Url.Action("GetPropertiesofEntityWithInLineProperties", "BusinessRule")' + '?Entity=' + entityname,
+            type: "GET",
+            cache: false,
+            async: false,
+            success: function (result) {
+                var optionDOM = '<option value="SelectProperty">--Select Property--</option>';
+                for (var index in result) {
+                    optionDOM += '<option value="' + index + '">' + result[index] + '</option>';
+                }
                 $("#" + "PropertyList1").html(optionDOM);
                 $("#" + "PropertyList1").multiselect('rebuild');
             },
@@ -280,47 +792,67 @@
     }
     function DuplicateAction() {
         var flage = true;
+        //$("#" + catname).find('input[type=checkbox]').is(":checked")
+        var iselsecurrent = true;
+        if ($('input[name=IsElseActionList]:checked').val() == "0")
+            iselsecurrent = false;
+        var actionListCheckedLabel = $('input[name=ActionList]:radio:checked').next('span:first').html();
         $('table[id=tblActionList]').each(function (e) {
             catname = $(this).attr('id');
+            var iselse = $("#" + catname).find('input[type=checkbox]').is(":checked");
             $("#" + catname).find('input[type=hidden]').each(function () {
                 if ($(this).attr('id') == "AssociatedActionTypeIDhdn") {
                     var currentValAction = $(this).val();
-                    if (currentValAction == 1 && $("#ActionList option:selected").text().trim() == "Make Records Readonly") {
+                    if (currentValAction == 1 && actionListCheckedLabel.trim() == "Make Record Readonly") {
                         $('#dvalert').attr("class", "modal fade in");
                         $('#dvalert').attr("aria-hidden", "false");
                         $('#dvalert').attr("style", "display:block;");
                         $('#alertbody').html("<li>The rule already contains this action..</li>");
                         flage = false;
                     }
-                    if (currentValAction == 2 && $("#ActionList option:selected").text().trim() == "Make Fields Mandatory") {
+                    if (currentValAction == 2 && actionListCheckedLabel.trim() == "Make Fields Mandatory" && iselse == iselsecurrent) {
                         $('#dvalert').attr("class", "modal fade in");
                         $('#dvalert').attr("aria-hidden", "false");
                         $('#dvalert').attr("style", "display:block;");
                         $('#alertbody').html("<li>The rule already contains this action..</li>");
                         flage = false;
                     }
-                    if (currentValAction == 3 && $("#ActionList option:selected").text().trim() == "Email Notification") {
+                    if (currentValAction == 3 && actionListCheckedLabel.trim() == "Email Notification" && iselse == iselsecurrent) {
                         $('#dvalert').attr("class", "modal fade in");
                         $('#dvalert').attr("aria-hidden", "false");
                         $('#dvalert').attr("style", "display:block;");
                         $('#alertbody').html("<li>The rule already contains this action..</li>");
                         flage = false;
                     }
-                    if (currentValAction == 4 && $("#ActionList option:selected").text().trim() == "Make Fields Readonly") {
+                    if (currentValAction == 4 && actionListCheckedLabel.trim() == "Make Fields Readonly" && iselse == iselsecurrent) {
                         $('#dvalert').attr("class", "modal fade in");
                         $('#dvalert').attr("aria-hidden", "false");
                         $('#dvalert').attr("style", "display:block;");
                         $('#alertbody').html("<li>The rule already contains this action..</li>");
                         flage = false;
                     }
-                    if (currentValAction == 5 && $("#ActionList option:selected").text().trim() == "Filter Dropdown") {
+                    if (currentValAction == 5 && actionListCheckedLabel.trim() == "Filter Dropdown") {
                         $('#dvalert').attr("class", "modal fade in");
                         $('#dvalert').attr("aria-hidden", "false");
                         $('#dvalert').attr("style", "display:block;");
                         $('#alertbody').html("<li>The rule already contains this action..</li>");
                         flage = false;
                     }
-                    if (currentValAction == 6 && $("#ActionList option:selected").text().trim() == "Make Fields Hidden") {
+                    if (currentValAction == 6 && actionListCheckedLabel.trim() == "Make Fields Hidden" && iselse == iselsecurrent) {
+                        $('#dvalert').attr("class", "modal fade in");
+                        $('#dvalert').attr("aria-hidden", "false");
+                        $('#dvalert').attr("style", "display:block;");
+                        $('#alertbody').html("<li>The rule already contains this action..</li>");
+                        flage = false;
+                    }
+                    if (currentValAction == 10 && actionListCheckedLabel.trim() == "Validate Before Save" ) {
+                        $('#dvalert').attr("class", "modal fade in");
+                        $('#dvalert').attr("aria-hidden", "false");
+                        $('#dvalert').attr("style", "display:block;");
+                        $('#alertbody').html("<li>The rule already contains this action..</li>");
+                        flage = false;
+                    }
+                    if (currentValAction == 7 && actionListCheckedLabel.trim() == "Set Value" && iselse == iselsecurrent) {
                         $('#dvalert').attr("class", "modal fade in");
                         $('#dvalert').attr("aria-hidden", "false");
                         $('#dvalert').attr("style", "display:block;");
@@ -358,14 +890,36 @@
                 $('#alertbody').html("<li>Select atleast one dropdown to filter !</li>");
                 return false;
             }
-        if (action == "ruletype7")
-            if ($("#PropertyList7").val() == undefined) {
+        if (action == "ruletype7") {
+            if ($("#Rule7Value").val() == undefined || $("#Rule7Value").val() == "") {
+                $('#dvalert').attr("class", "modal fade in");
+                $('#dvalert').attr("aria-hidden", "false");
+                $('#dvalert').attr("style", "display:block;");
+                $('#alertbody').html("<li>Provide Property Value !</li>");
+                return false;
+            }
+            if ($("#PropertyList7").val() == undefined || $("#PropertyList7").val() == "SelectProperty") {
                 $('#dvalert').attr("class", "modal fade in");
                 $('#dvalert').attr("aria-hidden", "false");
                 $('#dvalert').attr("style", "display:block;");
                 $('#alertbody').html("<li>Select atleast one property !</li>");
                 return false;
             }
+            if ($("#SuggestedDynamicValue7").val() == "SelectProperty" && $("#Rule7Operator").val() == 3) {
+                $('#dvalert').attr("class", "modal fade in");
+                $('#dvalert').attr("aria-hidden", "false");
+                $('#dvalert').attr("style", "display:block;");
+                $('#alertbody').html("<li>Select atleast one property !</li>");
+                return false;
+            }
+            if ($("#SuggestedDynamicValue71").val() == "SelectProperty" && $("#Rule7Operator").val() == 3) {
+                $('#dvalert').attr("class", "modal fade in");
+                $('#dvalert').attr("aria-hidden", "false");
+                $('#dvalert').attr("style", "display:block;");
+                $('#alertbody').html("<li>Select atleast one association property !</li>");
+                return false;
+            }
+        }
         if (action == "ruletype8")
             if ($("#EntityVerb").val() == undefined) {
                 $('#dvalert').attr("class", "modal fade in");
@@ -376,17 +930,13 @@
             }
         var str = "<tr>";
         var type = "";
-        var flag = ($("#lblruletype" + $("#ActionList").val()).val());
-        if (flag != undefined && flag.length > 0) {
-            // alert("The rule already contains this action..");
-            $('#dvalert').attr("class", "modal fade in");
-            $('#dvalert').attr("aria-hidden", "false");
-            $('#dvalert').attr("style", "display:block;");
-            $('#alertbody').html("<li>The rule already contains this action..</li>");
-            return false;
-        }
+
+        var iselse = true;
+        if ($('input[name=IsElseActionList]:checked').val() == "0")
+            iselse = false;
+
         if (action == "ruletype5") {
-            if ($("#ActionList").val() == '5') {
+            if ($('input[name=ActionList]:checked').val() == '5') {
                 str += "<td>Filter Dropdown</td>";
                 type = '5';
             }
@@ -395,22 +945,23 @@
                 return $(this).text();
             }).get().join();
             str += "<td>" + DropdownVal + "</td>";
-            $("#lblruletype" + type).val(val);
+            if (!iselse)
+                $("#lblruletype" + type).val(val);
+            else
+                $("#lblruletype" + type + "else").val(val);
             $("#Dropdown option:selected").removeAttr("selected");
             $("#Dropdown").multiselect('rebuild');
         }
         else {
             if (action == "ruletype23") {
-                if ($("#ActionList").val() == '3') {
+                if ($('input[name=ActionList]:checked').val() == '3') {
                     str += "<td>Mandatory Properties</td>";
                     type = '3';
                 }
-                    // Sanjeev
-                else if ($("#ActionList").val() == '6') {
+                else if ($('input[name=ActionList]:checked').val() == '6') {
                     str += "<td>Hidden Properties</td>";
                     type = '6';
                 }
-                    //
                 else {
                     str += "<td>ReadOnly Properties</td>";
                     type = '2';
@@ -420,7 +971,11 @@
                 }).get().join();
                 var val = $("#PropertyList1").val();
                 str += "<td>" + option_all + "</td>";
-                $("#lblruletype" + type).val(val);
+
+                if (!iselse)
+                    $("#lblruletype" + type).val(val);
+                else
+                    $("#lblruletype" + type + "else").val(val);
                 $("#PropertyList1 option:selected").removeAttr("selected");
                 $("#PropertyList1").multiselect('rebuild');
             } else {
@@ -431,23 +986,56 @@
                     }
                     str += "<td>Email Notification</td>";
                     var val1 = $("#cmbNotifyTo").val();
-                    str += "<td>Notify within :- " + $("#TimeValue").val() + " days<br/>Notify To :- " + val1 +
+                    str += "<td>Notify To :- " + val1 +
                         "<br/>Extra email-ids :- " + $("#NotifyToExtra").val() + "" +
                     "<br/>Notify Roles To :- " + valNotify + "" + "</td>";
                     type = '4';
-                    $("#lblruletype" + type).val(val1);
+                    if (!iselse)
+                        $("#lblruletype" + type).val(val1);
+                    else
+                        $("#lblruletype" + type + "else").val(val1);
                 }
                 else {
                     if (action == "ruletype7") {
-
                         str += "<td>Set Value</td>";
                         type = '7';
                         var option_all = $("#PropertyList7 option:selected").text();
                         var val = $("#PropertyList7").val();
-                        str += "<td>" + option_all + "=" + $("#Rule7Value").val() + "</td>";
+                        //date calculations
+                        var actionValue = "";
+                        if ($("#DurationCountInAction").val() != undefined && $("#DurationCountInAction").val().length != 0) {
+                            if ($("#DurationCountInAction").val().match(/[0-9]/g) == null) {
+                                alert("Please enter correct value in Count.");
+                                return false;
+                            }
+                            actionValue = actionValue + " " + $("#DateOperatorListInAction").val() + " " + $("#DurationCountInAction").val() + " " + $("#DurationListInAction").val();
+                        }
+                        //
+                        //Verify Property Value for Data Type
+                        var exMsg = VerifyPropertyAndValueDataType($("#EntityList").val(), val, $("#Rule7Value").val() + actionValue, $("#Rule7Operator option:selected").text(), 'action');
+                        if (exMsg != "" && exMsg != null) {
+                            alert('Please enter correct Property Value. ' + exMsg);
+                            return false;
+                        }
+                        var dynamicSetDispProperty = $("#Rule7Value").val();
+                        if ($("#Rule7Operator").val() == 3) {
+                            if ($("#" + "SuggestedDynamicValue71").val() != null && $("#" + "SuggestedDynamicValue71").val().length > 0) {
+                                dynamicSetDispProperty = "[" + $("#" + "SuggestedDynamicValue7 option:selected").text() + "." + $("#" + "SuggestedDynamicValue71 option:selected").text() + "]";
+                            }
+                            else {
+                                dynamicSetDispProperty = "[" + $("#" + "SuggestedDynamicValue7 option:selected").text() + "]";
+                            }
+                        }
+
+                        str += "<td>" + option_all + "=" + dynamicSetDispProperty + actionValue + "</td>";
                         var lblruletype7val = $("#lblruletype7").val();
-                        lblruletype7val += val + "," + "=" + "," + $("#Rule7Value").val() + "?";
+                        lblruletype7val += val + "," + "=" + "," + $("#Rule7Value").val() + actionValue + "?";
                         $("#lblruletype7").val(lblruletype7val);
+                        if (!iselse)
+                            $("#lblruletype7").val(lblruletype7val);
+                        else
+                            $("#lblruletype7else").val(lblruletype7val);
+                        $("#DurationCountInAction").val('');
                     }
                     else {
                         if (action == "ruletype8") {
@@ -456,38 +1044,83 @@
                             var option_all = $("#EntityVerb option:selected").text();
                             var val = $("#EntityVerb").val();
                             str += "<td>" + option_all + "</td>";
-                            $("#lblruletype8").val(val);
+                            if (!iselse)
+                                $("#lblruletype8").val(val);
+                            else
+                                $("#lblruletype8else").val(val);
+                        }
+                        else if (action == "ruletype10") {
+                            str += "<td>Validate Before Save</td>";
+                            var val1 = "Validate Before Save";
+                            str += "<td>" + val1 + "</td>";
+                            type = '10';
+                            if (!iselse)
+                                $("#lblruletype" + type).val(val1);
+                            else
+                                $("#lblruletype" + type + "else").val(val1);
+                        } else if (action == "ruletype11") {
+                            str += "<td>Make Record & Associations Readonly</td>";
+                            var val1 = "Make Record & Associations Readonly";
+                            str += "<td>" + val1 + "</td>";
+                            type = '11';
+                            if (!iselse)
+                                $("#lblruletype" + type).val(val1);
+                            else
+                                $("#lblruletype" + type + "else").val(val1);
                         }
                         else {
-                            str += "<td>Make Records Readonly</td>";
-                            var val1 = "Make Records Readonly";
+                            str += "<td>Make Record Readonly</td>";
+                            var val1 = "Make Record Readonly";
                             str += "<td>" + val1 + "</td>";
                             type = '1';
-                            $("#lblruletype" + type).val(val1);
+                            if (!iselse)
+                                $("#lblruletype" + type).val(val1);
+                            else
+                                $("#lblruletype" + type + "else").val(val1);
                         }
                     }
                 }
+
             }
         }
+
+        str += "<td>" + iselse + "</td>";
         str += "<td><i name=\"lblruletype" + type + "\" onclick=\"deleteRow(this);\" class=\"fam-delete\"></i></td>";
         $('#tblActionList').show();
         $('#tblActionList').append(str);
-        //if (DuplicateAction() == false) {
-        //    deleteRow($("i[name =lblruletype" + type + "]"))
-        //}
-
+        if (DuplicateAction() == false) {
+                deleteRow($("i[name =lblruletype" + type + "]"))
+                deleteRow($("i[name =lblruletype" + type + "else]"))
+        }
     }
+
+    @*function getInlineAssociations(entityName) {
+        var strAssociationList = "";
+        $.ajax({
+            url: '@Url.Action("getInlineAssociationsOfEntity", "Entity")'.replace("Entity", entityName),
+            type: "GET",
+            cache: false,
+            async: false,
+            success: function (result) {
+                strAssociationList += result + ".";
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                alert("error");
+            }
+        });
+        return strAssociationList.trim('.');
+    }*@
     $(document).ready(function () {
         var SelectedText = $('#EntityList :selected').val();
         $('#EntityName').val($('#EntityList :selected').val());
         FillPropertyOnLoad(SelectedText);
-        $('#TimeRuleApplyOn').change(function () {
-            var val = $(this).val();
-            if (val != "")
-                $('#rulecondition').show();
-            else
-                $('#rulecondition').hide();
-        });
+        //$('#TimeRuleApplyOn').change(function () {
+        //    var val = $(this).val();
+        //    if (val != "")
+        //        $('#rulecondition').show();
+        //    else
+        //        $('#rulecondition').hide();
+        //});
         $('select[name=cmbNotifyTo]').multiselect({
             buttonWidth: '100%'
         });
@@ -527,13 +1160,30 @@
                 type: "GET",
                 cache: false,
                 success: function (result) {
-                    var optionDOM = "";
+                    var optionDOM = '<option value="SelectProperty">--Select Property--</option>';
                     for (i = 0; i < result.length; i++) {
                         optionDOM += '<option value="' + result[i].Name + '">' + result[i].DisplayName + '</option>';
                     }
                     $("#" + "PropertyList").html(optionDOM);
                     $("#" + "PropertyList7").html(optionDOM);
                     $("#" + "PropertyList").select('rebuild')
+                    //$("#" + "PropertyList1").html(optionDOM);
+                    //$("#" + "PropertyList1").multiselect('rebuild');
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    alert("error");
+                }
+            })
+            $.ajax({
+                url: '@Url.Action("GetPropertiesofEntityWithInLineProperties", "BusinessRule")' + '?Entity=' + SelectedText,
+                type: "GET",
+                cache: false,
+                async: false,
+                success: function (result) {
+                    var optionDOM = '<option value="SelectProperty">--Select Property--</option>';
+                    for (var index in result) {
+                        optionDOM += '<option value="' + index + '">' + result[index] + '</option>';
+                    }
                     $("#" + "PropertyList1").html(optionDOM);
                     $("#" + "PropertyList1").multiselect('rebuild');
                 },
@@ -571,8 +1221,6 @@
                     var optionDOM = "";
                     for (i = 0; i < result.length; i++) {
                         var displayName = result[i].Value;
-                        //if (result[i].key.indexOf("T_") == 0)
-                        //    displayName = displayName.substr(2);
                         optionDOM += '<option value="' + result[i].Key + '">' + displayName + '</option>';
                     }
                     $("#" + "EntityVerb").html(optionDOM);
@@ -584,22 +1232,23 @@
             });
             //
         });
-        $('#ActionList').change(function () {
+        $('#ActionList input').change(function () {
+
+            var actionListCheckedLabel = $('input[name=ActionList]:radio:checked').next('span:first').html();
+
             var Entity = $('#EntityName').val();
             if (Entity == undefined || Entity.length == 0) {
-                //alert("Select Entity !")
                 $('#dvalert').attr("class", "modal fade in");
                 $('#dvalert').attr("aria-hidden", "false");
                 $('#dvalert').attr("style", "display:block;");
                 $('#alertbody').html("<li>Select Entity</li>");
-                $('#ActionList').prop('selectedIndex', 0);
+                $('input[name=ActionList]:checked').val() = 0;
                 return false;
             }
             $("#chk1").removeAttr("checked");
             $("#chk2").removeAttr("checked");
             $("#chk3").removeAttr("checked");
-            $("#ActionTriggerType").show();
-            var SelectedText = $('#ActionList :selected').val();
+            var SelectedText = $('input[name=ActionList]:checked').val();
             $('div[name=ruletype]').each(function (e) {
                 $(this).attr("class", "collapse");
             });
@@ -612,11 +1261,15 @@
                 } else {
                     if (SelectedText == 1)
                         AddActionInGrid('ruletype1');
+                    if (SelectedText == 11)
+                        AddActionInGrid('ruletype11');
                     if (SelectedText == 5)
                         $('#ruletype' + SelectedText).attr("class", "in");
+                    if (SelectedText == 10)
+                        AddActionInGrid('ruletype10');
                 }
             }
-            if (SelectedText == 1 || SelectedText == 2 || SelectedText == 5 || SelectedText == 6)
+            if (SelectedText == 1 || SelectedText == 11 || SelectedText == 2 || SelectedText == 5 || SelectedText == 6)
                 $("#chk1").prop("checked", true)
             else
                 if (SelectedText == 3 || SelectedText == 7)
@@ -632,7 +1285,240 @@
             var SelectedText = $('#OperatorList :selected').val();
             $('#ConditionOperator').val(SelectedText);
         });
+        var ruleType = $('#AssociatedBusinessRuleTypeID').val();
+        if (ruleType == "3") {
+            $('#OnUpdate').attr('checked', true);
+            $('#OnAdd').attr('checked', true);
+            $('#OnPropertyChange').attr('checked', false);
+        }
+        else if (ruleType == "2") {
+            $('#OnUpdate').attr('checked', true);
+            $('#OnAdd').attr('checked', false);
+            $('#OnPropertyChange').attr('checked', false);
+        }
+        else if (ruleType == "1" || ruleType == "11") {
+            $('#OnUpdate').attr('checked', false);
+            $('#OnAdd').attr('checked', true);
+            $('#OnPropertyChange').attr('checked', false);
+        }
+        else if (ruleType == "4") {
+            $('#OnUpdate').attr('checked', false);
+            $('#OnAdd').attr('checked', false);
+            $('#OnUpdate').attr('disabled', true);
+            $('#OnAdd').attr('disabled', true);
+            $('#OnPropertyChange').attr('checked', true);
+            $('#Scheduled').attr('disabled', true)
+        }
+        else if (ruleType == "5") {
+            $('#OnUpdate').attr('checked', false);
+            $('#OnAdd').attr('checked', false);
+            $('#OnPropertyChange').attr('checked', false);
+            $('#Scheduled').attr('checked', true);
+            $('#Scheduled').trigger("change");
+            $('#ScheduledDateTimeStart').val('@ViewData["ScheduledDateTimeStart"]');
+            $('#ScheduledDateTimeEnd').val('@ViewData["ScheduledDateTimeEnd"]');
+            $('#ScheduledDailyTime').val('@ViewData["ScheduledDailyTime"]');
+        }
+        else if (ruleType == "6") {
+            $('#OnUpdate').attr('checked', false);
+            $('#OnAdd').attr('checked', false);
+            $('#OnPropertyChange').attr('checked', false);
+            $('#Scheduled').attr('checked', false);
+            $('#BeforeSave').attr('checked', true);
+            $('#OnUpdate').attr('disabled', true);
+            $('#OnAdd').attr('disabled', true);
+            $('#OnPropertyChange').attr('disabled', true);
+            $('#Scheduled').attr('disabled', true);
+        }
+
+        $("input[type=radio][value=5]", $("#dvActions")).prop("disabled", true);
+        FilterActionList();
+        $('#dvChkRuleType').change(function () {
+            FilterActionList();
+        });
+        //filter Add Action dropdown
+
+        $('#chkAlways').change(function () {
+            AddAlwaysConditionInGrid(this);
+            if ($('#chkAlways').is(":checked")) {
+                $("#btnAddAction4").attr("disabled", true);
+                $('input:radio[name="IsElseActionList"]').prop('disabled', true);
+                $('input:radio[name="IsElseActionList"]').filter('[value="0"]').prop('checked', true);
+            }
+            else {
+                $("#btnAddAction4").attr("disabled", false);
+                $('input:radio[name="IsElseActionList"]').prop('disabled', false);
+            }
+        });
+        if ($('#idAlways').length == 1) {
+            $('#chkAlways').prop('checked', true);
+            $("#btnAddAction4").attr("disabled", true);
+            $('input:radio[name="IsElseActionList"]').prop('disabled', true);
+        }
+        else {
+            $('#chkAlways').prop('checked', false);
+            $("#btnAddAction4").attr("disabled", false);
+            $('input:radio[name="IsElseActionList"]').prop('disabled', false);
+        }
+        $('#chkAlways').checked = false;
+
+        $('input:radio[name="IsElseActionList"]').filter('[value="0"]').attr('checked', true);
     });
+    function FilterActionList() {
+        if (($('#OnUpdate').is(":checked") && $('#OnAdd').is(":checked")) || $('#OnAdd').is(":checked")) {
+            $(':radio', $("#dvActions")).each(function () {
+                if ($(this).val() == '1' || $(this).val() == '2' || $(this).val() == '11')
+                    $("input[type=radio][value=" + $(this).val() + "]", $("#dvActions")).attr("disabled", true);
+                else
+                    $("input[type=radio][value=" + $(this).val() + "]", $("#dvActions")).attr("disabled", false);
+            });
+            $("#OperatorList option[value='Changes to anything']").prop('disabled', true);
+            $("#ValueTypeList option[value='Changes to anything']").prop('disabled', true);
+            $("#ValueTypeList option[value='Dynamic']").prop('disabled', false);
+            $("#chkAlways").prop('disabled', false);
+        }
+        else if ($('#OnUpdate').is(":checked")) {
+            $(':radio', $("#dvActions")).each(function () {
+                $("input[type=radio][value=" + $(this).val() + "]", $("#dvActions")).attr("disabled", false);
+            });
+            $("#OperatorList option[value='Changes to anything']").prop('disabled', true);
+            $("#ValueTypeList option[value='Changes to anything']").prop('disabled', true);
+            $("#ValueTypeList option[value='Dynamic']").prop('disabled', false);
+            $("#chkAlways").prop('disabled', false);
+        }
+        else if ($('#OnPropertyChange').is(":checked")) {
+            $(':radio', $("#dvActions")).each(function () {
+                if ($(this).val() == '1' || $(this).val() == '2' || $(this).val() == '8' || $(this).val() == '11')
+                    $("input[type=radio][value=" + $(this).val() + "]", $("#dvActions")).attr("disabled", true);
+                else
+                    $("input[type=radio][value=" + $(this).val() + "]", $("#dvActions")).attr("disabled", false);
+            });
+            $("#OperatorList option[value='Changes to anything']").prop('disabled', false);
+            $("#ValueTypeList option[value='Changes to anything']").prop('disabled', false);
+            $("#ValueTypeList option[value='Dynamic']").prop('disabled', false);
+            $("#chkAlways").prop('disabled', true);
+            $("#chkAlways").prop('checked', false);
+            $('table#tblConditionList tr#idAlways').remove();
+            $("#lblrulecondition").val('');
+        }
+        else if ($('#Scheduled').is(":checked")) {
+            $(':radio', $("#dvActions")).each(function () {
+                if ($(this).val() == '4' || $(this).val() == '7' || $(this).val() == '8')
+                    $("input[type=radio][value=" + $(this).val() + "]", $("#dvActions")).attr("disabled", false);
+                else
+                    $("input[type=radio][value=" + $(this).val() + "]", $("#dvActions")).attr("disabled", true);
+            });
+            $("#OperatorList option[value='Changes to anything']").prop('disabled', false);
+            $("#ValueTypeList option[value='Changes to anything']").prop('disabled', false);
+            $("#ValueTypeList option[value='Dynamic']").prop('disabled', false);
+            $("#chkAlways").prop('disabled', false);
+        }
+        else if ($('#BeforeSave').is(":checked")) {
+            $(':radio', $("#dvActions")).each(function () {
+                if ($(this).val() == '7')
+                    $("input[type=radio][value=" + $(this).val() + "]", $("#dvActions")).attr("disabled", false);
+                else
+                    $("input[type=radio][value=" + $(this).val() + "]", $("#dvActions")).attr("disabled", true);
+            });
+            $("#OperatorList option[value='Changes to anything']").prop('disabled', false);
+            $("#ValueTypeList option[value='Changes to anything']").prop('disabled', false);
+            $("#ValueTypeList option[value='Dynamic']").prop('disabled', false);
+            $("#chkAlways").prop('disabled', false);
+        }
+        else {
+            $(':radio', $("#dvActions")).each(function () {
+                if ($(this).val() == '0' || $(this).val() == '5')
+                    $("input[type=radio][value=" + $(this).val() + "]", $("#dvActions")).attr("disabled", false);
+                else
+                    $("input[type=radio][value=" + $(this).val() + "]", $("#dvActions")).attr("disabled", true);
+            });
+            $("#OperatorList option[value='Changes to anything']").prop('disabled', true);
+            $("#ValueTypeList option[value='Changes to anything']").prop('disabled', true);
+            $("#ValueTypeList option[value='Dynamic']").prop('disabled', false);
+            $("#chkAlways").prop('disabled', false);
+        }
+    }
+</script>
+<script>
+    function ChangeNextRuntime(obj) {
+        var currentval = $("#ScheduledDateTimeStart").val();
+        var currenttime = $("#ScheduledDailyTime").val();
+        $("#NextRuntime").val(currentval + " " + currenttime);
+        $("#PreviousRuntime").hide();
+    }
+    $(document).on('change', '.tcheckbox', function () {
+        if (this.id == "Scheduled") {
+            if (this.checked) {
+                $("#ScheduleCalendar").show();
+                ChangeScheduleType();
+                $('#OnUpdate').attr('checked', false);
+                $('#OnAdd').attr('checked', false);
+                $("#OnPropertyChange").attr('checked', false);
+                $("#BeforeSave").attr('checked', false);
+                $('#OnUpdate').attr('disabled', true);
+                $('#OnAdd').attr('disabled', true);
+                $("#OnPropertyChange").attr('disabled', true);
+                $("#BeforeSave").attr('disabled', true);
+                $('#dvChkRuleType').trigger("change");
+                //$('#divAlways').hide();
+            }
+            else {
+                $("#ScheduleCalendar").hide();
+                $('#OnUpdate').removeAttr('disabled');
+                $('#OnAdd').removeAttr('disabled');
+                $("#OnPropertyChange").removeAttr('disabled');
+                $("#BeforeSave").removeAttr('disabled');
+                $('#OnUpdate').attr('checked', true);
+                $('#OnAdd').attr('checked', true);
+                $('#dvChkRuleType').trigger("change");
+                //$('#divAlways').show();
+            }
+        }
+        else if (this.id == "OnPropertyChange") {
+            if (this.checked) {
+                $('#OnUpdate').attr('checked', false);
+                $('#OnAdd').attr('checked', false);
+                $('#Scheduled').attr('checked', false);
+                $('#BeforeSave').attr('checked', false);
+                $('#OnUpdate').attr('disabled', true);
+                $('#OnAdd').attr('disabled', true);
+                $('#Scheduled').attr('disabled', true);
+                $('#BeforeSave').attr('disabled', true);
+                $('#dvChkRuleType').trigger("change");
+            }
+            else {
+                $('#OnUpdate').removeAttr('disabled');
+                $('#OnAdd').removeAttr('disabled');
+                $('#Scheduled').removeAttr('disabled');
+                $('#BeforeSave').removeAttr('disabled');
+                $('#OnUpdate').attr('checked', true);
+                $('#OnAdd').attr('checked', true);
+                $('#Scheduled').attr('checked', true);
+                $('#dvChkRuleType').trigger("change");
+            }
+        }
+        else if (this.id == "BeforeSave") {
+            if (this.checked) {
+                $('#OnUpdate').attr('checked', false);
+                $('#OnAdd').attr('checked', false);
+                $('#Scheduled').attr('checked', false);
+                $('#OnUpdate').attr('disabled', true);
+                $('#OnAdd').attr('disabled', true);
+                $('#Scheduled').attr('disabled', true);
+                $('#dvChkRuleType').trigger("change");
+            }
+            else {
+                $('#OnUpdate').removeAttr('disabled');
+                $('#OnAdd').removeAttr('disabled');
+                $('#Scheduled').removeAttr('disabled');
+                $('#OnUpdate').attr('checked', true);
+                $('#OnAdd').attr('checked', true);
+                $('#Scheduled').attr('checked', false);
+                $('#dvChkRuleType').trigger("change");
+            }
+        }
+    });
+
 </script>
 <style type="text/css">
     .panel-group .panel {
@@ -661,7 +1547,8 @@
 </div>
 <div class="panel-group" id="accordion">
     @*Business Rule trip*@
-    <div class="panel panel-default">
+    <div class="panel panel-default AppForm">
+
         <div class="panel-heading">
             <h4 class="panel-title" style="float:none;">
                 <a data-toggle="collapse" data-parent="#accordion" href="#BusinessRule">Business Rule</a>
@@ -669,15 +1556,26 @@
         </div>
         <div id="BusinessRule" class="panel-collapse collapse in">
             <div class="panel-body">
+
+
+
                 @*tabs start*@
                 <div class="tabbable responsive">
                     <ul class="nav nav-tabs">
                         <li class="active"><a href="#Details" data-toggle="tab">Details</a></li>
+                        @if (Model.AssociatedBusinessRuleTypeID == 5)
+                        {
+                            <li><a href="#TaskHistory" data-toggle="tab">Task History</a></li>
+                        }
                         <li @(!User.CanView("JournalEntry") ? "style=display:none;" : "")><a href="#JournalEntryToBusinessRuleRelation" data-toggle="tab">Business Rule Journal</a></li>
                     </ul>
                     <div class="tab-content">
                         @*details tab*@
                         <div class="tab-pane fade in active" id="Details">
+
+
+
+
                             @using (Html.BeginForm("Edit", "BusinessRule", new { UrlReferrer = Convert.ToString(ViewData["BusinessRuleParentUrl"]) }, FormMethod.Post, new { enctype = "multipart/form-data" }))
                             {
                                 @Html.AntiForgeryToken();
@@ -685,147 +1583,513 @@
                                                         Html.EnableClientValidation();
                                                         <div class="col-md-12 col-sm-12 col-xs-12" style="padding:0px; margin:0px;">
                                                             <div class="panel panel-default AppForm">
+                                                                <div class="panel-heading clearfix">
+                                                                    <i class="fam-script-lightning pull-left"></i>
+                                                                    <h3 style="padding-left:10px;" class="panel-title">Rule Details </h3>
+                                                                </div>
                                                                 <div class="panel-body">
-                                                                    <div class="row">
-                                                                        @if (User.CanView("BusinessRule", "RuleName"))
-                                                                        {
-                                                                            <div class='col-sm-6'>
-                                                                                <div class='form-group'>
-                                                                                    <label>@Html.LabelFor(model => model.RuleName) <span class="text-danger-reg">*</span> </label>
+
+
+                                                                    @if (User.CanView("BusinessRule", "RuleName"))
+                                                                    {
+                                                                        <div class="col-sm-12 col-md-12 col-xs-12">
+                                                                            <div class='form-group'>
+                                                                                <label class="col-sm-2 col-md-2 col-xs-12">@Html.LabelFor(model => model.RuleName) <span class="text-danger-reg">*</span> </label>
+                                                                                <div class="input-group col-sm-10 col-md-10 col-xs-12">
                                                                                     @Html.TextBoxFor(model => model.RuleName, getHtmlAttributes("RuleName"))
                                                                                     @Html.ValidationMessageFor(model => model.RuleName)
                                                                                 </div>
                                                                             </div>
-                                                                        }
-                                                                        else
-                                                                        { @Html.HiddenFor(model => model.RuleName, new { @class = "form-control" })}
-                                                                        @if (User.CanView("BusinessRule", "EntityName"))
-                                                                        {
-                                                                            <div class='col-sm-6'>
-                                                                                <div class='form-group'>
-                                                                                    <label>@Html.LabelFor(model => model.EntityName)<span class="text-danger-reg">*</span>  </label>
+                                                                        </div>
+                                                                    }
+                                                                    else
+                                                                    { @Html.HiddenFor(model => model.RuleName, new { @class = "form-control" })}
+                                                                    @if (User.CanView("BusinessRule", "Description"))
+                                                                    {
+                                                                        <div class="col-sm-12 col-md-12 col-xs-12">
+                                                                            <div class='form-group'>
+                                                                                <label class="col-sm-2 col-md-2 col-xs-12">@Html.LabelFor(model => model.Description) </label>
+                                                                                <div class="input-group col-sm-10 col-md-10 col-xs-12">
+                                                                                    @Html.TextAreaFor(model => model.Description, getHtmlAttributes("Description"))
+                                                                                    @Html.ValidationMessageFor(model => model.Description)
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    }
+
+
+
+
+                                                                </div>
+
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="col-md-12 col-sm-12 col-xs-12" style="padding:0px; margin:0px;">
+                                                            <div class="panel panel-default AppForm">
+                                                                <div class="panel-heading clearfix">
+                                                                    <i class="fam-script-lightning pull-left"></i>
+                                                                    <h3 style="padding-left:10px;" class="panel-title">Define Entity and Roles </h3>
+                                                                </div>
+                                                                <div class="panel-body">
+
+                                                                    @if (User.CanView("BusinessRule", "EntityName"))
+                                                                    {
+                                                                        <div class="col-sm-6 col-md-6 col-xs-12" style="padding-left:22px;">
+                                                                            <div class='form-group'>
+                                                                                <label class="col-sm-4 col-md-4 col-xs-12">@Html.LabelFor(model => model.EntityName)<span class="text-danger-reg">*</span>  </label>
+                                                                                <div class="input-group col-sm-8 col-md-8 col-xs-12">
                                                                                     @Html.DropDownList("EntityList", null, "-- Select --", new { @required = "required", @class = "form-control", @disabled = "disabled" })
                                                                                     @Html.TextBoxFor(model => model.EntityName, new { @class = "form-control hidden" })
                                                                                     @Html.ValidationMessageFor(model => model.EntityName)
                                                                                 </div>
                                                                             </div>
-                                                                        }
-                                                                        else
-                                                                        { @Html.HiddenFor(model => model.EntityName, new { @class = "form-control" })}
-                                                                        @if (User.CanView("BusinessRule", "Roles"))
-                                                                        {
-                                                                            <div class='col-sm-6'>
-                                                                                <div class='form-group'>
-                                                                                    <label>Apply to following roles</label>
-                                                                                    <div id="dvRole" name="dvRoles">
-                                                                                        @Html.TextBoxFor(model => model.Roles, new { style = "border:none !important;Width:0px !important;" })
-                                                                                        @Html.DropDownList("RoleList", null, new { @multiple = "multiple" })
-                                                                                        @Html.TextBox("RoleListValue", null, new { @class = "form-control hidden" })
-                                                                                        @Html.ValidationMessageFor(model => model.Roles)
-                                                                                    </div>
+                                                                        </div>
+                                                                    }
+                                                                    else
+                                                                    { @Html.HiddenFor(model => model.EntityName, new { @class = "form-control" })}
+
+                                                                    @if (User.CanView("BusinessRule", "Roles"))
+                                                                    {
+                                                                        <div class="col-sm-6 col-md-6 col-xs-12" style="height:35px;">
+                                                                            <div class='form-group'>
+                                                                                <label class="col-sm-4 col-md-4 col-xs-12">Apply to roles</label>
+                                                                                <div class="input-group col-sm-8 col-md-8 col-xs-12" id="dvRole" name="dvRoles">
+                                                                                    @Html.DropDownList("RoleList", null, new { @multiple = "multiple" })
+                                                                                    @Html.TextBoxFor(model => model.Roles, new { style = "border:none !important;Width:0px !important;" })
+                                                                                    @Html.TextBox("RoleListValue", null, new { @class = "form-control hidden" })
+                                                                                    @Html.ValidationMessageFor(model => model.Roles)
                                                                                 </div>
                                                                             </div>
-                                                                            <div class='col-sm-6'>
-                                                                                <div class='form-group'>
-                                                                                    <label>Disable Rule </label><br />
+                                                                        </div>
+                                                                        <div class="col-sm-6 col-md-6 col-xs-12">
+                                                                            <div class='form-group'>
+                                                                                <label class="col-sm-4 col-md-4 col-xs-12">Disable Rule </label>
+                                                                                <div class="input-group col-sm-8 col-md-8 col-xs-12">
                                                                                     @Html.CheckBoxFor(model => model.Disable)
                                                                                     @Html.ValidationMessageFor(model => model.Disable)
                                                                                 </div>
                                                                             </div>
-                                                                        }
-                                                                        else
-                                                                        { @Html.HiddenFor(model => model.Roles, new { @class = "form-control" })}
-                                                                        @if (User.CanView("BusinessRule", "DateCreated1"))
-                                                                        {
-                                                                            <div class='col-sm-4' style="display:none;">
-                                                                                <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.DateCreated1) </label>
-                                                                                <div class="form-group">
-                                                                                    <div class="input-group col-sm-7 col-md-7 col-xs-12">
-                                                                                        <div class="input-group date" id="datetimepickerDateCreated1">
-                                                                                            @Html.TextBoxFor(model => model.DateCreated1, "{0:MM/dd/yyyy}", new { @id = "datetimepickerDateCreated1txt", @class = "form-control", @readonly = "readonly" })
-                                                                                            <span class="input-group-addon btn-default calendar">
-                                                                                                <i class="fa fa-calendar"></i>
-                                                                                            </span>
-                                                                                        </div>
-                                                                                        @Html.ValidationMessageFor(model => model.DateCreated1)
-                                                                                    </div>
+                                                                        </div>
+                                                                        <div class="col-sm-6 col-md-6 col-xs-12">
+                                                                            <div class='form-group'>
+                                                                                <label class="col-sm-4 col-md-4 col-xs-12">Freeze Rule </label>
+                                                                                <div class="input-group col-sm-8 col-md-8 col-xs-12">
+                                                                                    @Html.CheckBoxFor(model => model.Freeze)
+                                                                                    @Html.ValidationMessageFor(model => model.Freeze)
                                                                                 </div>
                                                                             </div>
-                                                                        }
-                                                                        else
-                                                                        { @Html.HiddenFor(model => model.DateCreated1, new { @class = "form-control" })}
-                                                                    </div>
+                                                                        </div>
+                                                                    }
+                                                                    else
+                                                                    { @Html.HiddenFor(model => model.DateCreated1, new { @class = "form-control" })}
+
+
+                                                                    @if (User.CanView("BusinessRule", "DateCreated1"))
+                                                                    {
+                                                                        <div class='col-sm-4' style="display:none;">
+                                                                            <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.DateCreated1) </label>
+                                                                            <div class="form-group">
+                                                                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                                                    <div class="input-group date" id="datetimepickerDateCreated1">
+                                                                                        @Html.TextBoxFor(model => model.DateCreated1, "{0:MM/dd/yyyy}", new { @id = "datetimepickerDateCreated1txt", @class = "form-control", @readonly = "readonly" })
+                                                                                        <span class="input-group-addon btn-default calendar">
+                                                                                            <i class="fa fa-calendar"></i>
+                                                                                        </span>
+                                                                                    </div>
+                                                                                    @Html.ValidationMessageFor(model => model.DateCreated1)
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    }
+                                                                    else
+                                                                    { @Html.HiddenFor(model => model.AssociatedBusinessRuleTypeID, new { @class = "form-control" })}
+
+
                                                                 </div>
                                                             </div>
                                                         </div>
 
-                                                        <input type="submit" id="brsubmit" value="Save" class="hidden btn btn-primary btn-sm" />
+                                                        <div class="row">
+                                                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                                                <div class="panel panel-default AppForm">
+                                                                    <div class="panel-heading clearfix">
+                                                                        <i class="fam-script-lightning pull-left"></i>
+                                                                        <h3 style="padding-left:10px;" class="panel-title">When to evaluate?</h3>
+
+
+
+                                                                    </div>
+
+
+                                                                    <div class="panel-body">
+                                                                        <div class="row">
+                                                                            @if (User.CanView("BusinessRule", "AssociatedBusinessRuleTypeID"))
+                                                                            {
+                                                                                <div class="col-sm-10 col-md-12 col-xs-12" style="padding-left:10px; margin-top:10px; ">
+                                                                                    <label class="col-sm-2"></label>
+                                                                                    <div class='form-group'>
+                                                                                        @*<label class="col-sm-5 col-md-5 col-xs-12">When to apply?</label>*@
+                                                                                        <div id="dvChkRuleType" style="margin-top:-5px;">
+
+                                                                                            @foreach (var person in ViewBag.AssociatedBusinessRuleTypeID)
+                                                                                            {
+                                                                                                if (person.Value == "1" || person.Value == "2" || person.Value == "4" || person.Value == "5" || person.Value == "6")
+                                                                                                {
+                                                                                                    <input type="checkbox" name="@person.Text" value="@person.Value" id="@person.Text" class="tcheckbox" />
+                                                                                                    <label>
+                                                                                                        @person.Text
+                                                                                                    </label>
+                                                                                                }
+                                                                                            }
+                                                                                            @Html.ValidationMessageFor(model => model.AssociatedBusinessRuleTypeID)
+                                                                                            @Html.DropDownList("AssociatedBusinessRuleTypeID", null, new { @class = "form-control hidden", @style = "display:none" })
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    @Html.HiddenFor(model => model.T_SchedulerTaskID)
+                                                                                    @Html.HiddenFor(model => model.t_schedulertask.ConcurrencyKey)
+
+                                                                                    <div id="ScheduleCalendar" style="display:none;">
+                                                                                        <div class="row">
+                                                                                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                                                                                <div class="panel panel-default">
+                                                                                                    <div class="panel-heading clearfix">
+                                                                                                        <i class="icon-calendar"></i>
+
+                                                                                                        <h3 class="panel-title">Basic Details</h3>
+                                                                                                    </div>
+                                                                                                    <div class="panel-body">
+                                                                                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_Name">
+                                                                                                            <div class='form-group' title="Name">
+                                                                                                                <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.t_schedulertask.T_Name) <span class="text-danger-reg">*</span></label>
+                                                                                                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+
+                                                                                                                    @Html.TextBoxFor(model => model.t_schedulertask.T_Name, new { @class = "form-control" })
+                                                                                                                    @Html.ValidationMessageFor(model => model.t_schedulertask.T_Name)
+                                                                                                                </div>
+                                                                                                            </div>
+                                                                                                        </div>
+
+
+
+
+                                                                                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_Description">
+                                                                                                            <div class='form-group' title="Description">
+                                                                                                                <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.t_schedulertask.T_Description) </label>
+                                                                                                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                                                                                    @Html.TextAreaFor(model => model.t_schedulertask.T_Description, new { @class = "form-control" })
+                                                                                                                    @Html.ValidationMessageFor(model => model.t_schedulertask.T_Description)
+                                                                                                                </div>
+                                                                                                            </div>
+                                                                                                        </div>
+
+                                                                                                        <div class='col-sm-6 col-md-6  col-xs-12' id="dvT_AssociatedScheduleTypeID" style="min-height:35px;">
+                                                                                                            <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.t_schedulertask.T_AssociatedScheduleTypeID)  <span class="text-danger-reg">*</span></label>
+                                                                                                            <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                                                                                <div class="input-group radiocontainer">
+                                                                                                                    @Html.RadioButtonListFor(model => model.t_schedulertask.T_AssociatedScheduleTypeID, (SelectList)ViewBag.T_AssociatedScheduleTypeID, new { @onclick = "ChangeScheduleType();", @required = "required", @dataurl = Url.Action("GetAllValueForRB", "T_Scheduletype", new { caller = "T_AssociatedScheduleTypeID" }) })
+                                                                                                                    @Html.ValidationMessageFor(model => model.t_schedulertask.T_AssociatedScheduleTypeID)
+                                                                                                                </div>
+                                                                                                            </div>
+                                                                                                        </div>
+
+                                                                                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_StartDateTime">
+                                                                                                            <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.t_schedulertask.T_StartDateTime) <span class="text-danger-reg">*</span></label>
+                                                                                                            <div class="form-group" title="Start Date Time">
+                                                                                                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                                                                                    <div class="input-group date" id="datetimepickert_schedulertask_T_StartDateTime">
+                                                                                                                        @Html.TextBoxFor(model => model.t_schedulertask.T_StartDateTime, "{0:MM/dd/yyyy hh:mm tt}", new { @class = "form-control", @format = "MM/DD/YYYY hh:mm" })
+                                                                                                                        <span class="input-group-addon btn-default calendar">
+                                                                                                                            <i class="fa fa-calendar"></i>
+                                                                                                                        </span>
+                                                                                                                    </div>
+                                                                                                                    @Html.ValidationMessageFor(model => model.t_schedulertask.T_StartDateTime)
+                                                                                                                </div>
+                                                                                                            </div>
+                                                                                                            <script type="text/javascript">
+                                                                                                                $(function () {
+                                                                                                                    $('#datetimepickert_schedulertask_T_StartDateTime').datetimepicker({});
+                                                                                                                    $('#t_schedulertask_T_StartDateTime').datetimepicker({});
+                                                                                                                });
+                                                                                                            </script>
+                                                                                                        </div>
+
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                        <div class="row" id="dvRepeat" style="display:none;">
+                                                                                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                                                                                <div class="panel panel-default">
+                                                                                                    <div class="panel-heading clearfix">
+                                                                                                        <i class="icon-calendar"></i>
+
+                                                                                                        <h3 class="panel-title">Recurrence Detail</h3>
+                                                                                                    </div>
+                                                                                                    <div class="panel-body">
+
+                                                                                                        <div class='col-sm-6 col-md-6  col-xs-12' id="dvT_AssociatedRecurringScheduleDetailsTypeID" style="min-height:35px;">
+                                                                                                            <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.t_schedulertask.T_AssociatedRecurringScheduleDetailsTypeID)  </label>
+                                                                                                            <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                                                                                <div class="input-group radiocontainer">
+                                                                                                                    @Html.RadioButtonListFor(model => model.t_schedulertask.T_AssociatedRecurringScheduleDetailsTypeID, (SelectList)ViewBag.T_AssociatedRecurringScheduleDetailsTypeID, new { @onchange = "RepeatTypeChange();", @dataurl = Url.Action("GetAllValueForRB", "T_RecurringScheduleDetailstype", new { caller = "T_AssociatedRecurringScheduleDetailsTypeID" }) })
+                                                                                                                    @Html.ValidationMessageFor(model => model.t_schedulertask.T_AssociatedRecurringScheduleDetailsTypeID)
+                                                                                                                </div>
+                                                                                                            </div>
+                                                                                                        </div>
+
+
+                                                                                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_RecurringRepeatFrequencyID">
+                                                                                                            <div class='form-group'>
+                                                                                                                <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.t_schedulertask.T_RecurringRepeatFrequencyID) </label>
+                                                                                                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                                                                                    <div class="input-group" style="width:100%;">
+                                                                                                                        @Html.DropDownListFor(model => model.t_schedulertask.T_RecurringRepeatFrequencyID, (SelectList)ViewBag.T_RecurringRepeatFrequencyID, "--Select--", new { @class = "chosen-select form-control", @HostingName = "T_RecurringFrequency", @dataurl = Url.Action("GetAllValue", "T_RecurringFrequency", new { caller = "T_RecurringRepeatFrequencyID" }) })
+                                                                                                                        @*@Html.DropDownList("T_RecurringRepeatFrequencyID", null, "-- Select --", new { @class = "chosen-select form-control", @HostingName = "T_RecurringFrequency", @dataurl = Url.Action("GetAllValue", "T_RecurringFrequency", new { caller = "T_RecurringRepeatFrequencyID" }) })*@
+                                                                                                                        @Html.ValidationMessageFor(model => model.t_schedulertask.T_RecurringRepeatFrequencyID)
+
+                                                                                                                    </div>
+                                                                                                                </div>
+                                                                                                            </div>
+                                                                                                        </div>
+                                                                                                        <div class='col-sm-6 col-md-6  col-xs-12' id="RepeatOnWeekly" style="display:none;">
+                                                                                                            <label class="col-sm-5 col-md-5 col-xs-12"> Repeat On</label>
+                                                                                                            <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                                                                                <div class="input-group" style="width:100%;">
+
+                                                                                                                    @Html.DropDownListFor(model => model.t_schedulertask.SelectedT_RecurrenceDays_T_RepeatOn, (MultiSelectList)ViewBag.SelectedT_RecurrenceDays_T_RepeatOn, new { @multiple = "multiple", @HostingName = "T_RecurrenceDays", @dataurl = Url.Action("GetAllMultiSelectValue", "T_RecurrenceDays", null) })
+                                                                                                                    @*@Html.DropDownList("SelectedT_RecurrenceDays_T_RepeatOn", null, new { @multiple = "multiple", @HostingName = "T_RecurrenceDays", @dataurl = Url.Action("GetAllMultiSelectValue", "T_RecurrenceDays", null) })*@
+                                                                                                                </div>
+                                                                                                            </div>
+                                                                                                        </div>
+
+                                                                                                        <div class='col-sm-6 col-md-6  col-xs-12' id="dvT_RepeatByID" style="min-height:35px;display:none;">
+                                                                                                            <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.t_schedulertask.T_RepeatByID)  </label>
+                                                                                                            <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                                                                                <div class="input-group radiocontainer">
+                                                                                                                    @Html.RadioButtonListFor(model => model.t_schedulertask.T_RepeatByID, (SelectList)ViewBag.T_RepeatByID, new { @dataurl = Url.Action("GetAllValueForRB", "T_MonthlyRepeatType", new { caller = "T_RepeatByID" }) })
+                                                                                                                    @Html.ValidationMessageFor(model => model.t_schedulertask.T_RepeatByID)
+                                                                                                                </div>
+                                                                                                            </div>
+                                                                                                        </div>
+
+                                                                                                        <div class="clearfix"></div>
+
+                                                                                                        <div class='col-sm-6 col-md-6  col-xs-12' id="dvT_RecurringTaskEndTypeID" style="min-height:35px;">
+                                                                                                            <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.t_schedulertask.T_RecurringTaskEndTypeID)  </label>
+                                                                                                            <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                                                                                <div class="input-group radiocontainer">
+                                                                                                                    @Html.RadioButtonListFor(model => model.t_schedulertask.T_RecurringTaskEndTypeID, (SelectList)ViewBag.T_RecurringTaskEndTypeID, new { @onclick = "ChangeEndType()", @dataurl = Url.Action("GetAllValueForRB", "T_RecurringEndType", new { caller = "T_RecurringTaskEndTypeID" }) })
+                                                                                                                    @Html.ValidationMessageFor(model => model.t_schedulertask.T_RecurringTaskEndTypeID)
+                                                                                                                </div>
+                                                                                                            </div>
+                                                                                                        </div>
+
+
+                                                                                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_EndDate">
+                                                                                                            <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.t_schedulertask.T_EndDate) </label>
+                                                                                                            <div class="form-group" title="End Date">
+                                                                                                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                                                                                    <div class="input-group date" id="datetimepickerT_EndDate">
+                                                                                                                        @Html.TextBoxFor(model => model.t_schedulertask.T_EndDate, new { @class = "form-control" })
+                                                                                                                        <span class="input-group-addon btn-default calendar">
+                                                                                                                            <i class="fa fa-calendar"></i>
+                                                                                                                        </span>
+                                                                                                                    </div>
+                                                                                                                    @Html.ValidationMessageFor(model => model.t_schedulertask.T_EndDate)
+                                                                                                                </div>
+                                                                                                            </div>
+                                                                                                            <script type="text/javascript">
+                                                                                                                $(function () {
+                                                                                                                    $('#datetimepickerT_EndDate').datetimepicker({ pickTime: false });
+                                                                                                                    $('#T_EndDate').datetimepicker({ pickTime: false });
+                                                                                                                });
+                                                                                                            </script>
+                                                                                                        </div>
+
+
+                                                                                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_OccurrenceLimitCount">
+                                                                                                            <div class='form-group' title="Occurrence Limit Count">
+                                                                                                                <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.t_schedulertask.T_OccurrenceLimitCount) </label>
+                                                                                                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+
+                                                                                                                    @Html.TextBoxFor(model => model.t_schedulertask.T_OccurrenceLimitCount, new { @class = "form-control" })
+                                                                                                                    @Html.ValidationMessageFor(model => model.t_schedulertask.T_OccurrenceLimitCount)
+                                                                                                                </div>
+                                                                                                            </div>
+                                                                                                        </div>
+
+
+
+
+                                                                                                        @*<div class='col-sm-6 col-md-6 col-xs-12' id="dvT_Summary">
+                                                                                                                <div class='form-group' title="Summary">
+                                                                                                                    <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.t_schedulertask.T_Summary) </label>
+                                                                                                                    <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                                                                                        @Html.TextAreaFor(model => model.t_schedulertask.T_Summary, new { @class = "form-control" })
+                                                                                                                        @Html.ValidationMessageFor(model => model.t_schedulertask.T_Summary)
+                                                                                                                    </div>
+                                                                                                                </div>
+                                                                                                            </div>*@
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </div>
+
+
+
+
+
+
+
+                                                                                    </div>
+                                                                                </div>
+                                                                            }
+
+
+
+                                                                            else
+                                                                            { @Html.HiddenFor(model => model.Roles, new { @class = "form-control", @style = "display:none" })}
+                                                                        </div>
+                                                                    </div>
+
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <input type="submit" id="brsubmit" value="Save" class="hidden btn btn-primary btn-sm" style="display:none; " />
                                                         @Html.TextBox("lblruletype1", null, new { @class = "hidden" })
                                                         @Html.TextBox("lblruletype2", null, new { @class = "hidden" })
                                                         @Html.TextBox("lblruletype3", null, new { @class = "hidden" })
                                                         @Html.TextBox("lblruletype4", null, new { @class = "hidden" })
                                                         @Html.TextBox("lblruletype5", null, new { @class = "hidden" })
-                                                        @Html.TextBox("lblruletype7", null, new { @class = "hidden" })
                                                         @Html.TextBox("lblruletype6", null, new { @class = "hidden" })
+                                                        @Html.TextBox("lblruletype7", null, new { @class = "hidden" })
                                                         @Html.TextBox("lblruletype8", null, new { @class = "hidden" })
+                                                        @Html.TextBox("lblruletype10", null, new { @class = "hidden" })
+                                                        @Html.TextBox("lblruletype11", null, new { @class = "hidden" })
                                                         @Html.TextBox("lblrulecondition", null, new { @class = "hidden" })
-                                                        <div class="row">
+
+                                                        @Html.TextBox("lblruletype1else", null, new { @class = "hidden" })
+                                                        @Html.TextBox("lblruletype2else", null, new { @class = "hidden" })
+                                                        @Html.TextBox("lblruletype3else", null, new { @class = "hidden" })
+                                                        @Html.TextBox("lblruletype4else", null, new { @class = "hidden" })
+                                                        @Html.TextBox("lblruletype5else", null, new { @class = "hidden" })
+                                                        @Html.TextBox("lblruletype6else", null, new { @class = "hidden" })
+                                                        @Html.TextBox("lblruletype7else", null, new { @class = "hidden" })
+                                                        @Html.TextBox("lblruletype8else", null, new { @class = "hidden" })
+                                                        @Html.TextBox("lblruletype10else", null, new { @class = "hidden" })
+                                                        @Html.TextBox("lblruletype11else", null, new { @class = "hidden" })
+
+
+                                                        <div class="row" style="margin-top:-20px;">
                                                             <div class="col-md-12 col-sm-12 col-xs-12">
-                                                                <div class="panel panel-default">
+                                                                <div class="panel panel-default AppForm">
                                                                     <div class="panel-heading clearfix">
                                                                         <i class="fam-script-lightning pull-left"></i>
-                                                                        <h3 style="padding-left:10px;" class="panel-title"><label class="alert-warning">Define condition to apply rule</label> </h3>
+                                                                        <h3 style="padding-left:10px;" class="panel-title">Define condition to apply rule</h3>
                                                                     </div>
-                                                                    <div class="panel panel-default AppForm">
-                                                                        <div class="panel-body">
-                                                                            <div class="row">
-                                                                                <div class='col-sm-6 col-md-6 col-xs-12'>
-                                                                                    <label class="col-sm-5 col-md-5 col-xs-12">Select Condition Type</label>
-                                                                                    @Html.DropDownList("TimeRuleApplyOn", null, "-- Select --", new { @style = "width:150px;", @class = "form-control col-sm-7 col-md-7 col-xs-12" })
-                                                                                    @Html.TextBox("TimeRuleApplyOnValue", null, new { @class = "form-control hidden" })
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="clearfix"></div>
-                                                                    <div class="panel panel-default AppForm" id="rulecondition" style="display:none;">
-                                                                        <div class="panel-body">
-                                                                            <div class="row">
-                                                                                <div class='col-sm-4'>
+                                                                    <div class="panel-body">
+                                                                        <div id="rulecondition">
+
+                                                                            <div class="row" id="divAlways">
+                                                                                <div class="col-sm-12 col-md-12 col-xs-12">
                                                                                     <div class='form-group'>
-                                                                                        <label>Select Property <span class="text-danger-reg">*</span></label>
-                                                                                        @Html.DropDownList("PropertyList", null, new { @class = "form-control" })
-                                                                                    </div>
-                                                                                </div>
-                                                                                <div class='col-sm-4'>
-                                                                                    <div class='form-group'>
-                                                                                        <label>Select Operator <span class="text-danger-reg">*</span></label>
-                                                                                        <select class="form-control" id="OperatorList" onchange="GetSuggestedValues(this);">
-                                                                                            <option value="=">Equals to</option>
-                                                                                            <option value=">">Greater than</option>
-                                                                                            <option value="<">Less than</option>
-                                                                                            <option value="<=">Less than Or Equals to</option>
-                                                                                            <option value=">=">Greater than Or Equals to</option>
-                                                                                            <option value="Contains">Contains</option>
-                                                                                            <option value="!=">Not Equals to</option>
-                                                                                            <option value="=">Pick From List</option>
-                                                                                        </select>
-                                                                                        @Html.TextBox("ConditionOperator", null, new { @class = "form-control hidden" })
-                                                                                    </div>
-                                                                                </div>
-                                                                                <div class='col-sm-4'>
-                                                                                    <div class='form-group'>
-                                                                                        <label>Property Value <span class="text-danger-reg">*</span></label>
-                                                                                        @Html.TextBox("ConditionValue", null, new { @class = "form-control" })
-                                                                                        <div style="display:none;" id="dvSuggestedPropertyValue">
-                                                                                            @Html.DropDownList("SuggestedPropertyValue", null, "-- Select --", new { @onchange = "FillSugestedValues();", @class = "chosen-select form-control", @style = "margin-top:8px;", @HostingName = "", @dataurl = "" })
+                                                                                        <label class="col-sm-2 col-md-2 col-xs-12">Always </label>
+                                                                                        <div class="input-group col-sm-10 col-md-10 col-xs-12">
+                                                                                            <input type="checkbox" name="Always" value="Always" id="chkAlways" />
+                                                                                            <label>  (Action will always execute and will not require any condition)</label>
                                                                                         </div>
+
                                                                                     </div>
                                                                                 </div>
                                                                             </div>
-                                                                            <button type="button" id="btnAddAction4" onclick="AddConditionInGrid()" class="btn btn-primary btn-sm">Add Condition</button>
                                                                         </div>
+                                                                        <div class="row">
+                                                                            <div class="col-sm-3 col-md-3 col-xs-12">
+                                                                                <div class='form-group'>
+                                                                                    <label>Select Property <span class="text-danger-reg">*</span></label>
+                                                                                    @Html.DropDownList("PropertyList", null, new { @onchange = "FillDateInConditionValue(this);GetSecondLevelAttributeForCondition();", @class = "form-control" })
+                                                                                    @Html.DropDownList("AssociationPropertyList", null, "-- Select --", new { @onchange = "GetSuggestedValues(this);FillDateInConditionForAssociation();", @class = "form-control", @style = "margin-top:8px;display:none;", @HostingName = "", @dataurl = "" })
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="col-sm-3 col-md-3 col-xs-12">
+                                                                                <div class='form-group'>
+                                                                                    <label>Select Operator <span class="text-danger-reg">*</span></label>
+                                                                                    <select class="form-control" id="OperatorList" onchange="SetValueType(this);">
+                                                                                        <option value="=">Equals to</option>
+                                                                                        <option value=">">Greater than</option>
+                                                                                        <option value="<">Less than</option>
+                                                                                        <option value="<=">Less than Or Equals to</option>
+                                                                                        <option value=">=">Greater than Or Equals to</option>
+                                                                                        <option value="Contains">Contains</option>
+                                                                                        <option value="!=">Not Equals to</option>
+                                                                                        <option value="Changes to anything" disabled>Changes to anything</option>
+                                                                                        <option value="Match">Match</option>
+                                                                                    </select>
+                                                                                    @Html.TextBox("ConditionOperator", null, new { @class = "form-control hidden" })
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="col-sm-3 col-md-3 col-xs-12">
+                                                                                <div class='form-group'>
+                                                                                    <label>Select Value Type<span class="text-danger-reg">*</span></label>
+                                                                                    <select class="form-control" id="ValueTypeList" onchange="GetSuggestedValues(this);">
+                                                                                        <option value="Constant">Constant</option>
+                                                                                        <option value="Pick From List">Pick From List</option>
+                                                                                        <option value="Changes to anything">Changes to anything</option>
+                                                                                        <option value="Regular Expression">Regular Expression</option>
+                                                                                        <option value="Dynamic">Dynamic</option>
+                                                                                    </select>
+                                                                                    @Html.TextBox("ConditionValueType", null, new { @class = "form-control hidden" })
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="col-sm-3 col-md-3 col-xs-12">
+                                                                                <label>Property Value <span class="text-danger-reg">*</span></label>
+                                                                                <div class='form-group'>
+                                                                                    <div style="display:none; padding-left:0px;" id="dvSuggestedPropertyValue" class="col-sm-8 col-md-8 col-xs-8">
+                                                                                        @*@Html.DropDownList("SuggestedPropertyValue", null, "-- Select --", new { @onchange = "FillSugestedValues();", @class = "chosen-select form-control", @style = "margin-top:8px;", @HostingName = "", @dataurl = "" })*@
+                                                                                        @Html.DropDownList("SuggestedPropertyValue", null, new { @onchange = "FillSugestedValues();", @multiple = "multiple" })
+                                                                                        @Html.TextBox("SuggestedPropertyValues", null, new { @class = "form-control hidden" })
+                                                                                    </div>
+
+                                                                                    @Html.TextBox("ConditionValue", null, new { @class = "col-sm-8 col-md-8 col-xs-8", @style = "border-radius:4px;" })
+                                                                                    <div id="dvRule7DynamicValueInCondition" class="col-sm-8 col-md-8 col-xs-8" style="display:none; padding:0px;">
+                                                                                        @Html.DropDownList("SuggestedDynamicValueInCondition7", null, "-- Select --", new { @onchange = "GetSecondLevelAttributeInCondition();", @class = "form-control", @style = "margin:0px;", @HostingName = "", @dataurl = "" })
+                                                                                        @Html.DropDownList("SuggestedDynamicValueInCondition71", null, "-- Select --", new { @class = "form-control", @style = "margin-top:8px;", @HostingName = "", @dataurl = "" })
+                                                                                    </div>
+                                                                                    <div class="col-sm-4 col-md-4 col-xs-4" style="padding:0px 0px 0px 5px;">
+                                                                                        <select class="form-control" id="LogicalConnectorList">
+                                                                                            <option value="AND">AND</option>
+                                                                                            <option value="OR">OR</option>
+                                                                                        </select>
+                                                                                        @Html.TextBox("LogicalConnector", null, new { @class = "form-control hidden" })
+                                                                                    </div>
+
+
+                                                                                    <div id="dvDurationInCondition" class="col-sm-12 col-md-12 col-xs-12" style="display:none; padding:0px; margin-top:5px;">
+                                                                                        <select class="col-sm-4 col-md-4 col-xs-4" id="DateOperatorList" style="border-radius:4px 0px 0px 4px;">
+                                                                                            <option value="+">Add (+)</option>
+                                                                                            <option value="-">Subtract (-)</option>
+                                                                                        </select>
+                                                                                        @Html.TextBox("DurationCount", null, new { @placeholder = "Enter Number", @class = "col-sm-4 col-md-4 col-xs-4", @style = "border-left:0px; border-right:0px;" })
+                                                                                        <select class="col-sm-4 col-md-4 col-xs-4" id="DurationList" style="border-radius:0px 4px 4px 0px;">
+
+                                                                                            <option value="Days">Days</option>
+                                                                                            <option value="Weeks">Weeks</option>
+                                                                                            <option value="Months">Months</option>
+                                                                                            <option value="Years">Years</option>
+                                                                                        </select>
+                                                                                    </div>
+
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-sm-12 col-md-12 col-lg-12" style="margin-top:10px; padding:0px">
+                                                                            <button type="button" id="btnAddAction4" onclick="AddConditionInGrid()" class="btn btn-primary pull-right">Add Condition</button>
+                                                                        </div>
+
                                                                     </div>
+
                                                                     <div id="Des_Table" style="padding-top:5px;" class="table-responsive" style="overflow-x:auto;">
                                                                         @if (User.Identity.IsAuthenticated && User != null && User.CanView("Condition"))
                                                                         {
@@ -841,34 +2105,35 @@
                                                                 <div class="panel panel-default">
                                                                     <div class="panel-heading clearfix">
                                                                         <i class="fam-lightbulb pull-left"></i>
-                                                                        <h3 style="padding-left:10px;" class="panel-title"><label class="alert-warning">Define Actions</label></h3>
+                                                                        <h3 style="padding-left:10px;" class="panel-title">Define Actions</h3>
+                                                                        <div class="input-group col-sm-6 col-md-6 col-xs-12 pull-right">
+                                                                            <label>  (Select for each action to execute, if condition evaluates- )</label>
+                                                                            @Html.RadioButtonList("IsElseActionList")
+                                                                        </div>
                                                                     </div>
-                                                                    <div class="panel panel-default AppForm">
-                                                                        <div class="panel-body">
-                                                                            <div class="row">
-                                                                                <div class='col-sm-6 col-md-6 col-xs-12'>
-                                                                                    <label class="pull-left" style="margin-left:20px;">Add Action </label>
-                                                                                    <select class="form-control col-sm-7 col-md-7 col-xs-12" style="width:150px;" id="ActionList" data-placement="top">
-                                                                                        <option value="0">--Select Action--</option>
-                                                                                        <option value="1">Make Records Readonly</option>
-                                                                                        <option value="2">Make Fields Readonly</option>
-                                                                                        <option value="3">Make Fields Mandatory</option>
-                                                                                        <option value="4">Email Notification</option>
-                                                                                        <option value="5">Filter Dropdown</option>
-                                                                                        <option value="6">Make Fields Hidden</option>
-                                                                                        <option value="7">Set Value</option>
-                                                                                        <option value="8">Invoke Action</option>
-                                                                                    </select>
-                                                                                    @Html.TextBox("ActionListValue", null, new { @class = "form-control hidden" })
-                                                                                </div>
-                                                                                <div class='col-sm-6 col-md-6 col-xs-12' id="ActionTriggerType" style="display:none;">
-                                                                                    <input id="chk1" type="checkbox" disabled />On Fetch
-                                                                                    <input id="chk2" type="checkbox" disabled style="margin-left:5px;" />On Save
-                                                                                    <input id="chk3" type="checkbox" disabled style="margin-left:5px;" />After Save
+
+                                                                    <div class="panel-body">
+                                                                        <div class="row" style="padding-top:10px;">
+                                                                            <label class="col-sm-2 col-md-2 col-xs-2"></label>
+                                                                            <div class="col-sm-10 col-md-10 col-xs-12" id="dvActions">
+                                                                                <div class='form-group'>
+                                                                                    <div id="ActionList" class="input-group newradiocontainer">
+                                                                                        <div class="radio" style="margin-top:-4px;">
+                                                                                            @Html.RadioButtonList("ActionList", actionListItems)
+                                                                                            @Html.TextBox("ActionListValue", null, new { @class = "form-control hidden" })
+                                                                                        </div>
+                                                                                    </div>
                                                                                 </div>
                                                                             </div>
                                                                         </div>
+                                                                        <div class='col-sm-6 col-md-6 col-xs-12' id="ActionTriggerType" style="display:none;">
+                                                                            <input id="chk1" type="checkbox" disabled /> On Fetch
+                                                                            <input id="chk2" type="checkbox" disabled style="margin-left:5px;" /> On Save
+                                                                            <input id="chk3" type="checkbox" disabled style="margin-left:5px;" /> After Save
+                                                                        </div>
                                                                     </div>
+
+
                                                                     <div id="ruletype4" class="collapse" name="ruletype">
                                                                         <div class="panel panel-default AppForm" style="border:0px !important">
 
@@ -909,11 +2174,12 @@
                                                                                         <label>Notification Message </label>
                                                                                         <label>(###Record### to display record, ###RecordLink### to display hyperlink of record)</label>
                                                                                         @Html.TextArea("AlertMessage", null, new { @placeholder = "Alert Message for notification", @class = "form-control xyz" })
+                                                                                        <button type="button" id="btnAddAction4" onclick="AddActionInGrid('ruletype4')" class="btn btn-primary btn-sm pull-right" style="margin-top:5px;">Add Action</button>
+
                                                                                     </div>
                                                                                 </div>
                                                                             </div>
 
-                                                                            <button type="button" id="btnAddAction4" onclick="AddActionInGrid('ruletype4')" class="btn btn-primary btn-sm" style="margin-left:20px;">Add Action</button>
 
                                                                         </div>
                                                                     </div>
@@ -955,7 +2221,7 @@
                                                                                     <div class='col-sm-4'>
                                                                                         <div class='form-group'>
                                                                                             <label>Select Property <span class="text-danger-reg">*</span></label>
-                                                                                            @Html.DropDownList("PropertyList7", null, "-- Select --", new { @required = "required", @class = "form-control", @onchange = "GetConstantValue();" })
+                                                                                            @Html.DropDownList("PropertyList7", null, "-- Select --", new { @required = "required", @class = "form-control", @onchange = "GetConstantValue();FillDateInConditionValue(this);" })
                                                                                             @Html.TextBox("PropertyList7Value", null, new { @class = "form-control hidden" })
                                                                                         </div>
                                                                                     </div>
@@ -970,8 +2236,9 @@
                                                                                         </div>
                                                                                     </div>
                                                                                     <div class='col-sm-4'>
+                                                                                        <label>Property Value <span class="text-danger-reg">*</span></label>
                                                                                         <div class='form-group'>
-                                                                                            <label>Property Value <span class="text-danger-reg">*</span></label>
+
                                                                                             @Html.TextBox("Rule7Value", null, new { @class = "form-control" })
                                                                                             <div style="display:none;" id="dvRule7Value">
                                                                                                 @Html.DropDownList("SuggestedPropertyValue7", null, "-- Select --", new { @onchange = "FillSugestedValues7();", @class = "chosen-select form-control", @style = "margin-top:8px;", @HostingName = "", @dataurl = "" })
@@ -980,10 +2247,23 @@
                                                                                                 @Html.DropDownList("SuggestedDynamicValue7", null, "-- Select --", new { @onchange = "GetSecondLevelAttribute();", @class = "form-control", @style = "margin-top:8px;", @HostingName = "", @dataurl = "" })
                                                                                                 @Html.DropDownList("SuggestedDynamicValue71", null, "-- Select --", new { @onchange = "FillSugestedDynamicValues7();", @class = "form-control", @style = "margin-top:8px;", @HostingName = "", @dataurl = "" })
                                                                                             </div>
+                                                                                            <div id="dvDurationInAction" class="col-sm-12 col-md-12 col-xs-12" style="display:none; padding:0px; margin-top:5px;">
+                                                                                                <select class="col-sm-4 col-md-4 col-xs-4" id="DateOperatorListInAction" style="border-radius:4px 0px 0px 4px;">
+                                                                                                    <option value="+">Add (+)</option>
+                                                                                                    <option value="-">Subtract (-)</option>
+                                                                                                </select>
+                                                                                                @Html.TextBox("DurationCountInAction", null, new { @placeholder = "Enter Number", @class = "col-sm-4 col-md-4 col-xs-4", @style = "border-left:0px; border-right:0px;" })
+                                                                                                <select class="col-sm-4 col-md-4 col-xs-4" id="DurationListInAction" style="border-radius:0px 4px 4px 0px;">
+                                                                                                    <option value="Days">Days</option>
+                                                                                                    <option value="Weeks">Weeks</option>
+                                                                                                    <option value="Months">Months</option>
+                                                                                                    <option value="Years">Years</option>
+                                                                                                </select>
+                                                                                            </div>
                                                                                         </div>
                                                                                     </div>
                                                                                 </div>
-                                                                                <button type="button" id="btnAddAction7" onclick="AddActionInGrid('ruletype7')" class="btn btn-primary btn-sm">Add Action</button>
+                                                                                <button type="button" id="btnAddAction7" onclick="AddActionInGrid('ruletype7')" class="btn btn-primary btn-sm pull-right" style="margin-top:5px;">Add Action</button>
                                                                             </div>
 
                                                                         </div>
@@ -1012,11 +2292,45 @@
                                                                 </div>
                                                             </div>
                                                         </div>
+
+
+                                                        @*DisplayMessage For Rules*@
+                                                        <div class="row">
+                                                            <div class="col-md-12 col-sm-12 col-xs-12 ">
+                                                                <div class="panel panel-default AppForm">
+                                                                    <div class="panel-heading clearfix">
+                                                                        <i class="fam-script-lightning pull-left"></i>
+                                                                        <h3 style="padding-left:10px;" class="panel-title">Define Messages</h3>
+                                                                    </div>
+                                                                    <div class="panel-body">
+                                                                        <div class="col-sm-12 col-md-12 col-xs-12 hidden">
+                                                                            <div class='form-group'>
+                                                                                <label class="col-sm-2 col-md-2 col-xs-12">Information Message</label>
+                                                                                <div class="input-group col-sm-10 col-md-10 col-xs-12">
+                                                                                    @Html.TextBoxFor(model => model.InformationMessage, new { @class = "form-control" })
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-sm-12 col-md-12 col-xs-12">
+                                                                            <div class='form-group'>
+                                                                                <label class="col-sm-2 col-md-2 col-xs-12">Custom Message</label>
+                                                                                <div class="input-group col-sm-10 col-md-10 col-xs-12">
+                                                                                    @Html.TextBoxFor(model => model.FailureMessage, new { @class = "form-control" })
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
                             }
                         </div>
                         @*Journal tab*@
                         <div class="tab-pane fade in" id="JournalEntryToBusinessRuleRelation">
                             @{Html.RenderAction("Index", "JournalEntry", new { RenderPartial = true, HostingEntity = "BusinessRule", HostingEntityID = @Model.Id, AssociatedType = "JournalEntry" });}
+                        </div>
+                        <div class="tab-pane fade in" id="TaskHistory">
+                            @{Html.RenderAction("TaskHistory", "BusinessRule", new { RenderPartial = true, HostingEntity = "BusinessRule", HostingEntityID = @Model.Id });}
                         </div>
                     </div>
                 </div>
@@ -1044,6 +2358,9 @@
 <script src="~/Scripts/Common2/bootstrap-multiselect.js"></script>
 <script>
     $(document).ready(function () {
+        $('select[multiple="multiple"]').each(function () {
+            $(this).multiselect({ buttonWidth: '100%' });
+        });
         $('select[name=RoleList]').multiselect({
             buttonWidth: '100%'
         });
@@ -1102,8 +2419,64 @@
                     $("#" + txtid).val('');
             }
         });
-        //if ($(this).find('.input-validation-error').length == 0) {
-        //    $(this).find(':submit').attr('disabled', 'disabled');
-        //}
+        var ruleType = "";
+        if ($("#" + "OnAdd").is(':checked') && $("#" + "OnUpdate").is(':checked'))
+            ruleType = "3";
+        else if ($("#" + "OnUpdate").is(':checked'))
+            ruleType = "2";
+        else if ($("#" + "OnAdd").is(':checked'))
+            ruleType = "1";
+        else if ($("#" + "OnPropertyChange").is(':checked'))
+            ruleType = "4";
+        if ($("#" + "Scheduled").is(':checked')) {
+            ruleType = "5";
+            SaveDateTimeBR("t_schedulertask_T_StartDateTime");
+        }
+        if ($("#" + "BeforeSave").is(':checked'))
+            ruleType = "6";
+        $("#AssociatedBusinessRuleTypeID").val(ruleType);
+        var flag = false;
+        if (ruleType == "5") {
+            $("#tblActionList tr td:nth-child(2)").filter(function (i) {
+                if ($(this).html().indexOf('Make Records Readonly') >= 0 || $(this).html().indexOf('ReadOnly Properties') >= 0
+                    || $(this).html().indexOf('Mandatory Properties') >= 0 || $(this).html().indexOf('Filter Dropdown') >= 0
+                    || $(this).html().indexOf('Hidden Properties') >= 0)
+                    flag = true;
+            });
+            if (flag) {
+                alert("Please select appropriate Action Type with Schedule.");
+                return false;
+            }
+        }
+        if ($('input[name=ActionList]:checked').val() == "5" && ($("#" + "lblrulecondition").val() == "Id,>,0,AND?" || $('table#tblConditionList tr#idAlways').length > 0)) {
+            flag = true;
+        }
+        $("#tblActionList tr td:nth-child(2)").filter(function (i) {
+            if ($(this).html().indexOf('Filter Dropdown') >= 0 && $('table#tblConditionList tr#idAlways').length > 0) {
+                flag = true;
+            }
+        });
+        if (flag) {
+            alert("Filter Dropdown requires condition. It can't be used with 'Always'.");
+            return false;
+        }
+        if ($('#chkAlways').is(":checked")) {
+            var flagAlways = false;
+            $('#tblActionList tr').each(function () {
+                if ($(this).closest('tr').find('td:eq(2)').text() == "true") {
+                    flagAlways = true;
+                }
+                if ($(this).closest('tr').find('td:eq(3)').find(':checkbox').is(':checked')) {
+                    flagAlways = true;
+                }
+            });
+            if (flagAlways) {
+                alert("Always in Condition & Action for Else Condition can't be used.");
+                return false;
+            }
+        }
     });
 </script>
+
+
+

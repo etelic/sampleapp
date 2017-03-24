@@ -1,0 +1,87 @@
+﻿@model PagedList.IPagedList<GeneratorBase.MVC.Models.PropertyMapping>
+@using PagedList.Mvc;
+@{
+    ViewBag.Title = "Index";
+    Layout = null;
+    Response.ContentType = "application/vnd.ms-excel";
+    Response.AddHeader("Content-Disposition", "attachment; filename=Property Mapping.xls");
+}
+                    <table>
+                            <tr>
+@if(User.CanView("PropertyMapping","PropertyName"))
+{
+		<th>Property Name</th>
+}
+@if(User.CanView("PropertyMapping","DataName"))
+{
+		<th>Data Name</th>
+}
+@if(User.CanView("PropertyMapping","DataSource"))
+{
+		<th>Data Source</th>
+}
+@if(User.CanView("PropertyMapping","SourceType"))
+{
+		<th>Source Type</th>
+}
+@if(User.CanView("PropertyMapping","MethodType"))
+{
+		<th>Method Type</th>
+}
+@if(User.CanView("PropertyMapping","Action"))
+{
+		<th>Action</th>
+}
+@if(User.CanView("PropertyMapping","EntityPropertyMappingID"))
+{
+		<th  @(Convert.ToString(ViewData["HostingEntity"]) == "EntityDataSource"?"hidden":"")>Entity Data Source</th>
+}
+    </tr>
+@foreach (var item in Model) {
+    <tr>
+	@if(User.CanView("PropertyMapping","PropertyName"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.PropertyName)
+        </td>
+}
+@if(User.CanView("PropertyMapping","DataName"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.DataName)
+        </td>
+}
+@if(User.CanView("PropertyMapping","DataSource"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.DataSource)
+        </td>
+}
+@if(User.CanView("PropertyMapping","SourceType"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.SourceType)
+        </td>
+}
+@if(User.CanView("PropertyMapping","MethodType"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.MethodType)
+        </td>
+}
+@if(User.CanView("PropertyMapping","Action"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.Action)
+        </td>
+}
+@if(User.CanView("PropertyMapping","EntityPropertyMappingID"))
+{
+		<td @(Convert.ToString(ViewData["HostingEntity"]) == "EntityDataSource"?"hidden":"")>
+            @Html.DisplayFor(modelItem => item.entitypropertymapping.DisplayValue)
+        </td>
+}
+                                </tr>
+                            }
+</table>
+               

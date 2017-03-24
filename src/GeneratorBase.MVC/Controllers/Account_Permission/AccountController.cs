@@ -20,10 +20,12 @@ using System.Drawing.Imaging;
 using System.Drawing.Drawing2D;
 using System.Drawing.Text;
 using System.Linq.Expressions;
+using System.Linq.Dynamic;
+using Microsoft.AspNet.Identity.Owin;
 namespace GeneratorBase.MVC.Controllers
 {
     [Authorize]
-    public class AccountController : Controller
+    public class AccountController : IdentityBaseController
     {
 		/// <summary>
         /// captchastring propert rendom ganrated 
@@ -34,26 +36,12 @@ namespace GeneratorBase.MVC.Controllers
             set;
         }
         public AccountController()
-            : this(new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new ApplicationDbContext())))
         {
         }
         public AccountController(UserManager<ApplicationUser> userManager)
         {
-            UserManager = userManager;
-            UserManager.UserValidator = new UserValidator<ApplicationUser>(UserManager) { AllowOnlyAlphanumericUserNames = false };
-
-			ApplicationContext db = new ApplicationContext(new SystemUser());
-            var appSettings = db.AppSettings;
-            string applySecurityPolicy = appSettings.Where(p => p.Key == "ApplySecurityPolicy").FirstOrDefault().Value;
-			UserManager.UserLockoutEnabledByDefault = true;
-            if(applySecurityPolicy.ToLower() == "yes")
-            {
-                //UserManager.UserLockoutEnabledByDefault = Convert.ToBoolean(appSettings.Where(p => p.Key == "UserLockoutEnabledByDefault").FirstOrDefault().Value);
-                UserManager.DefaultAccountLockoutTimeSpan = TimeSpan.FromHours(Double.Parse(appSettings.Where(p => p.Key == "DefaultAccountLockoutTimeSpan").FirstOrDefault().Value));
-                UserManager.MaxFailedAccessAttemptsBeforeLockout = Convert.ToInt32(appSettings.Where(p => p.Key == "MaxFailedAccessAttemptsBeforeLockout").FirstOrDefault().Value);
-            }
         }
-        public UserManager<ApplicationUser> UserManager { get; private set; }
+		public static string UrlforForgotpassword { get; private set; }
 		public RedirectResult SwitchView(bool mobile, string returnUrl)
         {
             if (Request.Browser.IsMobileDevice == mobile)
@@ -69,6 +57,8 @@ namespace GeneratorBase.MVC.Controllers
         [AllowAnonymous]
         public ActionResult Login(string returnUrl,string ThirdPartyLoginError)
         {
+			if (!Request.IsAjaxRequest())
+                UrlforForgotpassword = System.Web.HttpContext.Current.Request.Url.AbsoluteUri;
             ViewBag.ReturnUrl = returnUrl;
 			if (User != null && User.Identity is System.Security.Principal.WindowsIdentity)
                 return RedirectToAction("Index", "Home");
@@ -98,8 +88,8 @@ namespace GeneratorBase.MVC.Controllers
                         var result = ph.VerifyHashedPassword(user.PasswordHash, model.Password);
                         if (result.ToString() == "Success")
                         {
-                            ApplicationDbContext localAppDB = new ApplicationDbContext();
-                            var localAppUser = localAppDB.Users.Where(p => p.UserName == model.UserName).ToList();
+                           // ApplicationDbContext localAppDB = new ApplicationDbContext();
+                            var localAppUser = Identitydb.Users.Where(p => p.UserName == model.UserName).ToList();
                             if (localAppUser != null && localAppUser.Count > 0)
                             {
                                 await SignInAsync(localAppUser[0], isPersistent: false);
@@ -152,7 +142,7 @@ namespace GeneratorBase.MVC.Controllers
                             if (await UserManager.IsLockedOutAsync(user.Id))
                             {
                                 ModelState.AddModelError("", string.Format("Your account has been locked out for {0} hours due to multiple failed login attempts.", db.AppSettings.Where(p => p.Key == "DefaultAccountLockoutTimeSpan").FirstOrDefault().Value));
-                                return View(model);
+	                            return View(model);
                             }
                             else
                             {
@@ -170,6 +160,7 @@ namespace GeneratorBase.MVC.Controllers
                         {
                             await SignInAsync(user, model.RememberMe);
                         }
+
                         return RedirectToLocal(returnUrl);
                     }
                     else
@@ -227,22 +218,26 @@ namespace GeneratorBase.MVC.Controllers
             // If we got this far, something failed, redisplay form
             return View(model);
         }
-		 // [Authorize(Roles = "Admin")]
+		
         [AllowAnonymous]
         public ActionResult CreateUser()
         {
-            if (((CustomPrincipal)User).IsAdmin())
+            if (((CustomPrincipal)User).CanAddAdminFeature("User"))
+            {
+                var role = Identitydb.Roles;
+                ViewBag.RoleList = role.ToList().OrderBy(p => p.Name);
                 return View();
+            }
             else
                 return RedirectToAction("Index", "Home");
         }
-        // [Authorize(Roles = "Admin")]
         [AllowAnonymous]
         public ActionResult Register()
         {
             return View();
         }
-		 /// <summary>
+
+		        /// <summary>
         /// Generate Captcha method for show Captcha image on Register page   
         /// </summary>
         [AllowAnonymous]
@@ -313,75 +308,118 @@ namespace GeneratorBase.MVC.Controllers
             hatchBrush.Dispose();
             g.Dispose();
         }
-         [HttpPost, ValidateInput(false)]
-        // [Authorize(Roles = "Admin")]
+        [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Register(RegisterViewModel model, string CaptchaText)
         {
-			ViewBag.DuplicacyMessage = "";
-			if (ModelState.IsValid)
+            if (ModelState.IsValid)
             {
+                var User = await UserManager.FindByEmailAsync(model.Email);
+                if (User != null)
+                {
+                    return Json("emailExist", "application/json", System.Text.Encoding.UTF8, JsonRequestBehavior.AllowGet);
+                }
                 var user = model.GetUser();
                 var userExist = await UserManager.FindByNameAsync(user.UserName);
                 if (userExist == null)
                 {
-				 if (CaptchaText == captchastring)
+                    if (CaptchaText == captchastring)
                     {
                         var result = await UserManager.CreateAsync(user, model.Password);
                         if (result.Succeeded)
                         {
                             AssignDefaultRoleToNewUser(user.Id);
-							 var appURL = "http://" + CommonFunction.Instance.Server() + "/" + CommonFunction.Instance.AppURL();
+                            var appURL = "http://" + CommonFunction.Instance.Server() + "/" + CommonFunction.Instance.AppURL();
                             SendEmail sendEmail = new SendEmail();
-                            var Db = new ApplicationDbContext();
+                            //var Db = new ApplicationDbContext();
                             var EmailTemplate = (new ApplicationContext(new SystemUser())).EmailTemplates.FirstOrDefault(e => e.associatedemailtemplatetype.DisplayValue == "User Registration");
                             if (EmailTemplate != null)
                             {
                                 string mailbody = string.Empty;
+                                string mailsubject = string.Empty;
                                 if (!string.IsNullOrEmpty(EmailTemplate.EmailContent))
                                 {
                                     mailbody = EmailTemplate.EmailContent;
                                     mailbody = mailbody.Replace("###FullName###", model.FirstName + " " + model.LastName).Replace("###AppName###", CommonFunction.Instance.AppName()).Replace("###URL###", " <a href='" + appURL + "'>here</a>");
                                 }
-                                sendEmail.Notify(model.Email, mailbody, CommonFunction.Instance.AppName() + " :Your registration is successful!");
+
+                                mailsubject = string.IsNullOrEmpty(EmailTemplate.EmailSubject) ? CommonFunction.Instance.AppName() + " :Your registration is successful!" : EmailTemplate.EmailSubject; ;
+
+                                sendEmail.Notify(model.Email, mailbody, mailsubject);
                             }
-							//return RedirectToAction("Index", "Home");
-							ViewBag.Success = "You are registered successfully, Email has been sent to registered email id.";
+                            return Json("Ok", "application/json", System.Text.Encoding.UTF8, JsonRequestBehavior.AllowGet);
+                        }
+                        else
+                        {
+                            string strError = "";
+                            var lstError = result.Errors;
+                            foreach (var errormsg in lstError)
+                            {
+                                foreach (var msg in errormsg.Split('.'))
+                                {
+                                    strError += msg + ".\r\n";
+                                }
+                            }
+                            return Json(strError, "application/json", System.Text.Encoding.UTF8, JsonRequestBehavior.AllowGet);
                         }
                     }
                     else
                     {
-                        ViewBag.Message = "Captcha verification failed!";
+                        return Json("Captchaverification", "application/json", System.Text.Encoding.UTF8, JsonRequestBehavior.AllowGet);
                     }
                 }
                 else
                 {
-                    ViewBag.DuplicacyMessage = "Username already exist. Please try another one.";
+                    return Json("UserExist", "application/json", System.Text.Encoding.UTF8, JsonRequestBehavior.AllowGet);
                 }
             }
             // If we got this far, something failed, redisplay form
             return View(model);
         }
-		private void AssignDefaultRoleToNewUser(string userId)
+        private void AssignDefaultRoleToNewUser(string userId)
         {
             AdminSettingsRepository _adminSettings = new AdminSettingsRepository();
             IdentityManager idManager = new IdentityManager();
             if (!string.IsNullOrEmpty(_adminSettings.GetDefaultRoleForNewUser()) && _adminSettings.GetDefaultRoleForNewUser().ToUpper() != "NONE")
-                idManager.AddUserToRole(userId, _adminSettings.GetDefaultRoleForNewUser());
+                idManager.AddUserToRole(LogggedInUser, userId, _adminSettings.GetDefaultRoleForNewUser());
         }
-		[HttpPost]
-        // [Authorize(Roles = "Admin")]
+        [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> RegisterUser(RegisterViewModel model)
+        public async Task<ActionResult> RegisterUser(RegisterViewModel model, string selectedRoles)
         {
-           if (ModelState.IsValid)
+            if (ModelState.IsValid)
             {
+                var User = await UserManager.FindByEmailAsync(model.Email);
+                string emailerror = "";
+                if (User != null)
+                {
+                    emailerror = "E-mail is already taken";
+                    var errors = new List<string>();
+                    errors.Add(emailerror);
+                    return Json(errors);
+                }
                 var user = model.GetUser();
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
+                    if (!string.IsNullOrEmpty(selectedRoles))
+                    {
+                        selectedRoles = selectedRoles.TrimEnd(',');
+                        var lstRoles = selectedRoles.Split(',');
+                        //var Db = new ApplicationDbContext();
+                        var currentUser = Identitydb.Users.First(u => u.UserName == model.UserName);
+                        if (currentUser != null)
+                        {
+                            var idManager = new IdentityManager();
+                            idManager.ClearUserRoles(LogggedInUser, currentUser.Id);
+                            foreach (var role in lstRoles)
+                            {
+                                idManager.AddUserToRole(LogggedInUser, user.Id, role);
+                            }
+                        }
+                    }
                     return Json(new { success = true });
                 }
                 else
@@ -389,7 +427,7 @@ namespace GeneratorBase.MVC.Controllers
                     var errors = new List<string>();
                     foreach (var error in result.Errors)
                     {
-                        errors.Add(error);
+                        errors.Add(error + "\r\n");
                     }
                     return Json(errors);
                 }
@@ -406,97 +444,147 @@ namespace GeneratorBase.MVC.Controllers
             // If we got this far, something failed, redisplay form
             return View(model);
         }
-		  [AllowAnonymous]
+        [AllowAnonymous]
         public async Task<ActionResult> ForgotPassword()
         {
             return View();
         }
-        [HttpPost]
+       [HttpPost]
         [AllowAnonymous]
         public async Task<ActionResult> ForgotPassword(ForgotPasswordViewModel model, bool? IsAddPop)
         {
             if (ModelState.IsValid)
             {
-                var appURL = "http://" + CommonFunction.Instance.Server() + "/" + CommonFunction.Instance.AppURL();
+                var appURL = UrlforForgotpassword;
                 SendEmail sendEmail = new SendEmail();
-                var Db = new ApplicationDbContext();
-                var User = await UserManager.FindByNameAsync(model.Username);  
+                //var Db = new ApplicationDbContext();
+                ApplicationContext db = new ApplicationContext(new SystemUser());
+                ApplicationUser User = new ApplicationUser();
+
+                if (model.Username != null)
+                    User = await UserManager.FindByNameAsync(model.Username);
+                else
+                    User = await UserManager.FindByEmailAsync(model.Email);
+
                 if (User != null)
                 {
-                    string randomPassword = Membership.GeneratePassword(8, 2);
-                    var user1 = UserManager.RemovePassword(Convert.ToString(User.Id));
-                    UserManager.AddPassword(Convert.ToString(User.Id), randomPassword);
-				   var EmailTemplate = (new ApplicationContext(new SystemUser())).EmailTemplates.FirstOrDefault(e => e.associatedemailtemplatetype.DisplayValue == "User Forgot Password");
+                    int accessFailedCount = User.AccessFailedCount;
+                    int attempts = Convert.ToInt32(db.AppSettings.Where(p => p.Key == "MaxFailedAccessAttemptsBeforeLockout").FirstOrDefault().Value);
+                    if (accessFailedCount >= attempts)
+                        return Json("UserLoginAttempt", "application/json", System.Text.Encoding.UTF8, JsonRequestBehavior.AllowGet);
+                    if (User.LockoutEndDateUtc != null)
+                        return Json("UserIslocked", "application/json", System.Text.Encoding.UTF8, JsonRequestBehavior.AllowGet);
+
+                    var EmailTemplate = (new ApplicationContext(new SystemUser())).EmailTemplates.FirstOrDefault(e => e.associatedemailtemplatetype.DisplayValue == "User Forgot Password");
                     if (EmailTemplate != null)
                     {
                         string mailbody = string.Empty;
+                        string mailsubject = string.Empty;
                         if (!string.IsNullOrEmpty(EmailTemplate.EmailContent))
                         {
                             mailbody = EmailTemplate.EmailContent;
-                            mailbody = mailbody.Replace("###FullName###", User.FirstName + " " + User.LastName).Replace("###Password###", randomPassword).Replace("###URL###", " <a href='" + appURL + "'>here</a>").Replace("###AppName###", CommonFunction.Instance.AppName());
+                            try
+                            {
+                                var code = await UserManager.GenerateEmailConfirmationTokenAsync(User.Id);
+                                var callbackUrl = Url.Action("ResetPassword", "Account",
+                                new { UserId = User.Id, code = System.Web.HttpUtility.UrlEncode(code) }, protocol: Request.Url.Scheme);
+                                mailbody = mailbody.Replace("###FullName###", User.FirstName + " " + User.LastName).Replace("###Username###", User.UserName).Replace("###Password###", "").Replace("###URL###", " <a href='" + callbackUrl + "'>here</a>").Replace("###AppName###", CommonFunction.Instance.AppName());
+                            }
+                            catch
+                            {
+                            }
                         }
-                        sendEmail.Notify(User.Email, mailbody, CommonFunction.Instance.AppName() + " :Your password changed successfully!");
+                        mailsubject = string.IsNullOrEmpty(EmailTemplate.EmailSubject) ? CommonFunction.Instance.AppName() + " :Your password changed successfully!" : EmailTemplate.EmailSubject; ;
+                        sendEmail.Notify(User.Email, mailbody, mailsubject);
                     }
-					SavePasswordHistory(Convert.ToString(User.Id));
                     return Json("Ok", "application/json", System.Text.Encoding.UTF8, JsonRequestBehavior.AllowGet);
                 }
                 else
-	                return Json("Wrong Username", "application/json", System.Text.Encoding.UTF8, JsonRequestBehavior.AllowGet);
+                    return Json("UserNotExist", "application/json", System.Text.Encoding.UTF8, JsonRequestBehavior.AllowGet);
             }
             return View(model);
+        }
+        [AllowAnonymous]
+        public async Task<ActionResult> ResetPassword(string userId, string code)
+        {
+            if (userId == null || code == null)
+            {
+                return View("Error");
+            }
+            IdentityResult result;
+            try
+            {
+                result = await UserManager.ConfirmEmailAsync(userId, HttpUtility.UrlDecode(code));
+            }
+            catch (InvalidOperationException ioe)
+            {
+                // ConfirmEmailAsync throws when the userId is not found.
+                ViewBag.errorMessage = ioe.Message;
+                return View("Error");
+            }
+
+            if (result.Succeeded)
+            {
+                var token = await UserManager.GeneratePasswordResetTokenAsync(userId);
+                return RedirectToAction("Manage", new { token = token, provider = userId });
+            }
+            // If we got this far, something failed.
+            AddErrors(result);
+            ViewBag.errorMessage = "Authentication failed";
+            return RedirectToAction("ActivationLink", "Error");
         }
         [AllowAnonymous]
         public ActionResult CreateRole()
         {
-            if (((CustomPrincipal)User).IsAdmin())
+            if (((CustomPrincipal)User).CanAddAdminFeature("Role"))
                 return View();
             else
                 return RedirectToAction("Index", "Home");
         }
-        [HttpPost]
-        // [Authorize(Roles = "Admin")]
+         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> CreateRole(CreateRoleViewModel model)
         {
-		 if (((CustomPrincipal)User).IsAdmin())
-           if (ModelState.IsValid)
-            {
-                var role = model.GetRole();
-                var RoleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>());
-                // Create Admin Role
-                string roleName = model.Name;
-                IdentityResult roleResult;
-                roleResult = RoleManager.Create(new IdentityRole(roleName));
-                if (roleResult.Succeeded)
+            model.Name = model.Name.Trim();
+            if (((CustomPrincipal)User).CanAddAdminFeature("Role"))
+                if (ModelState.IsValid)
                 {
-                    return Json(new { success = true });
+                    var role = model.GetRole();
+                    var RoleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>());
+                    // Create Admin Role
+                    string roleName = model.Name;
+                    IdentityResult roleResult;
+                    roleResult = RoleManager.Create(new IdentityRole(roleName));
+                    if (roleResult.Succeeded)
+                    {
+						DoAuditEntry.AddJournalEntryCommon(LogggedInUser, Identitydb, roleName, "IdentityRole");
+                        return Json(new { success = true });
+                    }
+                    else
+                    {
+                        var errors = new List<string>();
+                        foreach (var error in roleResult.Errors)
+                        {
+                            errors.Add(error);
+                        }
+                        return Json(errors);
+                    }
                 }
                 else
                 {
                     var errors = new List<string>();
-                    foreach (var error in roleResult.Errors)
+                    foreach (var modelState in ViewData.ModelState.Values)
                     {
-                        errors.Add(error);
+                        errors.AddRange(modelState.Errors.Select(error => error.ErrorMessage));
                     }
                     return Json(errors);
                 }
-            }
-            else
-            {
-                var errors = new List<string>();
-                foreach (var modelState in ViewData.ModelState.Values)
-                {
-                    errors.AddRange(modelState.Errors.Select(error => error.ErrorMessage));
-                }
-                return Json(errors);
-            }
             // If we got this far, something failed, redisplay form
             return View(model);
         }
-        //  [Authorize(Roles = "Admin")]
         [AllowAnonymous]
-        public ActionResult Manage(ManageMessageId? message)
+        public ActionResult Manage(ManageMessageId? message, string token, string provider)
         {
             ViewBag.StatusMessage =
                 message == ManageMessageId.ChangePasswordSuccess ? "Your password has been changed."
@@ -506,30 +594,76 @@ namespace GeneratorBase.MVC.Controllers
                 : "";
             ViewBag.HasLocalPassword = HasPassword();
             ViewBag.ReturnUrl = Url.Action("Manage");
+            ViewBag.token = token;
+            ViewBag.provider = provider;
+            if (!string.IsNullOrEmpty(token))
+                ViewBag.HasLocalPassword = true;
             return View();
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        // [Authorize(Roles = "Admin")]
         [AllowAnonymous]
         public async Task<ActionResult> Manage(ManageUserViewModel model)
         {
             bool hasPassword = HasPassword();
             ViewBag.HasLocalPassword = hasPassword;
             ViewBag.ReturnUrl = Url.Action("Manage");
-            if (hasPassword)
+            if (hasPassword || !string.IsNullOrEmpty(model.token))
             {
                 if (ModelState.IsValid)
                 {
-                    IdentityResult result = await UserManager.ChangePasswordAsync(User.Identity.GetUserId(), model.OldPassword, model.NewPassword);
-                    if (result.Succeeded)
+                    ApplicationContext db = new ApplicationContext(new SystemUser());
+                    var appSettings = db.AppSettings;
+                    string applySecurityPolicy = appSettings.Where(p => p.Key == "ApplySecurityPolicy").FirstOrDefault().Value;
+                    if (applySecurityPolicy.ToLower() == "yes")
                     {
-						SavePasswordHistory(User.Identity.GetUserId());
-                        return RedirectToAction("Manage", new { Message = ManageMessageId.ChangePasswordSuccess });
+                        var pwdcount = Convert.ToInt32(appSettings.Where(p => p.Key == "OldPasswordGenerationCount").FirstOrDefault().Value);
+                        if (string.IsNullOrEmpty(model.token))
+                        {
+                            if (isPreviousUsedPassword(model, pwdcount, User.Identity.GetUserId()))
+                                return View(model);
+                        }
+                        else
+                        {
+                            if (isPreviousUsedPassword(model, pwdcount, model.provider))
+                            {
+                                ViewBag.HasLocalPassword = true;
+                                ViewBag.token = model.token;
+                                ViewBag.provider = model.provider;
+                                return View(model);
+                            }
+                        }
+                    }
+                    //IdentityResult result = await UserManager.ChangePasswordAsync(User.Identity.GetUserId(), model.OldPassword, model.NewPassword);
+                    if (string.IsNullOrEmpty(model.token))
+                    {
+                        IdentityResult result = await UserManager.ChangePasswordAsync(User.Identity.GetUserId(), model.OldPassword, model.NewPassword);
+
+                        if (result.Succeeded)
+                        {
+                            SavePasswordHistory(User.Identity.GetUserId());
+                            return RedirectToAction("Manage", new { Message = ManageMessageId.ChangePasswordSuccess });
+                        }
+                        else
+                        {
+                            AddErrors(result);
+                        }
                     }
                     else
                     {
-                        AddErrors(result);
+                        ViewBag.HasLocalPassword = true;
+                        ViewBag.token = model.token;
+                        ViewBag.provider = model.provider;
+                        IdentityResult result = await UserManager.ResetPasswordAsync(model.provider, model.token, model.NewPassword);
+                        if (result.Succeeded)
+                        {
+                            SavePasswordHistory(model.provider);
+                            return RedirectToAction("Manage", new { Message = ManageMessageId.ChangePasswordSuccess, token = model.token, provider = model.provider });
+                        }
+                        else
+                        {
+                            AddErrors(result);
+                        }
                     }
                 }
             }
@@ -557,29 +691,63 @@ namespace GeneratorBase.MVC.Controllers
             // If we got this far, something failed, redisplay form
             return View(model);
         }
-		public void SavePasswordHistory(string userID)
+        public void SavePasswordHistory(string userID)
         {
-            ApplicationDbContext appDb = new ApplicationDbContext();
             PasswordHistory history = new PasswordHistory();
-            var Db = new ApplicationDbContext();
             var user = UserManager.FindById(userID);
             history.Date = DateTime.Now;
             history.UserId = user.Id;
             history.HashedPassword = user.PasswordHash;
-            appDb.PasswordHistorys.Add(history);
-            appDb.SaveChanges();
+            Identitydb.PasswordHistorys.Add(history);
+            Identitydb.SaveChanges();
         }
+        public bool isPreviousUsedPassword(ManageUserViewModel model, int pwdcount, string userid)
+        {
+            if (string.IsNullOrEmpty(userid)) return false;
+            ApplicationDbContext appDb = new ApplicationDbContext(true);
+            var user = appDb.Users.Find(userid); //UserManager.FindById(userid);
+            if (user == null) return false;
+            var lstpwdhistory = appDb.PasswordHistorys.Where(p => p.UserId == user.Id).OrderByDescending(p => p.Date).Take(pwdcount).ToList();
+            foreach (var pwd in lstpwdhistory)
+            {
+                var result = UserManager.PasswordHasher.VerifyHashedPassword(pwd.HashedPassword, model.NewPassword);
+                if (result == PasswordVerificationResult.Success)
+                {
+                    ModelState.AddModelError("", "You can't use password from last 24 passwords.");
+                    return true;
+                }
+            }
+            return false;
+        }
+		public ActionResult LogOff(string UrlReferrer)
+        {
+			return RedirectToAction("Index", "Home");
+			RemoveMultitenant(((CustomPrincipal)User).Name);
+		}
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult LogOff()
         {
             AuthenticationManager.SignOut();
-			 HttpCookie userrole = new HttpCookie("CurrentRole");
+			RemoveMultitenant(((CustomPrincipal)User).Name);
+			string AppUrl = System.Configuration.ConfigurationManager.AppSettings["AppUrl"];
+			 HttpCookie userrole = new HttpCookie(AppUrl+"CurrentRole");
             HttpCookie userpage = new HttpCookie("PageId");
             userpage.Expires = DateTime.Now.AddDays(-1);
             userrole.Expires = DateTime.Now.AddDays(-1);
             Response.Cookies.Add(userpage);
             Response.Cookies.Add(userrole);
+			Response.Cookies["fltCookie"].Expires = DateTime.Now.AddDays(-1);
+            Response.Cookies["fltCookieFltTabId"].Expires = DateTime.Now.AddDays(-1);
+			Response.Cookies.Clear();
+            Session.Clear();
+			Response.Cookies[AppUrl + "CurrentRole"].Expires = DateTime.Now.AddDays(-1);
+            Response.Cookies["PageId"].Expires = DateTime.Now.AddDays(-1);
+            //string[] myCookies = Request.Cookies.AllKeys;
+            //foreach (string cookie in myCookies)
+            //{
+                //Response.Cookies[cookie].Expires = DateTime.Now.AddDays(-1);
+            //}
             return RedirectToAction("Index", "Home");
         }
 
@@ -587,12 +755,23 @@ namespace GeneratorBase.MVC.Controllers
         public ActionResult BrowserClose()
         {
             AuthenticationManager.SignOut();
-            HttpCookie userrole = new HttpCookie("CurrentRole");
+			RemoveMultitenant(((CustomPrincipal)User).Name);
+			string AppUrl = System.Configuration.ConfigurationManager.AppSettings["AppUrl"];
+            HttpCookie userrole = new HttpCookie(AppUrl+"CurrentRole");
             HttpCookie userpage = new HttpCookie("PageId");
             userpage.Expires = DateTime.Now.AddDays(-1);
             userrole.Expires = DateTime.Now.AddDays(-1);
             Response.Cookies.Add(userpage);
             Response.Cookies.Add(userrole);
+			Response.Cookies.Clear();
+            Session.Clear();
+			Response.Cookies[AppUrl + "CurrentRole"].Expires = DateTime.Now.AddDays(-1);
+            Response.Cookies["PageId"].Expires = DateTime.Now.AddDays(-1);
+            //string[] myCookies = Request.Cookies.AllKeys;
+            //foreach (string cookie in myCookies)
+            //{
+                //Response.Cookies[cookie].Expires = DateTime.Now.AddDays(-1);
+            //}
             return RedirectToAction("Index", "Home");
         }
 
@@ -601,7 +780,6 @@ namespace GeneratorBase.MVC.Controllers
             if (disposing && UserManager != null)
             {
                 UserManager.Dispose();
-                UserManager = null;
             }
             base.Dispose(disposing);
         }
@@ -609,6 +787,8 @@ namespace GeneratorBase.MVC.Controllers
         [AllowAnonymous]
         public ActionResult Index(string currentFilter, string searchString, string sortBy, string isAsc, int? page, int? itemsPerPage, bool? IsExport, bool? RenderPartial)
         {
+            if (!((CustomPrincipal)User).CanViewAdminFeature("User"))
+                return RedirectToAction("Index", "Home");
             if (string.IsNullOrEmpty(isAsc) && !string.IsNullOrEmpty(sortBy))
             {
                 isAsc = "ASC";
@@ -620,18 +800,16 @@ namespace GeneratorBase.MVC.Controllers
             else
                 searchString = currentFilter;
             ViewBag.CurrentFilter = searchString;
-
-            var Db = new ApplicationDbContext();
             List<ApplicationUser> users = null;
-            users = Db.Users.ToList();
+            users = Identitydb.Users.ToList();
             var model = new List<EditUserViewModel>();
             foreach (var user in users)
             {
                 var u = new EditUserViewModel(user);
                 model.Add(u);
             }
-            var _model =from s in model
-                            select s;
+            var _model = from s in model
+                         select s;
             if (!String.IsNullOrEmpty(searchString))
             {
                 _model = searchRecords(_model.AsQueryable(), searchString.ToUpper());
@@ -699,29 +877,27 @@ namespace GeneratorBase.MVC.Controllers
                     users.Expression,
                     lambda));
         }
-        // [Authorize(Roles = "Admin")]
         [AllowAnonymous]
         public ActionResult RoleList()
         {
-			if (!((CustomPrincipal)User).IsAdmin())
+            if (!((CustomPrincipal)User).CanViewAdminFeature("Role"))
                 return RedirectToAction("Index", "Home");
-            var Db = new ApplicationDbContext();
-            var roles = Db.Roles;
+            // var Db = new ApplicationDbContext();
+            var roles = Identitydb.Roles;
             var model = new List<EditRoleViewModel>();
             foreach (var role in roles)
             {
                 var u = new EditRoleViewModel(role);
                 model.Add(u);
             }
-			AdminSettingsRepository _adminSettings = new AdminSettingsRepository();
+            AdminSettingsRepository _adminSettings = new AdminSettingsRepository();
             ViewBag.DefaultRoleForNewUser = _adminSettings.GetDefaultRoleForNewUser();
             return View(model);
         }
-        // [Authorize(Roles = "Admin")]
         [AllowAnonymous]
         public ActionResult Edit(string id, ManageMessageId? Message = null)
         {
-			if (!((CustomPrincipal)User).IsAdmin())
+            if (!((CustomPrincipal)User).CanEditAdminFeature("User"))
                 return RedirectToAction("Index", "Home");
             var Db = new ApplicationDbContext();
             var user = Db.Users.First(u => u.Id == id);
@@ -730,36 +906,62 @@ namespace GeneratorBase.MVC.Controllers
             return View(model);
         }
         [HttpPost]
-        // [Authorize(Roles = "Admin")]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Edit(EditUserViewModel model)
         {
-			if (!((CustomPrincipal)User).IsAdmin())
+            if (!((CustomPrincipal)User).CanEditAdminFeature("User"))
                 return RedirectToAction("Index", "Home");
             if (ModelState.IsValid)
             {
-                var Db = new ApplicationDbContext();
-                var user = Db.Users.First(u => u.UserName == model.UserName);
-                user.FirstName = model.FirstName;
-                user.LastName = model.LastName;
-                user.Email = model.Email;
-                Db.Entry(user).State = System.Data.Entity.EntityState.Modified;
-                await Db.SaveChangesAsync();
-                return RedirectToAction("Index");
+                //  var Db = new ApplicationDbContext();
+                var userInfo = Identitydb.Users;
+                //var username = user.First(p => p.UserName == model.UserName);
+                var userEmail = userInfo.FirstOrDefault(p => p.Email == model.Email);
+                if (userEmail != null)
+                {
+                    var user = userInfo.First(p => p.UserName == model.UserName);
+                    if (user.FirstName != model.FirstName || user.LastName != model.LastName)
+                    {
+                        user.FirstName = model.FirstName;
+                        user.LastName = model.LastName;
+                        Identitydb.Entry(user).State = System.Data.Entity.EntityState.Modified;
+                        await Identitydb.SaveChangesAsync();
+                        return RedirectToAction("Index");
+                    }
+                    else if (user.Email == userEmail.Email)
+                    {
+                        return RedirectToAction("Index");
+
+                    }
+                    //if (user.Email == model.Email)
+                    //    return RedirectToAction("Index");
+                    ViewBag.DuplicacyMessage = "E-Mail already exist. Please try another one.";
+                    return View(model);
+                }
+                else
+                {
+                    var user = userInfo.First(p => p.UserName == model.UserName);
+                    user.FirstName = model.FirstName;
+                    user.LastName = model.LastName;
+                    user.Email = model.Email;
+                    Identitydb.Entry(user).State = System.Data.Entity.EntityState.Modified;
+                    await Identitydb.SaveChangesAsync();
+                    return RedirectToAction("Index");
+                }
             }
             // If we got this far, something failed, redisplay form
             return View(model);
         }
-		[AllowAnonymous]
+        [AllowAnonymous]
         public ActionResult LockUnlockUser(string id, string lockuser)
         {
-            if (!((CustomPrincipal)User).IsAdmin())
+            if (!((CustomPrincipal)User).CanEditAdminFeature("User"))
                 return RedirectToAction("Index", "Home");
             if (ModelState.IsValid)
             {
-                var Db = new ApplicationDbContext();
-                var user = Db.Users.First(u => u.Id == id);
+                //var Db = new ApplicationDbContext();
+                var user = Identitydb.Users.First(u => u.Id == id);
 
                 if (Convert.ToBoolean(lockuser))
                 {
@@ -773,43 +975,41 @@ namespace GeneratorBase.MVC.Controllers
                 }
 
 
-                Db.Entry(user).State = System.Data.Entity.EntityState.Modified;
-                Db.SaveChanges();
+                Identitydb.Entry(user).State = System.Data.Entity.EntityState.Modified;
+                Identitydb.SaveChanges();
                 return RedirectToAction("Index");
             }
             // If we got this far, something failed, redisplay form
             return RedirectToAction("Index");
         }
-		
-	 // [Authorize(Roles = "Admin")]
         [AllowAnonymous]
         public ActionResult EditRole(string id, ManageMessageId? Message = null)
         {
-			if (!((CustomPrincipal)User).IsAdmin())
+            if (!((CustomPrincipal)User).CanEditAdminFeature("Role"))
                 return RedirectToAction("Index", "Home");
-            var Db = new ApplicationDbContext();
-            var roles = Db.Roles.First(u => u.Name == id);
+            var roles = Identitydb.Roles.First(u => u.Id == id);
             var model = new EditRoleViewModel(roles);
             ViewBag.MessageId = Message;
             return View(model);
         }
         [HttpPost]
-        // [Authorize(Roles = "Admin")]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> EditRole(EditRoleViewModel model)
         {
-		if (!((CustomPrincipal)User).IsAdmin())
+            model.Name = model.Name.Trim();
+            model.OriginalName = model.OriginalName.Trim();
+            if (!((CustomPrincipal)User).CanEditAdminFeature("Role"))
                 return RedirectToAction("Index", "Home");
             if (ModelState.IsValid)
             {
-                var Db = new ApplicationDbContext();
-                if (Db.Roles.Where(u => u.Name == model.Name).Count() <= 0)
+                //var Db = new ApplicationDbContext();
+                if (Identitydb.Roles.Where(u => u.Name == model.Name).Count() <= 0)
                 {
-                    var roles = Db.Roles.First(u => u.Name == model.OriginalName);
+                    var roles = Identitydb.Roles.First(u => u.Name == model.OriginalName);
                     roles.Name = model.Name;
-                    Db.Entry(roles).State = System.Data.Entity.EntityState.Modified;
-                    await Db.SaveChangesAsync();
+                    Identitydb.Entry(roles).State = System.Data.Entity.EntityState.Modified;
+                    await Identitydb.SaveChangesAsync();
                     PermissionContext db = new PermissionContext();
                     List<Permission> lstprm = db.Permissions.Where(q => q.RoleName == model.OriginalName).ToList();
                     lstprm.ForEach(p => p.RoleName = model.Name);
@@ -833,14 +1033,13 @@ namespace GeneratorBase.MVC.Controllers
             // If we got this far, something failed, redisplay form
             return View(model);
         }
-        //  [Authorize(Roles = "Admin")]
         [AllowAnonymous]
         public ActionResult Delete(string id = null)
         {
-		if (!((CustomPrincipal)User).IsAdmin())
+            if (!((CustomPrincipal)User).CanDeleteAdminFeature("User"))
                 return RedirectToAction("Index", "Home");
-            var Db = new ApplicationDbContext();
-            var user = Db.Users.First(u => u.Id == id);
+            // var Db = new ApplicationDbContext();
+            var user = Identitydb.Users.First(u => u.Id == id);
             var model = new EditUserViewModel(user);
             if (user == null)
             {
@@ -850,26 +1049,23 @@ namespace GeneratorBase.MVC.Controllers
         }
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        //[Authorize(Roles = "Admin")]
         [AllowAnonymous]
         public ActionResult DeleteConfirmed(string id)
         {
-		if (!((CustomPrincipal)User).IsAdmin())
+            if (!((CustomPrincipal)User).CanDeleteAdminFeature("User"))
                 return RedirectToAction("Index", "Home");
-            var Db = new ApplicationDbContext();
-            var user = Db.Users.First(u => u.Id == id);
-            Db.Users.Remove(user);
-            Db.SaveChanges();
+            var user = Identitydb.Users.First(u => u.Id == id);
+            Identitydb.Users.Remove(user);
+            Identitydb.SaveChanges();
             return RedirectToAction("Index");
         }
-		//  [Authorize(Roles = "Admin")]
         [AllowAnonymous]
         public ActionResult DeleteRole(string id = null)
         {
-		if (!((CustomPrincipal)User).IsAdmin())
+            if (!((CustomPrincipal)User).CanDeleteAdminFeature("Role"))
                 return RedirectToAction("Index", "Home");
-            var Db = new ApplicationDbContext();
-            var roles = Db.Roles.First(u => u.Name == id);
+            // var Db = new ApplicationDbContext();
+            var roles = Identitydb.Roles.First(u => u.Id == id);
             var model = new EditRoleViewModel(roles);
             if (roles == null)
             {
@@ -879,25 +1075,23 @@ namespace GeneratorBase.MVC.Controllers
         }
         [HttpPost, ActionName("DeleteRole")]
         [ValidateAntiForgeryToken]
-        //[Authorize(Roles = "Admin")]
         [AllowAnonymous]
         public ActionResult DeleteRoleConfirmed(string id)
         {
-		if (!((CustomPrincipal)User).IsAdmin())
+            if (!((CustomPrincipal)User).CanDeleteAdminFeature("Role"))
                 return RedirectToAction("Index", "Home");
-            var Db = new ApplicationDbContext();
-            var roles = Db.Roles.First(u => u.Name == id);
-            Db.Roles.Remove(roles);
-            Db.SaveChanges();
+            var roles = Identitydb.Roles.First(u => u.Id == id);
+            Identitydb.Roles.Remove(roles);
+            Identitydb.SaveChanges();
             PermissionContext db = new PermissionContext();
             List<Permission> lstprm = db.Permissions.Where(q => q.RoleName == id).ToList();
             db.Permissions.RemoveRange(lstprm);
             db.SaveChanges();
-			UserDefinePagesRoleContext dbUserPages = new UserDefinePagesRoleContext();
+            UserDefinePagesRoleContext dbUserPages = new UserDefinePagesRoleContext();
             List<UserDefinePagesRole> lstUserPagesprm = dbUserPages.UserDefinePagesRoles.Where(q => q.RoleName == id).ToList();
             dbUserPages.UserDefinePagesRoles.RemoveRange(lstUserPagesprm);
             dbUserPages.SaveChanges();
-			AdminSettingsRepository _adminSettingsRepository = new AdminSettingsRepository();
+            AdminSettingsRepository _adminSettingsRepository = new AdminSettingsRepository();
             if (_adminSettingsRepository.GetDefaultRoleForNewUser() == roles.Name)
             {
                 AdminSettings adminSettings = new AdminSettings();
@@ -906,74 +1100,167 @@ namespace GeneratorBase.MVC.Controllers
             }
             return RedirectToAction("Rolelist");
         }
-        //  [Authorize(Roles = "Admin")]
         [AllowAnonymous]
         public ActionResult UserRoles(string id)
         {
-		if (!((CustomPrincipal)User).IsAdmin())
+            if (!((CustomPrincipal)User).CanAddAdminFeature("AssignUserRole"))
                 return RedirectToAction("Index", "Home");
-            var Db = new ApplicationDbContext();
-            var user = Db.Users.First(u => u.Id == id);
+            var user = Identitydb.Users.First(u => u.Id == id);
             var model = new SelectUserRolesViewModel(user);
             return View(model);
         }
         [HttpPost]
-        // [Authorize(Roles = "Admin")]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public ActionResult UserRoles(SelectUserRolesViewModel model)
         {
-		if (!((CustomPrincipal)User).IsAdmin())
+            if (!((CustomPrincipal)User).CanAddAdminFeature("AssignUserRole"))
                 return RedirectToAction("Index", "Home");
             if (ModelState.IsValid)
             {
                 var idManager = new IdentityManager();
-                var Db = new ApplicationDbContext();
-                var user = Db.Users.First(u => u.UserName == model.UserName);
-                idManager.ClearUserRoles(user.Id);
+                //    var Db = new ApplicationDbContext();
+                var user = Identitydb.Users.First(u => u.UserName == model.UserName);
+                idManager.ClearUserRoles(LogggedInUser, user.Id);
                 foreach (var role in model.Roles)
                 {
                     if (role.Selected)
                     {
-                        idManager.AddUserToRole(user.Id, role.RoleName);
+                        idManager.AddUserToRole(LogggedInUser, user.Id, role.RoleName);
                     }
                 }
                 return RedirectToAction("index");
             }
             return View();
         }
-		//  [Authorize(Roles = "Admin")]
         [AllowAnonymous]
-        public ActionResult UsersInRole(string id, string searchkey)
+        public ActionResult UsersInRole(string id, string currentFilter, string searchString, string sortBy, string isAsc, int? page, int? itemsPerPage, bool? IsExport, bool? RenderPartial)
         {
-            if (!((CustomPrincipal)User).IsAdmin())
+            if (!((CustomPrincipal)User).CanViewAdminFeature("AssignUserRole"))
                 return RedirectToAction("Index", "Home");
-            var Db = new ApplicationDbContext();
-            var role = Db.Roles.First(u => u.Name == id);
-            var model = new SelectUsersInRoleViewModel(role, searchkey);
-            return View(model);
+
+
+            if (string.IsNullOrEmpty(isAsc) && !string.IsNullOrEmpty(sortBy))
+            {
+                isAsc = "ASC";
+            }
+            ViewBag.isAsc = isAsc;
+            ViewBag.CurrentSort = sortBy;
+            if (searchString != null)
+                page = null;
+            else
+                searchString = currentFilter;
+            ViewBag.CurrentFilter = searchString;
+
+            // var Db = new ApplicationDbContext();
+            var role = Identitydb.Roles.First(u => u.Id == id);
+            var model = new SelectUsersInRoleViewModel(role);
+            ViewBag.RolesName = model.RoleName;
+            ViewBag.Count = model.UserCount;
+
+            var model1 = from s in model.Users.ToList()
+                         select s;
+            //model1 = model1.OrderBy(c => c.UserName);
+            int pageSize = 10;
+            int pageNumber = (page ?? 1);
+            ViewBag.Pages = page;
+            if (itemsPerPage != null)
+            {
+                pageSize = (int)itemsPerPage;
+                ViewBag.CurrentItemsPerPage = itemsPerPage;
+            }
+            //Cookies for pagesize 
+            if (Request.Cookies["pageSize" + HttpUtility.UrlEncode(((CustomPrincipal)User).Name) + "UsersInRole"] != null)
+            {
+                pageSize = Convert.ToInt32(Request.Cookies["pageSize" + HttpUtility.UrlEncode(((CustomPrincipal)User).Name) + "UsersInRole"].Value);
+                ViewBag.CurrentItemsPerPage = itemsPerPage;
+            }
+            pageSize = pageSize > 100 ? 100 : pageSize;
+            //Cookies for pagination 
+            if (Request.Cookies["pagination" + HttpUtility.UrlEncode(((CustomPrincipal)User).Name) + "UsersInRole"] != null)
+            {
+                pageNumber = Convert.ToInt32(Request.Cookies["pagination" + HttpUtility.UrlEncode(((CustomPrincipal)User).Name) + "UsersInRole"].Value);
+                ViewBag.Pages = pageNumber;
+            }
+
+            //
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                model1 = searchRecordsRoles(model1.AsQueryable(), searchString.ToUpper());
+            }
+            if (!String.IsNullOrEmpty(sortBy) && !String.IsNullOrEmpty(isAsc))
+            {
+                model1 = sortRecordsRoles(model1.AsQueryable(), sortBy, isAsc);
+            }
+            if (pageNumber > 1)
+            {
+                var totalListCount = model1.Count();
+                int quotient = totalListCount / pageSize;
+                var remainder = totalListCount % pageSize;
+                var maxpagenumber = quotient + (remainder > 0 ? 1 : 0);
+                if (pageNumber > maxpagenumber)
+                {
+                    pageNumber = 1;
+                }
+            }
+
+            ViewBag.PageSize = pageSize;
+
+            if (!(RenderPartial == null ? false : RenderPartial.Value) && !Request.IsAjaxRequest())
+                return View(model1.ToPagedList(pageNumber, pageSize));
+            else
+                return PartialView("UsersInRolePartial", model1.ToPagedList(pageNumber, pageSize));
+
+            // return View(model);
+        }
+
+        private IQueryable<SelectUserEditorViewModel> searchRecordsRoles(IQueryable<SelectUserEditorViewModel> users, string searchString)
+        {
+            searchString = searchString.Trim();
+            users = users.Where(s => (!String.IsNullOrEmpty(s.UserName) && s.UserName.ToUpper().Contains(searchString)));
+            return users;
+        }
+        private IQueryable<SelectUserEditorViewModel> sortRecordsRoles(IQueryable<SelectUserEditorViewModel> users, string sortBy, string isAsc)
+        {
+            string methodName = "";
+            switch (isAsc.ToLower())
+            {
+                case "asc":
+                    methodName = "OrderBy";
+                    break;
+                case "desc":
+                    methodName = "OrderByDescending";
+                    break;
+            }
+            ParameterExpression paramExpression = Expression.Parameter(typeof(SelectUserEditorViewModel), "ApplicationUser");
+            MemberExpression memExp = Expression.PropertyOrField(paramExpression, sortBy);
+            LambdaExpression lambda = Expression.Lambda(memExp, paramExpression);
+            return (IQueryable<SelectUserEditorViewModel>)users.Provider.CreateQuery(
+                Expression.Call(
+                    typeof(Queryable),
+                    methodName,
+                    new Type[] { users.ElementType, lambda.Body.Type },
+                    users.Expression,
+                    lambda));
         }
         [HttpPost]
-        // [Authorize(Roles = "Admin")]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public ActionResult UsersInRole(SelectUsersInRoleViewModel model, string searchkey)
+        public ActionResult UsersInRole(List<SelectUserEditorViewModel> model, string id)
         {
-            if (!((CustomPrincipal)User).IsAdmin())
+            if (!((CustomPrincipal)User).CanAddAdminFeature("AssignUserRole"))
                 return RedirectToAction("Index", "Home");
             if (ModelState.IsValid)
             {
                 var idManager = new IdentityManager();
-                var Db = new ApplicationDbContext();
-                var role = Db.Roles.First(u => u.Name == model.RoleName);
-                foreach (var user in model.Users)
+                foreach (var user in model)
                 {
-                    var userId = Db.Users.First(p => p.UserName == user.UserName).Id;
+                    var userId = Identitydb.Users.First(p => p.UserName == user.UserName).Id;
                     if (user.Selected)
-                        idManager.AddUserToRole(userId, role.Name);
+                        idManager.AddUserToRole(LogggedInUser, userId, id);
                     else
                         if (user.UserName != "Admin")
-                            idManager.ClearUsersFromRole(userId, role.Name);
+                            idManager.ClearUsersFromRole(LogggedInUser, userId, id);
                 }
                 return RedirectToAction("RoleList", "Account");
             }
@@ -983,7 +1270,152 @@ namespace GeneratorBase.MVC.Controllers
         {
             return RedirectToAction("RoleList", "Account");
         }
-        #region Helpers
+		private void RemoveMultitenant(string username)
+        {
+            ApplicationDbContext ac = new ApplicationDbContext();
+            var oldAccess = ac.MultiTenantLoginSelected.FirstOrDefault(p => p.T_User == username);
+            if (oldAccess != null)
+            {
+                ac.MultiTenantLoginSelected.Remove(oldAccess);
+                ac.SaveChanges();
+            }
+        }
+		 [AllowAnonymous]
+        public ActionResult ApplicationExtraSecurity()
+        {
+            if (!((CustomPrincipal)User).CanViewAdminFeature("MultiTenantExtraPrivileges"))
+                return RedirectToAction("Index", "Home");
+            ApplicationDbContext user = new ApplicationDbContext();
+            ApplicationContext db = new ApplicationContext(new SystemUser());
+            var userlist = user.Users.OrderBy(p => p.UserName);
+            ViewBag.mainentitylist = new MultiSelectList(db.T_Organizations.OrderBy(p => p.DisplayValue).ToList(), "ID", "DisplayValue");
+            List<MultiTenantExtraAccess> model = new List<MultiTenantExtraAccess>();
+            ApplicationDbContext adb = new ApplicationDbContext();
+            foreach (var item in userlist)
+            {
+                MultiTenantExtraAccess obj = new MultiTenantExtraAccess();
+                obj.T_User = item.UserName;
+                var security = adb.MultiTenantExtraAccess.Where(p => p.T_User == item.UserName);
+                obj.T_MainEntity = security != null ? string.Join(",", security.Select(p => p.T_MainEntityID)) : "";// ViewBag.mainentitylist;
+                model.Add(obj);
+            }
+
+            return View(model);
+        }
+        public ActionResult ApplicationExtraSecurityByMainEntity()
+        {
+            if (!((CustomPrincipal)User).CanViewAdminFeature("MultiTenantExtraPrivileges"))
+                return RedirectToAction("Index", "Home");
+            ApplicationDbContext user = new ApplicationDbContext();
+            ApplicationContext db = new ApplicationContext(new SystemUser());
+            var userlist = user.Users.OrderBy(p => p.UserName);
+            var mainentitylist = db.T_Organizations.OrderBy(p => p.DisplayValue).ToList();
+            ViewBag.mainentitylist = new MultiSelectList(userlist, "UserName", "UserName");
+            List<MultiTenantExtraAccess> model = new List<MultiTenantExtraAccess>();
+            ApplicationDbContext adb = new ApplicationDbContext();
+            foreach (var item in mainentitylist)
+            {
+                MultiTenantExtraAccess obj = new MultiTenantExtraAccess();
+                obj.T_MainEntityID = item.Id;
+                obj.DisplayValue = item.DisplayValue;
+                var security = adb.MultiTenantExtraAccess.Where(p => p.T_MainEntityID == item.Id);
+                obj.T_MainEntity = security != null ? string.Join(",", security.Select(p => p.T_User)) : "";// ViewBag.mainentitylist;
+                model.Add(obj);
+            }
+
+            return View(model);
+        }
+        [HttpPost]
+        [AllowAnonymous]
+        public ActionResult ApplicationExtraSecurity(List<MultiTenantExtraAccess> model, string GroupBy)
+        {
+             if (!((CustomPrincipal)User).CanAddAdminFeature("MultiTenantExtraPrivileges"))
+                return RedirectToAction("Index", "Home");
+            if (ModelState.IsValid)
+            {
+                ApplicationDbContext adb = new ApplicationDbContext();
+                foreach (var item in adb.MultiTenantExtraAccess.ToList())
+                {
+                    adb.MultiTenantExtraAccess.Remove(item);
+                }
+                adb.SaveChanges();
+                
+                foreach (var item in model)
+                {
+                    if (!string.IsNullOrEmpty(item.T_MainEntity))
+                    {
+                        foreach (var mainid in item.T_MainEntity.Split(",".ToCharArray()))
+                        {
+                            if (!string.IsNullOrEmpty(mainid))
+                            {
+                                MultiTenantExtraAccess obj = new MultiTenantExtraAccess();
+                                if (GroupBy == "MainEntity")
+                                {
+                                    obj.T_MainEntityID = item.T_MainEntityID;
+                                    obj.T_User = mainid;
+                                }
+                                else
+                                {
+                                    obj.T_User = item.T_User;
+                                    obj.T_MainEntityID = Convert.ToInt64(mainid);
+                                }
+                                adb.MultiTenantExtraAccess.Add(obj);
+                            }
+                        }
+                    }
+                }
+                adb.SaveChanges();
+                if (GroupBy == "MainEntity")
+                    return RedirectToAction("ApplicationExtraSecurityByMainEntity");
+                else
+                    return RedirectToAction("ApplicationExtraSecurity");
+            }
+            ApplicationDbContext user = new ApplicationDbContext();
+            ApplicationContext db = new ApplicationContext(new SystemUser());
+            var userlist = user.Users;
+            ViewBag.mainentitylist = new MultiSelectList(db.T_Organizations.OrderBy(p => p.DisplayValue), "ID", "DisplayValue");
+            List<MultiTenantExtraAccess> modela = new List<MultiTenantExtraAccess>();
+            ApplicationDbContext adbc = new ApplicationDbContext();
+            foreach (var item in userlist)
+            {
+                MultiTenantExtraAccess obj = new MultiTenantExtraAccess();
+                obj.T_User = item.UserName;
+                var security = adbc.MultiTenantExtraAccess.FirstOrDefault(p => p.T_User == item.UserName);
+                obj.T_MainEntity = security != null ? security.T_MainEntity : "";// ViewBag.mainentitylist;
+                model.Add(obj);
+            }
+            return View(modela);
+        }
+		[AcceptVerbs(HttpVerbs.Get)]
+        [AllowAnonymous]
+        public JsonResult GetAllValue(string caller, string key, string AssoNameWithParent, string AssociationID, string ExtraVal)
+        {
+            ApplicationContext db = new ApplicationContext(new SystemUser());
+            IQueryable<T_Organization> list = db.T_Organizations;
+            if (key != null && key.Length > 0)
+            {
+                if (ExtraVal != null && ExtraVal.Length > 0)
+                {
+                    long? val = Convert.ToInt64(ExtraVal);
+                    var data = from x in list.Where(p => p.DisplayValue.Contains(key) && p.Id != val).Take(9).Union(list.Where(p => p.Id == val)).OrderBy(q => q.DisplayValue).ToList()
+                               select new { Id = x.Id, Name = x.DisplayValue };
+                    return Json(data, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                    var data = from x in list.Where(p => p.DisplayValue.Contains(key)).OrderBy(q => q.DisplayValue).Take(10).ToList()
+                               select new { Id = x.Id, Name = x.DisplayValue };
+                    return Json(data, JsonRequestBehavior.AllowGet);
+                }
+            }
+            else
+            {
+                    var data = from x in list.OrderBy(q => q.DisplayValue).Take(10).ToList()
+                               select new { Id = x.Id, Name = x.DisplayValue };
+                    return Json(data, JsonRequestBehavior.AllowGet);
+            }
+        }
+#region Helpers
         private IAuthenticationManager AuthenticationManager
         {
             get
@@ -993,6 +1425,7 @@ namespace GeneratorBase.MVC.Controllers
         }
         private async Task SignInAsync(ApplicationUser user, bool isPersistent)
         {
+            ClearCookies();
             AuthenticationManager.SignOut(DefaultAuthenticationTypes.ExternalCookie);
             var identity = await UserManager.CreateIdentityAsync(user, DefaultAuthenticationTypes.ApplicationCookie);
             AuthenticationManager.SignIn(new AuthenticationProperties() { IsPersistent = isPersistent }, identity);
@@ -1001,7 +1434,12 @@ namespace GeneratorBase.MVC.Controllers
         {
             foreach (var error in result.Errors)
             {
-                ModelState.AddModelError("", error);
+                var strError = "";
+                foreach (var msg in error.Split('.'))
+                {
+                    strError += msg + ".\r\n";
+                }
+                ModelState.AddModelError("", strError);
             }
         }
         private bool HasPassword()
@@ -1023,21 +1461,21 @@ namespace GeneratorBase.MVC.Controllers
         private ActionResult RedirectToLocal(string returnUrl)
         {
             string IsAdmin = "false";
-            if (((CustomPrincipal)User).IsAdmin())
+            if (((CustomPrincipal)User).IsAdmin)
                 IsAdmin = "true";
             else
                 IsAdmin = "false";
-                if (Url.IsLocalUrl(returnUrl))
-                {
-                    return Redirect(returnUrl);
-                }
-                else
-                {
-                    return RedirectToAction("Index", "Home");
-                }
+            if (Url.IsLocalUrl(returnUrl))
+            {
+                return Redirect(returnUrl);
+            }
+            else
+            {
+                return RedirectToAction("Index", "Home");
+            }
         }
         #endregion
-		#region Helpers External Login ex google,yahoo etc
+        #region Helpers External Login ex google,yahoo etc
         //
         // POST: /Account/Disassociate
         // Used for XSRF protection when adding external logins
@@ -1070,11 +1508,11 @@ namespace GeneratorBase.MVC.Controllers
                 OAuthWebSecurity.RequestAuthentication(provider, Url.Action("ExternalLoginCallbackYahoo", new { provider = provider, ReturnUrl = returnUrl }));
             else
             {
-		ThirdPartyLoginRepository thirdPartyLoginRepository = new ThirdPartyLoginRepository();
-                 ThirdPartyLogin thirdPartyLogin = thirdPartyLoginRepository.GetThirdPartyLogin();
+                ThirdPartyLoginRepository thirdPartyLoginRepository = new ThirdPartyLoginRepository();
+                ThirdPartyLogin thirdPartyLogin = thirdPartyLoginRepository.GetThirdPartyLogin();
                 if (provider.ToLower() == "facebook")
                 {
-                    if (!string.IsNullOrEmpty(thirdPartyLogin.FacebookId)&& !string.IsNullOrEmpty(thirdPartyLogin.FacebookSecretKey) && thirdPartyLogin.FacebookId.ToUpper() != "NONE" && thirdPartyLogin.FacebookSecretKey.ToUpper() != "NONE")
+                    if (!string.IsNullOrEmpty(thirdPartyLogin.FacebookId) && !string.IsNullOrEmpty(thirdPartyLogin.FacebookSecretKey) && thirdPartyLogin.FacebookId.ToUpper() != "NONE" && thirdPartyLogin.FacebookSecretKey.ToUpper() != "NONE")
                         return new ChallengeResult(provider, Url.Action("ExternalLoginCallback", "Account", new { provider = provider, ReturnUrl = returnUrl }));
                     else
                         return RedirectToAction("Login", new RouteValueDictionary(new { returnUrl = "", ThirdPartyLoginError = "Facebook settings has not been done. Please contact your Administrator." }));
@@ -1094,38 +1532,38 @@ namespace GeneratorBase.MVC.Controllers
         [AllowAnonymous]
         public async Task<ActionResult> ExternalLoginCallback(string provider, string returnUrl)
         {
-            ApplicationDbContext localAppDB = new ApplicationDbContext();
+            // ApplicationDbContext localAppDB = new ApplicationDbContext();
             var loginInfo = await AuthenticationManager.GetExternalLoginInfoAsync();
             var userExist = await UserManager.FindByNameAsync(loginInfo.Email);
             if (userExist != null)
             {
-                var localAppUser = localAppDB.Users.Where(p => p.UserName == userExist.UserName).ToList();
+                var localAppUser = Identitydb.Users.Where(p => p.UserName == userExist.UserName).ToList();
                 if (localAppUser != null && localAppUser.Count > 0)
                 {
                     ApplicationContext db = new ApplicationContext(new SystemUser());
-                string applySecurityPolicy = db.AppSettings.Where(p => p.Key == "ApplySecurityPolicy").FirstOrDefault().Value;
+                    string applySecurityPolicy = db.AppSettings.Where(p => p.Key == "ApplySecurityPolicy").FirstOrDefault().Value;
 
-                if (localAppUser != null && localAppUser.Count > 0)
-                {
-                    if ((applySecurityPolicy.ToLower() == "yes") && !(((CustomPrincipal)User).Identity is System.Security.Principal.WindowsIdentity))
+                    if (localAppUser != null && localAppUser.Count > 0)
                     {
-                        if (await UserManager.IsLockedOutAsync(localAppUser[0].Id))
+                        if ((applySecurityPolicy.ToLower() == "yes") && !(((CustomPrincipal)User).Identity is System.Security.Principal.WindowsIdentity))
                         {
-                            ModelState.AddModelError("", string.Format("Your account has been locked out for {0} hours due to multiple failed login attempts.", db.AppSettings.Where(p => p.Key == "DefaultAccountLockoutTimeSpan").FirstOrDefault().Value));
-                            return View("Login");
+                            if (await UserManager.IsLockedOutAsync(localAppUser[0].Id))
+                            {
+                                ModelState.AddModelError("", string.Format("Your account has been locked out for {0} hours due to multiple failed login attempts.", db.AppSettings.Where(p => p.Key == "DefaultAccountLockoutTimeSpan").FirstOrDefault().Value));
+                                return View("Login");
+                            }
                         }
-                    }
-                    else
-                    {
-                        if (await UserManager.IsLockedOutAsync(localAppUser[0].Id))
+                        else
                         {
-                            ModelState.AddModelError("", string.Format("Your account has been locked. Please contact your administrator. ", db.AppSettings.Where(p => p.Key == "DefaultAccountLockoutTimeSpan").FirstOrDefault().Value));
-                            return View("Login");
+                            if (await UserManager.IsLockedOutAsync(localAppUser[0].Id))
+                            {
+                                ModelState.AddModelError("", string.Format("Your account has been locked. Please contact your administrator. ", db.AppSettings.Where(p => p.Key == "DefaultAccountLockoutTimeSpan").FirstOrDefault().Value));
+                                return View("Login");
+                            }
                         }
+                        await SignInAsync(localAppUser[0], isPersistent: false);
+                        return RedirectToAction("Index", "Home", new { isThirdParty = true });
                     }
-                    await SignInAsync(localAppUser[0], isPersistent: false);
-                    return RedirectToAction("Index", "Home", new { isThirdParty = true });
-                }
                 }
             }
             if (loginInfo == null)
@@ -1138,7 +1576,7 @@ namespace GeneratorBase.MVC.Controllers
             {
                 await SignInAsync(user, isPersistent: false);
                 //return RedirectToLocal(returnUrl);
-				 return RedirectToAction("Index", "Home", new { isThirdParty = true });
+                return RedirectToAction("Index", "Home", new { isThirdParty = true });
             }
             else
             {
@@ -1175,19 +1613,19 @@ namespace GeneratorBase.MVC.Controllers
                     //
                     usermodel.Email = info.Email;
                     var LogedInuser = usermodel.GetUser();
-                    var localAppUser = localAppDB.Users.Where(p => p.UserName == LogedInuser.UserName).ToList();
+                    var localAppUser = Identitydb.Users.Where(p => p.UserName == LogedInuser.UserName).ToList();
                     if (localAppUser != null && localAppUser.Count > 0)
                     {
                         await SignInAsync(localAppUser[0], isPersistent: false);
                         //return RedirectToLocal(returnUrl);
-						 return RedirectToAction("Index", "Home", new { isThirdParty = true });
+                        return RedirectToAction("Index", "Home", new { isThirdParty = true });
                     }
                     var result = await UserManager.CreateAsync(LogedInuser, usermodel.Password);
                     if (result.Succeeded)
                     {
                         var idManager = new IdentityManager();
-                        var Db = new ApplicationDbContext();
-                        idManager.ClearUserRoles(LogedInuser.Id);
+                        // var Db = new ApplicationDbContext();
+                        idManager.ClearUserRoles(LogggedInUser, LogedInuser.Id);
                         AssignDefaultRoleToNewUser(LogedInuser.Id);
                         //idManager.AddUserToRole(LogedInuser.Id, "ReadOnly");
                         // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
@@ -1210,12 +1648,12 @@ namespace GeneratorBase.MVC.Controllers
                         var RegisteruserExist = await UserManager.FindByNameAsync(Registerlogin.Email);
                         if (RegisteruserExist != null)
                         {
-                            var LogedInAppUser = localAppDB.Users.Where(p => p.UserName == RegisteruserExist.UserName).ToList();
+                            var LogedInAppUser = Identitydb.Users.Where(p => p.UserName == RegisteruserExist.UserName).ToList();
                             if (LogedInAppUser != null && LogedInAppUser.Count > 0)
                             {
                                 await SignInAsync(LogedInAppUser[0], isPersistent: false);
                                 return RedirectToLocal(returnUrl);
-								 return RedirectToAction("Index", "Home", new { isThirdParty = true });
+                                return RedirectToAction("Index", "Home", new { isThirdParty = true });
                             }
                         }
                     }
@@ -1228,40 +1666,40 @@ namespace GeneratorBase.MVC.Controllers
         [AllowAnonymous]
         public async Task<ActionResult> ExternalLoginCallbackYahoo(string provider, string returnUrl)
         {
-            ApplicationDbContext localAppDB = new ApplicationDbContext();
+            // ApplicationDbContext localAppDB = new ApplicationDbContext();
             var yahooResult = OAuthWebSecurity.VerifyAuthentication();
             if (yahooResult.IsSuccessful)
             {
                 var userExist = await UserManager.FindByNameAsync(yahooResult.ExtraData["email"]);
                 if (userExist != null)
                 {
-                    var localAppUser = localAppDB.Users.Where(p => p.UserName == userExist.UserName).ToList();
+                    var localAppUser = Identitydb.Users.Where(p => p.UserName == userExist.UserName).ToList();
                     if (localAppUser != null && localAppUser.Count > 0)
                     {
-                         ApplicationContext db = new ApplicationContext(new SystemUser());
-                string applySecurityPolicy = db.AppSettings.Where(p => p.Key == "ApplySecurityPolicy").FirstOrDefault().Value;
+                        ApplicationContext db = new ApplicationContext(new SystemUser());
+                        string applySecurityPolicy = db.AppSettings.Where(p => p.Key == "ApplySecurityPolicy").FirstOrDefault().Value;
 
-                if (localAppUser != null && localAppUser.Count > 0)
-                {
-                    if ((applySecurityPolicy.ToLower() == "yes") && !(((CustomPrincipal)User).Identity is System.Security.Principal.WindowsIdentity))
-                    {
-                        if (await UserManager.IsLockedOutAsync(localAppUser[0].Id))
+                        if (localAppUser != null && localAppUser.Count > 0)
                         {
-                            ModelState.AddModelError("", string.Format("Your account has been locked out for {0} hours due to multiple failed login attempts.", db.AppSettings.Where(p => p.Key == "DefaultAccountLockoutTimeSpan").FirstOrDefault().Value));
-                            return View("Login");
+                            if ((applySecurityPolicy.ToLower() == "yes") && !(((CustomPrincipal)User).Identity is System.Security.Principal.WindowsIdentity))
+                            {
+                                if (await UserManager.IsLockedOutAsync(localAppUser[0].Id))
+                                {
+                                    ModelState.AddModelError("", string.Format("Your account has been locked out for {0} hours due to multiple failed login attempts.", db.AppSettings.Where(p => p.Key == "DefaultAccountLockoutTimeSpan").FirstOrDefault().Value));
+                                    return View("Login");
+                                }
+                            }
+                            else
+                            {
+                                if (await UserManager.IsLockedOutAsync(localAppUser[0].Id))
+                                {
+                                    ModelState.AddModelError("", string.Format("Your account has been locked. Please contact your administrator. ", db.AppSettings.Where(p => p.Key == "DefaultAccountLockoutTimeSpan").FirstOrDefault().Value));
+                                    return View("Login");
+                                }
+                            }
+                            await SignInAsync(localAppUser[0], isPersistent: false);
+                            return RedirectToAction("Index", "Home", new { isThirdParty = true });
                         }
-                    }
-                    else
-                    {
-                        if (await UserManager.IsLockedOutAsync(localAppUser[0].Id))
-                        {
-                            ModelState.AddModelError("", string.Format("Your account has been locked. Please contact your administrator. ", db.AppSettings.Where(p => p.Key == "DefaultAccountLockoutTimeSpan").FirstOrDefault().Value));
-                            return View("Login");
-                        }
-                    }
-                    await SignInAsync(localAppUser[0], isPersistent: false);
-                    return RedirectToAction("Index", "Home", new { isThirdParty = true });
-                }
                     }
                 }
                 // Sign in the user with this external login provider if the user already has a login
@@ -1270,7 +1708,7 @@ namespace GeneratorBase.MVC.Controllers
                 {
                     await SignInAsync(user, isPersistent: false);
                     //return RedirectToLocal(returnUrl);
-					 return RedirectToAction("Index", "Home", new { isThirdParty = true });
+                    return RedirectToAction("Index", "Home", new { isThirdParty = true });
                 }
                 else
                 {
@@ -1299,19 +1737,19 @@ namespace GeneratorBase.MVC.Controllers
                         //
                         usermodel.Email = info.UserName;
                         var LogedInuser = usermodel.GetUser();
-                        var localAppUser = localAppDB.Users.Where(p => p.UserName == LogedInuser.UserName).ToList();
+                        var localAppUser = Identitydb.Users.Where(p => p.UserName == LogedInuser.UserName).ToList();
                         if (localAppUser != null && localAppUser.Count > 0)
                         {
                             await SignInAsync(localAppUser[0], isPersistent: false);
-                           // return RedirectToLocal(returnUrl);
-						    return RedirectToAction("Index", "Home", new { isThirdParty = true });
+                            // return RedirectToLocal(returnUrl);
+                            return RedirectToAction("Index", "Home", new { isThirdParty = true });
                         }
                         var result = await UserManager.CreateAsync(LogedInuser, usermodel.Password);
                         if (result.Succeeded)
                         {
                             var idManager = new IdentityManager();
-                            var Db = new ApplicationDbContext();
-                            idManager.ClearUserRoles(LogedInuser.Id);
+                            //  var Db = new ApplicationDbContext();
+                            idManager.ClearUserRoles(LogggedInUser, LogedInuser.Id);
                             AssignDefaultRoleToNewUser(LogedInuser.Id);
                             //idManager.AddUserToRole(LogedInuser.Id, "ReadOnly");
                             // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
@@ -1334,12 +1772,12 @@ namespace GeneratorBase.MVC.Controllers
                             var RegisteruserExist = await UserManager.FindByNameAsync(Registerlogin.ExtraData["email"]);
                             if (RegisteruserExist != null)
                             {
-                                var LogedInAppUser = localAppDB.Users.Where(p => p.UserName == RegisteruserExist.UserName).ToList();
+                                var LogedInAppUser = Identitydb.Users.Where(p => p.UserName == RegisteruserExist.UserName).ToList();
                                 if (LogedInAppUser != null && LogedInAppUser.Count > 0)
                                 {
                                     await SignInAsync(LogedInAppUser[0], isPersistent: false);
                                     //return RedirectToLocal(returnUrl);
-									 return RedirectToAction("Index", "Home", new { isThirdParty = true });
+                                    return RedirectToAction("Index", "Home", new { isThirdParty = true });
                                 }
                             }
                         }
@@ -1419,9 +1857,9 @@ namespace GeneratorBase.MVC.Controllers
                     //{
                     await SignInAsync(user, isPersistent: false);
                     var idManager = new IdentityManager();
-                    var Db = new ApplicationDbContext();
+                    // var Db = new ApplicationDbContext();
                     //var user = Db.Users.First(u => u.UserName == model.UserName);
-                    idManager.ClearUserRoles(user.Id);
+                    idManager.ClearUserRoles(LogggedInUser, user.Id);
                     AssignDefaultRoleToNewUser(user.Id);
                     //idManager.AddUserToRole(user.Id, "ReadOnly");
                     // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
@@ -1442,6 +1880,71 @@ namespace GeneratorBase.MVC.Controllers
         public ActionResult ExternalLoginFailure()
         {
             return View();
+        }
+        private void ClearCookies()
+        {
+            string AppUrl = System.Configuration.ConfigurationManager.AppSettings["AppUrl"];
+            HttpCookie userrole = new HttpCookie(AppUrl + "CurrentRole");
+            HttpCookie userpage = new HttpCookie("PageId");
+            userpage.Expires = DateTime.Now.AddDays(-1);
+            userrole.Expires = DateTime.Now.AddDays(-1);
+            Response.Cookies.Add(userpage);
+            Response.Cookies.Add(userrole);
+            Response.Cookies["fltCookie"].Expires = DateTime.Now.AddDays(-1);
+            Response.Cookies["fltCookieFltTabId"].Expires = DateTime.Now.AddDays(-1);
+            Response.Cookies.Clear();
+            Session.Clear();
+            Response.Cookies[AppUrl + "CurrentRole"].Expires = DateTime.Now.AddDays(-1);
+            Response.Cookies["PageId"].Expires = DateTime.Now.AddDays(-1);
+            //string[] myCookies = Request.Cookies.AllKeys;
+            //foreach (string cookie in myCookies)
+            //{
+            //Response.Cookies[cookie].Expires = DateTime.Now.AddDays(-1);
+            //}
+        }
+        public static string CreateRandomPassword()
+        {
+            ApplicationContext dbcontext = new ApplicationContext(new SystemUser());
+            int pwdlength = Convert.ToInt32(dbcontext.AppSettings.Where(p => p.Key == "PasswordMinimumLength").FirstOrDefault().Value);
+            bool isalphanumeric = dbcontext.AppSettings.Where(p => p.Key == "PasswordRequireAlphaNumericCharacter").FirstOrDefault().Value.ToLower() == "yes" ? true : false;
+            bool isdigit = dbcontext.AppSettings.Where(p => p.Key == "PasswordRequireDigit").FirstOrDefault().Value.ToLower() == "yes" ? true : false;
+            bool isUpperCase = dbcontext.AppSettings.Where(p => p.Key == "PasswordRequireUpperCase").FirstOrDefault().Value.ToLower() == "yes" ? true : false;
+            bool isLowerCase = dbcontext.AppSettings.Where(p => p.Key == "PasswordRequireLowerCase").FirstOrDefault().Value.ToLower() == "yes" ? true : false;
+
+            char[] charUpper = { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z' };
+            char[] charNumeric = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+            char[] charAlphaNumeric = { '!', '@', '$', '?', '_', '&', '#', '*' };
+            char[] charLower = { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z' };
+
+            System.Text.StringBuilder randomString = new System.Text.StringBuilder();
+
+            Random randomCharacter = new Random();
+            int randomCharSelected;
+            int stringlength = pwdlength;
+            if (isUpperCase)
+            {
+                randomCharSelected = randomCharacter.Next(1, charUpper.Length);
+                randomString.Append(charUpper[randomCharSelected]);
+            }
+            if (isalphanumeric)
+            {
+                randomCharSelected = randomCharacter.Next(1, charAlphaNumeric.Length);
+                randomString.Append(charAlphaNumeric[randomCharSelected]);
+            }
+            if (isLowerCase)
+            {
+                for (uint i = 0; i < stringlength; i++)
+                {
+                    int randomCharSelected1 = randomCharacter.Next(1, (stringlength));
+                    randomString.Append(charLower[randomCharSelected1]);
+                }
+            }
+            if (isdigit)
+            {
+                randomCharSelected = randomCharacter.Next(1, charNumeric.Length);
+                randomString.Append(charNumeric[randomCharSelected]);
+            }
+            return randomString.ToString();
         }
         [ChildActionOnly]
         public ActionResult RemoveAccountList()

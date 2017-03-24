@@ -6,9 +6,11 @@
     {
         ActionNameUrl = "FSearch";
     }
+    var EntityReflector = ModelReflector.Entities.FirstOrDefault(p => p.Name == "JournalEntry");
 }
 <script>
     function EntityFilterJE(EntityName, url, dataurl) {
+        var resId = "";
         var FilterHostingEntityID = (dataurl.indexOf("FirstCall=True") > 0) ? undefined : getHostingEntityID(dataurl)["FilterHostingEntityID"];
         var html = "<ul class=\"nav nav-tabs\">";
         $.ajax({
@@ -21,6 +23,8 @@
                 for (i in result) {
                     if (result[i].Id == undefined) continue;
                     var isactive = false;
+                    if (result[i].Name == "" || result[i].Name == undefined)
+                        continue;
                     if (FilterHostingEntityID != undefined) {
                         if (result[i].Id == FilterHostingEntityID) {
                             html += "<li name=\"" + result[i].Id + "\" class=\"active\">";
@@ -35,11 +39,17 @@
                         }
                         else
                             html += "<li name=\"" + result[i].Id + "\">";
+
                     }
-                    html += "<a data-toggle=\"tab\"  onclick=\"CancelSearch('" + EntityName + "','" + dataurl + "&AssociatedType=" + result[i].Id + "')\">" + result[i].Name + "</a>";
+                    //if(result[i].Id=="[object Object]")
+                    //    resId = result[i].Id.PropertyName;
+                    //else
+                    resId = result[i].Id
+                    html += "<a data-toggle=\"tab\"  onclick=\"CancelSearch('" + EntityName + "','" + dataurl + "&AssociatedType=" + resId + "')\">" + result[i].Name + "</a>";
                     html += "</li>";
-                    if (isactive)
-                        firstClick = dataurl + "&AssociatedType=" + result[i].Id;
+                    if (isactive) {
+                        firstClick = dataurl + "&AssociatedType=" + resId;
+                    }
                 }
                 html += "</ul>";
                 $("#dv" + EntityName + "Filter").html($(html));
@@ -50,6 +60,10 @@
         });
     }
 </script>
+@if (ViewData["HostingEntity"] != null)
+{
+    <div id="dvJournalEntryFilter"></div>
+}
 <div id="JournalEntry">
     @if (ViewBag.ColumnMapping == null && ViewBag.ImportError == null && ViewBag.ConfirmImportData == null)
     {
@@ -61,9 +75,11 @@
                 border: 0px solid transparent;
                 border-top: 1px solid #c3ddec;
             }
+
             .fixed-column th {
                 background: #fff;
             }
+
             .fixed-column td {
                 background: #fff;
             }
@@ -129,34 +145,42 @@
                     <div class="panel-heading clearfix" style="margin:0px; padding:8px;">
                         <div class="btn-group">
                             <div class="btn btn-default  btn-default tip-top" data-original-title="Export Excel" data-placement="top" style="padding:3px 5px;" onclick=@Html.Raw("NavigateToUrl('" + Url.Action(ActionNameUrl, "JournalEntry", getSortHtmlAttributes(null, false, null, true), null) + "');")>
-                                <span class="fam-page-excel"></span>
+                                <span class="fam-page-white-put"></span>
                             </div>
-                            @if (ViewData["HostingEntity"] == null || Convert.ToBoolean(ViewData["IsFilter"]) == true)
-                            {
-                                <div class="btn-group">
-                                    <a class="btn btn-default btn-default dropdown-toggle tip-top" data-original-title="Filter-Groupby" style="padding:3px 5px;" data-toggle="dropdown" href="#">
-                                        <span class="glyphicon glyphicon-filter"></span>
-                                    </a>
-                                    <ul class="dropdown-menu" role="menu">
+                            @*@if (ViewData["HostingEntity"] == null || Convert.ToBoolean(ViewData["IsFilter"]) == true)*@
+
+                            <div class="btn-group">
+                                <a class="btn btn-default btn-default dropdown-toggle tip-top" data-original-title="Filter-Groupby" style="padding:3px 5px;" data-toggle="dropdown" href="#">
+                                    <span class="glyphicon glyphicon-filter"></span>
+                                </a>
+                                <ul class="dropdown-menu" role="menu">
+                                    <li>
+                                        <a id="fltEntityName" data-placement="top" onclick=@Html.Raw("EntityFilterJE('JournalEntry','" + Url.Action("GetAllValue", "JournalEntry", new { HostingEntityName = "EntityName", HostingEntityID = ViewData["HostingEntityID"], HostingEntity = ViewData["HostingEntity"] }) + "','" + Html.Raw(Url.Action("Index", "JournalEntry", new { FirstCall = true, FilterHostingEntityID = ViewData["HostingEntityID"], IsFilter = true, HostingEntity = "EntityName", ClearSearchTimeStamp = DateTime.Now })) + "');")>
+                                            <span>Entity Name</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a id="fltType" data-placement="top" onclick=@Html.Raw("EntityFilterJE('JournalEntry','" + Url.Action("GetAllValue", "JournalEntry", new { HostingEntityName = "Type" }) + "','" + Html.Raw(Url.Action("Index", "JournalEntry", new { FirstCall = true, FilterHostingEntityID = ViewData["HostingEntityID"], IsFilter = true, HostingEntity = "Type", ClearSearchTimeStamp = DateTime.Now })) + "');")>
+                                            <span>Audit Type</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a id="fltUserName" data-placement="top" onclick=@Html.Raw("EntityFilterJE('JournalEntry','" + Url.Action("GetAllValue", "JournalEntry", new { HostingEntityName = "UserName" }) + "','" + Html.Raw(Url.Action("Index", "JournalEntry", new { FirstCall = true, FilterHostingEntityID = ViewData["HostingEntityID"], IsFilter = true, HostingEntity = "UserName", ClearSearchTimeStamp = DateTime.Now })) + "');")>
+                                            <span>User</span>
+                                        </a>
+                                    </li>
+                                    @if (ViewData["HostingEntity"] != null)
+                                    {
                                         <li>
-                                            <a id="fltEntityName" data-placement="top" onclick=@Html.Raw("EntityFilterJE('JournalEntry','" + Url.Action("GetAllValue", "JournalEntry", new { HostingEntityName = "EntityName" }) + "','" + Html.Raw(Url.Action("Index", "JournalEntry", new { FirstCall = true, FilterHostingEntityID = ViewData["HostingEntityID"], IsFilter = true, HostingEntity = "EntityName", ClearSearchTimeStamp = DateTime.Now })) + "');")>
-                                                <span>Entity Name</span>
+                                            <a id="fltPropertyName" data-placement="top" onclick=@Html.Raw("EntityFilterJE('JournalEntry','" + Url.Action("GetAllValue", "JournalEntry", new { HostingEntityName = "PropertyName", HostingEntityID = ViewData["HostingEntityID"], HostingEntity = ViewData["HostingEntity"] }) + "','" + Html.Raw(Url.Action("Index", "JournalEntry", new { FirstCall = true, FilterHostingEntityID = ViewData["HostingEntityID"], FilterHostingEntity = ViewData["HostingEntity"], IsFilter = true, HostingEntity = "PropertyName", ClearSearchTimeStamp = DateTime.Now })) + "');")>
+                                                <span>Property</span>
                                             </a>
                                         </li>
-                                        <li>
-                                            <a id="fltType" data-placement="top" onclick=@Html.Raw("EntityFilterJE('JournalEntry','" + Url.Action("GetAllValue", "JournalEntry", new { HostingEntityName = "Type" }) + "','" + Html.Raw(Url.Action("Index", "JournalEntry", new { FirstCall = true, FilterHostingEntityID = ViewData["HostingEntityID"], IsFilter = true, HostingEntity = "Type", ClearSearchTimeStamp = DateTime.Now })) + "');")>
-                                                <span>Audit Type</span>
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a id="fltUserName" data-placement="top" onclick=@Html.Raw("EntityFilterJE('JournalEntry','" + Url.Action("GetAllValue", "JournalEntry", new { HostingEntityName = "UserName" }) + "','" + Html.Raw(Url.Action("Index", "JournalEntry", new { FirstCall = true, FilterHostingEntityID = ViewData["HostingEntityID"], IsFilter = true, HostingEntity = "UserName", ClearSearchTimeStamp = DateTime.Now })) + "');")>
-                                                <span>User</span>
-                                            </a>
-                                        </li>
-                                        <li><span class="label label-primary pull-left filterLabel" style="margin-left:20px;">@Html.ActionLink("Clear", "Index")</span></li>
-                                    </ul>
-                                </div>
-                            }
+                                    }
+                                    <li><span class="label label-primary pull-left filterLabel" style="margin-left:20px;">@Html.ActionLink("Clear", "Index")</span></li>
+                                </ul>
+                            </div>
+
                         </div>
                         <div class="pull-right" style="width:200px;">
                             <div class="input-group">
@@ -251,15 +275,27 @@
                                             {<i class="fa fa-sort-asc"></i>}
                                         </th>
                                     }
-                                    <th>View</th>
+                                    @*<th>View</th>*@
                                 </tr>
                                 @foreach (var item in Model)
                                 {
+                                    var entity = ModelReflector.Entities.FirstOrDefault(p => p.Name == item.EntityName);
+                                    var entityDP = item.EntityName;
+                                    var propertyDP = item.PropertyName;
+                                    if (entity != null)
+                                    {
+                                        entityDP = entity.DisplayName;
+                                        var proper = entity.Properties.FirstOrDefault(p => p.Name == item.PropertyName);
+                                        if (proper != null)
+                                        {
+                                            propertyDP = proper.DisplayName;
+                                        }
+                                    }
                                     <tr>
                                         @if (User.CanView("JournalEntry", "EntityName"))
                                         {
                                             <td>
-                                                @Html.DisplayFor(modelItem => item.EntityName)
+                                                @entityDP
                                             </td>
                                         }
                                         @if (User.CanView("JournalEntry", "Type"))
@@ -285,7 +321,7 @@
                                         }@if (User.CanView("JournalEntry", "PropertyName"))
                                         {
                                             <td>
-                                                @Html.DisplayFor(modelItem => item.PropertyName)
+                                                @propertyDP
                                             </td>
                                         }@if (User.CanView("JournalEntry", "OldValue"))
                                         {
@@ -297,12 +333,13 @@
                                             <td>
                                                 @Html.DisplayFor(modelItem => item.NewValue)
                                             </td>
-                                        }@if (User.CanView("JournalEntry", "EntityName"))
-                                        {
-                                            <td>
-                                                @Html.ActionLink("View", "Edit", @Html.DisplayFor(modelItem => item.EntityName).ToString(), new { id = @Html.DisplayFor(modelItem => item.RecordId) }, new { @class = "label label-primary" })
-                                            </td>
                                         }
+                                        @*@if (User.CanView("JournalEntry", "EntityName"))
+                                            {
+                                                <td>
+                                                    @Html.ActionLink("View", "Edit", @Html.DisplayFor(modelItem => item.EntityName).ToString(), new { id = @Html.DisplayFor(modelItem => item.RecordId) }, new { @class = "label label-primary" })
+                                                </td>
+                                            }*@
                                     </tr>
                                 }
                             </table>

@@ -16,11 +16,12 @@
         using (Html.BeginForm(action, "Account", new { provider = provider, ReturnUrl = returnUrl }))
         {
             @Html.AntiForgeryToken()
-            <div class="col-md-4" style="margin:0px; padding:0px 5px 0px 0px">
-                <button type="submit" id="@p.AuthenticationType" class="button @name" name="provider" value="@p.AuthenticationType">
-                    <span><i class="fa fa-@name"></i></span><p>@authType</p>
-                </button>
-            </div>
+    <div class="col-md-4" class="facebook">
+        <button type="submit" id="@p.AuthenticationType" class="@name" name="provider" value="@p.AuthenticationType">
+            <i class="fa fa-@name"></i>
+        </button>
+        <p class="text-center">@authType</p>
+    </div>
         }
     }
 }

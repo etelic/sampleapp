@@ -20,7 +20,7 @@ namespace GeneratorBase.MVC.Controllers
         [HttpPost]
         public ActionResult Edit(bool? EnableODataServices)
         {
-            if (((CustomPrincipal)User).IsAdmin())
+            if (((CustomPrincipal)User).IsAdmin)
             {
                 if (ModelState.IsValid)
                 {
@@ -42,7 +42,7 @@ namespace GeneratorBase.MVC.Controllers
         // GET: ODataServices
         public ActionResult Index()
         {
-            if (((CustomPrincipal)User).IsAdmin())
+            if (((CustomPrincipal)User).IsAdmin)
             {
                 ODataServices cp = _repository.GetODataServices();
                 if (cp == null)

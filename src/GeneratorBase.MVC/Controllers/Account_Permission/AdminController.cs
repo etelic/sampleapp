@@ -21,7 +21,7 @@ namespace GeneratorBase.MVC.Controllers
         }
         public ActionResult Index()
         {
-            if (!((CustomPrincipal)User).IsAdmin())
+            if (!((CustomPrincipal)User).HasAdminPrivileges())
                 return RedirectToAction("Index", "Home");
 
             var fileList = Directory.GetFiles(Server.MapPath(@"~/Templates/"), "*.docx").Where(file => Regex.IsMatch(Path.GetFileName(file), "^[0-9]+"))
@@ -78,7 +78,7 @@ namespace GeneratorBase.MVC.Controllers
         [HttpPost]
         public ActionResult Edit(AdminSettings adminSettings, HttpPostedFileBase logo)
         {
-            if (((CustomPrincipal)User).IsAdmin())
+            if (((CustomPrincipal)User).IsAdmin)
             {
                 if (ModelState.IsValid)
                 {
@@ -98,7 +98,7 @@ namespace GeneratorBase.MVC.Controllers
         }
         public ActionResult SetDefaultRole(string RoleName)
         {
-            if (((CustomPrincipal)User).IsAdmin())
+            if (((CustomPrincipal)User).IsAdmin)
             {
                 if (ModelState.IsValid)
                 {
@@ -117,6 +117,22 @@ namespace GeneratorBase.MVC.Controllers
                 }
             }
             return RedirectToAction("Index", "Home");
+        }
+        public FileResult DownloadTestScript()
+        {
+            string zipsolutionPath = Server.MapPath("~/SeleniumTestScript");
+            FileZipper fz;
+            fz = new FileZipper();
+            fz.CopyZip(zipsolutionPath, "TestScript.rar");
+            string solutionPath = zipsolutionPath;
+            solutionPath = zipsolutionPath + "\\TestScript.rar";
+            if (System.IO.File.Exists(solutionPath))
+            {
+                byte[] fileBytes = System.IO.File.ReadAllBytes(solutionPath);
+                string fileName = "TestScript.rar";
+                return File(fileBytes, System.Net.Mime.MediaTypeNames.Application.Octet, fileName);
+            }
+            return null;
         }
     }
 }

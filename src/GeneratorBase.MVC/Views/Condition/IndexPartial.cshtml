@@ -29,32 +29,44 @@
                                     }
                                     @if (User.CanView("Condition", "LogicalConnector"))
                                     {
-                                        @*<th class="col5">
-                                @Html.ActionLink("Logical Connector", ActionNameUrl, "Condition", getSortHtmlAttributes("LogicalConnector", false, null, false), new { @class = "SortLink" })
-                            @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "LogicalConnector")
-                            {<i class="fa fa-sort-desc"></i>}
-                            @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "LogicalConnector")
-                            {<i class="fa fa-sort-asc"></i>}
-                        </th>*@
+                                        <th class="col1">
+                                            Connector
+                                        </th>
                                     }
                                     @if (User.CanView("Condition", "RuleConditionsID"))
                                     {
                                         @*<th class="col1" @(Convert.ToString(ViewData["HostingEntity"]) == "BusinessRule" ? "hidden" : "")>
-                            Business Rule
-                        </th>*@
+                                                Business Rule
+                                            </th>*@
                                     }
                                     <th class="col1">Remove</th>
                                 </tr>
                                 @foreach (var item in Model)
                                 {
-                                    <tr>
+                                    var displayTag = "";
+                                    if (item.PropertyName == "Id")
+                                    {
+                                        displayTag = "id = idAlways " + "style=display:none";
+                                    }
+                                    <tr @displayTag>
                                         @if (User.CanView("Condition", "PropertyName"))
                                         {
-                                            if (((List<ModelReflector.Property>)(ViewBag.PropertyList)).FirstOrDefault(p => p.Name == item.PropertyName) != null)
+                                            if (item.PropertyName != "Id")
                                             {
-                                                <td>
-                                                    @(((List<ModelReflector.Property>)(ViewBag.PropertyList)).FirstOrDefault(p => p.Name == item.PropertyName).DisplayName)
-                                                </td>
+                                                if (item.PropertyName.StartsWith("[") && item.PropertyName.EndsWith("]"))
+                                                {
+                                                    <td>@item.PropertyName</td>
+                                                }
+                                                else if (((List<ModelReflector.Property>)(ViewBag.PropertyList)).FirstOrDefault(p => p.Name == item.PropertyName) != null)
+                                                {
+                                                    <td>
+                                                        @(((List<ModelReflector.Property>)(ViewBag.PropertyList)).FirstOrDefault(p => p.Name == item.PropertyName).DisplayName)
+                                                    </td>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <td>Id</td>
                                             }
                                         }
                                         @if (User.CanView("Condition", "Operator"))
@@ -88,6 +100,14 @@
                                                 {
                                                     <label>Not Equals to</label>
                                                 }
+												@if (item.Operator == "Changes to anything")
+                                                {
+                                                    <label>Changes to anything</label>
+                                                }
+                                                @if (item.Operator == "Regular Expression")
+                                                {
+                                                    <label>Regular Expression</label>
+                                                }
                                             </td>
                                         }
                                         @if (User.CanView("Condition", "Value"))
@@ -98,15 +118,15 @@
                                         }
                                         @if (User.CanView("Condition", "LogicalConnector"))
                                         {
-                                            @*<td>
-                                @Html.DisplayFor(modelItem => item.LogicalConnector)
-                            </td>*@
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.LogicalConnector)
+                                            </td>
                                         }
                                         @if (User.CanView("Condition", "RuleConditionsID"))
                                         {
                                             @*<td @(Convert.ToString(ViewData["HostingEntity"]) == "BusinessRule" ? "hidden" : "")>
-                                @Html.DisplayFor(modelItem => item.ruleconditions.DisplayValue)
-                            </td>*@
+                                                    @Html.DisplayFor(modelItem => item.ruleconditions.DisplayValue)
+                                                </td>*@
                                         }
                                         <td>
                                             <a href="@Url.Action("Delete", "Condition", new { id = item.Id }, null)"><i class="fam-delete"></i> </a>
@@ -182,4 +202,3 @@
         </div>
     </div>
 </div>
-

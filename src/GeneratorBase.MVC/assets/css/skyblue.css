@@ -1,27 +1,43 @@
 
+.cloudbar {
+    background-image:url(../../assets/images/cloudbg.png);
+    background-position: top;
+    background-repeat: repeat-x;
+    height: 150px;
+    width: 100%;
+    margin-top: 0px;
+    background-color: #00b7ea; /* Old browsers */
+}
+
+
+.mob_subheaderHome {
+  background: #00b7ea !important;
+  width: 100%;
+  height: 40px;
+  text-align: left;
+  color: white;
+}
+
+.sub-header1 {
+margin-top:-70px;
+}
+
+
 .brandSecondarycolor {
   background: rgb(146,146,146); /* Old browsers */
-    background: -moz-linear-gradient(top, rgba(146,146,146,1) 0%, rgba(110,110,110,1) 50%, rgba(108,108,108,1) 50%, rgba(56,48,45,1) 100%); /* FF3.6-15 */
-    background: -webkit-linear-gradient(top, rgba(146,146,146,1) 0%,rgba(110,110,110,1) 50%,rgba(108,108,108,1) 50%,rgba(56,48,45,1) 100%); /* Chrome10-25,Safari5.1-6 */
-    background: linear-gradient(to bottom, rgba(146,146,146,1) 0%,rgba(110,110,110,1) 50%,rgba(108,108,108,1) 50%,rgba(56,48,45,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#929292', endColorstr='#38302d',GradientType=0 ); /* IE6-9 */
-    color:white;
+       color:white;
 }
 
 .brandcolor {
   
 background: rgb(0,183,234); /* Old browsers */
-background: -moz-linear-gradient(top, rgba(0,183,234,1) 0%, rgba(0,158,195,1) 100%); /* FF3.6-15 */
-background: -webkit-linear-gradient(top, rgba(0,183,234,1) 0%,rgba(0,158,195,1) 100%); /* Chrome10-25,Safari5.1-6 */
-background: linear-gradient(to bottom, rgba(0,183,234,1) 0%,rgba(0,158,195,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
-filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00b7ea', endColorstr='#009ec3',GradientType=0 ); /* IE6-9 */
     color: white;
 
 
 }
 
 .brandBorder {
-    border-bottom: 1px solid #018eaf;
+    border-bottom: 0px solid #018eaf;
 }
 
 .bs-glyphicons li a:hover {
@@ -29,10 +45,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00b7ea', end
             text-shadow: 2px 2px 3px rgb(234,234,234);
         }
 
-.infobox-icon.primary {
-background-color: #ffffff;
-color: #ffffff;
-}
+.infobox-icon.primary {background-color: #00b7ea;color: #ffffff;}
 
 .divcanvas p {
 display: block;
@@ -64,4 +77,92 @@ box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
 -webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;
 -o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
 transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+}
+
+
+.slick-initialized .swipe-tab {
+ 
+background: rgb(247, 247, 247);
+ 
+color: #00b7ea;
+}
+
+.slick-initialized .swipe-tab:hover {
+        color: #000 !important;
+    }
+
+/* The side navigation menu */
+.sidenav {
+    height: 100%; /* 100% Full-height */
+    width: 0; /* 0 width - change this with JavaScript */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Stay on top */
+    top: 0;
+    left: 0;
+    background-color: #ffffff; /* Black*/
+    overflow-x: auto; /* Disable horizontal scroll */
+    /* padding-top: 20px; */ /* Place content 60px from the top */
+    transition: 0.5s; /* 0.5 second transition effect to slide in the sidenav */
+    /* border-right: 1px solid #fff; */
+}
+
+/* The navigation menu links */
+.sidenav a {
+    padding: 8px 0px 8px 10px;
+    text-decoration: none;
+    font-size: 16px;
+    color: #252525;
+    display: block;
+    transition: 0.3s;
+    /* border-bottom:1px solid #fff; */
+}
+.sidenav a:first-child {
+    padding: 8px 0px 8px 10px;
+    text-decoration: none;
+    font-size: 16px;
+    color: #fff;
+    display: block;
+    transition: 0.3s;
+    border-bottom:1px solid #fff;
+    background:rgb(0,183,234)
+}
+
+/* When you mouse over the navigation links, change their color */
+.sidenav a:hover, .offcanvas a:focus{
+    color: #f1f1f1;
+}
+
+/* Position and style the close button (top right corner) */
+.sidenav .closebtn {
+    position: absolute;
+    top: -15px;
+    right: 10px;
+    font-size: 36px;
+    margin-left: 0px;
+    border: 0px;
+    color: white;
+}
+
+.mob_subheaderinternal {
+    background: #252525 !important;
+    width: 100%;
+    height: 40px;
+    margin-top: -4px;
+    text-align: left;
+    color: white;
+    display: block;
+}
+.badge {
+    display: inline-block;
+    min-width: 10px;
+    padding: 3px 7px;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1;
+    color: #f7f7f7;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    background-color: #252525;
+    border-radius: 10px;
 }

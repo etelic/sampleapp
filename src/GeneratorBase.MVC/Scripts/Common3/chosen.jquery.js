@@ -48,7 +48,8 @@
                         disabled: group_disabled === true ? group_disabled : option.disabled,
                         group_array_index: group_position,
                         classes: option.className,
-                        style: option.style.cssText
+                        style: option.style.cssText,
+                        title: option.title
                     });
                 } else {
                     this.parsed.push({
@@ -215,8 +216,13 @@
             if (option.classes !== "") {
                 classes.push(option.classes);
             }
+            var title = "";
+            if (option.title !== "") {
+                title = option.title;
+            }
             style = option.style.cssText !== "" ? " style=\"" + option.style + "\"" : "";
-            return "<li class=\"" + (classes.join(' ')) + "\"" + style + " data-option-array-index=\"" + option.array_index + "\">" + option.search_text + "</li>";
+            return "<li title=\"" + title + "\" class=\"" + (classes.join(' ')) + "\"" + style + " data-option-array-index=\"" + option.array_index + "\">" + option.search_text + "</li>";
+
         };
         AbstractChosen.prototype.result_add_group = function (group) {
             if (!(group.search_match || group.group_match)) {
@@ -228,9 +234,17 @@
             return "<li class=\"group-result\">" + group.search_text + "</li>";
         };
         AbstractChosen.prototype.results_update_field = function () {
+
             this.set_default_text();
             if (!this.is_multiple) {
                 this.results_reset_cleanup();
+                //
+                var hostingentity = this.container[0].id.substr(0, this.container[0].id.length - 7);
+                var linktoentName = $("#" + hostingentity).attr("hostingname");
+                if ($("#dvLinkTo" + linktoentName).attr("Id") != undefined) {
+                    bindLinkTo(hostingentity, linktoentName);
+                }
+                //
             }
             this.result_clear_highlight();
             this.result_single_selected = null;
@@ -254,6 +268,7 @@
             }
         };
         AbstractChosen.prototype.winnow_results = function () {
+
             var escapedSearchText, option, regex, regexAnchor, results, results_group, searchText, startpos, text, zregex, _i, _len, _ref;
             this.no_results_clear();
             results = 0;
@@ -263,6 +278,7 @@
             regex = new RegExp(regexAnchor + escapedSearchText, 'i');
             zregex = new RegExp(escapedSearchText, 'i');
             var hostingentity = this.container[0].id.substr(0, this.container[0].id.length - 7);
+
             this.results_data = _ref = select(hostingentity, searchText); //Mahesh
             _len = undefined;
             if (_ref.length < 2 && searchText.length == 0) {
@@ -270,6 +286,7 @@
                 this.container.addClass("chosen-container-single-nosearch");
             }
             if (_ref.length >= 10) {
+
                 var urlGetAll = $("#" + hostingentity).attr("dataurl").replace("GetAllValue", "Index");// + "?BulkOperation=single";
                 urlGetAll = addParameterToURL(urlGetAll, 'BulkOperation', 'single');
                 //
@@ -299,20 +316,23 @@
                     //alert(urlGetAll);
                 }
                 //
+                var UserDropDown = $("#" + hostingentity).attr("hostingname");
                 var dispName = ($("label[for=\"" + hostingentity + "\"]").text());
-                var getAll = {
-                    array_index: _ref,
-                    options_index: _ref,
-                    value: "GetAll",
-                    text: "Get all items",
-                    html: "<a onclick=\"" + "OpenPopUpBulkOperation('PopupBulkOperation','" + hostingentity + "','" + dispName + "','dvPopupBulkOperation','" + urlGetAll + "')\">View All</a>",
-                    selected: false,
-                    disabled: true,
-                    group_array_index: undefined,
-                    classes: "",
-                    style: "font-style:Italic;text-decoration:Underline;"
-                };
-                _ref.push(getAll);
+                if (UserDropDown != "UserDropDown") {
+                    var getAll = {
+                        array_index: _ref,
+                        options_index: _ref,
+                        value: "GetAll",
+                        text: "Get all items",
+                        html: "<a onclick=\"" + "OpenPopUpBulkOperation('PopupBulkOperation','" + hostingentity + "','" + dispName + "','dvPopupBulkOperation','" + urlGetAll + "')\">View All</a>",
+                        selected: false,
+                        disabled: true,
+                        group_array_index: undefined,
+                        classes: "",
+                        style: "font-style:Italic;text-decoration:Underline;"
+                    };
+                    _ref.push(getAll);
+                }
             }
             for (_i = 0, _len = _ref.length; _i < _len; _i++) {
                 option = _ref[_i];
@@ -553,6 +573,7 @@
             });
             this.container.bind('mouseenter.chosen', function (evt) {
                 _this.mouse_enter(evt);
+
             });
             this.container.bind('mouseleave.chosen', function (evt) {
                 _this.mouse_leave(evt);
@@ -581,7 +602,7 @@
             this.search_field.bind('blur.chosen', function (evt) {
                 _this.input_blur(evt);
             });
-            this.search_field.bind('keyup.chosen', $.debounce(150, function (evt) {
+            this.search_field.bind('keyup.chosen', $.debounce(400, function (evt) {
                 _this.keyup_checker(evt);
             }));
             this.search_field.bind('keydown.chosen', function (evt) {
@@ -805,6 +826,7 @@
             if (target.length) {
                 this.result_highlight = target;
                 this.result_select(evt);
+
                 return this.search_field.focus();
             }
         };
@@ -873,6 +895,8 @@
             return this.selected_item.find("abbr").remove();
         };
         Chosen.prototype.result_select = function (evt) {
+
+
             var high, item, selected_index;
             if (this.result_highlight) {
                 high = this.result_highlight;
@@ -890,6 +914,7 @@
                         this.result_single_selected.removeClass("result-selected");
                         selected_index = this.result_single_selected[0].getAttribute('data-option-array-index');
                         //this.results_data[selected_index].selected = false;
+
                     }
                     this.result_single_selected = high;
                 }
@@ -902,6 +927,13 @@
                     this.choice_build(item);
                 } else {
                     this.single_set_selected_text(item.text);
+                    //
+                    var hostingentity = this.container[0].id.substr(0, this.container[0].id.length - 7);
+                    var linktoentName = $("#" + hostingentity).attr("hostingname");
+                    if ($("#dvLinkTo" + linktoentName).attr("Id") != undefined) {
+                        bindLinkTo(hostingentity, linktoentName);
+                    }
+                    //
                 }
                 if (!((evt.metaKey || evt.ctrlKey) && this.is_multiple)) {
                     this.results_hide();
@@ -909,10 +941,13 @@
                 this.search_field.val("");
                 if (this.is_multiple || this.form_field.selectedIndex !== this.current_selectedIndex || this.form_field.selectedIndex == this.current_selectedIndex) {
                     this.form_field_jq.trigger("change", {
+
                         'selected': this.form_field.options[item.options_index].value
+
                     });
                 }
                 this.current_selectedIndex = this.form_field.selectedIndex;
+
                 return this.search_field_scale();
             }
         };
@@ -1045,6 +1080,8 @@
                 case 9:
                     if (this.results_showing && !this.is_multiple) {
                         this.result_select(evt);
+
+
                     }
                     this.mouse_on_container = false;
                     break;
@@ -1092,6 +1129,7 @@
     })(AbstractChosen);
 }).call(this);
 function select(hostingentity, searchtxt) {
+
     var stufflist = [];
     var lock = $("#" + hostingentity).attr("lock");
     if (lock != undefined && lock == "true")
@@ -1177,9 +1215,9 @@ function select(hostingentity, searchtxt) {
             for (i in jsonObj) {
                 if (jsonObj[i].Id != undefined && jsonObj[i].Name != undefined) {
                     if (selectedval == jsonObj[i].Id || IsFillWithFirst)
-                        listItems += "<option selected='selected' value='" + jsonObj[i].Id + "'>" + jsonObj[i].Name + "</option>";
+                        listItems += "<option  selected='selected' value='" + jsonObj[i].Id + "'>" + jsonObj[i].Name + "</option>";
                     else
-                        listItems += "<option value='" + jsonObj[i].Id + "'>" + jsonObj[i].Name + "</option>";
+                        listItems += "<option  value='" + jsonObj[i].Id + "'>" + jsonObj[i].Name + "</option>";
                     var stuff = {
                         array_index: stufflist.length,
                         options_index: stufflist.length,
@@ -1190,7 +1228,8 @@ function select(hostingentity, searchtxt) {
                         disabled: false,
                         group_array_index: undefined,
                         classes: (selectedval == jsonObj[i].Id || IsFillWithFirst) ? "result-selected highlighted" : "",
-                        style: ""
+                        style: "",
+                        title: jsonObj[i].Name
                     };
                     stufflist.push(stuff);
                 }
@@ -1213,4 +1252,60 @@ function addParameterToURL(_url, _key, _value) {
     }
     _url += sep + param;
     return _url;
+}
+function LoadUserDropdown(hostingentity) {
+    var stufflist = [];
+
+    var finalUrl = $("#" + hostingentity).attr("dataurl").replace("GetAllValue", "GetDisplayValueByUserName");
+    var selectedval = $("option:selected", $("select#" + hostingentity)).val();
+
+    $.ajax({
+        type: "GET",
+        url: finalUrl,
+        contentType: "application/json; charset=utf-8",
+        global: false,
+        async: false,
+        cache: false,
+        dataType: "json",
+        success: function (jsonObj) {
+            var listItems = "";
+            $("#" + hostingentity).empty();
+            if (jsonObj.Id != undefined && jsonObj.Name != undefined) {
+                listItems += "<option  selected='selected' value='" + jsonObj.Id + "'>" + jsonObj.Name + "</option>";
+            }
+            $("#" + hostingentity).html(listItems);
+            $("#" + hostingentity).trigger('chosen:updated');
+            $("#" + hostingentity).change();
+        }
+    });
+    return stufflist;
+}
+$(document).ready(function () {
+    var $inptextarea = $(this).find('textarea');
+    if ($inptextarea.length > 0) {
+        $inptextarea.focus(function () {
+            var txtareastyle = "height: 90px !important;padding:2px 5px !important;font-size: 14px !important;z-index: 1000;";
+            $(this).attr("style", txtareastyle);
+        })
+        //$inptextarea.bind('mouseup mousemove', function () {
+        //                 this.style.removeProperty("width");
+        //});
+    }
+});
+function bindLinkTo(hostingentity, linKtoentName) {
+    var Id = $("#" + hostingentity).val();
+    var value = $("#" + hostingentity + " option:selected").text();
+
+
+    if (Id != '') {
+        $("#dvLinkTo" + linKtoentName).show();
+        $("#dvLinkTo" + linKtoentName).attr("title", value)
+        var finalUrl = ($("#" + hostingentity).attr("dataurl").replace("GetAllValue", "Details").split('?')[0]) + "/" + Id
+        $("#aLinkTo" + linKtoentName).attr("href", finalUrl);
+    }
+    else {
+        $("#dvLinkTo" + linKtoentName).attr("title", '')
+        $("#aLinkTo" + linKtoentName).attr("href", "");
+        $("#dvLinkTo" + linKtoentName).hide();
+    }
 }

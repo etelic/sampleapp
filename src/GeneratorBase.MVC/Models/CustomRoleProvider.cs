@@ -43,18 +43,19 @@ namespace GeneratorBase.MVC.Models
         {
             using (var usersContext = new ApplicationDbContext(true))
             {
-                var user = usersContext.Users.SingleOrDefault(u => u.UserName == username);
+                var user = usersContext.Users.FirstOrDefault(u => u.UserName == username);
                 if (user == null)
                     return false;
                 if (user.Roles == null)
                     return false;
                 var roleIds = user.Roles.Select(r => r.RoleId);
                 var roles = usersContext.Roles.Where(r => roleIds.Contains(r.Id));
-                var UserCurrentRole = HttpContext.Current.Request.Cookies["CurrentRole"] == null ? string.Empty : HttpContext.Current.Request.Cookies["CurrentRole"].Value;
+                string AppUrl = System.Configuration.ConfigurationManager.AppSettings["AppUrl"];
+                var UserCurrentRole = HttpContext.Current.Request.Cookies[AppUrl+"CurrentRole"] == null ? string.Empty : HttpContext.Current.Request.Cookies[AppUrl+"CurrentRole"].Value;
                 if (!string.IsNullOrEmpty(UserCurrentRole))
                 {
-                    string[] splittedarray = UserCurrentRole.Split(",".ToCharArray());
-                    roles = roles.Where(u => splittedarray.Contains(u.Name));
+                    string[] splittedarray = UserCurrentRole.Split(",".ToCharArray()).Select(p => p.Trim()).ToArray();
+                    roles = roles.Where(u => splittedarray.Contains(u.Name.Trim()));
                 }
                 AddDynamicRoles adr = new AddDynamicRoles();
                 return roles.Any(r => r.Name == roleName) || adr.AddRolesDynamic(new string[] { }, user.Id).Contains(roleName);
@@ -64,7 +65,7 @@ namespace GeneratorBase.MVC.Models
         {
             using (var usersContext = new ApplicationDbContext(true))
             {
-                var user = usersContext.Users.SingleOrDefault(u => u.UserName == username);
+                var user = usersContext.Users.FirstOrDefault(u => u.UserName == username);
                 if (user == null)
                     return new string[] { };
                 if (user.Roles == null)
@@ -73,10 +74,11 @@ namespace GeneratorBase.MVC.Models
                 var roles = usersContext.Roles.Where(r => roleIds.Contains(r.Id)).Select(r => r.Name).ToArray();
                 AddDynamicRoles adr = new AddDynamicRoles();
                 roles = adr.AddRolesDynamic(roles, user.Id);
-                var UserCurrentRole = HttpContext.Current.Request.Cookies["CurrentRole"] == null ? string.Empty : HttpContext.Current.Request.Cookies["CurrentRole"].Value;
+                string AppUrl = System.Configuration.ConfigurationManager.AppSettings["AppUrl"];
+                var UserCurrentRole = HttpContext.Current.Request.Cookies[AppUrl+"CurrentRole"] == null ? string.Empty : HttpContext.Current.Request.Cookies[AppUrl+"CurrentRole"].Value;
                 if (!string.IsNullOrEmpty(UserCurrentRole))
                 {
-                    string[] splittedarray = UserCurrentRole.Split(",".ToCharArray());
+                    string[] splittedarray = UserCurrentRole.Split(",".ToCharArray()).Select(p => p.Trim()).ToArray();
                     roles = roles.Where(u => splittedarray.Contains(u.Trim())).ToArray();
                 }
                 return roles;

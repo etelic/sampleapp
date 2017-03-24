@@ -1,0 +1,129 @@
+﻿@model GeneratorBase.MVC.Models.DataSourceParameters
+@{
+    ViewBag.Title = "Create Data Source Parameters";
+    Layout = null;
+}
+<script>
+    $(document).ready(function () {
+        try {
+            var hostingEntityName = "";
+            if ('@Convert.ToString(ViewData["AssociatedType"])' != null) {
+                hostingEntityName = '@Convert.ToString(ViewData["AssociatedType"])';
+                 $('#' + hostingEntityName + 'ID').attr("lock","true");
+				  $('#' + hostingEntityName + 'ID').trigger("change");
+            }
+        }
+        catch (ex) { }
+    });
+</script>
+@{
+    if (!string.IsNullOrEmpty(ViewBag.DataSourceParametersIsHiddenRule))
+    {
+        @Html.Raw(ViewBag.DataSourceParametersIsHiddenRule);
+    }
+}
+<link href="~/Content/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+<link href="@Url.Content("~/Content/chosen.css")" rel="stylesheet" type="text/css" />
+@using (Html.BeginForm("CreateQuick", "DataSourceParameters",FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken();
+    Html.ValidationSummary(true);
+    Html.EnableClientValidation();
+	<label id="ErrMsgQuickAdd" class="text-primary small pull-right" style="color:red; vertical-align:middle; font-weight:100;"></label>
+    <div id="errorContainerQuickAdd" style="display: none">
+        <div id="errorsMsgQuickAdd"></div>
+        <div id="errorsQuickAdd"></div>
+    </div>
+    <div class="row">
+	@Html.Hidden("AssociatedEntity", Convert.ToString(ViewData["AssociatedType"]))
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="panel panel-default AppForm">
+                <div class="panel-body">
+               <div class="row">         
+					<div class='col-sm-6' id="dvArgumentName">
+                                <div class='form-group'>
+                                    <label>@Html.LabelFor(model => model.ArgumentName) <span class="text-danger-reg">*</span></label>
+									 
+                                    @Html.TextBoxFor(model => model.ArgumentName, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.ArgumentName)
+									
+                                </div>
+					</div>
+					<div class='col-sm-6' id="dvArgumentValue">
+                                <div class='form-group'>
+                                    <label>@Html.LabelFor(model => model.ArgumentValue) </label>
+									 
+                                    @Html.TextBoxFor(model => model.ArgumentValue, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.ArgumentValue)
+									
+                                </div>
+					</div>
+					<div class='col-sm-6' id="dvHostingEntity">
+                                <div class='form-group'>
+                                    <label>@Html.LabelFor(model => model.HostingEntity) </label>
+									 
+                                    @Html.TextBoxFor(model => model.HostingEntity, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.HostingEntity)
+									
+                                </div>
+					</div>
+                            <div class='col-sm-6' id="dvflag">
+                                <label >
+                                    @Html.LabelFor(model => model.flag) 
+                                </label>
+                                <div class="form-group">
+                                    @*@Html.CheckBoxFor(model => model.flag)*@
+									@Html.CheckBox("flag", false)
+                                    @Html.ValidationMessageFor(model => model.flag)
+                                </div>
+                            </div>
+					<div class='col-sm-6' id="dvother">
+                                <div class='form-group'>
+                                    <label>@Html.LabelFor(model => model.other) </label>
+									 
+                                    @Html.TextBoxFor(model => model.other, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.other)
+									
+                                </div>
+					</div>
+				 <div class='col-sm-6'  id="dvEntityDataSourceParametersID">
+                        <div class='form-group'>
+                            <label>@Html.LabelFor(model => model.EntityDataSourceParametersID) </label>
+                            <div class="input-group" style="width: 100%;">
+									@Html.DropDownList("EntityDataSourceParametersID", null, "-- Select --", new {       @class = "chosen-select form-control", @HostingName = "EntityDataSource", @dataurl = Url.Action("GetAllValue", "EntityDataSource",new { caller = "EntityDataSourceParametersID" }) })
+                                @Html.ValidationMessageFor(model => model.EntityDataSourceParametersID)
+                            </div>
+                        </div>
+                    </div>
+       </div>
+                        </div>
+                    </div>
+                </div>
+        </div>
+		<button id="CancelQuickAdd" type="button" class="btn btn-default btn-sm" data-dismiss="modal" aria-hidden="true">Cancel</button>
+		var busineesrule = User.businessrules.Where(p => p.EntityName == "DataSourceParameters").ToList();
+        if (ViewBag.IsAddPop != null)
+		{
+			<input type="submit" value="Create" class="btn btn-primary btn-sm" onclick="QuickAdd(event,'@busineesrule',@busineesrule.Count);" />
+		}
+		else
+		{
+			<input type="submit" value="Create" class="btn btn-primary btn-sm" onclick="QuickAddFromIndex(event,true,'DataSourceParameters','@ViewData["AssociatedType"]','@busineesrule',@busineesrule.Count);" />
+		}
+}
+@Scripts.Render("~/bundles/jqueryval")
+<script src="~/Scripts/Common3/chosen.jquery.js" type="text/javascript"></script>
+<script type="text/javascript">
+    var config = {
+        '.chosen-select': {},
+        '.chosen-select-deselect': { allow_single_deselect: true },
+        '.chosen-select-no-single': { disable_search_threshold: 10 },
+        '.chosen-select-no-results': { no_results_text: 'Oops, nothing found!' },
+        '.chosen-select-width': { width: "95%" }
+    }
+    for (var selector in config) {
+        $(selector).chosen(config[selector]);
+    }
+</script>
+
+

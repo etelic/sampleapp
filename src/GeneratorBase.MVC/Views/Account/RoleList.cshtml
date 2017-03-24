@@ -3,8 +3,6 @@
 @{
     ViewBag.Title = "Role List";
 }
-
-
 <div class="row">
     <div class="col-lg-12">
         <h1 class="page-title">
@@ -18,9 +16,12 @@
         <div class="col-md-12 col-sm-12 col-xs-12">
             <div class="panel panel-default">
                 <div class="panel-heading clearfix " style="margin:0px; padding:8px;">
-                    <button class="btn btn-default tip-top" data-placement="top" data-original-title="Create Role" style="padding:3px 5px;" data-toggle="modal" data-target="#quickaddRole" onclick=@Html.Raw("OpenQuickQddPopUp('dvQAddquickaddRole');")>
-                        <span class="fam-add"> </span> Create Role
-                    </button>
+                    @if (User.CanAddAdminFeature("Role"))
+                    {
+                        <button class="btn btn-default tip-top" data-placement="top" data-original-title="Create Role" style="padding:3px 5px;" data-toggle="modal" data-target="#quickaddRole" onclick=@Html.Raw("OpenQuickQddPopUp('dvQAddquickaddRole');")>
+                            <span class="fam-add"> </span> Create Role
+                        </button>
+                    }
                     <span class="pull-right">
                         <u><b>@ViewBag.DefaultRoleForNewUser</b></u>
                         is set as default for new user
@@ -47,25 +48,42 @@
                                                     <span class="caret">    </span>
                                                 </button>
                                                 <ul class="dropdown-menu pull-left">
-                                                    <li>
-                                                        @Html.ActionLink("Edit", "EditRole", new { id = item.Name })
-
-                                                    </li>
-                                                    <li>
-                                                        @Html.ActionLink("Permission", "Index", "Permission", new { RoleName = item.Name }, null)
-                                                    </li>
-                                                    <li>
-                                                        @Html.ActionLink("Field Level Security", "Fls", "Permission", new { RoleName = item.Name }, null)
-                                                    </li>
-                                                    <li>
-                                                        @Html.ActionLink("Delete", "DeleteRole", new { id = item.Name })
-                                                    </li>
-                                                    <li>
-                                                        @Html.ActionLink("Assign Users", "UsersInRole", new { id = item.Name })
-                                                    </li>
+                                                    @if (User.CanEditAdminFeature("Role"))
+                                                    {
+                                                        <li>
+                                                            @Html.ActionLink("Edit", "EditRole", new { id = item.id })
+                                                        </li>
+                                                    }
+                                                    @if (User.CanViewAdminFeature("RoleEntityPermission"))
+                                                    {
+                                                        <li>
+                                                            @Html.ActionLink("Permission", "Index", "Permission", new { RoleName = item.Name }, null)
+                                                        </li>
+                                                    }
+                                                    @if (User.CanViewAdminFeature("FieldLevelSecurity"))
+                                                    {
+                                                        <li>
+                                                            @Html.ActionLink("Field Level Security", "Fls", "Permission", new { RoleName = item.Name }, null)
+                                                        </li>
+                                                    }
+                                                    @if (User.CanDeleteAdminFeature("Role"))
+                                                    {
+                                                        <li>
+                                                            @Html.ActionLink("Delete", "DeleteRole", new { id = item.id })
+                                                        </li>
+                                                    }
+                                                    @if (User.CanViewAdminFeature("AssignUserRole"))
+                                                    {
+                                                        <li>
+                                                            @Html.ActionLink("Assign Users", "UsersInRole", new { id = item.id })
+                                                        </li>
+                                                    }
+                                                    @if (User.CanEditAdminFeature("AssignUserRole"))
+                                                    {
                                                     <li>
                                                         @Html.ActionLink("Set this as Default Role for New User", "SetDefaultRole", "Admin", new { RoleName = item.Name }, null)
                                                     </li>
+                                                    }
                                                 </ul>
                                             </div>
                                         </div>

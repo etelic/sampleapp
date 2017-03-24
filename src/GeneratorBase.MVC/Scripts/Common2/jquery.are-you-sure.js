@@ -10,6 +10,7 @@
  * Version: 1.9.0
  * Date:    13th August 2014
  */
+var keycode;
 (function ($) {
     $.fn.areYouSure = function (options) {
         var settings = $.extend(
@@ -60,6 +61,7 @@
             $field.data('ays-orig', getValue($field));
         };
         var checkForm = function (evt) {
+            keycode = evt.keyCode;
             var isFieldDirty = function ($field) {
                 var origValue = $field.data('ays-orig');
                 if (undefined === origValue) {
@@ -145,7 +147,8 @@
                     window.aysHasPrompted = true;
                     window.setTimeout(function () { window.aysHasPrompted = false; }, 900);
                 }
-                return settings.message;
+                if (keycode != 13)
+                    return settings.message;
             });
         }
         return this.each(function (elem) {

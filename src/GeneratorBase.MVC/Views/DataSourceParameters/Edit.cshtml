@@ -1,0 +1,317 @@
+﻿@model GeneratorBase.MVC.Models.DataSourceParameters
+@using PagedList;
+@{
+    ViewBag.Title = "Edit Data Source Parameters";
+	var EditPermission = User.CanEditItem("DataSourceParameters", Model, User);
+	var DeletePermission = User.CanDeleteItem("DataSourceParameters", Model, User);
+}
+@functions {
+    object getHtmlAttributes(string Property)
+    {
+        if (User.CanEdit("DataSourceParameters", Property))
+        {
+            return new { @class = "form-control" };
+        } return new { @class = "form-control", @readonly = "readonly" };
+    }
+}
+<script>
+    $(document).ready(function () {
+        try {
+            var hostingEntityName = "";
+            if ('@Convert.ToString(ViewData["AssociatedType"])' != null) {
+                hostingEntityName = '@Convert.ToString(ViewData["AssociatedType"])';
+				$('#' + hostingEntityName + 'ID').attr("lock","true");
+				 $('#' + hostingEntityName + 'ID').trigger("change");
+            }
+        }
+        catch (ex) { }
+    });
+</script>
+@{
+    if (!string.IsNullOrEmpty(ViewBag.DataSourceParametersIsHiddenRule))
+    {
+        @Html.Raw(ViewBag.DataSourceParametersIsHiddenRule);
+    }
+}
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-title">
+            <i class="glyphicon glyphicon-edit text-primary"></i> Data Source Parameters  <i class="glyphicon glyphicon-chevron-right small"></i> <span>Edit</span>
+        </h1>
+<label id="ErrMsg" class="text-primary small pull-right" style="color:red; vertical-align:middle; font-weight:100;"></label>
+<div id="errorContainerEdit" style="display: none">
+            <div id="errorsMsgEdit"></div>
+            <div id="errorsEdit"></div>
+        </div>
+      <h2 class="text-primary">
+	  <span id="HostingEntityDisplayValue">@Html.DisplayFor(model => model.DisplayValue)</span>
+	   <div class="btn-group pull-right fixactionbut">
+            <button data-toggle="dropdown" class="btn btn-xs dropdown-toggle btn-default pull-right">
+                Action
+                <span class="caret">    </span>
+            </button>
+			<ul class="dropdown-menu pull-left">
+				<li>
+                    <a href="@Url.Action("Details", "DataSourceParameters", new { id = Model.Id, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"])  }, null)"><i class="glyphicon glyphicon-eye-open"></i>  View</a>
+                </li>
+				<li>
+                    @if (User.Identity.IsAuthenticated && User != null && User.CanEdit("DataSourceParameters"))
+                    {
+                        <a href="@Url.Action("Edit","DataSourceParameters", new { id = Model.Id,  UrlReferrer = Request.Url, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) },null)"><i class="glyphicon glyphicon-edit"></i>  Edit</a>
+                    }
+                </li>             
+				<li>
+                    @if (User.Identity.IsAuthenticated && User != null && User.CanDelete("DataSourceParameters"))
+                    {
+                        <a href="@Url.Action("Delete", "DataSourceParameters", new { id = Model.Id, UrlReferrer = Request.Url, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null)"><i class="glyphicon glyphicon-remove-sign"></i>  Delete</a>
+                    }
+                </li>
+ <li class="divider" style="clear:both"></li>
+ <li class="dropdown-submenu pull-left">
+	<a tabindex="-1" href="#" style="margin-bottom:10px;">Find Matching</a>
+    <ul class="dropdown-menu pull-left">
+<li>
+		<a href="@Url.Action("FindFSearch", "PropertyMapping", new {sourceEntity="DataSourceParameters",id=Model.Id}, null)">Property Mapping</a>
+</li>
+</ul>
+</li>
+			</ul>
+		</div>
+	  </h2>
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+ <div class="tabbable responsive">
+    <ul class="nav nav-tabs">
+	 <li class="active"><a href="#Details" data-toggle="tab">Details</a></li>
+    </ul>
+		<div class="tab-content">
+        <div class="tab-pane fade in active" id="Details">
+@using (Html.BeginForm("Edit","DataSourceParameters",new {UrlReferrer =Convert.ToString(ViewData["DataSourceParametersParentUrl"])}, FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+     Html.ValidationSummary(true);
+                Html.EnableClientValidation();
+    @Html.HiddenFor(model => model.Id)
+	@Html.HiddenFor(model => model.ConcurrencyKey)
+                <div class="col-md-12 col-sm-12 col-xs-12" style="padding:0px; margin:0px;">
+                    <div class="panel panel-default AppForm">
+						<div class="panel-body">
+						<div class="row">
+@if(User.CanView("DataSourceParameters","ArgumentName"))
+{
+						<div class='col-sm-6 col-md-6 col-xs-12' id="dvArgumentName">
+							<div class='form-group'>
+								<label class="col-sm-5 col-md-5 col-xs-12" >@Html.LabelFor(model => model.ArgumentName)  <span class="text-danger-reg">*</span> </label>
+                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+											
+									@Html.TextBoxFor(model => model.ArgumentName,  getHtmlAttributes("ArgumentName"))
+									@Html.ValidationMessageFor(model => model.ArgumentName)
+								</div>
+                             </div>
+						</div>
+} else { @Html.HiddenFor(model => model.ArgumentName, new { @class = "form-control" })}
+@if(User.CanView("DataSourceParameters","ArgumentValue"))
+{
+						<div class='col-sm-6 col-md-6 col-xs-12' id="dvArgumentValue">
+							<div class='form-group'>
+								<label class="col-sm-5 col-md-5 col-xs-12" >@Html.LabelFor(model => model.ArgumentValue)   </label>
+                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+											
+									@Html.TextBoxFor(model => model.ArgumentValue,  getHtmlAttributes("ArgumentValue"))
+									@Html.ValidationMessageFor(model => model.ArgumentValue)
+								</div>
+                             </div>
+						</div>
+} else { @Html.HiddenFor(model => model.ArgumentValue, new { @class = "form-control" })}
+@if(User.CanView("DataSourceParameters","HostingEntity"))
+{
+						<div class='col-sm-6 col-md-6 col-xs-12' id="dvHostingEntity">
+							<div class='form-group'>
+								<label class="col-sm-5 col-md-5 col-xs-12" >@Html.LabelFor(model => model.HostingEntity)   </label>
+                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+											
+									@Html.TextBoxFor(model => model.HostingEntity,  getHtmlAttributes("HostingEntity"))
+									@Html.ValidationMessageFor(model => model.HostingEntity)
+								</div>
+                             </div>
+						</div>
+} else { @Html.HiddenFor(model => model.HostingEntity, new { @class = "form-control" })}
+@if(User.CanView("DataSourceParameters","flag"))
+{
+                            <div class='col-sm-6 col-md-6 col-xs-12' id="dvflag">
+							  <div class="form-group">
+                                <label class="col-sm-5 col-md-5 col-xs-12" >
+                                    @Html.LabelFor(model => model.flag) 
+                                </label>
+								<div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                    @*@Html.CheckBoxFor(model => model.flag)*@
+									@Html.CheckBox("flag", Model.flag.HasValue ? Model.flag : false)
+                                    @Html.ValidationMessageFor(model => model.flag)
+                                </div>
+								</div>
+                            </div>
+} else { @Html.HiddenFor(model => model.flag, new { @class = "form-control" })}
+@if(User.CanView("DataSourceParameters","other"))
+{
+						<div class='col-sm-6 col-md-6 col-xs-12' id="dvother">
+							<div class='form-group'>
+								<label class="col-sm-5 col-md-5 col-xs-12" >@Html.LabelFor(model => model.other)   </label>
+                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+											
+									@Html.TextBoxFor(model => model.other,  getHtmlAttributes("other"))
+									@Html.ValidationMessageFor(model => model.other)
+								</div>
+                             </div>
+						</div>
+} else { @Html.HiddenFor(model => model.other, new { @class = "form-control" })}
+				@if(User.CanView("DataSourceParameters","EntityDataSourceParametersID"))
+				{
+                    <div class='col-sm-6 col-md-6 col-xs-12' id="dvEntityDataSourceParametersID">
+                        <div class='form-group'>
+                            <label class="col-sm-5 col-md-5 col-xs-12" >@Html.LabelFor(model => model.EntityDataSourceParametersID) </label>
+							<div class="input-group col-sm-7 col-md-7 col-xs-12">
+							<div class="input-group" style="width:100%;">									
+									@if (User.CanEdit("DataSourceParameters", "EntityDataSourceParametersID"))
+		{
+			@Html.DropDownList("EntityDataSourceParametersID", null, "-- Select --", new {      @class = "chosen-select form-control", @HostingName = "EntityDataSource", @dataurl = Url.Action("GetAllValue", "EntityDataSource",new { caller = "EntityDataSourceParametersID" }) })
+		}
+		else
+		{
+			@Html.HiddenFor(model => model.EntityDataSourceParametersID, new { @class = "form-control" })
+			@Html.DropDownList("EntityDataSourceParametersID", null, "-- Select --", new {     @class = "chosen-select form-control", @disabled="disabled", @HostingName = "EntityDataSource", @dataurl = Url.Action("GetAllValue", "EntityDataSource",new { caller = "EntityDataSourceParametersID" }) })
+		}
+                                @Html.ValidationMessageFor(model => model.EntityDataSourceParametersID)
+								 @if (User.Identity.IsAuthenticated && User != null && User.CanAdd("EntityDataSource"))
+                                    {
+                                <div class="input-group-btn">
+                                 <a class="btn btn-default btn ie8fix"  data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Entity Data Source','dvPopup','" + Url.Action("CreateQuick", "EntityDataSource", new { UrlReferrer = Request.Url, HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), IsAddPop=true }) + "')")">
+										<span class="glyphicon glyphicon-plus-sign"></span>
+                                    </a>
+                                </div>
+								}
+							</div>
+							</div>
+                        </div>
+                    </div>
+					} else { @Html.HiddenFor(model => model.EntityDataSourceParametersID, new { @class = "form-control" })}
+       </div>
+	            </div>
+        </div>
+		</div>
+		 @Html.AntiForgeryToken();
+		 @Html.ActionLink("Cancel", "Cancel", new { UrlReferrer = ViewData["DataSourceParametersParentUrl"] }, new { @onclick = "", @class = "btn btn-default btn-sm" })
+		 if (EditPermission)
+         {
+				<input type="submit" name="command" value="Save" class="btn btn-primary btn-sm" />
+				<input type="submit" name="command" value="Save & Continue" class="btn btn-primary btn-sm" />
+		}	
+				<input type="hidden" name="hdncommand" value="" />
+}
+</div>
+</div> <!-- /tab-content --><br />
+<br/>
+</div>
+	<script>
+    $(function () {
+        var userAgent = navigator.userAgent.toLowerCase();
+        // Figure out what browser is being used
+        var browser = {
+            version: (userAgent.match(/.+(?:rv|it|ra|ie)[\/: ]([\d.]+)/) || [])[1],
+            safari: /webkit/.test(userAgent),
+            opera: /opera/.test(userAgent),
+            msie: /msie/.test(userAgent) && !/opera/.test(userAgent),
+            mozilla: /mozilla/.test(userAgent) && !/(compatible|webkit)/.test(userAgent)
+        };
+        if (!browser.msie) {
+            $('form').areYouSure();
+        }
+        else if (browser.version > 8.0) {
+            $('form').areYouSure();
+        }
+    });
+</script>
+	<script>
+    $("input[type='submit']").click(function () {
+        var $this = $(this);
+        $('input:hidden[name="hdncommand"]').val($this.val());
+    });
+	</script>
+@{
+var busineesrule = User.businessrules.Where(p => p.EntityName == "DataSourceParameters").ToList();
+if ((busineesrule != null && busineesrule.Count > 0))
+{
+    <script>
+    $(document).ready(function () {
+        $.ajax({
+            async: false,
+            type: "GET",
+            url: "@Url.Action("GetLockBusinessRules", "DataSourceParameters")",
+            data: $("form").serialize(),
+        success: function (data) {
+            if (data.length > 0) {
+                $(':input:not([readonly])', 'form').attr('disabled', 'disabled').attr('readonly', 'readonly').trigger("chosen:updated");
+                document.getElementById('ErrMsg').innerHTML = data + " Rules applied";
+            }
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+        }
+    });
+	$.ajax({
+            async: false,
+            type: "GET",
+            url: "@Url.Action("GetReadOnlyProperties", "DataSourceParameters")",
+            data: $("form").serialize(),
+            success: function (data) {
+                for (var key in data) {
+                    $('#' + key).attr('disabled', 'disabled').attr('readonly', 'readonly').trigger("chosen:updated");
+					$("input[type='radio'][name='" + key + "']").attr('disabled', 'disabled').attr('readonly', 'readonly');
+					$('form').append('<input type="hidden" name="' + key + '" id="' + key + '" value="' + $('#' + key).val() + '" />');
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+            }
+        });
+    });
+</script>
+<script>
+    $("form").submit(function () {
+            var flag = true;
+      
+            $.ajax({
+                async: false,
+                type: "GET",
+                url: "@Url.Action("GetMandatoryProperties", "DataSourceParameters")",
+                data: $(this).serialize(),
+                 success: function (data) {
+                        $('[businessrule="mandatory"]').each(function () {
+                            $(this).removeAttr('required');
+                        });
+                        document.getElementById('ErrMsg').innerHTML = "";
+                        for (var key in data) {
+                            if ($.trim($('#' + key).val()).length == 0 && $.trim($("input[type='radio'][name='" + key + "']:checked").val()).length == 0)
+                            {
+                                $('#' + key).attr('required', 'required');
+                                $('#' + key).attr('businessrule', 'mandatory');
+                                $("input[type='radio'][name='" + key + "']").attr('required', 'required');
+                                $("input[type='radio'][name='" + key + "']").attr('businessrule', 'mandatory');
+                                flag = false;
+                                document.getElementById('ErrMsg').innerHTML += data[key] + " is Mandatory.<br/>";
+                            }
+                        }
+                    },
+                error: function (jqXHR, textStatus, errorThrown) {
+                }
+            });
+			 if (flag)
+                    $("form").find(':input').removeAttr('disabled');
+            return flag;
+    });
+</script>
+}
+ else
+    {
+           
+    }
+}
+
+

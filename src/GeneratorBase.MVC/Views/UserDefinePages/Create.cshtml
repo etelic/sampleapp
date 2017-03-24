@@ -1,4 +1,4 @@
-﻿@model GeneratorBase.MVC.Models.UserDefinePages
+﻿@model GeneratorBase.MVC.Models.CreateUserDefinePageViewModel
 @{
     ViewBag.Title = "Create User Define Page";
     Layout = null;
@@ -10,7 +10,8 @@
             url: '@Url.Action("Create", "UserDefinePages")',
             data: $('#createUserForm').serialize(),
             type: 'post',
-            success: function (data) {
+            success: function (data)
+            {
                 if (data.success)
                 {
                     var url = '@Url.Action("UserDefinePage", "UserDefinePages")';
@@ -23,35 +24,34 @@
                 }
             },
             error: function (xhr, status) {
-                //Display error message
             }
         });
         return false;
     }
     function showValidationErrors(isShown) {
         if (isShown) {
-            $("#errorContainer").show();
+            $("#errorContainer1").show();
         } else {
-            $("#errorContainer").hide();
+            $("#errorContainer1").hide();
         }
     }
     function fillErrorList(errors) {
-        $("#errors").html("");
+        $("#errors1").html("");
         var list = document.createElement('ul');
         for (var i = 0; i < errors.length; i++) {
             var item = document.createElement('li');
             item.appendChild(document.createTextNode(errors[i]));
             list.appendChild(item);
         }
-        $("#errors").html(list);
+        $("#errors1").html(list);
     }
 </script>
 @using (Html.BeginForm("Create", "UserDefinePages", FormMethod.Post, new { id = "createUserForm", enctype = "multipart/form-data" }))
 {
     @Html.AntiForgeryToken()
     @Html.ValidationSummary(true)
-    <div id="errorContainer" class="alert alert-danger" style="display: none">
-        <div id="errors"></div>
+    <div id="errorContainer1" class="alert alert-danger" style="display: none">
+        <div id="errors1"></div>
     </div>
     <div class="row">
         <div class="col-md-12 col-sm-12 col-xs-12">
@@ -61,11 +61,27 @@
                         <div class='col-sm-6'>
                             <div class='form-group'>
                                 <label>@Html.LabelFor(model => model.PageName) </label>
-                                @Html.TextBoxFor(model => model.PageName, new { @class = "form-control" })
+                                @Html.TextBoxFor(model => model.PageName, new { @class = "form-control"})
                                 @Html.ValidationMessageFor(model => model.PageName)
                             </div>
                             @Html.HiddenFor(model => model.PageContent)
                         </div>
+                        <div class='col-sm-6'>
+                            <div class='form-group'>
+                                <label>Select Role </label>
+                                @Html.DropDownList("SelectedRole", Model.RoleList.Where(rl => rl.Text != System.Configuration.ConfigurationManager.AppSettings["AdministratorRoles"].ToString()), "--- Select Role ---", new { @class = "form-control", @required = "required" })
+                            </div>
+                        </div>
+                        @*<div class="col-md-12 col-sm-12 col-sx-12">
+                            <div class="panel panel-default">
+                                <div class="panel-heading clearfix" style="margin:0px; padding:8px;">
+                                    Select Roles
+                                </div>
+                                <div class="panel-body" style="margin:0px; padding:8px;">
+                                    @Html.EditorFor(model => model.Roles)
+                                </div>
+                            </div>
+                        </div>*@
                     </div>
                 </div>
             </div>
@@ -74,4 +90,4 @@
     <button type="button" class="btn btn-default btn-sm" data-dismiss="modal" aria-hidden="true">Cancel</button>
     <input type="submit" value="Create" onclick="return bindForm();" class="btn btn-primary btn-sm" />
 }
-
+@Scripts.Render("~/bundles/jqueryval")

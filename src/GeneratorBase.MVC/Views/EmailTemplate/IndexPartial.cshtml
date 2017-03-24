@@ -23,27 +23,39 @@
                                 <div class="btn-group pull-right" style="position:absolute; right:30px">
                                     @if (!emailTemplate.IsDefault)
                                     {
-                                        <button class="btn dropdown-toggle btn-default btn-xs" data-original-title="Edit Template Type" data-placement="top" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Edit Email Template Type','dvPopup','" + Url.Action("EditEmailTemplateType", "EmailTemplate", new { id = emailTemplate.Id, UrlReferrer = Request.Url, TS = DateTime.Now }) + "')")">
-                                            <span class="caret"></span>  Edit Type
-                                        </button>
+                                        if (User.CanEditAdminFeature("ApplicationConfiguration"))
+                                        {
+                                            <button class="btn dropdown-toggle btn-default btn-xs" data-original-title="Edit Template Type" data-placement="top" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Edit Email Template Type','dvPopup','" + Url.Action("EditEmailTemplateType", "EmailTemplate", new { id = emailTemplate.Id, UrlReferrer = Request.Url, TS = DateTime.Now }) + "')")">
+                                                <span class="caret"></span>  Edit Type
+                                            </button>
+                                        }
                                     }
                                     @if (itemSetting != null)
                                     {
-                                    <button class="btn dropdown-toggle btn-default btn-xs" data-original-title="Edit Template" data-placement="top" onclick="@Html.Raw("NavigateToUrl('" + Url.Action("Edit", "EmailTemplate", new { id = itemSetting.Id, UrlReferrer = Request.Url, TS = DateTime.Now }, null) + "');")">
-                                        <span class="caret"></span>  Edit Template
-                                    </button>
+                                         if (User.CanEditAdminFeature("ApplicationConfiguration"))
+                                        {
+                                        <button class="btn dropdown-toggle btn-default btn-xs" data-original-title="Edit Template" data-placement="top" onclick="@Html.Raw("NavigateToUrl('" + Url.Action("Edit", "EmailTemplate", new { id = itemSetting.Id, UrlReferrer = Request.Url, TS = DateTime.Now }, null) + "');")">
+                                            <span class="caret"></span>  Edit Template
+                                        </button>
+                                    }
                                     }
                                     @if (!emailTemplate.IsDefault)
                                     {
+                                         if (User.CanDeleteAdminFeature("ApplicationConfiguration"))
+                                        {
                                         <button class="btn dropdown-toggle btn-default btn-xs" data-original-title="Delete Template Type" data-placement="top" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Delete Email Template Type','dvPopup','" + Url.Action("DeleteEmailTemplateType", "EmailTemplate", new { id = emailTemplate.Id, UrlReferrer = Request.Url, TS = DateTime.Now }) + "')")">
                                             <span class="caret"></span>  Delete Type
                                         </button>
                                     }
+                                    }
                                     @if (itemSetting != null)
                                     {
+                                        if (User.CanDeleteAdminFeature("ApplicationConfiguration"))
+                                        {
                                         <button class="btn dropdown-toggle btn-default btn-xs" data-original-title="Delete Template" data-placement="top" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Delete Email Template','dvPopup','" + Url.Action("DeleteEmailTemplate", "EmailTemplate", new { id = itemSetting.Id, UrlReferrer = Request.Url, TS = DateTime.Now }) + "')")">
                                             <span class="caret"></span>  Delete Template
                                         </button>
+                                    }
                                     }
                                     @*<button data-toggle="dropdown" class="btn dropdown-toggle btn-default btn-xs">
                                             Action

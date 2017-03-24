@@ -27,7 +27,7 @@ namespace GeneratorBase.MVC.Models
         public Boolean? Flag { get; set; }
 		 public  string getDisplayValue() {
              var dispValue = Convert.ToString(this.EntityName);
-             dispValue = dispValue.TrimEnd(" - ".ToCharArray());
+             dispValue = !string.IsNullOrEmpty(dispValue) ? dispValue.TrimEnd(" - ".ToCharArray()) : "";
              this.m_DisplayValue = dispValue;
              return dispValue;
          }

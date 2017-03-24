@@ -1,0 +1,221 @@
+﻿@model GeneratorBase.MVC.Models.EntityDataSource
+@using PagedList;
+@{
+    ViewBag.Title = "View Entity Data Source";
+}
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-title">
+            <i class="glyphicon glyphicon-hand-down text-primary"></i> Entity Data Source  <i class="glyphicon glyphicon-chevron-right small"></i> <span>View</span>
+        </h1>
+        <h2 class="text-primary"><span id="HostingEntityDisplayValue">@Html.DisplayFor(model => model.DisplayValue)</span>
+			<div class="btn-group pull-right fixactionbut">
+            <button data-toggle="dropdown" class="btn btn-xs dropdown-toggle btn-default pull-right">
+                Action
+                <span class="caret">    </span>
+            </button>
+			<ul class="dropdown-menu pull-left">               
+				<li>
+                    @if (User.Identity.IsAuthenticated && User != null && User.CanEdit("EntityDataSource"))
+                    {
+                        <a href="@Url.Action("Edit","EntityDataSource", new { id = Model.Id,  UrlReferrer = Request.Url, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) },null)"><i class="glyphicon glyphicon-edit"></i>  Edit</a>
+                    }
+                </li>             
+				<li>
+                    @if (User.Identity.IsAuthenticated && User != null && User.CanDelete("EntityDataSource"))
+                    {
+                        <a href="@Url.Action("Delete", "EntityDataSource", new { id = Model.Id, UrlReferrer = Request.Url, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null)"><i class="glyphicon glyphicon-remove-sign"></i>  Delete</a>
+                    }
+                </li>
+	<li class="divider" style="clear:both"></li>
+	<li class="dropdown-submenu pull-left">
+	<a tabindex="-1" href="#" style="margin-bottom:10px;">Add Association</a>
+    <ul class="dropdown-menu pull-left">
+				@if (User.Identity.IsAuthenticated && User != null && User.CanAdd("DataSourceParameters"))
+				{
+					<li>
+						<a onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Create", "DataSourceParameters", 
+						new { UrlReferrer = Request.Url,
+								AssociatedType ="EntityDataSourceParameters", 
+							HostingEntityName = "EntityDataSource",
+							HostingEntityID = @Convert.ToString(Model.Id) }, null) + "');")>
+							<i class="glyphicon glyphicon-plus"></i>  Data Source Parameters
+						</a>
+					</li>
+				}
+							@if (User.Identity.IsAuthenticated && User != null && User.CanAdd("PropertyMapping"))
+				{
+					<li>
+						<a onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Create", "PropertyMapping", 
+						new { UrlReferrer = Request.Url,
+								AssociatedType ="EntityPropertyMapping", 
+							HostingEntityName = "EntityDataSource",
+							HostingEntityID = @Convert.ToString(Model.Id) }, null) + "');")>
+							<i class="glyphicon glyphicon-plus"></i>  Property Mapping
+						</a>
+					</li>
+				}
+			</ul>
+</li>
+			</ul>
+</div>
+		</h2>
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+<div class="tabbable responsive">
+    <ul class="nav nav-tabs">
+	 <li class="active"><a href="#Details" data-toggle="tab">Details</a></li>
+		 <li @(!User.CanView("DataSourceParameters")?"style=display:none;":"")><a onclick="LoadTab('EntityDataSourceParameters','@Url.Action("Index", "DataSourceParameters", new {RenderPartial=true, HostingEntity ="EntityDataSource", HostingEntityID = @Model.Id, AssociatedType = "EntityDataSourceParameters",TabToken = DateTime.Now.Ticks,})')" href="#EntityDataSourceParameters" data-toggle="tab">
+		 Data Source Parameters
+		 <span class="badge bg-blue"><div id="dvcnt_EntityDataSourceParameters">@ViewBag.EntityDataSourceParametersCount</div></span>
+		 		 </a></li>
+		 <li @(!User.CanView("PropertyMapping")?"style=display:none;":"")><a onclick="LoadTab('EntityPropertyMapping','@Url.Action("Index", "PropertyMapping", new {RenderPartial=true, HostingEntity ="EntityDataSource", HostingEntityID = @Model.Id, AssociatedType = "EntityPropertyMapping",TabToken = DateTime.Now.Ticks,})')" href="#EntityPropertyMapping" data-toggle="tab">
+		 Property Mapping
+		 <span class="badge bg-blue"><div id="dvcnt_EntityPropertyMapping">@ViewBag.EntityPropertyMappingCount</div></span>
+		 		 </a></li>
+    </ul>
+	    <div class="tab-content">
+		   <div class="tab-pane fade in active" id="Details">
+				 <div class="panel panel-default AppForm">
+					<div class="panel-body">
+                                  
+			<div class="row">
+				<div class="col-sm-12 col-md-12 col-xs-12">
+			<div class="row">
+@if(User.CanView("EntityDataSource","EntityName"))
+{
+<div class='col-sm-6 col-md-6 col-xs-12'>
+	<div class='form-group'>
+		<label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.EntityName) </label>
+		<div class="input-group col-sm-7 col-md-7 col-xs-12">
+		
+				<p class="viewlabel">@Model.EntityName</p>
+		</div>
+	</div>
+</div>
+}
+@if(User.CanView("EntityDataSource","DataSource"))
+{
+<div class='col-sm-6 col-md-6 col-xs-12'>
+	<div class='form-group'>
+		<label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.DataSource)</label>
+		<div class="input-group col-sm-7 col-md-7 col-xs-12">
+		<p class="viewlabel">@Model.DataSource</p>
+		</div>
+	</div>
+</div>
+}
+@if(User.CanView("EntityDataSource","SourceType"))
+{
+<div class='col-sm-6 col-md-6 col-xs-12'>
+	<div class='form-group'>
+		<label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.SourceType) </label>
+		<div class="input-group col-sm-7 col-md-7 col-xs-12">
+		
+				<p class="viewlabel">@Model.SourceType</p>
+		</div>
+	</div>
+</div>
+}
+@if(User.CanView("EntityDataSource","MethodType"))
+{
+<div class='col-sm-6 col-md-6 col-xs-12'>
+	<div class='form-group'>
+		<label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.MethodType) </label>
+		<div class="input-group col-sm-7 col-md-7 col-xs-12">
+		
+				<p class="viewlabel">@Model.MethodType</p>
+		</div>
+	</div>
+</div>
+}
+@if(User.CanView("EntityDataSource","Action"))
+{
+<div class='col-sm-6 col-md-6 col-xs-12'>
+	<div class='form-group'>
+		<label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.Action) </label>
+		<div class="input-group col-sm-7 col-md-7 col-xs-12">
+		
+				<p class="viewlabel">@Model.Action</p>
+		</div>
+	</div>
+</div>
+}
+@if(User.CanView("EntityDataSource","flag"))
+{
+<div class='col-sm-6 col-md-6 col-xs-12'>
+	<div class='form-group'>
+		<label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.flag) </label>
+		<div class="input-group col-sm-7 col-md-7 col-xs-12">
+		
+				@Html.DisplayFor(model => model.flag)
+		</div>
+	</div>
+</div>
+}
+@if(User.CanView("EntityDataSource","other"))
+{
+<div class='col-sm-6 col-md-6 col-xs-12'>
+	<div class='form-group'>
+		<label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.other) </label>
+		<div class="input-group col-sm-7 col-md-7 col-xs-12">
+		
+				<p class="viewlabel">@Model.other</p>
+		</div>
+	</div>
+</div>
+}
+		</div>
+				</div>
+			</div>
+		</div>
+			</div>
+			<div class="row">
+				<div class="col-md-12 col-sm-12 col-xs-12">
+					@Html.ActionLink("Back", "Cancel", new { UrlReferrer = Request.UrlReferrer }, new { @class = "btn btn-default btn-sm" })
+					 @if (User.Identity.IsAuthenticated && User != null && User.CanEdit("EntityDataSource"))
+                     {
+                          @Html.ActionLink("Edit", "Edit", new { id = Model.Id, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, new { @class = "btn btn-primary btn-sm" })
+                     }
+				</div>
+			</div>    
+			@if (User.Identity.IsAuthenticated && User != null && User.CanAdd("DataSourceParameters"))
+            {
+				<a onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Create", "DataSourceParameters",
+						new { UrlReferrer = Request.Url,
+								AssociatedType ="EntityDataSourceParameters", 
+						HostingEntityName = "EntityDataSource",
+                              HostingEntityID = @Convert.ToString(Model.Id)
+                        }, null) + "');") class="btn btn-primary btn-sm" style="margin-top:5px;">
+                   Add  Data Source Parameters
+                </a>
+            }
+			@if (User.Identity.IsAuthenticated && User != null && User.CanAdd("PropertyMapping"))
+            {
+				<a onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Create", "PropertyMapping",
+						new { UrlReferrer = Request.Url,
+								AssociatedType ="EntityPropertyMapping", 
+						HostingEntityName = "EntityDataSource",
+                              HostingEntityID = @Convert.ToString(Model.Id)
+                        }, null) + "');") class="btn btn-primary btn-sm" style="margin-top:5px;">
+                   Add  Property Mapping
+                </a>
+            }
+	</div>    
+<div class="tab-pane fade in" id="EntityDataSourceParameters">
+     @if (User.Identity.IsAuthenticated && User != null && User.CanView("DataSourceParameters"))
+	{
+	  // Html.RenderAction("Index", "DataSourceParameters", new {RenderPartial=true, HostingEntity = "EntityDataSource", HostingEntityID = @Model.Id, AssociatedType = "EntityDataSourceParameters" }); 
+	}
+  </div>
+<div class="tab-pane fade in" id="EntityPropertyMapping">
+     @if (User.Identity.IsAuthenticated && User != null && User.CanView("PropertyMapping"))
+	{
+	  // Html.RenderAction("Index", "PropertyMapping", new {RenderPartial=true, HostingEntity = "EntityDataSource", HostingEntityID = @Model.Id, AssociatedType = "EntityPropertyMapping" }); 
+	}
+  </div>
+	</div> <!-- /tab-content --><br />
+<br/>
+</div>
+ 

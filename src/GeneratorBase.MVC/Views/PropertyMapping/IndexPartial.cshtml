@@ -1,0 +1,424 @@
+﻿@model PagedList.IPagedList<GeneratorBase.MVC.Models.PropertyMapping>
+@using PagedList.Mvc;
+@{
+    var ActionNameUrl = "Index";
+    if (HttpContext.Current.Request.RequestContext.RouteData.Values["action"].ToString().ToUpper() == "FSEARCH")
+    {
+        ActionNameUrl = "FSearch";
+    }
+    var BackUrl = Request.Url;
+    if (ViewData["HostingEntity"] != null && Request.QueryString["TabToken"] != null)
+    {
+        BackUrl = Request.UrlReferrer;
+    }
+}
+<div id="PropertyMapping">
+    <style>
+        .table-responsive > .fixed-column {
+            position: absolute;
+            display: block;
+            width: auto;
+            border: 0px solid transparent;
+            border-top: 1px solid #c3ddec;
+        }
+
+        .fixed-column th {
+            background: #fff;
+        }
+
+        .fixed-column td {
+            background: #fff;
+        }
+    </style>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".pagination a").click(function (e) {
+                //PaginationClick(e,'PropertyMapping')
+                PaginationClick(e, 'PropertyMapping', '@User.JavaScriptEncodedName')
+            })
+            if ("@HttpContext.Current.Request.RequestContext.RouteData.Values["action"].ToString().ToUpper()" == "FSEARCH") {
+                $("#fsearchPropertyMapping").addClass('in');
+                if ('@ViewData["HostingEntity"]'.length > 0) {
+                    $("#" + "@ViewData["HostingEntity"]" + "_PropertyMapping").hide();
+                }
+            }
+            $("#SearchStringPropertyMapping").keypress(function (e) {
+                if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
+                    $("#PropertyMappingSearch").bind("click", (function () {
+                    }));
+                    $('#PropertyMappingSearch').trigger("click");
+                    return false;
+                }
+            })
+            $("#btnShowHidePropertyMapping").mouseup(function () {
+                if (document.getElementById('ColumnShowHidePropertyMapping').className == 'collapse') {
+                    $('#lblPropertyMapping').css('display', 'none');
+                }
+            })
+        });
+    </script>
+    @functions {
+        object getSortHtmlAttributes(string sortby, bool IsPaging, int? page, bool? IsExport)
+        {
+            if (IsPaging)
+            {
+                return new
+                {
+                    page,
+                    sortBy = ViewBag.CurrentSort,
+                    isAsc = ViewBag.IsAsc,
+                    currentFilter = ViewBag.CurrentFilter,
+                    HostingEntity = @Convert.ToString(ViewData["HostingEntity"]),
+                    AssociatedType = @Convert.ToString(ViewData["AssociatedType"]),
+                    HostingEntityID = ViewData["HostingEntityID"],
+                    IsExport = IsExport,
+                    FSFilter = ViewBag.FSFilter == null ? "Fsearch" : ViewBag.FSFilter,
+                    IsFilter = @Convert.ToBoolean(ViewData["IsFilter"]),
+
+                    entitypropertymapping = Request.QueryString["entitypropertymapping"],
+                    search = Request.QueryString["search"],
+                };
+            }
+            else
+            {
+                return new
+                {
+                    sortBy = sortby,
+                    currentFilter = Request.QueryString["currentFilter"],
+                    searchString = Request.QueryString["searchString"],
+                    isAsc = (ViewBag.IsAsc == "ASC" ? "DESC" : ""),
+                    page = ViewBag.Pages,
+                    HostingEntity = @Convert.ToString(ViewData["HostingEntity"]),
+                    HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),
+                    AssociatedType = @Convert.ToString(ViewData["AssociatedType"]),
+                    IsExport = IsExport,
+                    FSFilter = ViewBag.FSFilter == null ? "Fsearch" : ViewBag.FSFilter,
+                    IsFilter = @Convert.ToBoolean(ViewData["IsFilter"]),
+                    entitypropertymapping = Request.QueryString["entitypropertymapping"],
+                    search = Request.QueryString["search"],
+                };
+            }
+        }
+    }
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-sx-12">
+            <div class="panel panel-default">
+                <div class="panel-heading clearfix" style="margin:0px; padding:8px;">
+                    <div class="btn-group" id='@ViewData["HostingEntity"]_PropertyMapping'>
+                        @if (User.Identity.IsAuthenticated && User != null && User.CanAdd("PropertyMapping"))
+                        {
+
+                            <button class="btn btn-default tip-top" data-placement="top" data-original-title="Quick Add" style="padding:3px 5px;" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Property Mapping','dvPopup','" + Url.Action("CreateQuick", "PropertyMapping", new { UrlReferrer = BackUrl, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), TS=DateTime.Now }) + "')")">
+                                <span class="fam-add"></span> Define Mapping
+                            </button>
+                            @*<button class="btn btn-xs  btn-default tip-top" type="button" data-original-title="Full Add" data-placement="top" style="padding:4px 5px;" onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Create", "PropertyMapping", new { UrlReferrer = BackUrl, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null) + "');")>
+                                    <span class="fam-world-add"></span> Add
+                                </button>*@
+                        }
+                        @if (ViewData["HostingEntity"] != null && User.CanEdit(ViewData["HostingEntity"].ToString()))
+                        {
+                            @*<button class="btn btn-default tip-top" data-placement="top" data-original-title="Associate Property Mapping with @GeneratorBase.MVC.Models.ModelConversion.GetDisplayNameOfEntity(ViewData["HostingEntity"].ToString())" style="padding:3px 5px;" data-toggle="modal" data-target="#dvPopupBulkOperation" onclick="@Html.Raw("OpenPopUpEntity1M(this,'PopupBulkOperation','Property Mapping','dvPopupBulkOperation','" + Url.Action("Index", "PropertyMapping", new { BulkOperation = "multiple", BulkAssociate = true, UrlReferrer = BackUrl, AssociatedType = ViewData["AssociatedType"], HostingEntity = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), TS = DateTime.Now }) + "')")">
+                                    <span class="fam-chart-organisation"></span>
+                                </button>*@
+                        }
+                    </div>
+                    <div class="btn-group">
+                        @if (User.Identity.IsAuthenticated && User != null && User.CanAdd("PropertyMapping"))
+                        {
+                            if (ViewData["HostingEntity"] == null)
+                            {
+                                <button type="button" class="btn btn-default btn-default tip-top" data-original-title="Import Excel" data-placement="top" style="padding:3px 5px;" onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Upload", "PropertyMapping") + "');")>
+                                    <span class="fam-page-excel"></span>
+                                </button>
+                            }
+                        }
+                        <div class="btn btn-default  btn-default tip-top" data-original-title="Export Excel" data-placement="top" style="padding:3px 5px;" onclick=@Html.Raw("NavigateToUrl('" + Url.Action(ActionNameUrl,"PropertyMapping",getSortHtmlAttributes(null, false, null, true), null) + "');")>
+                            <span class="fam-page-white-put"></span>
+                        </div>
+                    </div>
+                    <div class="btn-group hidden">
+                        <button class="btn btn-default tip-top" data-placement="top" data-original-title="Show Graph" style="padding:3px 5px;" data-toggle="modal" data-target="#ShowGraphPropertyMapping" onclick=@Html.Raw("OpenDashBoard('dvShowGraphPropertyMapping');")>
+                            <span class="fam-chart-bar"></span>
+                        </button>
+                        <button type="button" class="btn btn-default btn-default collapse-data-btn tip-top" id="btnShowHidePropertyMapping" data-original-title="Show/Hide Column" data-placement="top" style="padding:3px 5px;" onclick=@Html.Raw("showhideColumns(event,'PropertyMapping');")>
+                            <span class="fam-table-row-delete"></span>
+                        </button>
+                        @if (ViewData["HostingEntity"] == null || Convert.ToBoolean(ViewData["IsFilter"]) == true)
+                        {
+                            <div class="btn-group">
+                                <a class="btn btn-default btn-default dropdown-toggle tip-top" data-original-title="Filter-Groupby" style="padding:3px 5px;" data-toggle="dropdown" href="#">
+                                    <span class="glyphicon glyphicon-filter"></span>
+                                </a>
+                                <ul class="dropdown-menu" role="menu">
+                                    <li>
+                                        <a id="fltEntityDataSource" data-placement="top" onclick=@Html.Raw("EntityFilter('PropertyMapping','" + Url.Action("GetAllValueForFilter", "EntityDataSource") + "','" + Html.Raw(Url.Action("Index", "PropertyMapping", new {FirstCall=true,FilterHostingEntityID = ViewData["HostingEntityID"], IsFilter = true, HostingEntity = "EntityDataSource", AssociatedType = "EntityPropertyMapping", ClearSearchTimeStamp = DateTime.Now })) + "','" + User.JavaScriptEncodedName + "');")>
+                                            <span>Entity Data Source</span>
+                                        </a>
+                                    </li>
+                                    <li><span class="label label-primary pull-left filterLabel" style="margin-left:20px;">@Html.ActionLink("Clear", "Index")</span></li>
+                                </ul>
+                            </div>
+                        }
+                    </div>
+                    <div class="btn-group hidden">
+                        <a class="btn btn-default dropdown-toggle tip-top" data-original-title="Bulk Actions" style="padding:3px 5px;" data-toggle="dropdown" href="#">
+                            <span class="fa fa-wrench"></span> Bulk
+                        </a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li>
+                                @if (User.Identity.IsAuthenticated && User != null && User.CanEdit("PropertyMapping") && User.CanUseVerb("BulkUpdate", "PropertyMapping", User))
+                                {
+                                    <a data-placement="top" style="cursor:pointer;" data-toggle="modal" data-target="#dvPopup"
+                                       onclick="@Html.Raw("OpenPopUpBulKUpdate('addPopup','Bulk Update Property Mapping','dvPopup','" + Url.Action("BulkUpdate", "PropertyMapping", new { UrlReferrer = BackUrl, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), TS = DateTime.Now }) + "')")">Update</a>
+                                }
+                            </li>
+                            <li>
+                                @if (User.Identity.IsAuthenticated && User != null && User.CanDelete("PropertyMapping") && User.CanUseVerb("BulkDelete", "PropertyMapping", User))
+                                {
+                                    <a style="cursor:pointer;" onclick="PerformBulkOperation(this,'PropertyMapping','Bulk Delete','@Url.Action("DeleteBulk", "PropertyMapping")');">Delete</a>
+                                }
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="pull-right" style="width:250px;">
+                        <div class="input-group">
+                            @Html.TextBox("SearchStringPropertyMapping", ViewBag.CurrentFilter as string, null, new { @class = "form-control fixsearchbox", @value = ViewBag.Homeval, @placeholder = "Search" })
+                            <div class="input-group-btn">
+                                <a id="PropertyMappingSearch" onclick="SearchClick(event, 'PropertyMapping', '@Html.Raw(Url.Action("Index", "PropertyMapping", new { IsFilter = ViewData["IsFilter"], IsDeepSearch = false, searchString = "_SearchString", HostingEntity = Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]), SearchTimeStamp = DateTime.Now }))','@User.JavaScriptEncodedName');" data-original-title="Grid Search" class="btn btn-default btn-default tip-top" style="padding:3px 5px;"><span class="fam-zoom"></span></a>
+                                <a id="PropertyMappingDeepSearch" onclick="SearchClick(event, 'PropertyMapping', '@Html.Raw(Url.Action("Index", "PropertyMapping", new { IsFilter = ViewData["IsFilter"], IsDeepSearch = true, searchString = "_SearchString", HostingEntity = Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]), SearchTimeStamp = DateTime.Now }))','@User.JavaScriptEncodedName');" data-original-title="Detail Search" class="btn btn-default btn-default tip-top" style="padding:3px 5px;"><span class="fam-zoom-in"></span></a>
+                                @if (ViewData["HostingEntity"] == null)
+                                {
+                                    <a href="@(Url.Action("SetFSearch", "PropertyMapping")+Request.Url.Query)" data-original-title="Faceted Search" class="btn btn-default btn-default tip-top" style="padding:3px 5px;"><span class="fam-page-find"></span></a>
+                                }
+                                <button id="PropertyMappingCancel" type="button" class="btn btn-default btn-default collapse-data-btn tip-top" onclick="CancelSearch('PropertyMapping','@Html.Raw(Url.Action("Index", "PropertyMapping", new {IsFilter=ViewData["IsFilter"], HostingEntity = Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]), ClearSearchTimeStamp = DateTime.Now }))','@User.JavaScriptEncodedName')" data-original-title="Clear Search" data-placement="top" style="padding:3px 5px;">
+                                    <span class="fam-delete"></span>
+                                </button>
+                                <button id="PropertyMappingSearchCancel" type="button" class="btn btn-default btn-default collapse-data-btn tip-top" onclick="CancelSearch('PropertyMapping','@Html.Raw(Url.Action("Index", "PropertyMapping", new {IsFilter=ViewData["IsFilter"], HostingEntity = Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]), ClearSearchTimeStamp = DateTime.Now }))','@User.JavaScriptEncodedName')" data-original-title="Refresh Grid" data-placement="top" style="padding:3px 5px;">
+                                    <span class="fam-arrow-refresh"></span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-body" style="margin:0px; padding:8px;">
+                    @if (ViewData["HostingEntity"] == null)
+                    {
+                        if (ViewBag.SearchResult != "")
+                        {
+                            <div id="fsearchPropertyMapping" class="collapse MessageFSearch">
+                                @Html.Raw(Html.Encode(ViewBag.SearchResult).Replace(Environment.NewLine, "<br/>"))
+                                <a href="@Url.Action("Index", "PropertyMapping")" style="margin-left:5px;float:right"><span class="glyphicon glyphicon-remove-sign"></span> Clear</a>
+                                <a href="@(Url.Action("SetFSearch", "PropertyMapping")+Request.Url.Query)" style="float:right"><span class="glyphicon glyphicon-edit"></span> Modify</a>
+                            </div>
+                        }
+                    }
+                    @Html.Partial("~/Views/PropertyMapping/ShowHideColumns.cshtml")
+                    <div id="Des_Table" class="table-responsive" style="overflow-x:auto;">
+                        <table class="table table-striped table-bordered table-hover table-condensed">
+                            <thead>
+                                <tr>
+                                    @*<th class="col0" style="width:20px;">
+                                        <input type="checkbox" class="tip-top" data-placement="top" data-original-title="Select All" onclick="SelectAllRows(this);" />
+                                        @Html.Hidden("SelectedItems")
+                                    </th>
+                                    <th class="col1" style="width:70px;">Actions</th>*@
+                                    @if (User.CanView("PropertyMapping", "PropertyName"))
+                                    {
+                                        <th class="col2">
+                                            @Html.ActionLink("Property Name", ActionNameUrl, "PropertyMapping", getSortHtmlAttributes("PropertyName", false, null, false), new { @onclick = "SortLinkClick(event,'PropertyMapping');" })
+                                        @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "PropertyName")
+                                        {<i class="fa fa-sort-desc"></i>}
+                                        @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "PropertyName")
+                                        {<i class="fa fa-sort-asc"></i>}
+                                    </th>
+                                    }
+                                    @if (User.CanView("PropertyMapping", "DataName"))
+                                    {
+                                        <th class="col3">
+                                            @Html.ActionLink("Data Name", ActionNameUrl, "PropertyMapping", getSortHtmlAttributes("DataName", false, null, false), new { @onclick = "SortLinkClick(event,'PropertyMapping');" })
+                                        @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "DataName")
+                                        {<i class="fa fa-sort-desc"></i>}
+                                        @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "DataName")
+                                        {<i class="fa fa-sort-asc"></i>}
+                                    </th>
+                                    }
+                                    @if (User.CanView("PropertyMapping", "EntityPropertyMappingID"))
+                                    {
+                                        <th class="col4" @(Convert.ToString(ViewData["HostingEntity"]) == "EntityDataSource" && Convert.ToString(ViewData["AssociatedType"]) == "EntityPropertyMapping" ? "hidden" : "")>
+                                            @Html.ActionLink("Entity Data Source", ActionNameUrl, "PropertyMapping", getSortHtmlAttributes("EntityPropertyMappingID", false, null, false), new { @onclick = "SortLinkClick(event,'PropertyMapping');" })
+                                            @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "EntityPropertyMappingID")
+                                            {<i class="fa fa-sort-desc"></i>}
+                                            @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "EntityPropertyMappingID")
+                                            {<i class="fa fa-sort-asc"></i>}
+                                        </th>
+                                    }
+                                </tr>
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        @*<td>
+                                            <input type="checkbox" id="@item.Id" onclick="SelectForBulkOperation(this,'@item.Id');" />
+                                        </td>
+                                        <td>
+                                            <div style="width:60px; margin-top:-2px;">
+                                                <div class="btn-group" style="position:absolute;">
+                                                    <button data-toggle="dropdown" class="btn btn-xs dropdown-toggle btn-default">
+                                                        Action
+                                                        <span class="caret">    </span>
+                                                    </button>
+                                                    <ul class="dropdown-menu pull-left">
+                                                        <li>
+                                                            <a href="@Url.Action("Details", "PropertyMapping", new { id = item.Id, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"])  }, null)"><i class="glyphicon glyphicon-eye-open"></i>  View</a>
+                                                        </li>
+                                                        @if (User.CanEditItem("PropertyMapping", item, User))
+                                                        {
+                                                            <li>
+
+                                                                <a id='aBtnQuickEditPropertyMapping_@item.Id' style="cursor:pointer;" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Edit Property Mapping','dvPopup','" + Url.Action("EditQuick", "PropertyMapping", new
+																			{
+																				id = item.Id,
+																				UrlReferrer = Request.Url,
+																				AssociatedType = ViewData["AssociatedType"],
+																				HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]),
+																				HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),
+																				TS = DateTime.Now
+																			}) + "')")"><i class="glyphicon glyphicon-edit"></i>Quick Edit</a>
+
+                                                            </li>
+                                                        }
+                                                        @if (User.CanEditItem("PropertyMapping", item, User))
+                                                        {
+                                                            <li>
+                                                                <a href="@Url.Action("Edit","PropertyMapping", new { id = item.Id,  UrlReferrer = BackUrl, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) },null)"><i class="glyphicon glyphicon-edit"></i>  Edit</a>
+
+                                                            </li>
+                                                        }
+                                                        @if (User.CanDeleteItem("PropertyMapping", item, User))
+                                                        {
+                                                            <li class="divider" style="clear:both"></li>
+                                                            <li>
+                                                                <a href="@Url.Action("Delete", "PropertyMapping", new { id = item.Id, UrlReferrer = BackUrl, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null)"><i class="glyphicon glyphicon-remove-sign" style="color: #E7574B;"></i> Delete</a>
+                                                            </li>
+                                                        }
+                                                        <li class="divider" style="clear:both"></li>
+                                                        <li class="dropdown-submenu">
+                                                            <a tabindex="-1" href="#" style="margin-bottom:10px;"><i class="fam-zoom small"></i> Find Matching</a>
+                                                            <ul class="dropdown-menu pull-left">
+                                                                <li>
+                                                                    <a href="@Url.Action("FindFSearch", "DataSourceParameters", new {sourceEntity="PropertyMapping",id=item.Id}, null)">Data Source Parameters</a>
+                                                                </li>
+                                                            </ul>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </td>*@
+                                        @if (User.CanView("PropertyMapping", "PropertyName"))
+                                        {
+                                            <td onclick="OpenQuickEdit('PropertyMapping','@item.Id',event);">
+                                                @Html.DisplayFor(modelItem => item.PropertyName)
+                                            </td>
+                                        }
+                                        @if (User.CanView("PropertyMapping", "DataName"))
+                                        {
+                                            <td onclick="OpenQuickEdit('PropertyMapping','@item.Id',event);">
+                                                @Html.DisplayFor(modelItem => item.DataName)
+                                            </td>
+                                        }
+                                        @if (User.CanView("PropertyMapping", "EntityPropertyMappingID"))
+                                        {
+                                            <td @(Convert.ToString(ViewData["HostingEntity"]) == "EntityDataSource" && Convert.ToString(ViewData["AssociatedType"]) == "EntityPropertyMapping" ? "hidden" : "")>
+                                                @Html.DisplayFor(modelItem => item.entitypropertymapping.DisplayValue)
+                                            </td>
+                                        }
+                                    </tr>
+                                }
+                        </table>
+                    </div>
+                    <ul id="Mob_List" class="list-group">
+                        @foreach (var item in Model)
+                        {
+                            <li class="list-group-item">
+                                @if (User.CanView("PropertyMapping", "PropertyName"))
+                                {
+                                    <p>
+                                        <span class="text-primary"> Property Name </span> : <span>
+                                            @Html.DisplayFor(modelItem => item.PropertyName)
+                                        </span>
+                                    </p>
+                                }
+                                @if (User.CanView("PropertyMapping", "DataName"))
+                                {
+                                    <p>
+                                        <span class="text-primary"> Data Name </span> : <span>
+                                            @Html.DisplayFor(modelItem => item.DataName)
+                                        </span>
+                                    </p>
+                                }
+                                @if (User.CanView("PropertyMapping", "EntityPropertyMappingID"))
+                                {
+                                    <p @(Convert.ToString(ViewData["HostingEntity"]) == "EntityDataSource" && Convert.ToString(ViewData["AssociatedType"]) == "EntityPropertyMapping" ? "hidden" : "")>
+                                        <span class="text-primary"> Entity Property Mapping </span> : <span>
+                                            @Html.DisplayFor(modelItem => item.entitypropertymapping.DisplayValue)
+                                        </span>
+                                    </p>
+                                }
+                                <span class="label label-primary text-linkwhite">
+                                    @Html.ActionLink("View", "Details", "PropertyMapping", new { id = item.Id }, null)
+                                </span>
+                                <span class="label label-warning text-linkwhite">
+                                    @if (User.CanEditItem("PropertyMapping", item, User))
+                                    {
+                                        @Html.ActionLink("Edit", "Edit", "PropertyMapping", new { id = item.Id, UrlReferrer = BackUrl, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null)
+                                    }
+                                </span>
+                                <span class="label label-danger text-linkwhite">
+                                    @if (User.CanDeleteItem("PropertyMapping", item, User))
+                                    {
+                                        @Html.ActionLink("Delete", "Delete", "PropertyMapping", new { id = item.Id, UrlReferrer = BackUrl, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null)
+                                    }
+                                </span>
+                            </li>
+                        }
+                    </ul>
+                    @if (Model.Count > 0)
+                    {
+                        <div id="pagination">
+                            @Html.PagedListPager(Model, page => Url.Action(ActionNameUrl, "PropertyMapping", getSortHtmlAttributes(null, true, page, false)))
+                            <div class="fixPageSize">
+                                Page Size :
+                                @Html.DropDownList("PageSize", new SelectList(new Dictionary<string, int> { { "10", 10 }, { "20", 20 }, { "50", 50 }, { "100", 100 } }, "Key", "Value")
+                            , new
+                            {
+                                @id = "pagesizelistPropertyMapping",
+                                @onchange = @Html.Raw("pagesizelistChange(event,'PropertyMapping','"
+                                 + @User.JavaScriptEncodedName + "')"),
+                                @Url = Html.Raw(@Url.Action(ActionNameUrl, "PropertyMapping",
+                                getSortHtmlAttributes(ViewBag.CurrentSort, ViewBag.Pages == 1 ? false : true,
+                                null, false), null))
+                            })
+                                <span style="text-align:right;"> Total Count: @(Model.TotalItemCount)</span>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="ShowGraphPropertyMapping" tabindex="-1" role="dialog" aria-labelledby="ShowGraphPropertyMappingLabel" aria-hidden="true">
+        <div class="modal-dialog" style="width:80%">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="ShowGraphPropertyMappingLabel">Dashboard Property Mapping</h4>
+                </div>
+                <div class="modal-body">
+                    <div id="dvShowGraphPropertyMapping" data-url="@Url.Action("ShowGraph", "PropertyMapping")">
+                    </div>
+                    <div style="clear:both"></div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

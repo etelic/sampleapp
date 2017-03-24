@@ -2,7 +2,7 @@
 <companyprofile>
   <item>
     <Name>Turanto</Name>
-    <Email>turantotest@gmail.com</Email>
+    <Email>do-not-reply@turanto.com</Email>
     <Address>5388 Twin Hickory Rd </Address>
     <Country>USA</Country>
     <State>VA</State>
@@ -10,11 +10,52 @@
     <Zip>23059</Zip>
     <ContactNumber1>1.866.591.5906</ContactNumber1>
     <ContactNumber2>1.866.591.5909</ContactNumber2>
-    <logo>logo.gif</logo>
-    <SMTPServer>smtp.gmail.com</SMTPServer>
-    <SMTPPassword>dHVyYW50bzEj</SMTPPassword>
-    <SMTPPort>587</SMTPPort>
-    <SSL>true</SSL>
-    <AboutCompany>About Company</AboutCompany>
+    <SMTPServer>smtp.bizmail.yahoo.com</SMTPServer>
+    <SMTPPassword>V2VsY29tZTEj</SMTPPassword>
+    <SMTPPort>465</SMTPPort>
+    <SSL>True</SSL>
+    <AboutCompany>
+      &lt;section class="jumbotron text-xs-center"&gt;
+      &lt;div class="container"&gt;
+      &lt;h1 class="jumbotron-heading" style="margin-left:0px; margin-top:-15px;font-size:30px;"&gt;About&lt;/h1&gt;
+      &lt;p class="lead text-muted"&gt;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed venenatis tempor nisi, vel dapibus leo congue nec. Curabitur viverra urna a diam laoreet, a fermentum libero pharetra. &lt;/p&gt;
+      &lt;p&gt;
+      &lt;a href="#" class="btn btn-primary"&gt;Main Action&lt;/a&gt;
+      &lt;a href="#" class="btn btn-secondary"&gt;Secondary Action&lt;/a&gt;
+      &lt;/p&gt;
+      &lt;/div&gt;
+      &lt;/section&gt;
+
+    </AboutCompany>
+    <IconWidth>28px</IconWidth>
+    <IconHeight>28px</IconHeight>
+    <LogoWidth>155px</LogoWidth>
+    <LogoHeight>29px</LogoHeight>
+    <Icon>logo.gif</Icon>
+    <Logo>logo_white.png</Logo>
+    <!--LegalInformation-->
+    <LegalInformation>Legal Information</LegalInformation>
+    <LegalInformationLink>/PolicyAndService/Licensing.pdf</LegalInformationLink>
+    <LegalInformationAttach>Licensing.pdf</LegalInformationAttach>
+    <!--end-->
+    <!--PrivacyPolicy-->
+    <PrivacyPolicy>Privacy Policy</PrivacyPolicy>
+    <PrivacyPolicyLink>/PolicyAndService/PrivacyPolicy.pdf</PrivacyPolicyLink>
+    <PrivacyPolicyAttach>PrivacyPolicy.pdf</PrivacyPolicyAttach>
+    <!--End-->
+    <!--Terms Of Service-->
+    <TermsOfService>Terms Of Service</TermsOfService>
+    <TermsOfServiceLink>/PolicyAndService/Terms_Of_Service.pdf</TermsOfServiceLink>
+    <TermsOfServiceAttach>Terms_Of_Service.pdf</TermsOfServiceAttach>
+    <!--End-->
+    <!--Emailto-->
+    <Emailto>Email To</Emailto>
+    <EmailtoAddress>contact@turanto.com</EmailtoAddress>
+    <!--End-->
+    <!--Create By-->
+    <CreatedBy>Created By</CreatedBy>
+    <CreatedByLink>http://www.turanto.com/</CreatedByLink>
+    <CreatedByName>Turanto</CreatedByName>
+    <!--End-->
   </item>
 </companyprofile>

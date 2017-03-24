@@ -1,4 +1,4 @@
-/**
+ /**
  * bootstrap-multiselect.js
  * https://github.com/davidstutz/bootstrap-multiselect
  *
@@ -189,6 +189,11 @@
                         cache: false,
                         dataType: "json",
                         success: function (jsonObj) {
+			    var object1 = {
+                                Id: "NULL",
+                                Name: "None",
+                            };
+                            jsonObj.insert("0", object1)
                             $('#' + hostingid).html('');
                             $('#' + hostingid).multiselect('dataproviderOnShowDropDown', jsonObj, hostingid);
                         }
@@ -236,7 +241,7 @@
             nSelectedText: 'selected',
             numberDisplayed: 3,
             templates: {
-                button: '<button type="button" class="multiselect dropdown-toggle" data-toggle="dropdown"></button>',
+                button: '<button type="button" class="multiselect dropdown-toggle multiselectFix" data-toggle="dropdown"></button>',
                 ul: '<ul class="multiselect-container dropdown-menu"></ul>',
                 filter: '<div class="input-group"><input class="form-control multiselect-search" type="text"></div>',
                 li: '<li><a href="javascript:void(0);"><label></label></a></li>',
@@ -550,7 +555,7 @@
                     this.$ul.prepend(this.$filter);
                     this.$filter.val(this.query).on('click', function (event) {
                         event.stopPropagation();
-                    }).on('input keyup', $.debounce(150, $.proxy(function (event) {
+                    }).on('input keyup', $.debounce(400, $.proxy(function (event) {
                         //event.stopPropagation();
                         //// event.preventDefault();
                         //event.preventDefault ? event.preventDefault() : event.returnValue = false;
@@ -935,7 +940,8 @@
             var str = this.$ul.find('div').find('input').val();
             this.rebuild();
             this.$ul.find('input')[0].value = str;
-            this.$ul.find('input')[0].focus();
+            SetFocusAtEnd(this.$ul.find('input')[0]);
+            //this.$ul.find('input')[0].focus();
             if (str == "") {
                 var hostingentity = obj.attr("id");
                 var dispName = ($("label[for=\"" + hostingentity + "\"]").text());
@@ -977,3 +983,28 @@
         $("select[data-role=multiselect]").multiselect();
     });
 }(window.jQuery);
+Array.prototype.insert = function (index, item) {
+    this.splice(index, 0, item);
+};
+
+function SetFocusAtEnd(elem) {
+    var elemLen = elem.value.length;
+    // For IE Only
+    if (document.selection) {
+        // Set focus
+        elem.focus();
+        // Use IE Ranges
+        var oSel = document.selection.createRange();
+        // Reset position to 0 & then set at end
+        oSel.moveStart('character', -elemLen);
+        oSel.moveStart('character', elemLen);
+        oSel.moveEnd('character', 0);
+        oSel.select();
+    }
+    else if (elem.selectionStart || elem.selectionStart == '0') {
+        // Firefox/Chrome
+        elem.selectionStart = elemLen;
+        elem.selectionEnd = elemLen;
+        elem.focus();
+    } // if
+}

@@ -1,24 +1,31 @@
 
 .brandSecondarycolor {
-    background: rgb(146,146,146); /* Old browsers */
-    background: -moz-linear-gradient(top, rgba(146,146,146,1) 0%, rgba(110,110,110,1) 50%, rgba(108,108,108,1) 50%, rgba(56,48,45,1) 100%); /* FF3.6-15 */
-    background: -webkit-linear-gradient(top, rgba(146,146,146,1) 0%,rgba(110,110,110,1) 50%,rgba(108,108,108,1) 50%,rgba(56,48,45,1) 100%); /* Chrome10-25,Safari5.1-6 */
-    background: linear-gradient(to bottom, rgba(146,146,146,1) 0%,rgba(110,110,110,1) 50%,rgba(108,108,108,1) 50%,rgba(56,48,45,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    background: rgb(37,37,37); /* Old browsers */
+    background: -moz-linear-gradient(top, rgba(37,37,37,1) 0%, rgba(37,37,37,1) 50%, rgba(37,37,37,1) 50%, rgba(37,37,37,1) 100%); /* FF3.6-15 */
+    background: -webkit-linear-gradient(top, rgba(37,37,37,1) 0%,rgba(37,37,37,1) 50%,rgba(37,37,37,1) 50%,rgba(37,37,37,1) 100%); /* Chrome10-25,Safari5.1-6 */
+    background: linear-gradient(to bottom, rgba(37,37,37,1) 0%,rgba(37,37,37,1) 50%,rgba(37,37,37,1) 50%,rgba(37,37,37,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#929292', endColorstr='#38302d',GradientType=0 ); /* IE6-9 */
     color: white;
 }
-
+.cloudbar {
+    background-image:url(../../assets/images/cloudbg.png);
+    background-position: top;
+    background-repeat: repeat-x;
+    height: 150px;
+    width: 100%;
+    margin-top: 0px;
+    background-color: #a12329; /* Old browsers */
+    opacity:50;
+   
+}
 .brandcolor {
-    background: #FF8879; /* Old browsers */
-    background: -moz-linear-gradient(top, #fd776a 0%, #ff978b 100%); /* FF3.6-15 */
-    background: -webkit-linear-gradient(top, #fd776a 0%,#ff978b 100%); /* Chrome10-25,Safari5.1-6 */
-    background: linear-gradient(to bottom, #fd776a 0%,#ff978b 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fd776a', endColorstr='#ff978b',GradientType=0 ); /* IE6-9 */
+    background: #a12329; /* Old browsers */
+  
     color: white;
 }
 
 .brandBorder {
-    border-bottom: 1px solid #ff8375;
+    border-bottom: 0px solid #ff8375;
 }
 
 .bs-glyphicons li a:hover {
@@ -27,38 +34,127 @@
 }
 
 .infobox-icon.primary {
-    background-color: #ffffff;
+    background-color: #a12329;
     color: #ffffff;
 }
 
-.divcanvas p {
-display: block;
-padding: 8px 8px;
-border-radius: 4px !important;
-background-color: #D5D4D3 !important;
-border: 0px solid #ddd;
-margin: 0px;
-color: #202020 !important;
-font-weight: normal;
-min-height: 34px;
+.divcanvas p {display: block;padding: 8px 8px;border-radius: 2px !important;background-color: #ffffff !important;/* border: 0px solid #ddd; */margin: 0px;color: #202020 !important;font-weight: normal;min-height: 34px;border: 1px solid #efefef;}
+
+.form-control {display: block;width: 100%;height: 34px;padding: 6px 6px;font-size: 16px;line-height: 1.42857143;color: #212121 !important;font-weight: normal;background-color: #ffffff !important;background-image: none;border: 1px solid #e7e7e7;border-radius: 2px;-webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);box-shadow: inset 0 1px 1px rgba(0,0,0,.075);-webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;-o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+              
 }
 
-.form-control {
-display: block;
-width: 100%;
-height: 34px;
-padding: 6px 6px;
-font-size: 16px;
-line-height: 1.42857143;
-color: #202020 !important;
-font-weight: normal;
-background-color: #D5D4D3 !important;
-background-image: none;
-border: 1px solid #7d7c7c;
-border-radius: 4px;
--webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
--webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;
--o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+.mob_subheader {
+    background: rgb(37,37,37);
+    
+    height: 40px;
+    text-align: left;
+    color: white;
 }
+
+
+.mob_subheaderHome {
+  background: #a12329 !important;
+      width: 100%;
+    height: 40px;
+    text-align: left;
+    color: white;
+}
+
+.badge {
+    display: inline-block;
+    min-width: 10px;
+    padding: 3px 7px 1px;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1;
+    color: #ffffff;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    background-color: #252525;
+    border-radius: 10px;
+}
+
+.sub-header1 {margin-top: -70px;}
+
+
+
+.mob_subheaderinternal {
+    background:#252525 !important;
+       width: 100%;
+    height: 40px;
+    margin-top: -4px;
+    text-align: left;
+    color: white;
+    display: block;
+}
+
+
+
+.slick-initialized .swipe-tab {
+ 
+background: #f7f7f7;
+ 
+color: #a12329;
+}
+
+  .slick-initialized .swipe-tab:hover {
+        color: #a12329 !important;
+    }
+
+/* The side navigation menu */
+.sidenav {
+    height: 100%; /* 100% Full-height */
+    width: 0; /* 0 width - change this with JavaScript */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Stay on top */
+    top: 0;
+    left: 0;
+    background-color: #ffffff; /* Black*/
+    overflow-x: auto; /* Disable horizontal scroll */
+    /* padding-top: 20px; */ /* Place content 60px from the top */
+    transition: 0.5s; /* 0.5 second transition effect to slide in the sidenav */
+    /* border-right: 1px solid #fff; */
+    
+}
+
+/* The navigation menu links */
+.sidenav a {
+    padding: 8px 0px 8px 10px;
+    text-decoration: none;
+    font-size: 16px;
+    color: #252525;
+    display: block;
+    transition: 0.3s;
+    /* border-bottom:1px solid #fff; */
+}
+.sidenav a:first-child {
+    padding: 8px 0px 8px 10px;
+    text-decoration: none;
+    font-size: 16px;
+    color: #fff;
+    display: block;
+    transition: 0.3s;
+    border-bottom:1px solid #fff;
+    background:#a12329;
+}
+
+/* When you mouse over the navigation links, change their color */
+.sidenav a:hover, .offcanvas a:focus{
+    color: #f1f1f1;
+}
+
+/* Position and style the close button (top right corner) */
+.sidenav .closebtn {
+    position: absolute;
+    top: -15px;
+    right: 10px;
+    font-size: 36px;
+    margin-left: 0px;
+    border: 0px;
+    color: white;
+}
+
+/* Style page content - use this if you want to push the page content to the right when you open the side navigation */
+

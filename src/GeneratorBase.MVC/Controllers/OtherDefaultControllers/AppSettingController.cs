@@ -10,6 +10,10 @@ using GeneratorBase.MVC.Models;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Configuration;
+using Microsoft.Owin.Security.Cookies;
+
+using Owin;
+
 namespace GeneratorBase.MVC.Controllers.OtherDefaultControllers
 {
     public class AppSettingController : BaseController
@@ -68,6 +72,14 @@ namespace GeneratorBase.MVC.Controllers.OtherDefaultControllers
                 db.SaveChanges();
             }
 
+            if (lstAppSetting.Where(s => s.Key.ToLower() == "useactivedirectoryrole").Count() > 0)
+            {
+                AppSetting obj = lstAppSetting.FirstOrDefault(s => s.Key.ToLower() == "useactivedirectoryrole");
+                obj.Value = System.Configuration.ConfigurationManager.AppSettings["UseActiveDirectoryRole"];
+                db.Entry(obj).State = EntityState.Modified;
+                db.SaveChanges();
+            }
+
 
             if (lstAppSetting.Where(s => s.Key.ToLower() == "administratorroles").Count() > 0)
             {
@@ -76,7 +88,29 @@ namespace GeneratorBase.MVC.Controllers.OtherDefaultControllers
                 db.Entry(obj).State = EntityState.Modified;
                 db.SaveChanges();
             }
-
+            //google analytics settings
+            if (string.IsNullOrEmpty(lstAppSetting.FirstOrDefault(s => s.Key.ToLower() == "enable google analytics").Value) || lstAppSetting.FirstOrDefault(s => s.Key.ToLower() == "enable google analytics").Value != ConfigurationManager.AppSettings["enableGA"])
+            {
+                AppSetting obj = lstAppSetting.FirstOrDefault(s => s.Key.ToLower() == "enable google analytics");
+                obj.Value = CommonFunction.Instance.EnableGoogleAnalytics();
+                db.Entry(obj).State = EntityState.Modified;
+                db.SaveChanges();
+            }
+            if (string.IsNullOrEmpty(lstAppSetting.FirstOrDefault(s => s.Key.ToLower() == "tracking id").Value) || lstAppSetting.FirstOrDefault(s => s.Key.ToLower() == "tracking id").Value != ConfigurationManager.AppSettings["trackingID"])
+            {
+                AppSetting obj = lstAppSetting.FirstOrDefault(s => s.Key.ToLower() == "tracking id");
+                obj.Value = CommonFunction.Instance.TrackingID();
+                db.Entry(obj).State = EntityState.Modified;
+                db.SaveChanges();
+            }
+            if (string.IsNullOrEmpty(lstAppSetting.FirstOrDefault(s => s.Key.ToLower() == "custom dimension name").Value) || lstAppSetting.FirstOrDefault(s => s.Key.ToLower() == "custom dimension name").Value != ConfigurationManager.AppSettings["customdimensionname"])
+            {
+                AppSetting obj = lstAppSetting.FirstOrDefault(s => s.Key.ToLower() == "custom dimension name");
+                obj.Value = CommonFunction.Instance.CustomDimensionName();
+                db.Entry(obj).State = EntityState.Modified;
+                db.SaveChanges();
+            }
+            //
 
             var _AppSetting = lstAppSetting.Include(t => t.associatedappsettinggroup);
 
@@ -161,7 +195,43 @@ namespace GeneratorBase.MVC.Controllers.OtherDefaultControllers
             {
                 db.Entry(appsetting).State = EntityState.Modified;
                 db.SaveChanges();
-                //CommonFunction.ResetInstance();
+                var appSettings = db.AppSettings;
+                //set session time out
+                if (appsetting.Key == "ApplicationSessionTimeOut")
+                {
+                    var myConfiguration = System.Web.Configuration.WebConfigurationManager.OpenWebConfiguration("~");
+                    myConfiguration.AppSettings.Settings["SessionTimeOut"].Value = Convert.ToString(appsetting.Value);
+                    myConfiguration.Save();
+                }
+                //
+                //Changing Application Name
+                if (appsetting.Key == "AppName")
+                {
+                    var myConfiguration = System.Web.Configuration.WebConfigurationManager.OpenWebConfiguration("~");
+                    myConfiguration.AppSettings.Settings["AppName"].Value = Convert.ToString(appsetting.Value);
+                    myConfiguration.Save();
+                }
+                //google analytics settings
+                if (appsetting.Key.ToLower() == "enable google analytics")
+                {
+                    var myConfiguration = System.Web.Configuration.WebConfigurationManager.OpenWebConfiguration("~");
+                    myConfiguration.AppSettings.Settings["enableGA"].Value = Convert.ToString(appsetting.Value);
+                    myConfiguration.Save();
+                }
+                if (appsetting.Key.ToLower() == "tracking id")
+                {
+                    var myConfiguration = System.Web.Configuration.WebConfigurationManager.OpenWebConfiguration("~");
+                    myConfiguration.AppSettings.Settings["trackingID"].Value = Convert.ToString(appsetting.Value);
+                    myConfiguration.Save();
+                }
+                if (appsetting.Key.ToLower() == "custom dimension name")
+                {
+                    var myConfiguration = System.Web.Configuration.WebConfigurationManager.OpenWebConfiguration("~");
+                    myConfiguration.AppSettings.Settings["customdimensionname"].Value = Convert.ToString(appsetting.Value);
+                    myConfiguration.Save();
+                }
+
+                //
 
                 return Json("FROMPOPUP", "application/json", System.Text.Encoding.UTF8, JsonRequestBehavior.AllowGet);
             }
@@ -418,4 +488,14 @@ namespace GeneratorBase.MVC.Controllers.OtherDefaultControllers
             }
         }
     }
+}
+public class AppBuilderProvider : IDisposable
+{
+    private Owin.IAppBuilder _app;
+    public AppBuilderProvider(Owin.IAppBuilder app)
+    {
+        _app = app;
+    }
+    public Owin.IAppBuilder Get() { return _app; }
+    public void Dispose() { }
 }

@@ -48,6 +48,7 @@
             //if (contextType.GetConstructor(Type.EmptyTypes) == null)
             //    throw new ArgumentException("The contextType type must declare a public parameterless consructor.");
             _ContextType = contextType;
+           
         }
         /// <summary>
         /// Validates the value against the matching columns in the other rows of this table.
@@ -114,14 +115,26 @@
                         } while (enumerator.MoveNext());
                     }
                 }
-                dbcontext.Dispose();
-                return isValid ?
-                  ValidationResult.Success :
-                  new ValidationResult(
-                    string.Format("A record with its '{0}' set to '{1}' already exists.",
-                      validationContext.DisplayName,
-                      value),
-                    new[] { validationContext.MemberName });
+                dbcontext.Dispose();                
+                
+                if (!string.IsNullOrEmpty(this.ErrorMessage))
+                {
+                    return isValid ?
+                     ValidationResult.Success :
+                     new ValidationResult(
+                       this.ErrorMessage,
+                       new[] { validationContext.MemberName });
+                }
+                else
+                {
+                    return isValid ?
+                      ValidationResult.Success :
+                      new ValidationResult(
+                        string.Format("A record with its '{0}' set to '{1}' already exists.",
+                          validationContext.DisplayName,
+                          value),
+                        new[] { validationContext.MemberName });
+                }
             }
         }
 #endif

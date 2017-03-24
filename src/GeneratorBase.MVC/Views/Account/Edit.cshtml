@@ -20,6 +20,8 @@
                     <div class="panel-heading clearfix">
                         <i class="icon-calendar"></i>
                         <h3 class="panel-title">@Model.UserName</h3>
+                        <br />
+                        <p class="text-danger-reg">@ViewBag.DuplicacyMessage</p>
                     </div>
                     <div class="panel-body">
                         <div class="form-horizontal">
@@ -57,8 +59,11 @@
                 </div>
             </div>
         </div>
-         @Html.ActionLink("Back to List", "Index", null, new { @class = "btn btn-default" })
-        <input type="submit" value="Save" class="btn btn-primary" />
+        @Html.ActionLink("Back to List", "Index", null, new { @class = "btn btn-default" })
+        if (User.CanEditAdminFeature("User"))
+        {
+            <input type="submit" value="Save" class="btn btn-primary" />
+        }
     }
 </div>
 @section Scripts {

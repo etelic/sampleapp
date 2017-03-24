@@ -1,0 +1,326 @@
+﻿@model PagedList.IPagedList<GeneratorBase.MVC.Models.T_Address>
+@using PagedList.Mvc;
+@{
+    var ActionNameUrl = "Index";
+    if (HttpContext.Current.Request.RequestContext.RouteData.Values["action"].ToString().ToUpper() == "FSEARCH")
+    {
+        ActionNameUrl = "FSearch";
+    }
+	var BackUrl =  Request.Url;
+	if (ViewData["HostingEntity"] != null && (Request.QueryString["TabToken"] != null || Request.IsAjaxRequest()))
+	{
+		BackUrl =  Request.UrlReferrer;
+	}
+	var EntityReflector = ModelReflector.Entities.FirstOrDefault(p => p.Name == "T_Address");
+	var reportUrl = GeneratorBase.MVC.Controllers.BaseController.FavoriteUrl.ToString();
+    var fromview = Request.QueryString["FromViewReport"];
+    var rptId = Request.QueryString["rptId"];
+ var OneToOnedb = new ApplicationContext(User);
+}
+
+<div id="T_Address">
+<style>
+    .table-responsive > .fixed-column {
+        position: absolute;
+        display: block;
+        width: auto;
+        border: 0px solid transparent;
+        border-top: 1px solid #c3ddec;
+    }
+    .fixed-column th {
+        background: #fff;
+    }
+    .fixed-column td {
+        background: #fff;
+    }
+
+</style>
+<script type="text/javascript"> 
+    $(document).ready(function () {
+	 $(".pagination a").click(function (e) {
+			PaginationClick(e, 'T_Address','@User.JavaScriptEncodedName',true @(fromview == null || fromview == "" ? ",false" : "," + fromview) @(rptId==null||rptId==""?",false":","+rptId))
+        })
+	    if("@HttpContext.Current.Request.RequestContext.RouteData.Values["action"].ToString().ToUpper()" == "FSEARCH")
+        {
+            $("#fsearchT_Address").addClass('in');
+			if('@ViewData["HostingEntity"]'.length>0)
+	        {
+                $("#" + "@ViewData["HostingEntity"]" + "_T_Address").hide();
+	        }
+			FSearchColumnsShowHide('@ViewData["HideColumns"]', 'T_Address');
+        }
+    });
+</script>
+@functions {
+    object getSortHtmlAttributes(string sortby, bool IsPaging, int? page, bool? IsExport)
+    {
+        if (IsPaging)
+        {
+            return new
+            {
+                page,
+                sortBy = ViewBag.CurrentSort,
+                isAsc = ViewBag.IsAsc,
+                currentFilter = ViewBag.CurrentFilter,
+                HostingEntity = @Convert.ToString(ViewData["HostingEntity"]),
+                AssociatedType = @Convert.ToString(ViewData["AssociatedType"]),
+                HostingEntityID = ViewData["HostingEntityID"],
+				IsExport = IsExport,
+				FSFilter = ViewBag.FSFilter == null ? "Fsearch" : ViewBag.FSFilter,
+				IsFilter = @Convert.ToBoolean(ViewData["IsFilter"]),
+                
+ t_addresscountry = Request.QueryString["t_addresscountry"],
+ t_addressstate = Request.QueryString["t_addressstate"],
+ t_addresscity = Request.QueryString["t_addresscity"],
+				search=Request.QueryString["search"],
+				SortOrder = Request.QueryString["SortOrder"],
+				viewtype = ViewBag.TemplatesName,
+				HideColumns = ViewData["HideColumns"],
+				 GroupByColumn = ViewBag.GroupByColumn,
+				 FilterCondition = ViewBag.FilterCondition,
+            };
+        }
+        else
+        {
+            return new
+            {
+                sortBy = sortby,
+                currentFilter = Request.QueryString["currentFilter"],
+                searchString = Request.QueryString["searchString"],
+                isAsc = (ViewBag.IsAsc == "ASC" ? "DESC" : ""),
+                page = ViewBag.Pages,
+                HostingEntity = @Convert.ToString(ViewData["HostingEntity"]),
+                HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),
+                AssociatedType = @Convert.ToString(ViewData["AssociatedType"]),
+				IsExport = IsExport,
+				FSFilter = ViewBag.FSFilter == null ? "Fsearch" : ViewBag.FSFilter,
+				IsFilter = @Convert.ToBoolean(ViewData["IsFilter"]),
+ t_addresscountry = Request.QueryString["t_addresscountry"],
+ t_addressstate = Request.QueryString["t_addressstate"],
+ t_addresscity = Request.QueryString["t_addresscity"],
+		search=Request.QueryString["search"],
+		SortOrder = Request.QueryString["SortOrder"],
+		viewtype = ViewBag.TemplatesName,
+		HideColumns = ViewData["HideColumns"],
+		 GroupByColumn = ViewBag.GroupByColumn,
+		 FilterCondition = ViewBag.FilterCondition,
+            };
+        }
+    }
+}
+<div class="row">
+    <div class="col-md-12 col-sm-12 col-sx-12">
+        <div class="panel panel-default">
+            <div class="panel-body" style="margin:0px; padding:8px;">
+	@if (ViewData["HostingEntity"]==null)
+		{ 
+			if (ViewBag.SearchResult != "" )
+                            {
+			<div id="fsearchT_Address" class="collapse MessageFSearch">
+                        @Html.Raw(Html.Encode(ViewBag.SearchResult).Replace(Environment.NewLine, "<br/>"))
+            </div>
+		}
+	}
+	
+    <div id="Des_Table" class="table-responsive" style="overflow-x:auto;">
+        <table id="tblReportResult" class="table table-striped table-bordered table-hover table-condensed">
+            <thead>
+                <tr>
+				<th class="col0" style="display: none;">
+                                        <input type="checkbox" style="visibility: hidden;"/>
+                                    </th>
+                                    <th class="col1" style="display: none;"></th>
+@if(User.CanView("T_Address","T_AddressLine1") )
+{	
+			var SortPropertyName = EntityReflector.Properties.FirstOrDefault(q => q.Name == "T_AddressLine1");
+			<th class="col2">
+			@Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "T_Address",getSortHtmlAttributes("T_AddressLine1", false, null, false),new {  @onclick = "SortLinkClick(event,'T_Address',true" + (fromview == null || fromview == "" ? ",false" : "," + fromview)+ (rptId==null||rptId==""?",false":","+rptId)+ ");" })
+				@if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "T_AddressLine1")
+                {<i class="fa fa-sort-desc"></i>}
+                @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "T_AddressLine1")
+                {<i class="fa fa-sort-asc"></i>}
+			</th>
+}
+@if(User.CanView("T_Address","T_AddressLine2") )
+{	
+			var SortPropertyName = EntityReflector.Properties.FirstOrDefault(q => q.Name == "T_AddressLine2");
+			<th class="col3">
+			@Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "T_Address",getSortHtmlAttributes("T_AddressLine2", false, null, false),new {  @onclick = "SortLinkClick(event,'T_Address',true" + (fromview == null || fromview == "" ? ",false" : "," + fromview)+ (rptId==null||rptId==""?",false":","+rptId)+ ");" })
+				@if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "T_AddressLine2")
+                {<i class="fa fa-sort-desc"></i>}
+                @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "T_AddressLine2")
+                {<i class="fa fa-sort-asc"></i>}
+			</th>
+}
+@if(User.CanView("T_Address","T_ZipCode") )
+{	
+			var SortPropertyName = EntityReflector.Properties.FirstOrDefault(q => q.Name == "T_ZipCode");
+			<th class="col4">
+			@Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "T_Address",getSortHtmlAttributes("T_ZipCode", false, null, false),new {  @onclick = "SortLinkClick(event,'T_Address',true" + (fromview == null || fromview == "" ? ",false" : "," + fromview)+ (rptId==null||rptId==""?",false":","+rptId)+ ");" })
+				@if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "T_ZipCode")
+                {<i class="fa fa-sort-desc"></i>}
+                @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "T_ZipCode")
+                {<i class="fa fa-sort-asc"></i>}
+			</th>
+}
+@if(User.CanView("T_Address","T_AddressCountryID"))
+{
+			var SortPropertyName = EntityReflector.Properties.FirstOrDefault(q => q.Name == "T_AddressCountryID");
+			<th class="col5" @(Convert.ToString(ViewData["HostingEntity"]) == "T_Country" && Convert.ToString(ViewData["AssociatedType"]) == "T_AddressCountry"?"hidden":"")>
+				@Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "T_Address",getSortHtmlAttributes("T_AddressCountryID", false, null, false),new {  @onclick = "SortLinkClick(event,'T_Address',true" + (fromview == null || fromview == "" ? ",false" : "," + fromview)+ (rptId==null||rptId==""?",false":","+rptId)+ ");" })
+				@if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "T_AddressCountryID")
+				{<i class="fa fa-sort-desc"></i>}
+				@if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "T_AddressCountryID")
+				{<i class="fa fa-sort-asc"></i>}
+			 </th>
+}
+@if(User.CanView("T_Address","T_AddressStateID"))
+{
+			var SortPropertyName = EntityReflector.Properties.FirstOrDefault(q => q.Name == "T_AddressStateID");
+			<th class="col6" @(Convert.ToString(ViewData["HostingEntity"]) == "T_State" && Convert.ToString(ViewData["AssociatedType"]) == "T_AddressState"?"hidden":"")>
+				@Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "T_Address",getSortHtmlAttributes("T_AddressStateID", false, null, false),new {  @onclick = "SortLinkClick(event,'T_Address',true" + (fromview == null || fromview == "" ? ",false" : "," + fromview)+ (rptId==null||rptId==""?",false":","+rptId)+ ");" })
+				@if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "T_AddressStateID")
+				{<i class="fa fa-sort-desc"></i>}
+				@if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "T_AddressStateID")
+				{<i class="fa fa-sort-asc"></i>}
+			 </th>
+}
+@if(User.CanView("T_Address","T_AddressCityID"))
+{
+			var SortPropertyName = EntityReflector.Properties.FirstOrDefault(q => q.Name == "T_AddressCityID");
+			<th class="col7" @(Convert.ToString(ViewData["HostingEntity"]) == "T_City" && Convert.ToString(ViewData["AssociatedType"]) == "T_AddressCity"?"hidden":"")>
+				@Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "T_Address",getSortHtmlAttributes("T_AddressCityID", false, null, false),new {  @onclick = "SortLinkClick(event,'T_Address',true" + (fromview == null || fromview == "" ? ",false" : "," + fromview)+ (rptId==null||rptId==""?",false":","+rptId)+ ");" })
+				@if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "T_AddressCityID")
+				{<i class="fa fa-sort-desc"></i>}
+				@if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "T_AddressCityID")
+				{<i class="fa fa-sort-asc"></i>}
+			 </th>
+}
+   		@if (ViewData["HostingEntity"] == null)
+		{
+			<th>Employee Address</th>
+		}
+    </tr>
+</thead>
+@{ bool isFirst = true; var oldKey = string.Empty; }
+                                @foreach (var item in Model)
+                                {
+                                    if (ViewBag.IsGroupBy != null && Convert.ToBoolean(ViewBag.IsGroupBy))
+                                    {
+                                        var groupKey = item.m_DisplayValue;
+                                        if (oldKey != groupKey)
+                                        {
+                                            isFirst = true;
+                                            oldKey = item.m_DisplayValue;
+                                        }
+                                        if (isFirst || (string.IsNullOrEmpty(oldKey)))
+                                        {
+                                            isFirst = false;
+											var groupCnt = Model.Where(grp => grp.m_DisplayValue == groupKey).Count();
+                                            string groupString = string.Empty;
+                                            if (groupCnt > 1)
+                                            {
+                                                groupString = "(" + groupCnt + " Records)";
+                                            }
+                                            else
+                                            {
+                                                groupString = "(" + groupCnt + " Record)";
+                                            }
+                                            <tr>
+                                                <td colspan="8" style="background: #EDF5FA; font-weight:bold"> @groupKey @groupString</td>
+                                            </tr>
+                                        }
+                                    }
+
+		var t_employeeaddress = OneToOnedb.T_Employees.FirstOrDefault(p => p.T_EmployeeAddressID == item.Id);
+		<tr>
+	 <td style="display: none;">
+                                        <input type="checkbox" style="display:none;" id="@item.Id" />
+                                    </td>
+                                    <td style="display: none;"></td>
+	@if(User.CanView("T_Address","T_AddressLine1"))
+{
+		<td >
+            @Html.DisplayFor(modelItem => item.T_AddressLine1)
+        </td>
+}
+@if(User.CanView("T_Address","T_AddressLine2"))
+{
+		<td >
+            @Html.DisplayFor(modelItem => item.T_AddressLine2)
+        </td>
+}
+@if(User.CanView("T_Address","T_ZipCode"))
+{
+		<td >
+            @Html.DisplayFor(modelItem => item.T_ZipCode)
+        </td>
+}
+@if(User.CanView("T_Address","T_AddressCountryID"))
+{
+		
+		
+					<td  @(Convert.ToString(ViewData["HostingEntity"]) == "T_Country" && Convert.ToString(ViewData["AssociatedType"]) == "T_AddressCountry"?"hidden":"") >
+            @Html.DisplayFor(modelItem => item.t_addresscountry.DisplayValue)
+			        </td>
+}
+@if(User.CanView("T_Address","T_AddressStateID"))
+{
+		
+		
+					<td  @(Convert.ToString(ViewData["HostingEntity"]) == "T_State" && Convert.ToString(ViewData["AssociatedType"]) == "T_AddressState"?"hidden":"") >
+            @Html.DisplayFor(modelItem => item.t_addressstate.DisplayValue)
+			        </td>
+}
+@if(User.CanView("T_Address","T_AddressCityID"))
+{
+		
+		
+					<td  @(Convert.ToString(ViewData["HostingEntity"]) == "T_City" && Convert.ToString(ViewData["AssociatedType"]) == "T_AddressCity"?"hidden":"") >
+            @Html.DisplayFor(modelItem => item.t_addresscity.DisplayValue)
+			        </td>
+}
+
+		@if (ViewData["HostingEntity"] == null)
+		{
+		 <td>
+			@if (t_employeeaddress != null)
+			{
+				@Html.ActionLink(t_employeeaddress.DisplayValue, "Details", "T_Employee", new { id = t_employeeaddress.Id }, null)
+			}
+		</td>
+		}
+             </tr>
+                            }
+                    </table>
+                </div>
+  			   @if (Model.Count > 0)
+                {
+                    <div id="pagination">
+                        @Html.PagedListPager(Model, page => Url.Action(ActionNameUrl, "T_Address", getSortHtmlAttributes(null, true, page, false)))
+                        <div class="fixPageSize">
+                            Page Size :
+                            @Html.DropDownList("PageSize", new SelectList(new Dictionary<string, int> { { "10", 10 }, { "20", 20 }, { "50", 50 }, { "100", 100 } }, "Key", "Value")
+							, new { @id = "pagesizelistT_Address",
+							 @onchange = @Html.Raw("pagesizelistChange(event,'T_Address','"
+							  + @User.JavaScriptEncodedName + "',true" + (fromview == null || fromview == "" ? ",false" : "," + fromview) + (rptId == null || rptId == "" ? ",false" : "," + rptId) + ")"),
+							 @Url = Html.Raw(@Url.Action(ActionNameUrl, "T_Address",
+							 getSortHtmlAttributes(ViewBag.CurrentSort, ViewBag.Pages == 1 ? false : true,
+							 null, false), null)) })
+							<span style="text-align:right;"> Total Count: @(Model.TotalItemCount)</span>
+							<script>
+                                    $(document).ready(function () {
+                                        $.validator.setDefaults({
+                                            ignore: "#pagesizelistT_Address"
+                                        })
+                                    }); 
+                                </script>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div> 
+ </div>
+</div>
+

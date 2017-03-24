@@ -11,23 +11,33 @@ namespace GeneratorBase.MVC
     {
         public static void Register(HttpConfiguration config)
         {
-            config.MapHttpAttributeRoutes();
-            config.Routes.MapHttpRoute(
-                name: "DefaultApi",
-                routeTemplate: "api/{controller}/{id}",
-                defaults: new { id = RouteParameter.Optional }
-            );
-            ODataConventionModelBuilder builder = new ODataConventionModelBuilder();
+           //config.MapHttpAttributeRoutes();
+            //config.Routes.MapHttpRoute(
+            //    name: "DefaultApi",
+            //    routeTemplate: "api/{controller}/{id}",
+            //    defaults: new { id = RouteParameter.Optional }
+            //);
+           // ODataConventionModelBuilder builder = new ODataConventionModelBuilder();
             
-			builder.EntitySet<T_School>("T_SchoolOData");
+			//builder.EntitySet<T_Address>("T_AddressOData");
             
-			builder.EntitySet<T_StudentPerformance>("T_StudentPerformanceOData");
+			//builder.EntitySet<T_City>("T_CityOData");
             
-			builder.EntitySet<T_Student>("T_StudentOData");
+			//builder.EntitySet<T_Country>("T_CountryOData");
             
-			builder.EntitySet<T_Department>("T_DepartmentOData");
-           
-			config.Routes.MapODataServiceRoute("odata", "odata", builder.GetEdmModel());
+			//builder.EntitySet<T_Employee>("T_EmployeeOData");
+            
+			//builder.EntitySet<T_Employeestatus>("T_EmployeestatusOData");
+            
+			//builder.EntitySet<T_Employeetype>("T_EmployeetypeOData");
+            
+			//builder.EntitySet<T_EmployeeOrganizationAssociation>("T_EmployeeOrganizationAssociationOData");
+            
+			//builder.EntitySet<T_State>("T_StateOData");
+            
+			//builder.EntitySet<T_Organization>("T_OrganizationOData");
+         // builder.EntitySet<Document>("DocumentOData");      
+			//config.Routes.MapODataServiceRoute("odata", "odata", builder.GetEdmModel());
         }
     }
 }

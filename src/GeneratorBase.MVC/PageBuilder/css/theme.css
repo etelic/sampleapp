@@ -1,0 +1,546 @@
+.edit {
+  
+    padding-top: 0px;
+  
+    margin-left: 215px;
+    
+}
+
+
+#menu-htmleditor {
+    float: right;
+}
+
+.edit .TurantoPage {
+    padding: 30px 15px 15px;
+    border-radius: 4px;
+    border: 1px solid rgb(221, 221, 221);
+    border-image: none;
+    margin-top: 10px;
+    margin-left: 0px;
+    position: relative;
+    -ms-word-wrap: break-word;
+}
+
+    .edit .TurantoPage::after {
+        padding: 3px 7px;
+        border-radius: 4px 0px;
+        border: 1px solid rgb(221, 221, 221);
+        border-image: none;
+        left: -1px;
+        top: -1px;
+        color: rgb(157, 160, 164);
+        font-size: 12px;
+        font-weight: bold;
+        position: absolute;
+        content: "Container";
+        background-color: rgb(245, 245, 245);
+    }
+
+.container {
+    margin: 0px;
+    width: auto;
+}
+
+.sidebar-builder {
+    background: rgb(221, 221, 221);
+    padding: 10px;
+    transition: 500ms;
+    left: 0px;
+    top: -0px;
+    width: 220px;
+    bottom: 0px;
+    position: absolute;
+    z-index: 10;
+    -webkit-transition: all 500ms ease;
+    -o-transition: all 500ms ease;
+    -moz-transition: all 500ms ease;
+    overflow-y:auto;
+    
+
+   
+}
+
+    .sidebar-builder .nav-header {
+        color: rgb(85, 119, 153);
+        text-transform: uppercase;
+        font-size: 11px;
+        font-weight: bold;
+        cursor: pointer;
+        margin-bottom:5px;
+        overflow-x:hidden;
+        width:150px;
+    }
+
+        .sidebar-builder .nav-header span.label {
+            top: -1px;
+            font-size: 10px;
+            position: relative;
+            overflow-x:hidden;
+        width:150px;
+        }
+
+    .sidebar-builder .nav-header {
+        color: rgb(0, 0, 0);
+        text-shadow: 0px 1px 0px #ddd;
+    }
+
+    .sidebar-builder .accordion-group {
+        border: currentColor;
+        border-image: none;
+    }
+
+
+.nav-list {
+margin: 0;
+padding: 0;
+list-style: none;
+ background-color: rgb(221, 221, 221) !important;
+ overflow-x:hidden;
+}
+
+
+.boxes {
+}
+
+.sidebar-builder li {
+    line-height: 18px;
+    margin-bottom: 3px;
+    overflow:hidden;
+}
+
+    .sidebar-builder li .TurantoRow {
+        margin-bottom: 5px;
+    }
+
+.sidebar-builder .box {
+    background: rgb(255, 255, 255);
+    padding: 3px;
+    border-radius: 4px;
+    border: 1px solid rgb(187, 187, 187);
+    border-image: none;
+    width: 150px;
+    text-align: center;
+    margin-top: 2px;
+    display: inline-block;
+}
+
+.sidebar-builder .preview .element-desc {
+    margin: 0px;
+    padding: 1px;
+    text-align: center;
+    line-height: 8px;
+    font-size: 9px;
+    cursor: move;
+}
+
+.sidebar-builder .preview {
+    color: #555;
+    line-height: 20px;
+    font-size: 12px;
+    display: block;
+}
+
+    .sidebar-builder .preview label {
+        background: #fff;
+        padding: 0px 10px;
+        top: -1px;
+        width: 169px;
+        height: 22px;
+        color: #555;
+        line-height: 20px;
+        font-size: 12px;
+        position: relative;
+    }
+
+.sidebar-builder .view {
+    display: none;
+}
+
+.sidebar-builder .remove {
+    display: none;
+}
+
+.sidebar-builder .clone {
+    display: none;
+}
+
+.sidebar-builder .configuration {
+    display: none;
+}
+
+.sidebar-builder .box .drag {
+    display: none;
+}
+
+.TurantoPage .preview {
+    display: none;
+}
+
+.TurantoPage .box .view {
+    padding-top: 0px;
+    display: block;
+}
+
+.ui-draggable-dragging .view {
+    display: block;
+}
+
+.ui-sortable-placeholder {
+    outline: rgb(85, 119, 136) dashed 1px;
+    border-radius: 4px;
+    visibility: visible !important;
+}
+
+.edit .drag {
+    top: 0px;
+    right: 0px;
+    position: absolute;
+    cursor: pointer;
+}
+
+.edit .clone {
+    top: 0px;
+    right: 0px;
+    position: absolute;
+    cursor: pointer;
+}
+
+.box {
+    position: relative;
+}
+
+.TurantoRow {
+    position: relative;
+}
+
+.edit .TurantoPage .TurantoRow .clone {
+    top: 5px;
+    right: 56px;
+    z-index: 10;
+}
+
+.edit .TurantoPage .TurantoRow .drag {
+    top: 5px;
+    right: 28px;
+    z-index: 10;
+}
+
+.edit .TurantoPage .column .box .drag {
+    top: 5px;
+}
+
+.edit .TurantoPage .column .box .configuration {
+    top: 5px;
+    right: 56px;
+    line-height: 8px;
+    white-space: nowrap;
+    position: absolute;
+}
+
+    .edit .TurantoPage .column .box .configuration:hover {
+        z-index: 1001;
+    }
+
+.edit .TurantoPage .column .navbar-fixed-top {
+    left: 180px;
+    top: 33px;
+}
+
+.TurantoPage .column .navbar-fixed-top {
+    top: 33px;
+}
+
+.edit .TurantoPage .column .navbar-fixed-bottom {
+    left: 180px;
+}
+
+.edit .TurantoPage .remove {
+    top: 5px;
+    right: 5px;
+    position: absolute;
+    z-index: 10;
+}
+
+.TurantoPage .configuration {
+    transition: 500ms;
+    opacity: 0;
+    -webkit-transition: all 500ms ease;
+    -o-transition: all 500ms ease;
+    -moz-transition: all 500ms ease;
+}
+
+.TurantoPage .drag {
+    transition: 500ms;
+    opacity: 0.2;
+    -webkit-transition: all 500ms ease;
+    -o-transition: all 500ms ease;
+    -moz-transition: all 500ms ease;
+}
+
+.TurantoPage .remove {
+    transition: 500ms;
+    opacity: 0.2;
+    -webkit-transition: all 500ms ease;
+    -o-transition: all 500ms ease;
+    -moz-transition: all 500ms ease;
+}
+
+.TurantoPage .clone {
+    transition: 500ms;
+    opacity: 0.2;
+    -webkit-transition: all 500ms ease;
+    -o-transition: all 500ms ease;
+    -moz-transition: all 500ms ease;
+}
+
+.TurantoPage .box:hover {
+    border: 2px dashed rgb(137, 189, 255);
+    border-image: none;
+}
+
+.TurantoPage .active {
+    border: 2px dashed rgb(137, 189, 255);
+    border-image: none;
+}
+
+.TurantoPage .TurantoRow:hover > .drag {
+    opacity: 1;
+}
+
+.TurantoPage .TurantoRow:hover > .clone {
+    opacity: 1;
+}
+
+.TurantoPage .TurantoRow:hover > .configuration {
+    opacity: 1;
+}
+
+.TurantoPage .TurantoRow:hover > .remove {
+    opacity: 1;
+}
+
+.TurantoPage .box:hover .drag {
+    opacity: 1;
+}
+
+.TurantoPage .box:hover .configuration {
+    opacity: 1;
+}
+
+.TurantoPage .box:hover .remove {
+    opacity: 1;
+}
+
+.TurantoPage .row {
+    border: 1px solid rgb(221, 221, 221);
+    border-image: none;
+    position: relative;
+    box-sizing: border-box;
+}
+
+.edit .column::after {
+    padding: 3px 7px;
+    border-radius: 4px 0px;
+    border: 1px solid rgb(221, 221, 221);
+    border-image: none;
+    left: -1px;
+    top: -1px;
+    color: rgb(157, 160, 164);
+    font-size: 12px;
+    font-weight: bold;
+    position: absolute;
+    content: "Drag Drop Element Here";
+}
+
+.column {
+    padding: 39px 19px 24px;
+    border-radius: 4px;
+    border: 1px dashed rgb(221, 221, 221);
+    border-image: none;
+    position: relative;
+}
+
+body.mobile {
+    border-right-color: gray;
+    border-right-width: 2px;
+    border-right-style: dashed;
+    max-width: 380px;
+}
+
+body.tablet {
+    border-right-color: gray;
+    border-right-width: 2px;
+    border-right-style: dashed;
+    max-width: 980px;
+}
+
+body.devpreview {
+    margin-left: 0px;
+}
+
+.devpreview .sidebar-builder {
+    transition: all;
+    left: -200px;
+    -webkit-transition: all 0ms ease;
+    -o-transition: all 0ms ease;
+    -moz-transition: all 0ms ease;
+}
+
+.devpreview .drag {
+    display: none !important;
+}
+
+.devpreview .configuration {
+    display: none !important;
+}
+
+.devpreview .remove {
+    display: none !important;
+}
+
+.devpreview .clone {
+    display: none !important;
+}
+
+.sourcepreview .column {
+    background: none;
+    margin: 0px;
+    padding: 0px;
+    border: currentColor;
+    border-image: none;
+    box-shadow: inset 0px 0px 0px rgba(0,0,0,0);
+    -webkit-box-shadow: inset 0 0px 0px rgba(0, 0, 0, 0.00);
+    -moz-box-shadow: inset 0 0px 0px rgba(0, 0, 0, 0.00);
+}
+
+.sourcepreview .row {
+    background: none;
+    margin: 0px;
+    padding: 0px;
+    border: currentColor;
+    border-image: none;
+    box-shadow: inset 0px 0px 0px rgba(0,0,0,0);
+    -webkit-box-shadow: inset 0 0px 0px rgba(0, 0, 0, 0.00);
+    -moz-box-shadow: inset 0 0px 0px rgba(0, 0, 0, 0.00);
+}
+
+.sourcepreview .TurantoPage .box {
+    background: none;
+    margin: 0px;
+    padding: 0px;
+    border: currentColor;
+    border-image: none;
+    box-shadow: inset 0px 0px 0px rgba(0,0,0,0);
+    -webkit-box-shadow: inset 0 0px 0px rgba(0, 0, 0, 0.00);
+    -moz-box-shadow: inset 0 0px 0px rgba(0, 0, 0, 0.00);
+}
+
+.devpreview .TurantoPage .box {
+    background: none;
+    padding-top: 0px;
+}
+
+.devpreview .TurantoPage .row {
+    background: none;
+    padding-top: 0px;
+}
+
+.devpreview .TurantoPage .column {
+    padding-top: 19px;
+    padding-bottom: 19px;
+}
+
+#download-layout {
+    display: none;
+}
+
+#feedbackModal textarea {
+    width: 100%;
+    height: 280px;
+    box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    resize: none;
+}
+
+#downloadModal textarea {
+    width: 100%;
+    height: 280px;
+    box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    resize: none;
+}
+
+#feedbackModal input {
+    width: 515px;
+}
+
+    #feedbackModal input.modal-error-field {
+        border: 1px solid red;
+        border-image: none;
+    }
+
+#feedbackModal textarea.modal-error-field {
+    border: 1px solid red;
+    border-image: none;
+}
+
+a.language-selected {
+    font-style: italic;
+    font-weight: bold;
+}
+
+#src {
+    border: 0px currentColor;
+    border-image: none;
+    width: 100%;
+}
+
+
+#footer {
+display:none !important;
+
+}
+
+body {
+background-color: #FFFFFF !important;
+
+}
+
+#wrapper_user {
+
+background-color: #fff !important;
+
+}
+
+  .scrollbar {
+        margin-left: 30px;
+        float: left;
+        height: 300px;
+       
+        background: #F5F5F5;
+        overflow-y: scroll;
+        margin-bottom: 25px;
+    }
+
+    .force-overflow {
+        min-height: 450px;
+    }
+
+
+
+    #style-3::-webkit-scrollbar-track {
+        -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+        background-color: #F5F5F5;
+    }
+
+    #style-3::-webkit-scrollbar {
+        width: 6px;
+        background-color: #F5F5F5;
+    }
+
+    #style-3::-webkit-scrollbar-thumb {
+        background-color: #428bca;
+    }

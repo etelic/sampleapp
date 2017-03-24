@@ -22,6 +22,29 @@ namespace GeneratorBase.MVC.Models
             get { return getDisplayValueModel(); }
             set { value = m_DisplayValue; }
         }
+ 	[NotMapped]
+        public TimeSpan m_OffSet
+        {
+
+            get
+            {
+                TimeSpan offset = TimeSpan.FromMinutes(0);
+                if (HttpContext.Current != null)
+                {
+                    var timeZoneCookie = HttpContext.Current.Request.Cookies["_timeZoneOffset"];
+                    if (timeZoneCookie != null)
+                    {
+                        double offsetMinutes = 0;
+                        if (double.TryParse(timeZoneCookie.Value, out offsetMinutes))
+                        {
+                            offset = TimeSpan.FromMinutes(offsetMinutes);
+                        }
+                    }
+                }
+                return offset;
+            }
+            set { }
+        }
         public virtual string getDisplayValueModel() { return m_DisplayValue; }
     }
 }

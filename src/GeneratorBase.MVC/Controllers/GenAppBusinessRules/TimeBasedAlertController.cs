@@ -1,16 +1,63 @@
 ﻿using GeneratorBase.MVC.Models;
+using RecurrenceGenerator;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
+using System.Data.Entity;
 using System.Linq;
 using System.Reflection;
-using System.Web;
 using System.Web.Mvc;
-using System.Web.Routing;
 namespace GeneratorBase.MVC.Controllers
 {
+
     public class TimeBasedAlertController : Controller
     {
+        public DbSet GetGenericData(ApplicationContext context, Type _type)
+        {
+            return context.Set(_type);
+        }
+        public ActionResult ScheduledTask(string EntityName, long BizId)
+        {
+            var user = new InternalUser();
+            var MainBiz = new BusinessRule();
+            List<BusinessRule> businessrules = new List<BusinessRule>();
+            using (var br = new BusinessRuleContext())
+            {
+                var rolebr = br.BusinessRules.Where(p => p.Roles != null && p.Roles.Length > 0 && !p.Disable).ToList();
+                MainBiz = rolebr.FirstOrDefault(p => p.Id == BizId);
+                foreach (var rules in rolebr)
+                {
+                    if (rules.Roles.Split(",".ToCharArray()).Contains("All"))
+                    {
+                        businessrules.Add(rules);
+                    }
+                }
+            }
+            if (MainBiz != null)
+            {
+                (user).businessrules = businessrules.ToList();
+                var database = new ApplicationContext(user);
+                var myType = Type.GetType("GeneratorBase.MVC.Models." + EntityName + "");
+                var data = GetGenericData(database, myType).ToListAsync();
+                foreach (var item in data.Result)
+                {
+                    if (ApplyRule.CheckRule<object>(item, MainBiz, MainBiz.EntityName))
+                    {
+                        database.Entry(item).State = EntityState.Modified;
+                        database.SaveChanges();
+                    }
+                }
+                ScheduledTaskHistoryContext sthcontext = new ScheduledTaskHistoryContext();
+                var itemhistory = sthcontext.ScheduledTaskHistorys.FirstOrDefault(p => p.BusinessRuleId == MainBiz.Id);
+                itemhistory.Status = "Processed";
+                sthcontext.Entry(itemhistory).State = EntityState.Modified;
+                sthcontext.SaveChanges();
+
+                RegisterScheduledTask nexttask = new RegisterScheduledTask();
+                nexttask.RegisterTask(MainBiz.EntityName, MainBiz.Id);
+            }
+            return Json("Success", "application/json", System.Text.Encoding.UTF8, JsonRequestBehavior.AllowGet);
+        }
+
         public ActionResult NotifyOneTime(string EntityName, long Id, long actionid, string userName)
         {
             var AppName = CommonFunction.Instance.AppName();
@@ -55,7 +102,9 @@ namespace GeneratorBase.MVC.Controllers
             }
             if (!string.IsNullOrEmpty(NotifyToExtra))
                 emailTo += "," + NotifyToExtra;
+            emailTo = emailTo.Trim(',');
             emailTo = emailTo.Trim().TrimEnd(",".ToCharArray());
+            emailTo = emailTo.Replace(",,", ",");
             //
             if (alertMessage.ToUpper().Contains("###RECORD###"))
             {
@@ -88,6 +137,8 @@ namespace GeneratorBase.MVC.Controllers
                         mailbody = EmailTemplate.EmailContent;
                         mailbody = mailbody.Replace("###Message###", alertMessage);
                     }
+                    if (!string.IsNullOrEmpty(EmailTemplate.EmailSubject))
+                        subject = EmailTemplate.EmailSubject;
                     emailTo = string.Join(",", emailTo.Split(',').Distinct().ToArray());
                     mail.Notify(emailTo, mailbody, subject);
                 }

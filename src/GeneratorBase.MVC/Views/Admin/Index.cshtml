@@ -31,36 +31,69 @@
     <li class="col-sm-4">
         <ul>
             <li class="dropdown-header">User Permissions & Security</li>
-            <li><a href="@Url.Action("Index", "Account")"><i class="fa fa-users"></i> Users</a></li>
-            <li><a href="@Url.Action("RoleList", "Account")"><i class="fa fa-check"></i> Roles</a></li>
+            @if (User.CanViewAdminFeature("User"))
+            {
+                <li><a href="@Url.Action("Index", "Account")"><i class="fa fa-users"></i> Users</a></li>
+            }
+            @if (User.CanViewAdminFeature("Role"))
+            {
+                <li><a href="@Url.Action("RoleList", "Account")"><i class="fa fa-check"></i> Roles</a></li>
+            }
             @if (GeneratorBase.MVC.ModelReflector.Entities.Where(p => p.Associations.Where(q => q.Target == "IdentityUser").Count() > 0).Count() > 0)
             {
-                <li><a href="@Url.Action("UserBasedSecurity", "Permission")"><i class="fa fa-user-secret"></i> Set User Based Security</a></li>
+				if (User.CanViewAdminFeature("UserBasedSecurity"))
+                {
+					<li><a href="@Url.Action("UserBasedSecurity", "Permission")"><i class="fa fa-user-secret"></i> Set User Based Security</a></li>
+				}
             }
-            <li><a href="@Url.Action("Index", "DynamicRoleMapping")"><i class="fa fa-cube"></i> Dynamic Roles</a></li>
+            @if (User.CanViewAdminFeature("DynamicRoles"))
+            {
+                <li><a href="@Url.Action("Index", "DynamicRoleMapping")"><i class="fa fa-cube"></i> Dynamic Roles</a></li>
+            }
+			@if (User.CanViewAdminFeature("MultiTenantExtraPrivileges"))
+            {
+				<li><a href="@Url.Action("ApplicationExtraSecurity", "Account")"><i class="fa fa-star"></i> Multi-Tenant  Security</a></li>
+			}
+			@if (User.CanView("JournalEntry"))
+			{
+				 <li><a href="@Url.Action("Index", "JournalEntry")"><i class="fa fa-video-camera"></i> Journal Entry (Audit log)</a></li>
+			}
+			@if (User.CanViewAdminFeature("ApplicationConfiguration"))
+            {
             <li class="divider"></li>
             <li class="dropdown-header">Application Configuration</li>
             <li><a href="@Url.Action("Index", "AppSetting")"><i class="fa fa-gears"></i> Configuration Setting</a></li>
-						<li><a href="@Url.Action("Index", "EmailTemplate")"><i class="fa fa-envelope"></i> Email Templates</a></li>
-
+			<li><a href="@Url.Action("Index", "EmailTemplate")"><i class="fa fa-envelope"></i> Email Templates</a></li>
+}
         </ul>
+		
     </li>
     <li class="col-sm-4">
         <ul>
+		 @if (User.CanViewAdminFeature("BusinessRule"))
+            {
             <li class="dropdown-header">Business Rules</li>
             <li><a href="@Url.Action("Index", "BusinessRule")"><i class="fa fa-cog"></i> Define Business Rules</a></li>
-            <li class="divider"></li>
+			  <li class="divider"></li>
+			}
+          
+			 @if (User.CanViewAdminFeature("UserInterfaceSetting"))
+            {
             <li class="dropdown-header">User Interface</li>
             <li><a href="@Url.Action("Index", "DefaultEntityPage")"><i class="fa fa-file"></i> Set Default Page for Entity</a></li>
             <li><a href="@Url.Action("Edit", "CompanyProfile")"><i class="fa fa-files-o"></i> Set Company Profile</a></li>
             <li><a href="@Url.Action("UserDefinePage", "UserDefinePages")"><i class="fa fa-file-text"></i> User Defined Pages</a></li>
             <li><a href="@Url.Action("Create", "Theme")"><i class="fa fa-th-large"></i> Themes</a></li>
+			<li><a href="@Url.Action("Index", "ResourceLocalization")"><i class="fa fa-globe"></i> Entity UI Display Language</a></li>
+			 <li><a href="@Url.Action("Index", "Chart")"><i class="fa fa-group"></i> Application Charts</a></li>
+			 }
         </ul>
     </li>
     <li class="col-sm-4">
     </li>
     <li class="col-sm-4">
-
+	 @if (User.CanViewAdminFeature("ApplicationDocuments"))
+        {
         <ul>
             <li class="dropdown-header">Application Documents</li>
             @if (ViewBag.FileList != null)
@@ -73,8 +106,10 @@
                     <li><a href="@Url.Action("GenerateDocument", "Template", new {id = @id})" style="text-transform: capitalize;"><i class="fa fa-file-word-o"></i> @docName</a></li>
                 }
             }
+			 <li><a href="@Url.Action("DownloadTestScript", "Admin")" style="text-transform: capitalize;"><i class="fa fa-bell-o"></i> Selenium Test Cases </a></li>
             <li class="divider"></li>
         </ul>
+		}
     </li>
 
 </ul>

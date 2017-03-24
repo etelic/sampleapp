@@ -59,7 +59,7 @@
                                 {
                                     <tr>
                                         <td>
-                                            @if (item.Key != "DomainName" && item.Key != "UseActiveDirectory" && item.Key != "AdministratorRoles" && item.Key != "ReportFolder")
+                                            @if (item.Key != "DomainName" && item.Key != "UseActiveDirectory" && item.Key != "UseActiveDirectoryRole" && item.Key != "AdministratorRoles" && item.Key != "ReportFolder")
                                             {
                                                 <div style="width:60px; margin-top:-2px;">
                                                     <div class="btn-group" style="position:absolute;">
@@ -94,7 +94,21 @@
                                         </td>
 
                                         <td>@Html.DisplayFor(modelItem => item.Key)</td>
-                                        <td>@Html.DisplayFor(modelItem => item.Value)</td>
+                                        @if (item.Key.ToLower() == "reportpass")
+                                        {
+                                            if (item.Value != null)
+                                            {
+                                                string newString = new string('*', item.Value.Length);
+                                                <td>@newString</td>
+                                            }
+                                            else
+                                            {
+                                                <td></td> }
+                                        }
+                                        else
+                                        {
+                                            <td>@Html.DisplayFor(modelItem => item.Value)</td>
+                                        }
                                         <td>@Html.DisplayFor(modelItem => item.Description)</td>
                                     </tr>
                                 }
@@ -106,7 +120,7 @@
             }
             <div class="panel panel-default AppForm">
                 <div class="panel-heading clearfix">
-                    <h3 class="panel-title">Other Setting</h3>
+                    <h3 class="panel-title">Other Settings</h3>
                 </div>
                 <div class="panel-body">
                     <div id="Des_Table" class="table-responsive">
@@ -123,7 +137,7 @@
                             {
                                 <tr>
                                     <td>
-                                        @if (item.Key != "AppName" && item.Key != "AppURL")
+                                        @if (item.Key != "AppURL")
                                         {
                                             <div style="width:60px; margin-top:-2px;">
                                                 <div class="btn-group" style="position:absolute;">
@@ -156,7 +170,21 @@
                                             <div>web.config setting</div>}
                                     </td>
                                     <td>@Html.DisplayFor(modelItem => item.Key)</td>
-                                    <td>@Html.DisplayFor(modelItem => item.Value)</td>
+                                    @if (item.Key.ToLower() == "reportpass")
+                                    {
+                                        if (item.Value != null)
+                                        {
+                                            string newString = new string('*', item.Value.Length);
+                                            <td>@newString</td>
+                                        }
+                                        else
+                                        {
+                                            <td></td> }
+                                    }
+                                    else
+                                    {
+                                        <td>@Html.DisplayFor(modelItem => item.Value)</td>
+                                    }
                                     <td>@Html.DisplayFor(modelItem => item.Description)</td>
                                 </tr>
                             }
@@ -164,8 +192,10 @@
                     </div>
                 </div>
             </div>
-
+            @if (User.CanEditAdminFeature("ApplicationConfiguration"))
+            {
             <a href="@Url.Action("ApplySetting", "AppSetting")" class="btn btn-primary btn-sm">Apply Setting</a>
+            }
             <br />
             <br />
 

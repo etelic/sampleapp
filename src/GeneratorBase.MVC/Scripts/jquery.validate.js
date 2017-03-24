@@ -101,7 +101,13 @@ $.extend($.fn, {
 				}
 				if (validator.form())
 				{
-				   $(this).find(':submit').attr('disabled', 'disabled');
+				    $(this).find(':submit').attr('disabled', 'disabled');
+				    // businessrules save button enable in i11
+				    if (document.getElementById('ErrMsg') != undefined) {
+				        if (document.getElementById('ErrMsg').innerHTML.length > 0)
+				            $(this).find(':submit').removeProp('disabled');
+				    }
+                    //
 				    if (validator.pendingRequest)
 				    {
 						validator.formSubmitted = true;

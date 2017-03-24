@@ -1,0 +1,489 @@
+﻿@model PagedList.IPagedList<GeneratorBase.MVC.Models.DataSourceParameters>
+@using PagedList.Mvc;
+@{
+    var ActionNameUrl = "Index";
+    if (HttpContext.Current.Request.RequestContext.RouteData.Values["action"].ToString().ToUpper() == "FSEARCH")
+    {
+        ActionNameUrl = "FSearch";
+    }
+    var BackUrl = Request.Url;
+    if (ViewData["HostingEntity"] != null && Request.QueryString["TabToken"] != null)
+    {
+        BackUrl = Request.UrlReferrer;
+    }
+}
+<div id="DataSourceParameters">
+    <style>
+        .table-responsive > .fixed-column {
+            position: absolute;
+            display: block;
+            width: auto;
+            border: 0px solid transparent;
+            border-top: 1px solid #c3ddec;
+        }
+
+        .fixed-column th {
+            background: #fff;
+        }
+
+        .fixed-column td {
+            background: #fff;
+        }
+    </style>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".pagination a").click(function (e) {
+                //PaginationClick(e,'DataSourceParameters')
+                PaginationClick(e, 'DataSourceParameters', '@User.JavaScriptEncodedName')
+            })
+            if ("@HttpContext.Current.Request.RequestContext.RouteData.Values["action"].ToString().ToUpper()" == "FSEARCH") {
+                $("#fsearchDataSourceParameters").addClass('in');
+                if ('@ViewData["HostingEntity"]'.length > 0) {
+                    $("#" + "@ViewData["HostingEntity"]" + "_DataSourceParameters").hide();
+                }
+            }
+            $("#SearchStringDataSourceParameters").keypress(function (e) {
+                if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
+                    $("#DataSourceParametersSearch").bind("click", (function () {
+                    }));
+                    $('#DataSourceParametersSearch').trigger("click");
+                    return false;
+                }
+            })
+            $("#btnShowHideDataSourceParameters").mouseup(function () {
+                if (document.getElementById('ColumnShowHideDataSourceParameters').className == 'collapse') {
+                    $('#lblDataSourceParameters').css('display', 'none');
+                }
+            })
+        });
+    </script>
+    @functions {
+        object getSortHtmlAttributes(string sortby, bool IsPaging, int? page, bool? IsExport)
+        {
+            if (IsPaging)
+            {
+                return new
+                {
+                    page,
+                    sortBy = ViewBag.CurrentSort,
+                    isAsc = ViewBag.IsAsc,
+                    currentFilter = ViewBag.CurrentFilter,
+                    HostingEntity = @Convert.ToString(ViewData["HostingEntity"]),
+                    AssociatedType = @Convert.ToString(ViewData["AssociatedType"]),
+                    HostingEntityID = ViewData["HostingEntityID"],
+                    IsExport = IsExport,
+                    FSFilter = ViewBag.FSFilter == null ? "Fsearch" : ViewBag.FSFilter,
+                    IsFilter = @Convert.ToBoolean(ViewData["IsFilter"]),
+
+                    entitydatasourceparameters = Request.QueryString["entitydatasourceparameters"],
+                    flag = Request.QueryString["flag"],
+                    search = Request.QueryString["search"],
+                };
+            }
+            else
+            {
+                return new
+                {
+                    sortBy = sortby,
+                    currentFilter = Request.QueryString["currentFilter"],
+                    searchString = Request.QueryString["searchString"],
+                    isAsc = (ViewBag.IsAsc == "ASC" ? "DESC" : ""),
+                    page = ViewBag.Pages,
+                    HostingEntity = @Convert.ToString(ViewData["HostingEntity"]),
+                    HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),
+                    AssociatedType = @Convert.ToString(ViewData["AssociatedType"]),
+                    IsExport = IsExport,
+                    FSFilter = ViewBag.FSFilter == null ? "Fsearch" : ViewBag.FSFilter,
+                    IsFilter = @Convert.ToBoolean(ViewData["IsFilter"]),
+                    entitydatasourceparameters = Request.QueryString["entitydatasourceparameters"],
+                    flag = Request.QueryString["flag"],
+                    search = Request.QueryString["search"],
+                };
+            }
+        }
+    }
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-sx-12">
+            <div class="panel panel-default">
+                <div class="panel-heading clearfix" style="margin:0px; padding:8px;">
+                    <div class="btn-group" id='@ViewData["HostingEntity"]_DataSourceParameters'>
+                        @if (User.Identity.IsAuthenticated && User != null && User.CanAdd("DataSourceParameters"))
+                        {
+
+                            <button class="btn btn-default tip-top" data-placement="top" data-original-title="Quick Add" style="padding:3px 5px;" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Data Source Parameters','dvPopup','" + Url.Action("CreateQuick", "DataSourceParameters", new { UrlReferrer = BackUrl, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), TS=DateTime.Now }) + "')")">
+                                <span class="fam-add"></span>
+                            </button>
+
+                        }
+                    </div>
+                    <div class="btn-group">
+                        @if (User.Identity.IsAuthenticated && User != null && User.CanAdd("DataSourceParameters"))
+                        {
+                            if (ViewData["HostingEntity"] == null)
+                            {
+                                <button type="button" class="btn btn-default btn-default tip-top" data-original-title="Import Excel" data-placement="top" style="padding:3px 5px;" onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Upload", "DataSourceParameters") + "');")>
+                                    <span class="fam-page-excel"></span>
+                                </button>
+                            }
+                        }
+                        <div class="btn btn-default  btn-default tip-top" data-original-title="Export Excel" data-placement="top" style="padding:3px 5px;" onclick=@Html.Raw("NavigateToUrl('" + Url.Action(ActionNameUrl,"DataSourceParameters",getSortHtmlAttributes(null, false, null, true), null) + "');")>
+                            <span class="fam-page-white-put"></span>
+                        </div>
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-default tip-top" data-placement="top" data-original-title="Show Graph" style="padding:3px 5px;" data-toggle="modal" data-target="#ShowGraphDataSourceParameters" onclick=@Html.Raw("OpenDashBoard('dvShowGraphDataSourceParameters');")>
+                            <span class="fam-chart-bar"></span>
+                        </button>
+                        <button type="button" class="btn btn-default btn-default collapse-data-btn tip-top" id="btnShowHideDataSourceParameters" data-original-title="Show/Hide Column" data-placement="top" style="padding:3px 5px;" onclick=@Html.Raw("showhideColumns(event,'DataSourceParameters');")>
+                            <span class="fam-table-row-delete"></span>
+                        </button>
+                        @if (ViewData["HostingEntity"] == null || Convert.ToBoolean(ViewData["IsFilter"]) == true)
+                        {
+                            <div class="btn-group">
+                                <a class="btn btn-default btn-default dropdown-toggle tip-top" data-original-title="Filter-Groupby" style="padding:3px 5px;" data-toggle="dropdown" href="#">
+                                    <span class="glyphicon glyphicon-filter"></span>
+                                </a>
+                                <ul class="dropdown-menu" role="menu">
+                                    <li>
+                                        <a id="fltEntityDataSource" data-placement="top" onclick=@Html.Raw("EntityFilter('DataSourceParameters','" + Url.Action("GetAllValueForFilter", "EntityDataSource") + "','" + Html.Raw(Url.Action("Index", "DataSourceParameters", new {FirstCall=true,FilterHostingEntityID = ViewData["HostingEntityID"], IsFilter = true, HostingEntity = "EntityDataSource", AssociatedType = "EntityDataSourceParameters", ClearSearchTimeStamp = DateTime.Now })) + "','" + User.JavaScriptEncodedName + "');")>
+                                            <span>Entity Data Source</span>
+                                        </a>
+                                    </li>
+                                    <li><span class="label label-primary pull-left filterLabel" style="margin-left:20px;">@Html.ActionLink("Clear", "Index")</span></li>
+                                </ul>
+                            </div>
+                        }
+                    </div>
+                    <div class="btn-group">
+                        <a class="btn btn-default dropdown-toggle tip-top" data-original-title="Bulk Actions" style="padding:3px 5px;" data-toggle="dropdown" href="#">
+                            <span class="fa fa-wrench"></span> Bulk
+                        </a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li>
+                                @if (User.Identity.IsAuthenticated && User != null && User.CanEdit("DataSourceParameters") && User.CanUseVerb("BulkUpdate", "DataSourceParameters", User))
+                                {
+                                    <a data-placement="top" style="cursor:pointer;" data-toggle="modal" data-target="#dvPopup"
+                                       onclick="@Html.Raw("OpenPopUpBulKUpdate('addPopup','Bulk Update Data Source Parameters','dvPopup','" + Url.Action("BulkUpdate", "DataSourceParameters", new { UrlReferrer = BackUrl, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), TS = DateTime.Now }) + "')")">Update</a>
+                                }
+                            </li>
+                            <li>
+                                @if (User.Identity.IsAuthenticated && User != null && User.CanDelete("DataSourceParameters") && User.CanUseVerb("BulkDelete", "DataSourceParameters", User))
+                                {
+                                    <a style="cursor:pointer;" onclick="PerformBulkOperation(this,'DataSourceParameters','Bulk Delete','@Url.Action("DeleteBulk", "DataSourceParameters")');">Delete</a>
+                                }
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="pull-right" style="width:250px;">
+                        <div class="input-group">
+                            @Html.TextBox("SearchStringDataSourceParameters", ViewBag.CurrentFilter as string, null, new { @class = "form-control fixsearchbox", @value = ViewBag.Homeval, @placeholder = "Search" })
+                            <div class="input-group-btn">
+                                <a id="DataSourceParametersSearch" onclick="SearchClick(event, 'DataSourceParameters', '@Html.Raw(Url.Action("Index", "DataSourceParameters", new { IsFilter = ViewData["IsFilter"], IsDeepSearch = false, searchString = "_SearchString", HostingEntity = Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]), SearchTimeStamp = DateTime.Now }))','@User.JavaScriptEncodedName');" data-original-title="Grid Search" class="btn btn-default btn-default tip-top" style="padding:3px 5px;"><span class="fam-zoom"></span></a>
+                                @if (ViewData["HostingEntity"] == null)
+                                {
+                                    <a href="@(Url.Action("SetFSearch", "DataSourceParameters")+Request.Url.Query)" data-original-title="Faceted Search" class="btn btn-default btn-default tip-top" style="padding:3px 5px;"><span class="fam-page-find"></span></a>
+                                }
+                                <button id="DataSourceParametersCancel" type="button" class="btn btn-default btn-default collapse-data-btn tip-top" onclick="CancelSearch('DataSourceParameters','@Html.Raw(Url.Action("Index", "DataSourceParameters", new {IsFilter=ViewData["IsFilter"], HostingEntity = Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]), ClearSearchTimeStamp = DateTime.Now }))','@User.JavaScriptEncodedName')" data-original-title="Clear Search" data-placement="top" style="padding:3px 5px;">
+                                    <span class="fam-delete"></span>
+                                </button>
+                                <button id="DataSourceParametersSearchCancel" type="button" class="btn btn-default btn-default collapse-data-btn tip-top" onclick="CancelSearch('DataSourceParameters','@Html.Raw(Url.Action("Index", "DataSourceParameters", new {IsFilter=ViewData["IsFilter"], HostingEntity = Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]), ClearSearchTimeStamp = DateTime.Now }))','@User.JavaScriptEncodedName')" data-original-title="Refresh Grid" data-placement="top" style="padding:3px 5px;">
+                                    <span class="fam-arrow-refresh"></span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-body" style="margin:0px; padding:8px;">
+                    @if (ViewData["HostingEntity"] == null)
+                    {
+                        if (ViewBag.SearchResult != "")
+                        {
+                            <div id="fsearchDataSourceParameters" class="collapse MessageFSearch">
+                                @Html.Raw(Html.Encode(ViewBag.SearchResult).Replace(Environment.NewLine, "<br/>"))
+                                <a href="@Url.Action("Index", "DataSourceParameters")" style="margin-left:5px;float:right"><span class="glyphicon glyphicon-remove-sign"></span> Clear</a>
+                                <a href="@(Url.Action("SetFSearch", "DataSourceParameters")+Request.Url.Query)" style="float:right"><span class="glyphicon glyphicon-edit"></span> Modify</a>
+                            </div>
+                        }
+                    }
+                    @Html.Partial("~/Views/DataSourceParameters/ShowHideColumns.cshtml")
+                    <div id="Des_Table" class="table-responsive" style="overflow-x:auto;">
+                        <table class="table table-striped table-bordered table-hover table-condensed">
+                            <thead>
+                                <tr>
+                                    <th class="col0" style="width:20px;">
+                                        <input type="checkbox" class="tip-top" data-placement="top" data-original-title="Select All" onclick="SelectAllRows(this);" />
+                                        @Html.Hidden("SelectedItems")
+                                    </th>
+                                    <th class="col1" style="width:70px;">Actions</th>
+                                    @if (User.CanView("DataSourceParameters", "ArgumentName"))
+                                    {
+                                        <th class="col2">
+                                            @Html.ActionLink("Argument Name", ActionNameUrl, "DataSourceParameters", getSortHtmlAttributes("ArgumentName", false, null, false), new { @onclick = "SortLinkClick(event,'DataSourceParameters');" })
+                                        @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "ArgumentName")
+                                        {<i class="fa fa-sort-desc"></i>}
+                                        @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "ArgumentName")
+                                        {<i class="fa fa-sort-asc"></i>}
+                                    </th>
+                                    }
+                                    @if (User.CanView("DataSourceParameters", "ArgumentValue"))
+                                    {
+                                        <th class="col3">
+                                            @Html.ActionLink("Argument Value", ActionNameUrl, "DataSourceParameters", getSortHtmlAttributes("ArgumentValue", false, null, false), new { @onclick = "SortLinkClick(event,'DataSourceParameters');" })
+                                        @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "ArgumentValue")
+                                        {<i class="fa fa-sort-desc"></i>}
+                                        @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "ArgumentValue")
+                                        {<i class="fa fa-sort-asc"></i>}
+                                    </th>
+                                    }
+                                    @if (User.CanView("DataSourceParameters", "HostingEntity"))
+                                    {
+                                        <th class="col4">
+                                            @Html.ActionLink("Hosting Entity", ActionNameUrl, "DataSourceParameters", getSortHtmlAttributes("HostingEntity", false, null, false), new { @onclick = "SortLinkClick(event,'DataSourceParameters');" })
+                                        @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "HostingEntity")
+                                        {<i class="fa fa-sort-desc"></i>}
+                                        @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "HostingEntity")
+                                        {<i class="fa fa-sort-asc"></i>}
+                                    </th>
+                                    }
+                                    @if (User.CanView("DataSourceParameters", "flag"))
+                                    {
+                                        <th class="col5">
+                                            @Html.ActionLink("flag", ActionNameUrl, "DataSourceParameters", getSortHtmlAttributes("flag", false, null, false), new { @onclick = "SortLinkClick(event,'DataSourceParameters');" })
+                                        @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "flag")
+                                        {<i class="fa fa-sort-desc"></i>}
+                                        @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "flag")
+                                        {<i class="fa fa-sort-asc"></i>}
+                                    </th>
+                                    }
+                                    @if (User.CanView("DataSourceParameters", "other"))
+                                    {
+                                        <th class="col6">
+                                            @Html.ActionLink("other", ActionNameUrl, "DataSourceParameters", getSortHtmlAttributes("other", false, null, false), new { @onclick = "SortLinkClick(event,'DataSourceParameters');" })
+                                        @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "other")
+                                        {<i class="fa fa-sort-desc"></i>}
+                                        @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "other")
+                                        {<i class="fa fa-sort-asc"></i>}
+                                    </th>
+                                    }
+                                    @if (User.CanView("DataSourceParameters", "EntityDataSourceParametersID"))
+                                    {
+                                        <th class="col7" @(Convert.ToString(ViewData["HostingEntity"]) == "EntityDataSource" && Convert.ToString(ViewData["AssociatedType"]) == "EntityDataSourceParameters" ? "hidden" : "")>
+                                            @Html.ActionLink("Entity Data Source", ActionNameUrl, "DataSourceParameters", getSortHtmlAttributes("EntityDataSourceParametersID", false, null, false), new { @onclick = "SortLinkClick(event,'DataSourceParameters');" })
+                                            @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "EntityDataSourceParametersID")
+                                            {<i class="fa fa-sort-desc"></i>}
+                                            @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "EntityDataSourceParametersID")
+                                            {<i class="fa fa-sort-asc"></i>}
+                                        </th>
+                                    }
+                                </tr>
+                                @foreach (var item in Model)
+                                {
+                                    <tr ondblclick="DoubleClickRow(@item.Id,'@Url.Action("Details", "DataSourceParameters", new { id = item.Id, UrlReferrer = BackUrl, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null)');">
+                                        <td>
+                                            <input type="checkbox" id="@item.Id" onclick="SelectForBulkOperation(this,'@item.Id');" />
+                                        </td>
+                                        <td>
+                                            <div style="width:60px; margin-top:-2px;">
+                                                <div class="btn-group" style="position:absolute;">
+                                                    <button data-toggle="dropdown" class="btn btn-xs dropdown-toggle btn-default">
+                                                        Action
+                                                        <span class="caret">    </span>
+                                                    </button>
+                                                    <ul class="dropdown-menu pull-left">
+                                                        <li>
+                                                            <a href="@Url.Action("Details", "DataSourceParameters", new { id = item.Id, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"])  }, null)"><i class="glyphicon glyphicon-eye-open"></i>  View</a>
+                                                        </li>
+                                                        @if (User.CanEditItem("DataSourceParameters", item, User))
+                                                        {
+                                                            <li>
+
+                                                                <a id='aBtnQuickEditDataSourceParameters_@item.Id' style="cursor:pointer;" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Edit Data Source Parameters','dvPopup','" + Url.Action("EditQuick", "DataSourceParameters", new
+																			{
+																				id = item.Id,
+																				UrlReferrer = Request.Url,
+																				AssociatedType = ViewData["AssociatedType"],
+																				HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]),
+																				HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),
+																				TS = DateTime.Now
+																			}) + "')")"><i class="glyphicon glyphicon-edit"></i>Quick Edit</a>
+
+                                                            </li>
+                                                        }
+                                                        @if (User.CanEditItem("DataSourceParameters", item, User))
+                                                        {
+                                                            <li>
+                                                                <a href="@Url.Action("Edit","DataSourceParameters", new { id = item.Id,  UrlReferrer = BackUrl, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) },null)"><i class="glyphicon glyphicon-edit"></i>  Edit</a>
+
+                                                            </li>
+                                                        }
+                                                        @if (User.CanDeleteItem("DataSourceParameters", item, User))
+                                                        {
+                                                            <li class="divider" style="clear:both"></li>
+                                                            <li>
+                                                                <a href="@Url.Action("Delete", "DataSourceParameters", new { id = item.Id, UrlReferrer = BackUrl, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null)"><i class="glyphicon glyphicon-remove-sign" style="color: #E7574B;"></i> Delete</a>
+                                                            </li>
+                                                        }
+                                                        <li class="divider" style="clear:both"></li>
+                                                        <li class="dropdown-submenu">
+                                                            <a tabindex="-1" href="#" style="margin-bottom:10px;"><i class="fam-zoom small"></i> Find Matching</a>
+                                                            <ul class="dropdown-menu pull-left">
+                                                                <li>
+                                                                    <a href="@Url.Action("FindFSearch", "PropertyMapping", new {sourceEntity="DataSourceParameters",id=item.Id}, null)">Property Mapping</a>
+                                                                </li>
+                                                            </ul>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        @if (User.CanView("DataSourceParameters", "ArgumentName"))
+                                        {
+                                            <td onclick="OpenQuickEdit('DataSourceParameters','@item.Id',event);">
+                                                @Html.DisplayFor(modelItem => item.ArgumentName)
+                                            </td>
+                                        }
+                                        @if (User.CanView("DataSourceParameters", "ArgumentValue"))
+                                        {
+                                            <td onclick="OpenQuickEdit('DataSourceParameters','@item.Id',event);">
+                                                @Html.DisplayFor(modelItem => item.ArgumentValue)
+                                            </td>
+                                        }
+                                        @if (User.CanView("DataSourceParameters", "HostingEntity"))
+                                        {
+                                            <td onclick="OpenQuickEdit('DataSourceParameters','@item.Id',event);">
+                                                @Html.DisplayFor(modelItem => item.HostingEntity)
+                                            </td>
+                                        }
+                                        @if (User.CanView("DataSourceParameters", "flag"))
+                                        {
+                                            <td onclick="OpenQuickEdit('DataSourceParameters','@item.Id',event);">
+                                                @Html.ValueFor(modelItem => item.flag)
+                                            </td>
+                                        }
+                                        @if (User.CanView("DataSourceParameters", "other"))
+                                        {
+                                            <td onclick="OpenQuickEdit('DataSourceParameters','@item.Id',event);">
+                                                @Html.DisplayFor(modelItem => item.other)
+                                            </td>
+                                        }
+                                        @if (User.CanView("DataSourceParameters", "EntityDataSourceParametersID"))
+                                        {
+                                            <td @(Convert.ToString(ViewData["HostingEntity"]) == "EntityDataSource" && Convert.ToString(ViewData["AssociatedType"]) == "EntityDataSourceParameters" ? "hidden" : "")>
+                                                @Html.DisplayFor(modelItem => item.entitydatasourceparameters.DisplayValue)
+                                            </td>
+                                        }
+                                    </tr>
+                                }
+                        </table>
+                    </div>
+                    <ul id="Mob_List" class="list-group">
+                        @foreach (var item in Model)
+                        {
+                            <li class="list-group-item">
+                                @if (User.CanView("DataSourceParameters", "ArgumentName"))
+                                {
+                                    <p>
+                                        <span class="text-primary"> Argument Name </span> : <span>
+                                            @Html.DisplayFor(modelItem => item.ArgumentName)
+                                        </span>
+                                    </p>
+                                }
+                                @if (User.CanView("DataSourceParameters", "ArgumentValue"))
+                                {
+                                    <p>
+                                        <span class="text-primary"> Argument Value </span> : <span>
+                                            @Html.DisplayFor(modelItem => item.ArgumentValue)
+                                        </span>
+                                    </p>
+                                }
+                                @if (User.CanView("DataSourceParameters", "HostingEntity"))
+                                {
+                                    <p>
+                                        <span class="text-primary"> Hosting Entity </span> : <span>
+                                            @Html.DisplayFor(modelItem => item.HostingEntity)
+                                        </span>
+                                    </p>
+                                }
+                                @if (User.CanView("DataSourceParameters", "flag"))
+                                {
+                                    <p>
+                                        <span class="text-primary"> flag </span> : <span>
+                                            @Html.DisplayFor(modelItem => item.flag)
+                                        </span>
+                                    </p>
+                                }
+                                @if (User.CanView("DataSourceParameters", "other"))
+                                {
+                                    <p>
+                                        <span class="text-primary"> other </span> : <span>
+                                            @Html.DisplayFor(modelItem => item.other)
+                                        </span>
+                                    </p>
+                                }
+                                @if (User.CanView("DataSourceParameters", "EntityDataSourceParametersID"))
+                                {
+                                    <p @(Convert.ToString(ViewData["HostingEntity"]) == "EntityDataSource" && Convert.ToString(ViewData["AssociatedType"]) == "EntityDataSourceParameters" ? "hidden" : "")>
+                                        <span class="text-primary"> Entity Data Source Parameters </span> : <span>
+                                            @Html.DisplayFor(modelItem => item.entitydatasourceparameters.DisplayValue)
+                                        </span>
+                                    </p>
+                                }
+                                <span class="label label-primary text-linkwhite">
+                                    @Html.ActionLink("View", "Details", "DataSourceParameters", new { id = item.Id }, null)
+                                </span>
+                                <span class="label label-warning text-linkwhite">
+                                    @if (User.CanEditItem("DataSourceParameters", item, User))
+                                    {
+                                        @Html.ActionLink("Edit", "Edit", "DataSourceParameters", new { id = item.Id, UrlReferrer = BackUrl, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null)
+                                    }
+                                </span>
+                                <span class="label label-danger text-linkwhite">
+                                    @if (User.CanDeleteItem("DataSourceParameters", item, User))
+                                    {
+                                        @Html.ActionLink("Delete", "Delete", "DataSourceParameters", new { id = item.Id, UrlReferrer = BackUrl, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null)
+                                    }
+                                </span>
+                            </li>
+                        }
+                    </ul>
+                    @if (Model.Count > 0)
+                    {
+                        <div id="pagination">
+                            @Html.PagedListPager(Model, page => Url.Action(ActionNameUrl, "DataSourceParameters", getSortHtmlAttributes(null, true, page, false)))
+                            <div class="fixPageSize">
+                                Page Size :
+                                @Html.DropDownList("PageSize", new SelectList(new Dictionary<string, int> { { "10", 10 }, { "20", 20 }, { "50", 50 }, { "100", 100 } }, "Key", "Value")
+                            , new
+                            {
+                                @id = "pagesizelistDataSourceParameters",
+                                @onchange = @Html.Raw("pagesizelistChange(event,'DataSourceParameters','"
+                                 + @User.JavaScriptEncodedName + "')"),
+                                @Url = Html.Raw(@Url.Action(ActionNameUrl, "DataSourceParameters",
+                                getSortHtmlAttributes(ViewBag.CurrentSort, ViewBag.Pages == 1 ? false : true,
+                                null, false), null))
+                            })
+                                <span style="text-align:right;"> Total Count: @(Model.TotalItemCount)</span>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="ShowGraphDataSourceParameters" tabindex="-1" role="dialog" aria-labelledby="ShowGraphDataSourceParametersLabel" aria-hidden="true">
+        <div class="modal-dialog" style="width:80%">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="ShowGraphDataSourceParametersLabel">Dashboard Data Source Parameters</h4>
+                </div>
+                <div class="modal-body">
+                    <div id="dvShowGraphDataSourceParameters" data-url="@Url.Action("ShowGraph", "DataSourceParameters")">
+                    </div>
+                    <div style="clear:both"></div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

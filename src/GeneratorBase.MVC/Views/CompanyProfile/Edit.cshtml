@@ -1,7 +1,15 @@
 ﻿@model GeneratorBase.MVC.Models.CompanyProfile
 @{
     ViewBag.Title = "Edit Company Profile";
-    // Layout = null;
+    var url = Url.Content("~/logo/logo.gif");
+    var url1 = Url.Content("~/logo/logo_white.png");
+    var commonObj = GeneratorBase.MVC.Models.CommonFunction.Instance;
+    if (HttpContext.Current.Request.Url.Host == "localhost")
+    {
+        url = Url.Content("~/logo/logo.gif");
+        url1 = Url.Content("~/logo/logo_white.png");
+    }
+
 }
 @functions {
     object getHtmlAttributes(string Property)
@@ -121,22 +129,104 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class='col-sm-6 col-md-6 col-xs-12'>
-                                    <div class='form-group'>
-                                        <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.logo) </label>
-                                        <div class="input-group col-sm-7 col-md-7 col-xs-12">
-                                            <div style="position:relative;">
-                                                @Html.TextBoxFor(model => model.logo, new { @class = "hidden" })
-                                                <a class='btn btn-primary btnupload' href='javascript:;'>
-                                                    Upload File
-                                                    <input id="logo" type="file" style='position:absolute;z-index:2;top:0;left:0;filter: alpha(opacity=0);-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";opacity:0;background-color:transparent;color:transparent;width:105px;' name="logo" onchange='$("#upload-file-infologo").html($(this).val());'>
-                                                </a>
-                                                &nbsp;
-                                                <span class='label uploadlblFix' id="upload-file-infologo"></span>
-                                            </div><img src="@(Url.Content("~/") + "/logo/logo.gif")" width="50px" height="50px" alt="NA" />
+                                <div style="clear:both"></div>
+                                @*logo*@
+                                <div class="col-md-6 col-sm-6 col-xs-12">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading clearfix">
+                                            <i class="icon-calendar"></i>
+                                            <h3 class="panel-title">LoginPage Logo Setting</h3>
+                                        </div>
+                                        <div class="panel-body">
+                                            <div class='col-sm-2 col-md-2 col-xs-12'>
+                                                @{
+                var srcvalue = Model.Logo == null || Model.Logo == "logo_white.png" ? url1 : "data:image/jpeg;base64," + Model.Logo;
+                                                }
+                                                <img src='@srcvalue' style="width: 50px; height: 50px; border: 1px solid #edf5fa; padding: 3px; margin-bottom: 5px;" alt="NA" />
+
+                                                <div style="position:relative;">
+                                                    @Html.TextBoxFor(model => model.Logo, new { @class = "hidden" })
+                                                    <a class='btn btn-primary btnupload' href='javascript:;'>
+                                                        Upload File
+                                                        <input id="Logo" type="file" style='position:absolute;z-index:2;top:0;left:0;filter: alpha(opacity=0);-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";opacity:0;background-color:transparent;color:transparent;width:105px;'
+                                                               name="Logo" onchange='$("#upload-file-infoLogo").html($(this).val());'>
+                                                    </a>
+                                                    <span class='label uploadlblFix' id="upload-file-infoLogo"></span>
+                                                </div>
+
+
+                                            </div>
+                                            <div class='col-sm-10 col-md-10 col-xs-10'>
+                                                <div class='form-group'>
+                                                    <label class="col-sm-2 col-md-2 col-xs-12">Width</label>
+                                                    <div class="input-group col-sm-3 col-md-3 col-xs-12">
+                                                        @Html.TextBoxFor(model => model.LogoWidth, getHtmlAttributes("LogoWidth"))
+                                                        @Html.ValidationMessageFor(model => model.LogoWidth)
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class='col-sm-10 col-md-10 col-xs-10'>
+                                                <div class='form-group'>
+                                                    <label class="col-sm-2 col-md-2 col-xs-12">Height</label>
+                                                    <div class="input-group col-sm-3 col-md-3 col-xs-12">
+                                                        @Html.TextBoxFor(model => model.LogoHeight, getHtmlAttributes("LogoHeight"))
+                                                        @Html.ValidationMessageFor(model => model.LogoHeight)
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
                                         </div>
                                     </div>
                                 </div>
+                                @*End*@
+
+                                @*Icon*@
+                                <div class="col-md-6 col-sm-6 col-xs-12">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading clearfix">
+                                            <i class="icon-calendar"></i>
+                                            <h3 class="panel-title">MasterPage Logo Setting</h3>
+                                        </div>
+                                        <div class="panel-body">
+                                            <div class='col-sm-2 col-md-2 col-xs-12'>
+                                                @{
+                var srcvalueIcon = Model.Icon == null || Model.Icon == "logo.gif" ? url : "data:image/jpeg;base64," + Model.Icon;
+                                                }
+                                                <img src="@srcvalueIcon" style="width: 50px; height: 50px; border: 1px solid #edf5fa; padding: 3px; margin-bottom: 5px;" alt="NA" />
+                                                <div style="position:relative;">
+                                                    @Html.TextBoxFor(model => model.Icon, new { @class = "hidden" })
+                                                    <a class='btn btn-primary btnupload' href='javascript:;'>
+                                                        Upload File
+                                                        <input id="Icon" type="file" style='position:absolute;z-index:2;top:0;left:0;filter: alpha(opacity=0);-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";opacity:0;background-color:transparent;color:transparent;width:105px;'
+                                                               name="Icon" onchange='$("#upload-file-infoIcon").html($(this).val());'>
+                                                    </a>
+                                                    <span class='label uploadlblFix' id="upload-file-infoIcon"></span>
+                                                </div>
+                                            </div>
+                                            <div class='col-sm-10 col-md-10 col-xs-10'>
+                                                <div class='form-group'>
+                                                    <label class="col-sm-2 col-md-2 col-xs-12">Width</label>
+                                                    <div class="input-group col-sm-3 col-md-3 col-xs-12">
+                                                        @Html.TextBoxFor(model => model.IconWidth, getHtmlAttributes("IconWidth"))
+                                                        @Html.ValidationMessageFor(model => model.IconWidth)
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class='col-sm-10 col-md-10 col-xs-10'>
+                                                <div class='form-group'>
+                                                    <label class="col-sm-2 col-md-2 col-xs-12">Height</label>
+                                                    <div class="input-group col-sm-3 col-md-3 col-xs-12">
+                                                        @Html.TextBoxFor(model => model.IconHeight, getHtmlAttributes("IconHeight"))
+                                                        @Html.ValidationMessageFor(model => model.IconHeight)
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                @*end*@
+
                             </div>
                             <div class="row">
                                 <div class="col-md-12 col-sm-12 col-xs-12">
@@ -186,12 +276,206 @@
                                     </div>
                                 </div>
                             </div>
+                            @*Add Update Document*@
+                            <div class="row">
+                                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                    <div class="panel panel-default" style="color:black">
+                                        <div class="panel-heading clearfix">
+                                            <h3 class="panel-title">
+                                                Footer
+                                            </h3>
+                                        </div>
+                                        <div class="panel-body" style="padding:0px;">
+                                            <table class="table table-bordered">
+                                                <thead>
+                                                    <tr>
+                                                        <th>
+                                                            Name
+                                                        </th>
+                                                        <th>
+                                                            Web Link
+                                                        </th>
+                                                        <th>
+                                                            Attach Document
+                                                        </th>
+                                                        <th width="50px">ADD/DELETE</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @*Legal Information*@
+                                                    <tr id="trGridLegal">
+                                                        <td>
+                                                            @commonObj.Legal()
+                                                        </td>
+                                                        <td>
+                                                            <a href='@Html.Raw(commonObj.getBaseUri() + commonObj.LegalLink())' target="_blank">@commonObj.Legal()</a>
+                                                        </td>
+                                                        <td>
+                                                            @*<span class='label uploadlblFix' id="upload-file-infoLegalInformationAttach">@LegalAttach</span>*@
+                                                            @commonObj.LegalAttach()
+                                                        </td>
+                                                        <td align="center">
+                                                            <a onclick="DeleteLegal()" id="aLegalDelete"><i class="fam-cross"></i></a>
+                                                            <a onclick="EditLegal()" id="aLegalEdit"><i class="fam-add"></i></a>
+                                                        </td>
+                                                    </tr>
+                                                    <tr id="trEditLegal">
+                                                        <td>
+                                                            <input name="LegalInformation" placeholder="@commonObj.Legal()" id="LegalInformation" value="" />
+                                                        </td>
+                                                        <td>
+                                                            <input name="LegalInformationLink" placeholder="@commonObj.LegalLink()" id="LegalInformationLink" value='' />
+                                                        </td>
+                                                        <td>
+                                                            <div style="position:relative;">
+                                                                <a class='btn btn-primary btnupload' href='javascript:;'>
+                                                                    Upload File
+                                                                    <input type="file" name="LegalInformationAttach" id="LegalInformationAttach" style='position:absolute;z-index:2;top:0;left:0;filter: alpha(opacity=0);-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";opacity:0;background-color:transparent;color:transparent;width:105px;' />
+                                                                </a>
+                                                            </div>
+                                                        </td>
+                                                        <td align="center">
+                                                            <a onclick="CancelLegal()" id="aCancelLegal"><i class="fam-delete"></i></a>
+                                                        </td>
+                                                    </tr>
+                                                    @*Privacy Policy*@
+                                                    <tr id="trGridPrivacy">
+                                                        <td>
+                                                            @commonObj.Policy()
+                                                        </td>
+                                                        <td>
+                                                            <a href='@Html.Raw(commonObj.getBaseUri() + commonObj.PolicyLink())' target="_blank">@commonObj.Policy()</a>
+                                                        </td>
+                                                        <td>
+                                                            @*<span class='label uploadlblFix' id="upload-file-infoPrivacyAttach">@PolicyAttach</span>*@
+                                                            @commonObj.PolicyAttach()
+                                                        </td>
+                                                        <td align="center">
+                                                            <a onclick="DeletePrivacy()" id="aPrivacyDelete"><i class="fam-cross"></i></a>
+                                                            <a onclick="EditPrivacy()" id="aPrivacyEdit"><i class="fam-add"></i></a>
+                                                        </td>
+                                                    </tr>
+                                                    <tr id="trEditPrivacy">
+                                                        <td>
+                                                            <input name="PrivacyPolicy" placeholder="@commonObj.Policy()" id="PrivacyPolicy" value="" />
+                                                        </td>
+                                                        <td>
+                                                            <input name="PrivacyPolicyLink" placeholder="@commonObj.PolicyLink()" id="PrivacyPolicyLink" value="" />
+                                                        </td>
+                                                        <td>
+                                                            <div style="position:relative;">
+                                                                <a class='btn btn-primary btnupload' href='javascript:;'>
+                                                                    Upload File
+                                                                    <input type="file" name="PrivacyPolicyAttach" id="PrivacyPolicyAttach" style='position:absolute;z-index:2;top:0;left:0;filter: alpha(opacity=0);-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";opacity:0;background-color:transparent;color:transparent;width:105px;' />
+                                                                </a>
+                                                            </div>
+                                                        </td>
+                                                        <td align="center">
+                                                            <a onclick="CancelPrivacy()" id="aCancelPrivacy"><i class="fam-delete"></i></a>
+                                                        </td>
+                                                    </tr>
+                                                    @*Terms Of Service*@
+                                                    <tr id="trGridTerms">
+                                                        <td>
+                                                            @commonObj.Terms()
+                                                        </td>
+                                                        <td>
+                                                            <a href='@Html.Raw(commonObj.getBaseUri() + commonObj.TermsLink())' target="_blank">@commonObj.Terms()</a>
+                                                        </td>
+                                                        <td>
+                                                            @*<span class='label uploadlblFix' id="upload-file-infoTermsOfServiceAttach">@TermsAttach</span>*@
+                                                            @commonObj.TermsAttach()
+                                                        </td>
+                                                        <td align="center">
+                                                            <a onclick="DeleteTerms()" id="aTermsDelete"><i class="fam-cross"></i></a>
+                                                            <a onclick="EditTerms()" id="aTermsEdit"><i class="fam-add"></i></a>
+                                                        </td>
+                                                    </tr>
+                                                    <tr id="trEditTerms">
+                                                        <td>
+                                                            <input name="TermsOfService" placeholder="@commonObj.Terms()" id="Terms Of Service" value="" />
+                                                        </td>
+                                                        <td>
+                                                            <input name="TermsOfServiceLink" placeholder="@commonObj.TermsLink()" id="TermsOfServiceLink" value="" />
+                                                        </td>
+                                                        <td>
+                                                            <div style="position:relative;">
+                                                                <a class='btn btn-primary btnupload' href='javascript:;'>
+                                                                    Upload File
+                                                                    <input type="file" name="TermsOfServiceAttach" id="TermsOfServiceAttach" style='position:absolute;z-index:2;top:0;left:0;filter: alpha(opacity=0);-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";opacity:0;background-color:transparent;color:transparent;width:105px;' />
+                                                                </a>
+                                                            </div>
+                                                        </td>
+                                                        <td align="center">
+                                                            <a onclick="CancelTerms()" id="aCancelTerms"><i class="fam-delete"></i></a>
+                                                        </td>
+                                                    </tr>
+                                                    @*Email*@
+                                                    <tr id="trGridEmailto">
+                                                        <td>
+                                                            @commonObj.Emailto()
+                                                        </td>
+                                                        <td>
+                                                            <a href='@Html.Raw("mailto:" + commonObj.EmailtoAddress())'>@commonObj.EmailtoAddress()</a>
+                                                        </td>
+                                                        <td></td>
+                                                        <td align="center">
+                                                            <a onclick="DeleteEmailto()" id="aEmailtoDelete"><i class="fam-cross"></i></a>
+                                                            <a onclick="EditEmailto()" id="aEmailtoEdit"><i class="fam-add"></i></a>
+                                                        </td>
+                                                    </tr>
+                                                    <tr id="trEditEmailto">
+                                                        <td>
+                                                            <input name="Emailto" placeholder="@commonObj.Emailto()" id="Emailto" value="" />
+                                                        </td>
+                                                        <td>
+                                                            <input name="EmailtoAddress" placeholder="@commonObj.EmailtoAddress()" id="EmailtoAddress" value="" />
+                                                        </td>
+                                                        <td></td>
+                                                        <td align="center">
+                                                            <a onclick="CancelEmailto()" id="aCancelEmailto"><i class="fam-delete"></i></a>
+                                                        </td>
+                                                    </tr>
+                                                    @* Created By*@
+                                                    <tr id="trGridCreatedBy">
+                                                        <td>
+                                                            @commonObj.CreatedBy()
+                                                        </td>
+                                                        <td>
+                                                            <a href="@commonObj.CreatedByLink()" target="_blank">@commonObj.CreatedByName()</a>
+                                                        </td>
+                                                        <td></td>
+                                                        <td align="center">
+                                                            <a onclick="DeleteCreatedBy()" id="aCreatedByDelete"><i class="fam-cross"></i></a>
+                                                            <a onclick="EditCreatedBy()" id="aCreatedByEdit"><i class="fam-add"></i></a>
+                                                        </td>
+                                                    </tr>
+                                                    <tr id="trEditCreatedBy">
+                                                        <td>
+                                                            <input name="CreatedBy" placeholder="@commonObj.CreatedBy()" id="Create By" value="" />
+                                                        </td>
+                                                        <td>
+                                                            <input name="CreatedByLink" placeholder="@commonObj.CreatedByLink()" id="CreatedByLink" value="" />
+                                                            <input name="CreatedByName" placeholder="@commonObj.CreatedByName()" id="CreatedByName" value="" />
+                                                        </td>
+                                                        <td></td>
+                                                        <td align="center">
+                                                            <a onclick="CancelCreatedBy()" id="aCancelCreatedBy"><i class="fam-delete"></i></a>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            @*End*@
                             <div class="row">
                                 <div class="col-md-12 col-sm-12 col-xs-12">
                                     <div class="panel panel-default">
                                         <div class="panel-heading clearfix">
                                             <i class="icon-calendar"></i>
-                                            <h3 class="panel-title">About Company</h3>
+                                            <h3 class="panel-title">About</h3>
                                         </div>
                                         <div class="panel-body" style="margin:0px; padding:8px;">
                                             @Html.TextAreaFor(model => model.AboutCompany, new { @id = "summernote" })
@@ -203,10 +487,88 @@
                         </div>
                     </div>
                 </div>
+
+
                 @Html.ActionLink("Back to Admin Settings", "Index", "Admin", null, new { @class = "btn btn-default btn-sm" })
                 <input type="submit" value="Save" class="btn btn-primary btn-sm" />
             }
         </div>
     </div><!-- /tab-content --><br />
 </div>
+<script>
+    $(document).ready(function () {
+        $("#trEditLegal").hide();
+        $("#trEditTerms").hide();
+        $("#trEditPrivacy").hide();
+        $("#trEditEmailto").hide();
+        $("#trEditCreatedBy").hide();
+    });
+    //Legal
+    function DeleteLegal() {
+        // alert('aLegalDelete')
+    }
+    function EditLegal() {
+        $("#trEditLegal").show()
+        $("#trGridLegal").hide();
+        //alert('aLegalEdit')
+    }
+    function CancelLegal() {
+        $("#trEditLegal").hide()
+        $("#trGridLegal").show();
+    }
+    //
+    //Terms
+    function DeleteTerms() {
+        //alert('aTermsDelete')
+    }
+    function EditTerms() {
+        $("#trEditTerms").show()
+        $("#trGridTerms").hide();
+    }
+    function CancelTerms() {
+        $("#trEditTerms").hide()
+        $("#trGridTerms").show();
+    }
+    //
+    //Privacy
+    function DeletePrivacy() {
+        //alert('aPrivacyDelete')
+    }
+    function EditPrivacy() {
+        $("#trEditPrivacy").show()
+        $("#trGridPrivacy").hide();
+    }
+    function CancelPrivacy() {
+        $("#trEditPrivacy").hide()
+        $("#trGridPrivacy").show();
+    }
+    //
+    //Emailto
+    function DeleteEmailto() {
+        //alert('aEmailtoDelete')
+    }
+    function EditEmailto() {
+        $("#trEditEmailto").show()
+        $("#trGridEmailto").hide();
+    }
+    function CancelEmailto() {
+        $("#trEditEmailto").hide()
+        $("#trGridEmailto").show();
+    }
+    //
+    //CreatedBy
+    function DeleteCreatedBy() {
+        //alert('aCreatedByDelete')
+    }
+    function EditCreatedBy() {
+        $("#trEditCreatedBy").show()
+        $("#trGridCreatedBy").hide();
+    }
+    function CancelCreatedBy() {
+        $("#trEditCreatedBy").hide()
+        $("#trGridCreatedBy").show();
+    }
+    //
+</script>
+
 

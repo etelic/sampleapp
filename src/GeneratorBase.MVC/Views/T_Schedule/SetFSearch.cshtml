@@ -1,0 +1,537 @@
+﻿@model IEnumerable<GeneratorBase.MVC.Models.T_Schedule>
+@{
+    ViewBag.Title = "Set Search Criteria";
+	var parentUrl = HttpUtility.ParseQueryString(Request.UrlReferrer.Query);
+}
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-title">
+            <i class="glyphicon glyphicon-search text-primary"></i> Schedule <i class="glyphicon glyphicon-chevron-right small"></i> <span>Faceted Search</span>
+        </h1>
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+
+<div style="margin:-5px 5px 5px 0px;">
+                @if (User.Identity.IsAuthenticated && User != null && User.CanView("T_Schedule"))
+                { 
+
+				<button class="btn btn-default btn-sm tip-top" type="button" data-original-title="Full Add" data-placement="top" onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Index", "T_Schedule") + "');")>
+					<span class="glyphicon glyphicon-list"></span> List
+				</button>
+				}
+				@if (User.Identity.IsAuthenticated && User != null && User.CanAdd("T_Schedule"))
+                {
+					<button class="btn btn-default btn-sm tip-top" type="button" data-original-title="Create New" data-placement="top" onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Create", "T_Schedule", new { UrlReferrer = Request.Url, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null) + "');")>
+						<span class="fam-world-add"></span> Create New
+					</button>
+                   
+	
+		<button class="btn btn-default btn-sm tip-top" type="button" data-original-title="Add Wizard" data-placement="top" onclick=@Html.Raw("NavigateToUrl('" + Url.Action("CreateWizard", "T_Schedule", new { UrlReferrer = Request.Url, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null) + "');")>
+            <span class="fam-chart-organisation-add"></span> Create Wizard
+        </button>
+					
+                }
+		<button class="btn btn-default btn-sm tip-top"  data-placement="top" type="button" data-original-title="Show Graph"  data-toggle="modal" data-target="#ShowGraphT_Schedule" onclick=@Html.Raw("OpenDashBoard('dvShowGraphT_Schedule');")>
+			<span class="fam-chart-bar"></span> Dashboard
+        </button>
+			</div>
+
+
+			 <div class="fsearch">
+			  <div class="row">
+			   <div class="col-md-12 col-sm-12 col-xs-12">
+				<div class="panel panel-default AppForm">
+				 <div class="panel-body">
+					<div class="row">
+                        <div class="col-md-12 col-sm-12 col-xs-12">
+                            <div class="panel panel-default">
+                                <div class="panel-heading clearfix">
+                                    <i class="icon-calendar"></i>
+
+                                    <h3 class="panel-title">
+                                        General Criteria
+                                    </h3>
+                                </div>
+                                <div class="panel-body">
+                                    <div class='col-sm-12 col-md-12 col-xs-12'>
+                                       @{
+									var txtGenCriteria = String.IsNullOrEmpty(Convert.ToString(ViewBag.CurrentFilter)) ? "" : Convert.ToString(ViewBag.CurrentFilter);
+									}
+									<input type="text" id="FSearch" class="form-control" placeholder="General Criteria" value="@txtGenCriteria" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+					 <div class="row">
+                        <div class="col-md-12 col-sm-12 col-xs-12">
+                            <div class="panel panel-default">
+                                <div class="panel-heading clearfix">
+                                    <i class="icon-calendar"></i>
+                                    <h3 class="panel-title">
+									Range Property
+                                    </h3>
+                                </div>
+                                <div class="panel-body">
+                           
+			<div class='col-sm-6 col-md-6 col-xs-12'>
+                                        <div class='form-group'
+                                             title=" Start Date Time">
+                                            <label class="col-sm-5 col-md-5 col-xs-12">Start Date Time</label>
+                                            <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                <input type="text" id="T_StartDateTimeFrom" class="form-control"  placeholder="From"/>
+
+                                           
+
+                                    <script type="text/javascript">
+                                        $(function () {
+                                            $('#T_StartDateTimeFrom').datetimepicker({ pickTime: false });
+                                        });
+                                    </script>
+                                <span class="input-group-addon datefiled">
+                                    <input type="text" id="T_StartDateTimeTo" class="form-control" placeholder="To" style=" border-radius:0px 4px 4px 0px; border-left:0px" />
+                                    <script type="text/javascript">
+                                        $(function () {
+                                            $('#T_StartDateTimeTo').datetimepicker({ pickTime: false });
+                                        });
+                                    </script>
+								</span>
+							</div>
+                        </div>
+                      </div>
+			<div class='col-sm-6 col-md-6 col-xs-12'>
+                                        <div class='form-group'
+                                             title=" End Date">
+                                            <label class="col-sm-5 col-md-5 col-xs-12">End Date</label>
+                                            <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                <input type="text" id="T_EndDateFrom" class="form-control"  placeholder="From"/>
+
+                                           
+
+                                    <script type="text/javascript">
+                                        $(function () {
+                                            $('#T_EndDateFrom').datetimepicker({ pickTime: false });
+                                        });
+                                    </script>
+                                <span class="input-group-addon datefiled">
+                                    <input type="text" id="T_EndDateTo" class="form-control" placeholder="To" style=" border-radius:0px 4px 4px 0px; border-left:0px" />
+                                    <script type="text/javascript">
+                                        $(function () {
+                                            $('#T_EndDateTo').datetimepicker({ pickTime: false });
+                                        });
+                                    </script>
+								</span>
+							</div>
+                        </div>
+                      </div>
+			<div class='col-sm-6 col-md-6 col-xs-12'>
+                                        <div class='form-group'
+                                             title=" Occurrence Limit Count">
+                                            <label class="col-sm-5 col-md-5 col-xs-12">Occurrence Limit Count</label>
+                                            <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                <input type="text" id="T_OccurrenceLimitCountFrom" class="form-control"  placeholder="From"/>
+
+                                           
+
+                                <span class="input-group-addon datefiled">
+                                    <input type="text" id="T_OccurrenceLimitCountTo" class="form-control" placeholder="To" style=" border-radius:0px 4px 4px 0px; border-left:0px" />
+								</span>
+							</div>
+                        </div>
+                      </div>
+		  </div>
+		</div>
+	  </div>
+	</div>
+    	<div class="row">
+                        <div class="col-md-12 col-sm-12 col-xs-12">
+                            <div class="panel panel-default">
+                                <div class="panel-heading clearfix">
+                                    <i class="icon-calendar"></i>
+                                    <h3 class="panel-title">
+									Association Property
+                                    </h3>
+                                </div>
+                                <div class="panel-body">
+       @if (ViewBag.t_associatedscheduletype!=null)
+                    {
+ <div class='col-sm-6 col-md-6 col-xs-12'>
+                            <div class='form-group' title="Schedule Type">
+                                <label class="col-sm-5 col-md-5 col-xs-12"> Schedule Type</label>
+                                <div class="input-group col-sm-7 col-md-7 col-xs-12" id="dvt_associatedscheduletype">
+                                    		
+	 @Html.DropDownList("t_associatedscheduletype", null, new {   @multiple = "multiple", @HostingName = "T_Scheduletype", @dataurl = Url.Action("GetAllMultiSelectValue", "T_Scheduletype",null) })
+                                </div>
+                            </div>
+                        </div>
+		}
+@if (ViewBag.t_associatedrecurringscheduledetailstype!=null)
+                    {
+ <div class='col-sm-6 col-md-6 col-xs-12'>
+                            <div class='form-group' title="Repeat Type">
+                                <label class="col-sm-5 col-md-5 col-xs-12"> Repeat Type</label>
+                                <div class="input-group col-sm-7 col-md-7 col-xs-12" id="dvt_associatedrecurringscheduledetailstype">
+                                    		
+	 @Html.DropDownList("t_associatedrecurringscheduledetailstype", null, new {   @multiple = "multiple", @HostingName = "T_RecurringScheduleDetailstype", @dataurl = Url.Action("GetAllMultiSelectValue", "T_RecurringScheduleDetailstype",null) })
+                                </div>
+                            </div>
+                        </div>
+		}
+@if (ViewBag.t_recurringrepeatfrequency!=null)
+                    {
+ <div class='col-sm-6 col-md-6 col-xs-12'>
+                            <div class='form-group' title="Repeat Every">
+                                <label class="col-sm-5 col-md-5 col-xs-12"> Repeat Every</label>
+                                <div class="input-group col-sm-7 col-md-7 col-xs-12" id="dvt_recurringrepeatfrequency">
+                                    		
+	 @Html.DropDownList("t_recurringrepeatfrequency", null, new {   @multiple = "multiple", @HostingName = "T_RecurringFrequency", @dataurl = Url.Action("GetAllMultiSelectValue", "T_RecurringFrequency",null) })
+                                </div>
+                            </div>
+                        </div>
+		}
+@if (ViewBag.t_repeatby!=null)
+                    {
+ <div class='col-sm-6 col-md-6 col-xs-12'>
+                            <div class='form-group' title="Repeat By">
+                                <label class="col-sm-5 col-md-5 col-xs-12"> Repeat By</label>
+                                <div class="input-group col-sm-7 col-md-7 col-xs-12" id="dvt_repeatby">
+                                    		
+	 @Html.DropDownList("t_repeatby", null, new {   @multiple = "multiple", @HostingName = "T_MonthlyRepeatType", @dataurl = Url.Action("GetAllMultiSelectValue", "T_MonthlyRepeatType",null) })
+                                </div>
+                            </div>
+                        </div>
+		}
+@if (ViewBag.t_recurringtaskendtype!=null)
+                    {
+ <div class='col-sm-6 col-md-6 col-xs-12'>
+                            <div class='form-group' title="Ends">
+                                <label class="col-sm-5 col-md-5 col-xs-12"> Ends</label>
+                                <div class="input-group col-sm-7 col-md-7 col-xs-12" id="dvt_recurringtaskendtype">
+                                    		
+	 @Html.DropDownList("t_recurringtaskendtype", null, new {   @multiple = "multiple", @HostingName = "T_RecurringEndType", @dataurl = Url.Action("GetAllMultiSelectValue", "T_RecurringEndType",null) })
+                                </div>
+                            </div>
+                        </div>
+		}
+
+		</div>
+		</div>
+		</div>
+	</div>
+		
+			@*End Div*@
+		  </div>
+        </div>
+	 </div>
+	</div>
+		@if (ViewBag.FavoriteItem != null)
+        {
+				<div class="col-lg-12 col-sm-12 col-sx-12" style="padding:0px; ">
+                    <table class="table table-striped table-bordered table-hover table-condensed ">
+                        <thead>
+                            <tr>
+                                <th colspan="2">Favorite Items</th>
+                            </tr>
+                        </thead>
+                        @foreach (GeneratorBase.MVC.Models.FavoriteItem fItem in ViewBag.FavoriteItem)
+                        {
+						<tr>
+                            <td>
+                                <a href='/@GeneratorBase.MVC.Models.CommonFunction.Instance.AppURL().ToString()@fItem.LinkAddress'>@fItem.Name</a>
+                            </td>
+                        </tr>                           
+                        }
+                </table>
+            </div>
+        }
+            </div>
+					
+   <a href="@Url.Action("Index")" class="btn btn-default btn-sm"> Cancel</a>
+<button id="fSearchT_Schedule" class="btn btn-primary btn-sm" type="button" dataurl="@(Url.Action("FSearch", "T_Schedule", null) )"
+        onclick="@(Html.Raw("FacetedSearch('T_Schedule','t_associatedscheduletype,t_associatedrecurringscheduledetailstype,t_recurringrepeatfrequency,t_repeatby,t_recurringtaskendtype','T_StartDateTimeFrom,T_StartDateTimeTo,T_EndDateFrom,T_EndDateTo,T_OccurrenceLimitCountFrom,T_OccurrenceLimitCountTo','"
+   + Convert.ToString(Request.QueryString["viewtype"]) + "','" + Convert.ToString(Request.QueryString["sortBy"]) + "','"
+     + Convert.ToString(Request.QueryString["isAsc"]) + "','" + "'); "))">
+    Search
+</button>
+<script>
+    $(document).ready(function () {
+	 $('#t_associatedscheduletype').multiselect({
+            buttonWidth: '100%'
+        });
+	 $('#t_associatedrecurringscheduledetailstype').multiselect({
+            buttonWidth: '100%'
+        });
+	 $('#t_recurringrepeatfrequency').multiselect({
+            buttonWidth: '100%'
+        });
+	 $('#t_repeatby').multiselect({
+            buttonWidth: '100%'
+        });
+	 $('#t_recurringtaskendtype').multiselect({
+            buttonWidth: '100%'
+        });
+    });
+</script>
+<script>
+    function keypressHandler(e) {
+        if (e.which == 13) {
+            $(this).blur();
+            $('#fSearchT_Schedule').focus().click();
+        }
+    }
+ $(document).keypress(keypressHandler);
+ $(document).ready(function () {
+  if ("@parentUrl".length > 0) {
+			 document.getElementById("FSearch").value = "@parentUrl["search"]";
+	    
+			document.getElementById("T_StartDateTimeTo").value = "@parentUrl["T_StartDateTimeTo"]";
+			 document.getElementById("T_StartDateTimeFrom").value = "@parentUrl["T_StartDateTimeFrom"]";
+	    
+			document.getElementById("T_EndDateTo").value = "@parentUrl["T_EndDateTo"]";
+			 document.getElementById("T_EndDateFrom").value = "@parentUrl["T_EndDateFrom"]";
+	    
+			document.getElementById("T_OccurrenceLimitCountTo").value = "@parentUrl["T_OccurrenceLimitCountTo"]";
+			 document.getElementById("T_OccurrenceLimitCountFrom").value = "@parentUrl["T_OccurrenceLimitCountFrom"]";
+ if ("@parentUrl["t_associatedscheduletype"]" != null && "@parentUrl["t_associatedscheduletype"]".length > 0) {
+            var resT_AssociatedScheduleType = "@parentUrl["t_associatedscheduletype"]".split(",");
+            var eleT_AssociatedScheduleType = document.getElementById("t_associatedscheduletype");
+			var isHaveNullSelect = false;
+			var countoptions = 0;
+            for (i = 0; i < resT_AssociatedScheduleType.length; i++) {
+                for (var o = 0; o < eleT_AssociatedScheduleType.options.length; o++) {
+                    if (eleT_AssociatedScheduleType.options[o].value == resT_AssociatedScheduleType[i])
+                        eleT_AssociatedScheduleType.options[o].selected = true;
+					else if (resT_AssociatedScheduleType[i] == "NULL") 
+                        isHaveNullSelect = true;
+					countoptions++;
+                }
+            }
+				var opt = document.createElement('option');
+                opt.value = "NULL";
+                opt.innerHTML = "None";
+                if(isHaveNullSelect)
+                {
+                    opt.selected = true;
+                    eleT_AssociatedScheduleType.insertBefore(opt, eleT_AssociatedScheduleType.firstChild);
+                }
+                if (!isHaveNullSelect) {
+                    eleT_AssociatedScheduleType.insertBefore(opt, eleT_AssociatedScheduleType.firstChild);
+                }
+				$("#t_associatedscheduletype").multiselect("rebuild");
+				if(countoptions >= 10)
+				{
+				var hostingentity = "t_associatedscheduletype";
+                var urlGetAll = $('#' + hostingentity).attr("dataurl").replace("GetAllMultiSelectValue", "Index") + "?BulkOperation=multiple";
+                var dispName = ($("label[for=\"" + hostingentity + "\"]").text());
+                var link = "<a onclick=\"" + "OpenPopUpBulkOperation('PopupBulkOperation','" + hostingentity + "','" + dispName + "','dvPopupBulkOperation','" + urlGetAll + "')\">View All</a>";
+                var getall = "<li class='disabled-result disabled-result' style='font-style:Italic;text-decoration:underline;' >" + link + "</li>";
+                var $ul = $("ul", "#dvt_associatedscheduletype");
+                $ul.append($(getall));
+				}
+	}
+	else {
+               var eleT_AssociatedScheduleType = document.getElementById("t_associatedscheduletype");
+                var opt = document.createElement('option');
+                opt.value = "NULL";
+                opt.innerHTML = "None";
+                 eleT_AssociatedScheduleType.insertBefore(opt, eleT_AssociatedScheduleType.firstChild);
+            }
+ if ("@parentUrl["t_associatedrecurringscheduledetailstype"]" != null && "@parentUrl["t_associatedrecurringscheduledetailstype"]".length > 0) {
+            var resT_AssociatedRecurringScheduleDetailsType = "@parentUrl["t_associatedrecurringscheduledetailstype"]".split(",");
+            var eleT_AssociatedRecurringScheduleDetailsType = document.getElementById("t_associatedrecurringscheduledetailstype");
+			var isHaveNullSelect = false;
+			var countoptions = 0;
+            for (i = 0; i < resT_AssociatedRecurringScheduleDetailsType.length; i++) {
+                for (var o = 0; o < eleT_AssociatedRecurringScheduleDetailsType.options.length; o++) {
+                    if (eleT_AssociatedRecurringScheduleDetailsType.options[o].value == resT_AssociatedRecurringScheduleDetailsType[i])
+                        eleT_AssociatedRecurringScheduleDetailsType.options[o].selected = true;
+					else if (resT_AssociatedRecurringScheduleDetailsType[i] == "NULL") 
+                        isHaveNullSelect = true;
+					countoptions++;
+                }
+            }
+				var opt = document.createElement('option');
+                opt.value = "NULL";
+                opt.innerHTML = "None";
+                if(isHaveNullSelect)
+                {
+                    opt.selected = true;
+                    eleT_AssociatedRecurringScheduleDetailsType.insertBefore(opt, eleT_AssociatedRecurringScheduleDetailsType.firstChild);
+                }
+                if (!isHaveNullSelect) {
+                    eleT_AssociatedRecurringScheduleDetailsType.insertBefore(opt, eleT_AssociatedRecurringScheduleDetailsType.firstChild);
+                }
+				$("#t_associatedrecurringscheduledetailstype").multiselect("rebuild");
+				if(countoptions >= 10)
+				{
+				var hostingentity = "t_associatedrecurringscheduledetailstype";
+                var urlGetAll = $('#' + hostingentity).attr("dataurl").replace("GetAllMultiSelectValue", "Index") + "?BulkOperation=multiple";
+                var dispName = ($("label[for=\"" + hostingentity + "\"]").text());
+                var link = "<a onclick=\"" + "OpenPopUpBulkOperation('PopupBulkOperation','" + hostingentity + "','" + dispName + "','dvPopupBulkOperation','" + urlGetAll + "')\">View All</a>";
+                var getall = "<li class='disabled-result disabled-result' style='font-style:Italic;text-decoration:underline;' >" + link + "</li>";
+                var $ul = $("ul", "#dvt_associatedrecurringscheduledetailstype");
+                $ul.append($(getall));
+				}
+	}
+	else {
+               var eleT_AssociatedRecurringScheduleDetailsType = document.getElementById("t_associatedrecurringscheduledetailstype");
+                var opt = document.createElement('option');
+                opt.value = "NULL";
+                opt.innerHTML = "None";
+                 eleT_AssociatedRecurringScheduleDetailsType.insertBefore(opt, eleT_AssociatedRecurringScheduleDetailsType.firstChild);
+            }
+ if ("@parentUrl["t_recurringrepeatfrequency"]" != null && "@parentUrl["t_recurringrepeatfrequency"]".length > 0) {
+            var resT_RecurringRepeatFrequency = "@parentUrl["t_recurringrepeatfrequency"]".split(",");
+            var eleT_RecurringRepeatFrequency = document.getElementById("t_recurringrepeatfrequency");
+			var isHaveNullSelect = false;
+			var countoptions = 0;
+            for (i = 0; i < resT_RecurringRepeatFrequency.length; i++) {
+                for (var o = 0; o < eleT_RecurringRepeatFrequency.options.length; o++) {
+                    if (eleT_RecurringRepeatFrequency.options[o].value == resT_RecurringRepeatFrequency[i])
+                        eleT_RecurringRepeatFrequency.options[o].selected = true;
+					else if (resT_RecurringRepeatFrequency[i] == "NULL") 
+                        isHaveNullSelect = true;
+					countoptions++;
+                }
+            }
+				var opt = document.createElement('option');
+                opt.value = "NULL";
+                opt.innerHTML = "None";
+                if(isHaveNullSelect)
+                {
+                    opt.selected = true;
+                    eleT_RecurringRepeatFrequency.insertBefore(opt, eleT_RecurringRepeatFrequency.firstChild);
+                }
+                if (!isHaveNullSelect) {
+                    eleT_RecurringRepeatFrequency.insertBefore(opt, eleT_RecurringRepeatFrequency.firstChild);
+                }
+				$("#t_recurringrepeatfrequency").multiselect("rebuild");
+				if(countoptions >= 10)
+				{
+				var hostingentity = "t_recurringrepeatfrequency";
+                var urlGetAll = $('#' + hostingentity).attr("dataurl").replace("GetAllMultiSelectValue", "Index") + "?BulkOperation=multiple";
+                var dispName = ($("label[for=\"" + hostingentity + "\"]").text());
+                var link = "<a onclick=\"" + "OpenPopUpBulkOperation('PopupBulkOperation','" + hostingentity + "','" + dispName + "','dvPopupBulkOperation','" + urlGetAll + "')\">View All</a>";
+                var getall = "<li class='disabled-result disabled-result' style='font-style:Italic;text-decoration:underline;' >" + link + "</li>";
+                var $ul = $("ul", "#dvt_recurringrepeatfrequency");
+                $ul.append($(getall));
+				}
+	}
+	else {
+               var eleT_RecurringRepeatFrequency = document.getElementById("t_recurringrepeatfrequency");
+                var opt = document.createElement('option');
+                opt.value = "NULL";
+                opt.innerHTML = "None";
+                 eleT_RecurringRepeatFrequency.insertBefore(opt, eleT_RecurringRepeatFrequency.firstChild);
+            }
+ if ("@parentUrl["t_repeatby"]" != null && "@parentUrl["t_repeatby"]".length > 0) {
+            var resT_RepeatBy = "@parentUrl["t_repeatby"]".split(",");
+            var eleT_RepeatBy = document.getElementById("t_repeatby");
+			var isHaveNullSelect = false;
+			var countoptions = 0;
+            for (i = 0; i < resT_RepeatBy.length; i++) {
+                for (var o = 0; o < eleT_RepeatBy.options.length; o++) {
+                    if (eleT_RepeatBy.options[o].value == resT_RepeatBy[i])
+                        eleT_RepeatBy.options[o].selected = true;
+					else if (resT_RepeatBy[i] == "NULL") 
+                        isHaveNullSelect = true;
+					countoptions++;
+                }
+            }
+				var opt = document.createElement('option');
+                opt.value = "NULL";
+                opt.innerHTML = "None";
+                if(isHaveNullSelect)
+                {
+                    opt.selected = true;
+                    eleT_RepeatBy.insertBefore(opt, eleT_RepeatBy.firstChild);
+                }
+                if (!isHaveNullSelect) {
+                    eleT_RepeatBy.insertBefore(opt, eleT_RepeatBy.firstChild);
+                }
+				$("#t_repeatby").multiselect("rebuild");
+				if(countoptions >= 10)
+				{
+				var hostingentity = "t_repeatby";
+                var urlGetAll = $('#' + hostingentity).attr("dataurl").replace("GetAllMultiSelectValue", "Index") + "?BulkOperation=multiple";
+                var dispName = ($("label[for=\"" + hostingentity + "\"]").text());
+                var link = "<a onclick=\"" + "OpenPopUpBulkOperation('PopupBulkOperation','" + hostingentity + "','" + dispName + "','dvPopupBulkOperation','" + urlGetAll + "')\">View All</a>";
+                var getall = "<li class='disabled-result disabled-result' style='font-style:Italic;text-decoration:underline;' >" + link + "</li>";
+                var $ul = $("ul", "#dvt_repeatby");
+                $ul.append($(getall));
+				}
+	}
+	else {
+               var eleT_RepeatBy = document.getElementById("t_repeatby");
+                var opt = document.createElement('option');
+                opt.value = "NULL";
+                opt.innerHTML = "None";
+                 eleT_RepeatBy.insertBefore(opt, eleT_RepeatBy.firstChild);
+            }
+ if ("@parentUrl["t_recurringtaskendtype"]" != null && "@parentUrl["t_recurringtaskendtype"]".length > 0) {
+            var resT_RecurringTaskEndType = "@parentUrl["t_recurringtaskendtype"]".split(",");
+            var eleT_RecurringTaskEndType = document.getElementById("t_recurringtaskendtype");
+			var isHaveNullSelect = false;
+			var countoptions = 0;
+            for (i = 0; i < resT_RecurringTaskEndType.length; i++) {
+                for (var o = 0; o < eleT_RecurringTaskEndType.options.length; o++) {
+                    if (eleT_RecurringTaskEndType.options[o].value == resT_RecurringTaskEndType[i])
+                        eleT_RecurringTaskEndType.options[o].selected = true;
+					else if (resT_RecurringTaskEndType[i] == "NULL") 
+                        isHaveNullSelect = true;
+					countoptions++;
+                }
+            }
+				var opt = document.createElement('option');
+                opt.value = "NULL";
+                opt.innerHTML = "None";
+                if(isHaveNullSelect)
+                {
+                    opt.selected = true;
+                    eleT_RecurringTaskEndType.insertBefore(opt, eleT_RecurringTaskEndType.firstChild);
+                }
+                if (!isHaveNullSelect) {
+                    eleT_RecurringTaskEndType.insertBefore(opt, eleT_RecurringTaskEndType.firstChild);
+                }
+				$("#t_recurringtaskendtype").multiselect("rebuild");
+				if(countoptions >= 10)
+				{
+				var hostingentity = "t_recurringtaskendtype";
+                var urlGetAll = $('#' + hostingentity).attr("dataurl").replace("GetAllMultiSelectValue", "Index") + "?BulkOperation=multiple";
+                var dispName = ($("label[for=\"" + hostingentity + "\"]").text());
+                var link = "<a onclick=\"" + "OpenPopUpBulkOperation('PopupBulkOperation','" + hostingentity + "','" + dispName + "','dvPopupBulkOperation','" + urlGetAll + "')\">View All</a>";
+                var getall = "<li class='disabled-result disabled-result' style='font-style:Italic;text-decoration:underline;' >" + link + "</li>";
+                var $ul = $("ul", "#dvt_recurringtaskendtype");
+                $ul.append($(getall));
+				}
+	}
+	else {
+               var eleT_RecurringTaskEndType = document.getElementById("t_recurringtaskendtype");
+                var opt = document.createElement('option');
+                opt.value = "NULL";
+                opt.innerHTML = "None";
+                 eleT_RecurringTaskEndType.insertBefore(opt, eleT_RecurringTaskEndType.firstChild);
+            }
+ }
+    });
+</script>
+
+
+    <div class="modal fade" id="ShowGraphT_Schedule" tabindex="-1" role="dialog" aria-labelledby="ShowGraphT_ScheduleLabel" aria-hidden="true">
+        <div class="modal-dialog" style="width:80%">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="ShowGraphT_ScheduleLabel">Dashboard Schedule</h4>
+                </div>
+				 <div  class="modal-body" >
+						<div id="dvShowGraphT_Schedule" data-url="@Url.Action("ShowGraph", "T_Schedule")">
+						</div>
+						<div style="clear:both"></div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+

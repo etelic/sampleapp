@@ -1,0 +1,77 @@
+﻿@model PagedList.IPagedList<GeneratorBase.MVC.Models.DataSourceParameters>
+@using PagedList.Mvc;
+@{
+    ViewBag.Title = "Index";
+    Layout = null;
+    Response.ContentType = "application/vnd.ms-excel";
+    Response.AddHeader("Content-Disposition", "attachment; filename=Data Source Parameters.xls");
+}
+                    <table>
+                            <tr>
+@if(User.CanView("DataSourceParameters","ArgumentName"))
+{
+		<th>Argument Name</th>
+}
+@if(User.CanView("DataSourceParameters","ArgumentValue"))
+{
+		<th>Argument Value</th>
+}
+@if(User.CanView("DataSourceParameters","HostingEntity"))
+{
+		<th>Hosting Entity</th>
+}
+@if(User.CanView("DataSourceParameters","flag"))
+{
+		<th>flag</th>
+}
+@if(User.CanView("DataSourceParameters","other"))
+{
+		<th>other</th>
+}
+@if(User.CanView("DataSourceParameters","EntityDataSourceParametersID"))
+{
+		<th  @(Convert.ToString(ViewData["HostingEntity"]) == "EntityDataSource"?"hidden":"")>Entity Data Source</th>
+}
+    </tr>
+@foreach (var item in Model) {
+    <tr>
+	@if(User.CanView("DataSourceParameters","ArgumentName"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.ArgumentName)
+        </td>
+}
+@if(User.CanView("DataSourceParameters","ArgumentValue"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.ArgumentValue)
+        </td>
+}
+@if(User.CanView("DataSourceParameters","HostingEntity"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.HostingEntity)
+        </td>
+}
+@if(User.CanView("DataSourceParameters","flag"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.flag)
+        </td>
+}
+@if(User.CanView("DataSourceParameters","other"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.other)
+        </td>
+}
+@if(User.CanView("DataSourceParameters","EntityDataSourceParametersID"))
+{
+		<td @(Convert.ToString(ViewData["HostingEntity"]) == "EntityDataSource"?"hidden":"")>
+            @Html.DisplayFor(modelItem => item.entitydatasourceparameters.DisplayValue)
+        </td>
+}
+                                </tr>
+                            }
+</table>
+               

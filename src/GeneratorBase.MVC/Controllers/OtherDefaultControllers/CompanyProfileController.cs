@@ -11,6 +11,7 @@ using PagedList;
 using System.Data.Entity.Infrastructure;
 using System.Data.Entity.SqlServer;
 using System.Linq.Expressions;
+using System.IO;
 namespace GeneratorBase.MVC.Controllers
 {
     public class CompanyProfileController : Controller
@@ -26,7 +27,7 @@ namespace GeneratorBase.MVC.Controllers
         }
         public ActionResult Edit()
         {
-            if (((CustomPrincipal)User).IsAdmin())
+            if (((CustomPrincipal)User).CanEditAdminFeature("UserInterfaceSetting"))
             {
                 CompanyProfile cp = _repository.GetCompanyProfile();
                 if (cp == null)
@@ -36,22 +37,43 @@ namespace GeneratorBase.MVC.Controllers
             else return RedirectToAction("Index", "Home");
         }
         [HttpPost]
-        public ActionResult Edit(CompanyProfile cp, HttpPostedFileBase logo)
+        public ActionResult Edit(CompanyProfile cp, HttpPostedFileBase Icon, HttpPostedFileBase Logo, HttpPostedFileBase LegalInformationAttach, HttpPostedFileBase PrivacyPolicyAttach, HttpPostedFileBase TermsOfServiceAttach)
         {
-            if (((CustomPrincipal)User).IsAdmin())
+            if (((CustomPrincipal)User).IsAdmin)
             {
                 if (ModelState.IsValid)
                 {
                     try
                     {
                         string path = Server.MapPath("~/logo/");
-                        if (logo != null)
+                        string pathPolicyAndService = Server.MapPath("~/PolicyAndService/");
+                        if (Icon != null)
                         {
-                            logo.SaveAs(path + "logo.gif");// System.IO.Path.GetFileName(logo.FileName));
-                           // cp.logo = System.IO.Path.GetFileName(logo.FileName);
+                            Icon.SaveAs(path + "logo.gif");
+                        }
+                        if (Logo != null)
+                        {
+                            Logo.SaveAs(path + "logo_white.png");
+                        }
+                        if (LegalInformationAttach != null)
+                        {
+                            LegalInformationAttach.SaveAs(pathPolicyAndService + "Licensing.pdf");
+
+                        }
+                        if (PrivacyPolicyAttach != null)
+                        {
+                            LegalInformationAttach.SaveAs(pathPolicyAndService + "PrivacyPolicy.pdf");
+
+                        }
+                        if (TermsOfServiceAttach != null)
+                        {
+                            TermsOfServiceAttach.SaveAs(pathPolicyAndService + "Terms_Of_Service.pdf");
+
                         }
                         _repository.EditCompanyProfile(cp);
-                        return RedirectToAction("Index","Admin");
+                        //journaling
+                        DoAuditEntry.AddJournalEntryCommon(((CustomPrincipal)User),null,"Company Profile Data Modified","Company Profile");
+                        return RedirectToAction("Index", "Admin");
                     }
                     catch (Exception ex)
                     {
@@ -60,7 +82,7 @@ namespace GeneratorBase.MVC.Controllers
                     }
                 }
             }
-             return RedirectToAction("Index", "Home");
+            return RedirectToAction("Index", "Home");
         }
     }
 }

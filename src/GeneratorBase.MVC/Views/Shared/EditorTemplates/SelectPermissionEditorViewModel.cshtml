@@ -18,6 +18,21 @@
         DispName = ModelEntity.DisplayName;
     }
 }
+@if (Model.IsAppHeader)
+{
+    <tr class="header expand" id="trAppHeader">
+        <td colspan="8" style="background: #EDF5FA; font-weight:bold"><span class="sign"></span> Application Entities</td>
+    </tr>
+}
+
+@if (Model.IsDefaultHeader)
+{
+    <tr class="header expand" id="trDefaultHeader">
+        <td colspan="8" style="background: #EDF5FA; font-weight:bold"><span class="sign"></span> Default Entities</td>
+    </tr>
+}
+
+
 <tr>
     <td>
         @Html.HiddenFor(model => model.EntityName)
@@ -33,7 +48,7 @@
         @Html.CheckBoxFor(model => model.CanDelete, new { @class = "fooDelete" })
     </td>
     <td style="text-align:center">
-        @Html.CheckBoxFor(model => model.CanView, new { @class = "fooView" })
+        @Html.CheckBoxFor(model => model.CanView, new { @class = "fooView", @onclick = "ChangeViewPermissionOfEntity(this)" })
     </td>
     @*code for verb action security*@
     <td style="text-align:center" id='tdVerbs_@Model.EntityName'>

@@ -22,7 +22,7 @@ namespace GeneratorBase.MVC.Controllers
         // GET: /DefaultEntityPage/
         public ActionResult Index(string currentFilter, string searchString, string sortBy, string isAsc, int? page, int? itemsPerPage, string HostingEntity, int? HostingEntityID, string AssociatedType, bool? IsExport, bool? IsDeepSearch, bool? IsFilter, bool? RenderPartial, string BulkOperation, string parent)
         {
-            if (!User.IsAdmin())
+            if (!((CustomPrincipal)User).CanViewAdminFeature("UserInterfaceSetting"))
                 return RedirectToAction("Index", "Error");
             if (string.IsNullOrEmpty(isAsc) && !string.IsNullOrEmpty(sortBy))
             {
@@ -131,7 +131,7 @@ namespace GeneratorBase.MVC.Controllers
         // GET: /DefaultEntityPage/CreateWizard
         public ActionResult CreateWizard(string UrlReferrer, string HostingEntityName, string HostingEntityID, string AssociatedType)
         {
-            if (!User.IsAdmin())
+            if (!User.IsAdmin)
                 return RedirectToAction("Index", "Error");
             if (!User.CanAdd("DefaultEntityPage"))
             {
@@ -148,7 +148,7 @@ namespace GeneratorBase.MVC.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult CreateWizard([Bind(Include = "Id,ConcurrencyKey,EntityName,Roles,PageType,PageUrl,Other,Flag")] DefaultEntityPage defaultentitypage, string UrlReferrer)
         {
-            if (!User.IsAdmin())
+            if (!User.IsAdmin)
                 return RedirectToAction("Index", "Error");
             if (ModelState.IsValid)
             {
@@ -164,7 +164,7 @@ namespace GeneratorBase.MVC.Controllers
         // GET: /DefaultEntityPage/CreateQuick
         public ActionResult CreateQuick(string UrlReferrer, string HostingEntityName, string HostingEntityID, string AssociatedType, bool? IsAddPop)
         {
-            if (!User.IsAdmin())
+            if (!User.IsAdmin)
                 return RedirectToAction("Index", "Error");
             if (!User.CanAdd("DefaultEntityPage"))
             {
@@ -183,16 +183,16 @@ namespace GeneratorBase.MVC.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult CreateQuick([Bind(Include = "Id,ConcurrencyKey,EntityName,Roles,PageType,PageUrl,Other,Flag")] DefaultEntityPage defaultentitypage, string UrlReferrer, bool? IsAddPop)
+        public ActionResult CreateQuick([Bind(Include = "Id,ConcurrencyKey,EntityName,Roles,PageType,PageUrl,Other,Flag,ViewEntityPage,ListEntityPage,EditEntityPage,SearchEntityPage,CreateEntityPage")] DefaultEntityPage defaultentitypage, string UrlReferrer, bool? IsAddPop)
         {
-            if (!User.IsAdmin())
+            if (!User.IsAdmin)
                 return RedirectToAction("Index", "Error");
             if (ModelState.IsValid)
             {
                 //var page = db.DefaultEntityPages.FirstOrDefault(p => p.EntityName == defaultentitypage.EntityName);
                 //if (page == null)
                 //{
-                    db.DefaultEntityPages.Add(defaultentitypage);
+                db.DefaultEntityPages.Add(defaultentitypage);
                 //}
                 //else
                 //{
@@ -243,7 +243,7 @@ namespace GeneratorBase.MVC.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "Id,ConcurrencyKey,EntityName,Roles,PageType,PageUrl,Other,Flag")] DefaultEntityPage defaultentitypage, string UrlReferrer, bool? IsDDAdd)
         {
-            if (!User.IsAdmin())
+            if (!User.IsAdmin)
                 return RedirectToAction("Index", "Error");
             if (ModelState.IsValid)
             {
@@ -264,7 +264,7 @@ namespace GeneratorBase.MVC.Controllers
         // GET: /DefaultEntityPage/Edit/5
         public ActionResult Edit(int? id, string UrlReferrer, string HostingEntityName, string AssociatedType)
         {
-            if (!User.IsAdmin())
+            if (!User.IsAdmin)
                 return RedirectToAction("Index", "Error");
             if (!User.CanEdit("DefaultEntityPage"))
             {
@@ -293,9 +293,9 @@ namespace GeneratorBase.MVC.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,ConcurrencyKey,EntityName,Roles,PageType,PageUrl,Other,Flag")] DefaultEntityPage defaultentitypage, string UrlReferrer)
+        public ActionResult Edit([Bind(Include = "Id,ConcurrencyKey,EntityName,Roles,PageType,PageUrl,Other,Flag,ViewEntityPage,ListEntityPage,EditEntityPage,SearchEntityPage,CreateEntityPage")] DefaultEntityPage defaultentitypage, string UrlReferrer)
         {
-            if (!User.IsAdmin())
+            if (!User.IsAdmin)
                 return RedirectToAction("Index", "Error");
             if (ModelState.IsValid)
             {
@@ -322,7 +322,7 @@ namespace GeneratorBase.MVC.Controllers
         // GET: /DefaultEntityPage/EditWizard/5
         public ActionResult EditWizard(int? id, string UrlReferrer)
         {
-            if (!User.IsAdmin())
+            if (!User.IsAdmin)
                 return RedirectToAction("Index", "Error");
             if (!User.CanEdit("DefaultEntityPage"))
             {
@@ -351,7 +351,7 @@ namespace GeneratorBase.MVC.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult EditWizard([Bind(Include = "Id,ConcurrencyKey,EntityName,Roles,PageType,PageUrl,Other,Flag")] DefaultEntityPage defaultentitypage, string UrlReferrer)
         {
-            if (!User.IsAdmin())
+            if (!User.IsAdmin)
                 return RedirectToAction("Index", "Error");
             if (ModelState.IsValid)
             {
@@ -375,7 +375,7 @@ namespace GeneratorBase.MVC.Controllers
         // GET: /DefaultEntityPage/Delete/5
         public ActionResult Delete(int id)
         {
-            if (!User.IsAdmin())
+            if (!User.IsAdmin)
                 return RedirectToAction("Index", "Error");
             if (!User.CanDelete("DefaultEntityPage"))
             {
@@ -399,7 +399,7 @@ namespace GeneratorBase.MVC.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(DefaultEntityPage defaultentitypage, string UrlReferrer)
         {
-            if (!User.IsAdmin())
+            if (!User.IsAdmin)
                 return RedirectToAction("Index", "Error");
             if (!User.CanDelete("DefaultEntityPage"))
             {
@@ -420,7 +420,7 @@ namespace GeneratorBase.MVC.Controllers
         }
         public ActionResult DeleteBulk(long[] ids, string UrlReferrer)
         {
-            if (!User.IsAdmin())
+            if (!User.IsAdmin)
                 return RedirectToAction("Index", "Error");
             foreach (var id in ids.Where(p => p > 0))
             {
@@ -439,5 +439,121 @@ namespace GeneratorBase.MVC.Controllers
             }
             base.Dispose(disposing);
         }
+
+        public ActionResult BindtemplatesIndex(string EntityName)
+        {
+            //Dictionary object for all templates 
+            Dictionary<string, string> dicIndexFile = new Dictionary<string, string>();
+            Dictionary<string, string> dicDetailsFile = new Dictionary<string, string>();
+            Dictionary<string, string> dicEditFile = new Dictionary<string, string>();
+            Dictionary<string, string> dicSearchFile = new Dictionary<string, string>();
+            Dictionary<string, string> dicCreateFile = new Dictionary<string, string>();
+            //
+            //get all cshtml page from view dirctory for an entity.
+            var viewsName = System.IO.Directory.EnumerateFiles(Server.MapPath(@"~/Views/" + EntityName)).ToList();
+            //bind file name of an entity page in Dictionary
+            foreach (var item in viewsName)
+            {
+                string fileName = Path.GetFileName(item).Replace(".cshtml", "");
+                string dispalyName = "";
+                if (fileName.ToLower().Contains(".mobile"))
+                    continue;
+                // getting index page
+                if (fileName.ToLower().Contains("indexpartial"))
+                {
+                    if (fileName.ToLower() == "indexpartial")
+                        dispalyName = "Table(Default)";
+                    else
+                        dispalyName = fileName.Replace("IndexPartial", "");
+                    dicIndexFile.Add(dispalyName, fileName);
+                }
+                //
+                //getting ditails page
+                if (fileName.ToLower().Contains("details"))
+                {
+                    if (fileName.ToLower() == "details")
+                    {
+                        dispalyName = "(Detail)Default";
+                        dicDetailsFile.Add(dispalyName, fileName);
+                    }
+                    else
+                        dispalyName = fileName.Replace("Details", "");
+                    //dicDetailsFile.Add(dispalyName, fileName);
+                }
+                //
+
+                //getting Edit page
+                if (fileName.ToLower().Contains("edit"))
+                {
+                    if (fileName.ToLower() == "edit")
+                        dispalyName = "(Edit)Default";
+                    else
+                        dispalyName = fileName.Replace("Edit", "");
+                    dicEditFile.Add(dispalyName, fileName);
+                }
+                //
+                //getting Search page
+                if (fileName.ToLower().Contains("search"))
+                {
+                    if (fileName.ToLower() == "setfsearch")
+                        dispalyName = "Faceted Search(Default)";
+                    else
+                        dispalyName = fileName.Replace("Search", "");
+                    dicSearchFile.Add(dispalyName, fileName);
+                }
+                //
+                //getting Search page
+                if (fileName.ToLower().Contains("create"))
+                {
+                    if (fileName.ToLower() == "create")
+                        dispalyName = "(Create)Default";
+                    else
+                        dispalyName = fileName.Replace("Create", "");
+                    dicCreateFile.Add(dispalyName, fileName);
+                }
+                //
+
+
+            }
+            //
+            return Json(new
+            {
+                IndexPages = dicIndexFile,
+                DetailsPage = dicDetailsFile,
+                EditPage = dicEditFile,
+                SearchPage = dicSearchFile,
+                CreatePage = dicCreateFile
+            }, "application/json", System.Text.Encoding.UTF8, JsonRequestBehavior.AllowGet);
+        }
+
+        //public string GetIndexTemplates(string EntityName)
+        //{
+        //    string pageName = "";
+        //    var lstDefaultEntityPage = from s in db.DefaultEntityPages
+        //                               where s.EntityName == EntityName
+        //                               select s;
+        //    if (lstDefaultEntityPage.Count() > 0)
+        //        pageName = lstDefaultEntityPage.Select(p => p.ListEntityPage).FirstOrDefault().ToString();
+        //    return pageName;
+
+        //}
+        //public string GetViewTemplates(string EntityName)
+        //{
+        //    string pageName = "";
+        //    return pageName;
+
+        //}
+        //public string GetEditTemplates(string EntityName)
+        //{
+        //    string pageName = "";
+        //    return pageName;
+
+        //}
+        //public string GetSearchTemplates(string EntityName)
+        //{
+        //    string pageName = "";
+        //    return pageName;
+
+        //}
     }
 }

@@ -9,7 +9,7 @@ namespace GeneratorBase.MVC.Models
     public class JournalEntryContext : DbContext
     {
         public JournalEntryContext()
-            : base("DefaultConnection")
+            : base("DefaultConnectionJournaling")
         {
         }
         public DbSet<JournalEntry> JournalEntries { get; set; }

@@ -1,0 +1,87 @@
+﻿@model PagedList.IPagedList<GeneratorBase.MVC.Models.EntityDataSource>
+@using PagedList.Mvc;
+@{
+    ViewBag.Title = "Index";
+    Layout = null;
+    Response.ContentType = "application/vnd.ms-excel";
+    Response.AddHeader("Content-Disposition", "attachment; filename=Entity Data Source.xls");
+}
+                    <table>
+                            <tr>
+@if(User.CanView("EntityDataSource","EntityName"))
+{
+		<th>Entity Name</th>
+}
+@if(User.CanView("EntityDataSource","DataSource"))
+{
+		<th>Data Source</th>
+}
+@if(User.CanView("EntityDataSource","SourceType"))
+{
+		<th>Source Type</th>
+}
+@if(User.CanView("EntityDataSource","MethodType"))
+{
+		<th>Method Type</th>
+}
+@if(User.CanView("EntityDataSource","Action"))
+{
+		<th>Action</th>
+}
+@if(User.CanView("EntityDataSource","flag"))
+{
+		<th>flag</th>
+}
+@if(User.CanView("EntityDataSource","other"))
+{
+		<th>other</th>
+}
+    </tr>
+@foreach (var item in Model) {
+    <tr>
+	@if(User.CanView("EntityDataSource","EntityName"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.EntityName)
+        </td>
+}
+@if(User.CanView("EntityDataSource","DataSource"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.DataSource)
+        </td>
+}
+@if(User.CanView("EntityDataSource","SourceType"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.SourceType)
+        </td>
+}
+@if(User.CanView("EntityDataSource","MethodType"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.MethodType)
+        </td>
+}
+@if(User.CanView("EntityDataSource","Action"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.Action)
+        </td>
+}
+@if(User.CanView("EntityDataSource","flag"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.flag)
+        </td>
+}
+@if(User.CanView("EntityDataSource","other"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.other)
+        </td>
+}
+                                </tr>
+                            }
+</table>
+               

@@ -1,0 +1,77 @@
+﻿@model PagedList.IPagedList<GeneratorBase.MVC.Models.CustomReport>
+@using PagedList.Mvc;
+@{
+    ViewBag.Title = "Index";
+    Layout = null;
+    Response.ContentType = "application/vnd.ms-excel";
+    Response.AddHeader("Content-Disposition", "attachment; filename=Custom Report.xls");
+}
+<table>
+    <tr>
+        @if (User.CanView("CustomReport", "ReportName"))
+        {
+            <th>Report Name</th>
+        }
+        @if (User.CanView("CustomReport", "EntityName"))
+        {
+            <th>Entity Name</th>
+        }
+        @if (User.CanView("CustomReport", "PeportType"))
+        {
+            <th>Peport Type</th>
+        }
+        @if (User.CanView("CustomReport", "Description"))
+        {
+            <th>Description</th>
+        }
+        @if (User.CanView("CustomReport", "OtherProperty"))
+        {
+            <th>Other Property</th>
+        }
+        @if (User.CanView("CustomReport", "ViewReport"))
+        {
+            <th>View Report</th>
+        }
+    </tr>
+    @foreach (var item in Model)
+    {
+        <tr>
+            @if (User.CanView("CustomReport", "ReportName"))
+            {
+                <td>
+                    @Html.DisplayFor(modelItem => item.ReportName)
+                </td>
+            }
+            @if (User.CanView("CustomReport", "EntityName"))
+            {
+                <td>
+                    @Html.DisplayFor(modelItem => item.EntityName)
+                </td>
+            }
+            @if (User.CanView("CustomReport", "PeportType"))
+            {
+                <td>
+                    @Html.DisplayFor(modelItem => item.PeportType)
+                </td>
+            }
+            @if (User.CanView("CustomReport", "Description"))
+            {
+                <td>
+                    @Html.DisplayFor(modelItem => item.Description)
+                </td>
+            }
+            @if (User.CanView("CustomReport", "OtherProperty"))
+            {
+                <td>
+                    @Html.DisplayFor(modelItem => item.OtherProperty)
+                </td>
+            }
+            @if (User.CanView("CustomReport", "ViewReport"))
+            {
+                <td>
+                    @Html.DisplayFor(modelItem => item.ViewReport)
+                </td>
+            }
+        </tr>
+    }
+</table>

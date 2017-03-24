@@ -88,8 +88,11 @@
             </div>
             <br />
             @Html.ActionLink("Back to Admin Settings", "Index", "Admin", null, new { @class = "btn btn-default btn-sm" })
-            @Html.ActionLink("Reset Security", "ClearUBS", "Permission", null, new { @class = "btn btn-primary btn-sm" })
-            <input type="submit" value="Save" class="btn btn-primary btn-sm" />
+            if (User.CanAddAdminFeature("UserBasedSecurity"))
+            {
+                @Html.ActionLink("Reset Security", "ClearUBS", "Permission", null, new { @class = "btn btn-primary btn-sm" })
+                <input type="submit" value="Save" class="btn btn-primary btn-sm" />
+            }
         }
     </div>
 </div>

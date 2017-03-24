@@ -8,9 +8,10 @@
                  $('#' + hostingEntityName + 'ID').attr("lock","true");
 				  $('#' + hostingEntityName + 'ID').trigger("change");
             }
+			
         }
         catch (ex) { }
-    });
+		});
 </script>
 @{
     if (!string.IsNullOrEmpty(ViewBag.FileDocumentIsHiddenRule))
@@ -18,24 +19,50 @@
         @Html.Raw(ViewBag.FileDocumentIsHiddenRule);
     }
 }
-@using (Html.BeginForm("Create", "FileDocument",new {UrlReferrer = Convert.ToString(ViewData["FileDocumentParentUrl"]), IsDDAdd = ViewBag.IsDDAdd }, FormMethod.Post, new { enctype = "multipart/form-data" }))
+@{
+    if (!string.IsNullOrEmpty(ViewBag.FileDocumentIsSetValueUIRule))
+    {
+        @Html.Raw(ViewBag.FileDocumentIsSetValueUIRule);
+    }
+}
+@using (Html.BeginForm("Create", "FileDocument",new {UrlReferrer = Convert.ToString(ViewData["FileDocumentParentUrl"]), IsDDAdd = ViewBag.IsDDAdd }, FormMethod.Post, new { enctype = "multipart/form-data",id="frmFileDocument" }))
 {
    @Html.AntiForgeryToken();
     Html.ValidationSummary(true);
     Html.EnableClientValidation();
-	<label id="ErrMsg" class="text-primary small pull-right" style="color:red; vertical-align:middle; font-weight:100;"></label>
+	<input type="hidden" id="ErrMsg" />
+	@*<label id="ErrMsg" class="text-primary small pull-right" style="color:red; vertical-align:middle; font-weight:100;"></label>*@
     <div id="errorContainer" style="display: none">
         <div id="errorsMsg"></div>
         <div id="errors"></div>
     </div>
-	
+	 <h2>
+	<div class="pull-right" style="margin-top:-10px;margin-bottom:10px">
+	 @Html.ActionLink("Cancel", "Cancel", new { UrlReferrer = ViewData["FileDocumentParentUrl"] }, new { @onclick = "", @class="btn btn-default btn-xs" })
+	<input type="submit" name="command" value="Create" class="btn btn-primary btn-xs" />
+    @if (ViewBag.IsDDAdd == null && User.CanEdit("FileDocument"))
+    {
+	<input type="submit" name="command" value="Create & Continue" class="btn btn-primary btn-xs" />
+	}
+	</div>
+	 </h2>
+	 <div id="divDisplayThresholdLimit" style="display:none;">
+	</div>
+	 <div id="divDisplayBRmsgMandatory" style="display:none;">
+	</div>
+	<div id="divDisplayBRmsgBeforeSaveProp" style="display:none;">
+	</div>
+	<div id="divDisplayCodeFragment" style="display:none;">
+	</div>
+
 	<div class="row">
         <div class="col-md-12 col-sm-12 col-xs-12">
             <div class="panel panel-default AppForm">
                 <div class="panel-body">
-               <div class="row">         
-					<div class='col-sm-6 col-md-6 col-xs-12' id="dvDocumentName">
-                                <div class='form-group'>
+               					<div class="row">
+				       
+			     <div class='col-sm-6 col-md-6 col-xs-12' id="dvDocumentName">
+                                <div class='form-group' title="">
                                    <label class="col-sm-5 col-md-5 col-xs-12" >@Html.LabelFor(model => model.DocumentName) <span class="text-danger-reg">*</span></label>
 									<div class="input-group col-sm-7 col-md-7 col-xs-12">
 									
@@ -44,8 +71,10 @@
 									</div>
                                 </div>
 					</div>
-					<div class='col-sm-6 col-md-6 col-xs-12' id="dvDescription">
-                                <div class='form-group'>
+
+					
+			     <div class='col-sm-6 col-md-6 col-xs-12' id="dvDescription">
+                                <div class='form-group' title="">
                                    <label class="col-sm-5 col-md-5 col-xs-12" >@Html.LabelFor(model => model.Description) </label>
 									<div class="input-group col-sm-7 col-md-7 col-xs-12">
 									
@@ -54,10 +83,12 @@
 									</div>
                                 </div>
 					</div>
+
+					
 				 @if(User.CanAdd("Document"))
                  { 
-				   <div class='col-sm-6 col-md-6 col-xs-12' id="dvAttachDocument">
-                            <div class='form-group'>
+				      <div class='col-sm-6 col-md-6 col-xs-12' id="dvAttachDocument">
+                            <div class='form-group' title="">
                                    <label class="col-sm-5 col-md-5 col-xs-12" >@Html.LabelFor(model => model.AttachDocument) </label>
                                      <div class="input-group col-sm-7 col-md-7 col-xs-12">
 									 <div style="position:relative;">
@@ -71,47 +102,59 @@
 									</div>
                             </div>
                    </div>
+
+				  
 				 }
-                            <div class='col-sm-6 col-md-6 col-xs-12' id="dvDateCreated">
+ 		  <div class='col-sm-6 col-md-6 col-xs-12' id="dvDateCreated">
                                 <label class="col-sm-5 col-md-5 col-xs-12" >@Html.LabelFor(model => model.DateCreated) <span class="text-danger-reg">*</span></label>
-                                <div class="form-group">
+                                <div class="form-group" title="">
 								<div class="input-group col-sm-7 col-md-7 col-xs-12">
                                     <div class="input-group date" id="datetimepickerDateCreated">
-                                        @Html.TextBoxFor(model => model.DateCreated, new {@class = "form-control" ,@Value = DateTime.Now.ToString("MM/dd/yyyy hh:ss tt") })
-                                        <span class="input-group-addon btn-default calendar">
+                                        @Html.TextBoxFor(model => model.DateCreated, new {@class = "form-control" ,@Value = DateTime.Now.ToString("MM/dd/yyyy hh:mm tt") ,@format = "MM/DD/YYYY hh:mm" })
+                                        
+										<span class="input-group-addon btn-default calendar">
                                            <i class="fa fa-calendar"></i>
                                         </span>
                                     </div>
                                     @Html.ValidationMessageFor(model => model.DateCreated)
+
 								</div>
                                 </div>
+	
                                 <script type="text/javascript">
                                     $(function () {
-                                        $('#datetimepickerDateCreated').datetimepicker();
-										$('#DateCreated').datetimepicker();
+										$('#DateCreated').datetimepicker({IsRequired: true});
+                                        $('#datetimepickerDateCreated').datetimepicker({IsRequired: true});
                                     });
                                 </script>
                             </div>
-                            <div class='col-sm-6 col-md-6 col-xs-12' id="dvDateLastUpdated">
+		  
+                          
+ 		  <div class='col-sm-6 col-md-6 col-xs-12' id="dvDateLastUpdated">
                                 <label class="col-sm-5 col-md-5 col-xs-12" >@Html.LabelFor(model => model.DateLastUpdated) <span class="text-danger-reg">*</span></label>
-                                <div class="form-group">
+                                <div class="form-group" title="">
 								<div class="input-group col-sm-7 col-md-7 col-xs-12">
                                     <div class="input-group date" id="datetimepickerDateLastUpdated">
-                                        @Html.TextBoxFor(model => model.DateLastUpdated, new {@class = "form-control" ,@Value = DateTime.Now.ToString("MM/dd/yyyy hh:ss tt") })
-                                        <span class="input-group-addon btn-default calendar">
+                                        @Html.TextBoxFor(model => model.DateLastUpdated, new {@class = "form-control" ,@Value = DateTime.Now.ToString("MM/dd/yyyy hh:mm tt") ,@format = "MM/DD/YYYY hh:mm" })
+                                        
+										<span class="input-group-addon btn-default calendar">
                                            <i class="fa fa-calendar"></i>
                                         </span>
                                     </div>
                                     @Html.ValidationMessageFor(model => model.DateLastUpdated)
+
 								</div>
                                 </div>
+	
                                 <script type="text/javascript">
                                     $(function () {
-                                        $('#datetimepickerDateLastUpdated').datetimepicker();
-										$('#DateLastUpdated').datetimepicker();
+										$('#DateLastUpdated').datetimepicker({IsRequired: true});
+                                        $('#datetimepickerDateLastUpdated').datetimepicker({IsRequired: true});
                                     });
                                 </script>
                             </div>
+		  
+                          
        </div>
                         </div>
                     </div>
@@ -127,7 +170,7 @@
 	<br/><br/>
 }
 	<script>
-    $(function () {
+	    $(function () {
         var userAgent = navigator.userAgent.toLowerCase();
         // Figure out what browser is being used
         var browser = {
@@ -145,53 +188,62 @@
         }
     });
 </script>
-	<script>
-            $("input[type='submit']").click(function () {
-                var $this = $(this);
-                $('input:hidden[name="hdncommand"]').val($this.val());
-            });
-	</script>
+	
 @{
-    var businessrule = User.businessrules.Where(p => p.EntityName == "FileDocument").ToList();
-    if ((businessrule != null && businessrule.Count > 0))
+		var businessrule = User.businessrules.Where(p => p.EntityName == "FileDocument").ToList();
+		
+if ((businessrule != null && businessrule.Count > 0) )
     {
         <script>
             $("form").submit(function () {
+				document.getElementById("ErrMsg").innerHTML = "";
                 var flag = true;
+                var dataurl = "";
+                var form = "";
+                var inlinecount = "0";
                 
-                $.ajax({
-                    async: false,
-                    type: "GET",
-                    url: "@Url.Action("GetMandatoryProperties", "FileDocument")",
-                    data: $(this).serialize(),
-                     success: function (data) {
-                        $('[businessrule="mandatory"]').each(function () {
-                            $(this).removeAttr('required');
-                        });
-                        document.getElementById('ErrMsg').innerHTML = "";
-                        for (var key in data) {
-                            if ($.trim($('#' + key).val()).length == 0 && $.trim($("input[type='radio'][name='" + key + "']:checked").val()).length == 0)
-                            {
-                                $('#' + key).attr('required', 'required');
-                                $('#' + key).attr('businessrule', 'mandatory');
-                                $("input[type='radio'][name='" + key + "']").attr('required', 'required');
-                                $("input[type='radio'][name='" + key + "']").attr('businessrule', 'mandatory');
-                                flag = false;
-                                document.getElementById('ErrMsg').innerHTML += data[key] + " is Mandatory.<br/>";
-                            }
-                        }
-                    },
-                    error: function (jqXHR, textStatus, errorThrown) {
-                    }
+              
+                //var form = $(this).serialize();
+ form = $("#frmFileDocument").serialize();
+  
+                dataurl = "@Url.Action("businessruletype", "FileDocument", new { ruleType = "OnCreate"})";
+                flag = ApplyBusinessRuleOnSubmit(dataurl, "FileDocument", false, "ErrMsg", form);
+				//business rules on inline associations
+				if (flag) {
+						
+                    SaveServerTime(this, true);
+                    $('input:hidden[name="hdncommand"]').val($("input[type='submit']").val());
+                    $("form").find(':input').removeAttr('disabled');
+                }
+				return flag;
+			 });	
+            $(document).ready(function () {
+                $("input[type='submit']").on('blur', function () {
+                    $("input[type='submit']").removeAttr('disabled');
                 });
-                return flag;
             });
         </script>
     }
     else
     {
+	<script>
+            $("input[type='submit']").click(function (event) {
+                var $this = $(this);
+				 SaveServerTime(this);
+                $('input:hidden[name="hdncommand"]').val($this.val());
+            });
+	</script>
            
     }
 }
 
+
+<script type='text/javascript'>
+    $(document).ready(function () {
+        try {
+		 focusOnControl('frmFileDocument');
+        }
+        catch (ex) { }
+    });
+</script>
 

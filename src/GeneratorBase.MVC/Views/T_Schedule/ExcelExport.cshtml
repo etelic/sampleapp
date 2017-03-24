@@ -1,0 +1,127 @@
+﻿@model PagedList.IPagedList<GeneratorBase.MVC.Models.T_Schedule>
+@using PagedList.Mvc;
+@{
+    ViewBag.Title = "Index";
+    Layout = null;
+    Response.ContentType = "application/vnd.ms-excel";
+    Response.AddHeader("Content-Disposition", "attachment; filename=Schedule.xls");
+}
+                    <table>
+                            <tr>
+@if(User.CanView("T_Schedule","T_Name"))
+{
+		<th>Name</th>
+}
+@if(User.CanView("T_Schedule","T_Description"))
+{
+		<th>Description</th>
+}
+@if(User.CanView("T_Schedule","T_AssociatedScheduleTypeID"))
+{
+		<th  @(Convert.ToString(ViewData["HostingEntity"]) == "T_Scheduletype"?"hidden":"")>Schedule Type</th>
+}
+@if(User.CanView("T_Schedule","T_StartDateTime"))
+{
+		<th>Start Date Time</th>
+}
+@if(User.CanView("T_Schedule","T_AssociatedRecurringScheduleDetailsTypeID"))
+{
+		<th  @(Convert.ToString(ViewData["HostingEntity"]) == "T_RecurringScheduleDetailstype"?"hidden":"")>Repeat Type</th>
+}
+@if(User.CanView("T_Schedule","T_RecurringRepeatFrequencyID"))
+{
+		<th  @(Convert.ToString(ViewData["HostingEntity"]) == "T_RecurringFrequency"?"hidden":"")>Repeat Every</th>
+}
+@if(User.CanView("T_Schedule","T_RepeatByID"))
+{
+		<th  @(Convert.ToString(ViewData["HostingEntity"]) == "T_MonthlyRepeatType"?"hidden":"")>Repeat By</th>
+}
+@if(User.CanView("T_Schedule","T_RecurringTaskEndTypeID"))
+{
+		<th  @(Convert.ToString(ViewData["HostingEntity"]) == "T_RecurringEndType"?"hidden":"")>Ends</th>
+}
+@if(User.CanView("T_Schedule","T_EndDate"))
+{
+		<th>End Date</th>
+}
+@if(User.CanView("T_Schedule","T_OccurrenceLimitCount"))
+{
+		<th>Occurrence Limit Count</th>
+}
+@if(User.CanView("T_Schedule","T_Summary"))
+{
+		<th>Summary</th>
+}
+    </tr>
+@foreach (var item in Model) {
+    <tr>
+	@if(User.CanView("T_Schedule","T_Name"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.T_Name)
+        </td>
+}
+@if(User.CanView("T_Schedule","T_Description"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.T_Description)
+        </td>
+}
+@if(User.CanView("T_Schedule","T_AssociatedScheduleTypeID"))
+{
+		<td @(Convert.ToString(ViewData["HostingEntity"]) == "T_Scheduletype"?"hidden":"")>
+            @Html.DisplayFor(modelItem => item.t_associatedscheduletype.DisplayValue)
+        </td>
+}
+@if(User.CanView("T_Schedule","T_StartDateTime"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.T_StartDateTime)
+        </td>
+}
+@if(User.CanView("T_Schedule","T_AssociatedRecurringScheduleDetailsTypeID"))
+{
+		<td @(Convert.ToString(ViewData["HostingEntity"]) == "T_RecurringScheduleDetailstype"?"hidden":"")>
+            @Html.DisplayFor(modelItem => item.t_associatedrecurringscheduledetailstype.DisplayValue)
+        </td>
+}
+@if(User.CanView("T_Schedule","T_RecurringRepeatFrequencyID"))
+{
+		<td @(Convert.ToString(ViewData["HostingEntity"]) == "T_RecurringFrequency"?"hidden":"")>
+            @Html.DisplayFor(modelItem => item.t_recurringrepeatfrequency.DisplayValue)
+        </td>
+}
+@if(User.CanView("T_Schedule","T_RepeatByID"))
+{
+		<td @(Convert.ToString(ViewData["HostingEntity"]) == "T_MonthlyRepeatType"?"hidden":"")>
+            @Html.DisplayFor(modelItem => item.t_repeatby.DisplayValue)
+        </td>
+}
+@if(User.CanView("T_Schedule","T_RecurringTaskEndTypeID"))
+{
+		<td @(Convert.ToString(ViewData["HostingEntity"]) == "T_RecurringEndType"?"hidden":"")>
+            @Html.DisplayFor(modelItem => item.t_recurringtaskendtype.DisplayValue)
+        </td>
+}
+@if(User.CanView("T_Schedule","T_EndDate"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.T_EndDate)
+        </td>
+}
+@if(User.CanView("T_Schedule","T_OccurrenceLimitCount"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.T_OccurrenceLimitCount)
+        </td>
+}
+@if(User.CanView("T_Schedule","T_Summary"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.T_Summary)
+        </td>
+}
+                                </tr>
+                            }
+</table>
+               

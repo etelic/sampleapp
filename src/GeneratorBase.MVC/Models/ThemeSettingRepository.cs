@@ -51,7 +51,7 @@ namespace GeneratorBase.MVC.Models
         {
             return allThemes.Find(t => t.Id == id);
         }
-        public void InsertThemeModel(ThemeSettings Themes)
+        public long InsertThemeModel(ThemeSettings Themes)
         {
             if (ThemeCount() > 0)
                 Themes.Id = (long)(from T in themeSettingsData.Descendants("Settings") orderby (long)T.Element("Id") descending select (long)T.Element("Id")).FirstOrDefault() + 1;
@@ -64,6 +64,7 @@ namespace GeneratorBase.MVC.Models
                 new XElement("IsDefault", Themes.IsDefault),
                 new XElement("DisplayValue", Themes.DisplayValue)));
             themeSettingsData.Save(HttpContext.Current.Server.MapPath("~/App_Data/ThemeSettings.xml"));
+            return Themes.Id;
         }
         public void EditThemesModel(Theme Themes, string strCss)
         {

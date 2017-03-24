@@ -21,9 +21,29 @@ namespace GeneratorBase.MVC.Controllers
     {
         private void LoadViewDataAfterOnEdit(DefaultEntityPage defaultentitypage)
         {
+
         }
         private void LoadViewDataBeforeOnEdit(DefaultEntityPage defaultentitypage)
         {
+            ViewBag.EntityName = new SelectList(GeneratorBase.MVC.ModelReflector.Entities.Where(p => !p.IsAdminEntity), "Name", "DisplayName", defaultentitypage.EntityName);
+            var RoleList = (new GeneratorBase.MVC.Models.CustomRoleProvider()).GetAllRoles().ToList();
+            RoleList.Add("All");
+            var adminString = System.Configuration.ConfigurationManager.AppSettings["AdministratorRoles"]; //CommonFunction.Instance.AdministratorRoles(); 
+            RoleList.Remove(adminString);
+            ViewBag.RoleList = new SelectList(RoleList, "", "", defaultentitypage.Roles);
+            ViewBag.Roles = defaultentitypage.Roles;
+
+            var favorites = db.FavoriteItems;
+            ViewBag.Favorites = new SelectList(favorites, "LinkAddress", "Name", defaultentitypage.PageUrl);
+            ViewBag.SelectedOtherVal = defaultentitypage.PageUrl;
+
+            ViewBag.PageType = defaultentitypage.PageType;
+            ViewBag.ViewEntityPage = defaultentitypage.ViewEntityPage;
+            ViewBag.ListEntityPage = defaultentitypage.ListEntityPage;
+            ViewBag.EditEntityPage = defaultentitypage.EditEntityPage;
+            ViewBag.SearchEntityPage = defaultentitypage.SearchEntityPage;
+            ViewBag.DefaultUrl = defaultentitypage.PageUrl;
+
         }
         private void LoadViewDataAfterOnCreate(DefaultEntityPage defaultentitypage)
         {
@@ -34,7 +54,7 @@ namespace GeneratorBase.MVC.Controllers
             RoleList.Remove(adminString);
             ViewBag.RoleList = new SelectList(RoleList, "", "");
             var favorites = db.FavoriteItems;
-            ViewBag.Favorites = new SelectList(favorites,"LinkAddress","Name" ); 
+            ViewBag.Favorites = new SelectList(favorites, "LinkAddress", "Name");
         }
         private void LoadViewDataBeforeOnCreate(string HostingEntityName, string HostingEntityID, string AssociatedType)
         {
@@ -45,7 +65,7 @@ namespace GeneratorBase.MVC.Controllers
             RoleList.Remove(adminString);
             ViewBag.RoleList = new SelectList(RoleList, "", "");
             var favorites = db.FavoriteItems;
-            ViewBag.Favorites = new SelectList(favorites, "LinkAddress", "Name"); 
+            ViewBag.Favorites = new SelectList(favorites, "LinkAddress", "Name");
         }
 
 
@@ -1085,7 +1105,7 @@ namespace GeneratorBase.MVC.Controllers
                 {
                     var ResultOfBusinessRules = db.ReadOnlyPropertiesRule(OModel, BR, "DefaultEntityPage");
                     BR = BR.Where(p => ResultOfBusinessRules.Values.Select(x => x.BRID).ToList().Contains(p.Id)).ToList();
-                    if (ResultOfBusinessRules.Keys.Select(p=>p.TypeNo).Contains(4))
+                    if (ResultOfBusinessRules.Keys.Select(p => p.TypeNo).Contains(4))
                     {
                         var Args = GeneratorBase.MVC.Models.BusinessRuleContext.GetActionArguments(ResultOfBusinessRules.Where(p => p.Key.TypeNo == 4).Select(v => v.Value.ActionID).ToList());
                         foreach (string paramName in Args.Select(p => p.ParameterName))
@@ -1110,7 +1130,7 @@ namespace GeneratorBase.MVC.Controllers
                 {
                     var ResultOfBusinessRules = db.MandatoryPropertiesRule(OModel, BR, "DefaultEntityPage");
                     BR = BR.Where(p => ResultOfBusinessRules.Values.Select(x => x.BRID).ToList().Contains(p.Id)).ToList();
-                    if (ResultOfBusinessRules.Keys.Select(p=>p.TypeNo).Contains(2))
+                    if (ResultOfBusinessRules.Keys.Select(p => p.TypeNo).Contains(2))
                     {
                         var Args = GeneratorBase.MVC.Models.BusinessRuleContext.GetActionArguments(ResultOfBusinessRules.Where(p => p.Key.TypeNo == 2).Select(v => v.Value.ActionID).ToList());
                         foreach (string paramName in Args.Select(p => p.ParameterName))
@@ -1134,7 +1154,7 @@ namespace GeneratorBase.MVC.Controllers
                 {
                     var ResultOfBusinessRules = db.LockEntityRule(OModel, BR, "DefaultEntityPage");
                     BR = BR.Where(p => ResultOfBusinessRules.Values.Select(x => x.BRID).ToList().Contains(p.Id)).ToList();
-                    if (ResultOfBusinessRules.Keys.Select(p=>p.TypeNo).Contains(1))
+                    if (ResultOfBusinessRules.Keys.Select(p => p.TypeNo).Contains(1))
                     {
                         RulesApplied = string.Join(",", BR.Select(p => p.RuleName).ToArray());
                     }
@@ -1153,7 +1173,7 @@ namespace GeneratorBase.MVC.Controllers
                 {
                     var ResultOfBusinessRules = db.MandatoryPropertiesRule(OModel, BR, "DefaultEntityPage");
                     BR = BR.Where(p => ResultOfBusinessRules.Values.Select(x => x.BRID).ToList().Contains(p.Id)).ToList();
-                    if (ResultOfBusinessRules.Keys.Select(p=>p.TypeNo).Contains(2))
+                    if (ResultOfBusinessRules.Keys.Select(p => p.TypeNo).Contains(2))
                     {
                         var Args = GeneratorBase.MVC.Models.BusinessRuleContext.GetActionArguments(ResultOfBusinessRules.Where(p => p.Key.TypeNo == 2).Select(v => v.Value.ActionID).ToList());
                         foreach (string paramName in Args.Select(p => p.ParameterName))

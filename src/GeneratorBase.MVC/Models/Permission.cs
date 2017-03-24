@@ -79,6 +79,7 @@ namespace GeneratorBase.MVC.Models
         public SelectEntityRolesViewModel()
         {
             this.Entities = new List<SelectPermissionEditorViewModel>();
+			this.privileges = new List<PermissionAdminPrivilege>();
         }
         // Enable initialization with an instance of ApplicationRole:
         public SelectEntityRolesViewModel(string RoleName)
@@ -87,13 +88,33 @@ namespace GeneratorBase.MVC.Models
             this.RoleName = RoleName;
             var Db = new PermissionContext();
             var permissions = Db.Permissions.ToList().Where(p => p.RoleName == RoleName);
+			var listprivileges = Db.AdminPrivileges.ToList().Where(p => p.RoleName == RoleName);
+			var IsAppHeader = false;
+            var IsDefaultHeader = false;
+            var rowcnt = 0;
             foreach (var ent in GeneratorBase.MVC.ModelReflector.Entities.Where(p=>!p.IsAdminEntity))
             {
                 if (ent.Name.ToUpper() == "PERMISSION") continue;
-                var rvm = new SelectPermissionEditorViewModel(ent.Name);
+                
+				if (!IsAppHeader && !ent.IsDefault && rowcnt == 0)
+                {
+                    IsAppHeader = true;
+                    rowcnt++;
+                }
+                else
+                    IsAppHeader = false;
+                if (!IsDefaultHeader && ent.IsDefault && rowcnt == 1)
+                {
+                    IsDefaultHeader = true;
+                    rowcnt++;
+                }
+                else
+                    IsDefaultHeader = false;
+
+                var rvm = new SelectPermissionEditorViewModel(ent.Name, IsAppHeader, IsDefaultHeader);
+
                 this.Entities.Add(rvm);
             }
-			this.Entities.Add(new SelectPermissionEditorViewModel() { EntityName = "DataMonitoring" });
             foreach (var perm in permissions)
             {
                 var checkUserRole =
@@ -114,20 +135,42 @@ namespace GeneratorBase.MVC.Models
                 checkUserRole.Verbs = perm.Verbs;
                 //
             }
+			//foreach (var item in Enum.GetValues(typeof(AdminFeatures)))
+			foreach (var item in (new AdminFeaturesDictionary()).getDictionary())
+            {
+                var privilege = listprivileges.FirstOrDefault(p => p.AdminFeature == item.Key);
+                if (privilege != null)
+                    this.privileges.Add(privilege);
+                else
+                {
+                    var obj = new PermissionAdminPrivilege();
+                    obj.RoleName = this.RoleName;
+                    obj.AdminFeature = item.Key;
+                    obj.IsAllow = false;
+                    obj.IsAdd = false;
+                    obj.IsEdit = false;
+                    obj.IsDelete = false;
+                    this.privileges.Add(obj);
+                }
+            }
         }
         public string RoleName { get; set; }
         public List<SelectPermissionEditorViewModel> Entities { get; set; }
+		public List<PermissionAdminPrivilege> privileges { get; set; }
     }
     public class SelectPermissionEditorViewModel
     {
         public SelectPermissionEditorViewModel() { }
-        public SelectPermissionEditorViewModel(string EntityName)
+        public SelectPermissionEditorViewModel(string EntityName, bool IsAppHeader, bool IsDefaultHeader)
         {
             this.EntityName = EntityName;
 			this.IsAssociatedWithUser = false;
 			  //code for verb action security
             this.IsHaveVerbs = false;
     	 this.IsSelfRegistrartion = false;
+
+		 this.IsAppHeader = IsAppHeader;
+            this.IsDefaultHeader = IsDefaultHeader;
             //
             var EntList = GeneratorBase.MVC.ModelReflector.Entities.Where(p => !p.IsAdminEntity && p.Associations.Where(q => q.Target == "IdentityUser").Count() > 0).Select(p=>p.Name);
             var association = ModelReflector.Entities.FirstOrDefault(p => p.Name == EntityName).Associations.Where(p => p.Target == "IdentityUser" || EntList.Contains(p.Target)).ToList();
@@ -158,9 +201,11 @@ namespace GeneratorBase.MVC.Models
 		public bool SelfRegistration { get; set; }
         public bool IsAssociatedWithUser { get; set; }
 
-		  //code for verb action security
+		public bool IsAppHeader { get; set; }
+        public bool IsDefaultHeader { get; set; }
+		//code for verb action security
         public bool IsHaveVerbs { get; set; }
-	public bool IsSelfRegistrartion { get; set; }
+		public bool IsSelfRegistrartion { get; set; }
         //
         public string UserAssociation { get; set; }
 

@@ -1,0 +1,29 @@
+﻿@model GeneratorBase.MVC.Models.CustomReport
+@{
+    ViewBag.Title = "Create Custom Report";
+	var EntityDisplayNameReflector = ModelReflector.Entities.FirstOrDefault(p => p.Name == "CustomReport");
+    var EntityDisplayName = EntityDisplayNameReflector != null ? EntityDisplayNameReflector.DisplayName : "Custom Report";
+}
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-title">
+		@{
+                var hostingValue = "";
+                if (ViewBag.DisplayVal != null)
+                {
+                    hostingValue = " - " + ViewBag.DisplayVal;
+                }
+            }
+            <i class="glyphicon glyphicon-save text-primary"></i> @EntityDisplayName  <i class="glyphicon glyphicon-chevron-right small"></i> <span> Add Custom Report @hostingValue</span>
+			<button class="btn btn-xs btn-default" type="button" data-original-title="List View" data-placement="top" onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Index", "CustomReport") + "');")>
+				<i class="glyphicon glyphicon-list"></i> List
+			</button>
+			</div>
+	
+
+        </h1>
+        <h2 class="text-primary">@Html.DisplayFor(model => model.DisplayValue)</h2>
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+@Html.Partial("~/Views/CustomReport/CreatePartial.cshtml", Model)

@@ -1,0 +1,2 @@
+download firefox plugin selenium to run test case
+Add userextension.js and code ide in firefox http://51elliot.blogspot.in/2008/02/selenium-ide-goto.html

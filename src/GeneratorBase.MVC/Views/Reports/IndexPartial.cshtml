@@ -8,13 +8,16 @@
         border: 0px solid transparent;
         border-top: 1px solid #c3ddec;
     }
+
     .fixed-column th {
         background: #fff;
     }
+
     .fixed-column td {
         background: #fff;
     }
 </style>
+
 <script>
     $(document).ready(function () {
         $("#SearchStringReports").keypress(function (e) {
@@ -87,14 +90,13 @@
     <div class="col-md-12 col-sm-12 col-sx-12">
         <div class="panel panel-default">
             <div class="panel-heading clearfix" style="margin:0px; padding:8px;">
-                <div class="btn-group">
-                </div>
+                Reports List
                 <div class="pull-right" style="width:200px;">
                     <div class="input-group">
                         @Html.TextBox("SearchStringReports", ViewBag.CurrentFilter as string, null, new { @class = "form-control fixsearchbox", @placeholder = "Search" })
                         <div class="input-group-btn">
                             <a id="ReportsSearch" href="@Url.Action("Index", "Reports")" class="btn btn-default" style="padding:3px 5px;"><span class="fam-zoom"></span></a>
-                            <a href="@Url.Action("Index", "Reports")" class="btn btn-default" style="padding:3px 5px;"><span class="fam-delete"></span></a>
+                            <a href="@Url.Action("Index", "Reports")" id="cancelReport" class="btn btn-default" style="padding:3px 5px;"><span class="fam-delete"></span></a>
                         </div>
                     </div>
                 </div>
@@ -162,4 +164,21 @@
         </div>
     </div>
 </div>
+<div class="row">
+    <div class="col-md-12 col-sm-12 col-sx-12">
+        <div class="panel panel-default">
+            <div class="panel-heading clearfix" style="margin:0px; padding:8px;">
+                Custom Reports List
+            </div>
+            <div class="panel-body" style="margin:0px; padding:8px;">
+                <div class="table-responsive">
+                    @if (User.Identity.IsAuthenticated && User != null && User.CanView("CustomReport"))
+                    {
+                        Html.RenderAction("Index", "CustomReport", new { RenderPartial = true });
+                    }
+                </div>
 
+            </div>
+        </div>
+    </div>
+</div>

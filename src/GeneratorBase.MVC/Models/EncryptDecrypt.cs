@@ -87,7 +87,9 @@ namespace GeneratorBase.MVC.Models
         public void Notify(String ToID, String Body, String Subject)
         {
             DataSet ds = new DataSet();
-            ds.ReadXml(HttpContext.Current.Server.MapPath("~/App_Data/CompanyProfile.xml"));
+           // ds.ReadXml(HttpContext.Current.Server.MapPath("~/App_Data/CompanyProfile.xml"));
+            ds.ReadXml(System.Web.Hosting.HostingEnvironment.MapPath("~/App_Data/CompanyProfile.xml"));
+            
             if (ds.Tables[0].Rows.Count > 0)
             {
                 DataRow dr = ds.Tables[0].Rows[0];

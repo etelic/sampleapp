@@ -14,11 +14,12 @@ namespace GeneratorBase.MVC.Controllers
     [NoCache]
     public class BaseController : Controller
     {
-        public  ApplicationContext db { get; private set; } //removed static for race condition
-        public new IUser User { get; private set; } //removed static for race condition
+        public ApplicationContext db { get; private set; } //removed static for race condition
+        public new IUser User { get; private set; }//removed static for race condition
         public static string FavoriteUrl { get; private set; }
         public static string FavoriteUrlEntityName { get; private set; }
         public static bool IsFavorite = false;
+        public static string EntityNameJournal = null;
         public static FavoriteItem objFavorite = null;
         protected override void OnAuthorization(AuthorizationContext filterContext)
         {
@@ -36,7 +37,11 @@ namespace GeneratorBase.MVC.Controllers
                     controller = "Account",
                     returnUrl = HttpContext.Request.Url.PathAndQuery
                 });
-                filterContext.Result = new RedirectToRouteResult(values);
+                var result = new HttpStatusCodeResult(System.Net.HttpStatusCode.BadRequest, "Bad Request");
+                if (Request.IsAjaxRequest())
+                    filterContext.Result = result;
+                else
+                    filterContext.Result = new RedirectToRouteResult(values);
                 return;
             }
             if (Request.UrlReferrer != null && Request.UrlReferrer.AbsolutePath.EndsWith("/Account/Login"))
@@ -57,7 +62,7 @@ namespace GeneratorBase.MVC.Controllers
                     if (IsPasswordExpired(duration, userid))
                         filterContext.Result = new RedirectResult("~/Account/Manage");
             }
- if (Request.Url.PathAndQuery.ToUpper().Contains("/HOME?ISTHIRDPARTY=TRUE") || (Request.UrlReferrer != null && Request.UrlReferrer.AbsolutePath.EndsWith("/Account/Login")&& !Request.Url.PathAndQuery.Contains("/Home?RegistrationEntity")))
+            if (Request.Url.PathAndQuery.ToUpper().Contains("/HOME?ISTHIRDPARTY=TRUE") || (Request.UrlReferrer != null && Request.UrlReferrer.AbsolutePath.EndsWith("/Account/Login") && !Request.Url.PathAndQuery.Contains("/Home?RegistrationEntity")))
             {
                 ApplicationDbContext usercontext = new ApplicationDbContext();
                 var userid = usercontext.Users.FirstOrDefault(p => p.UserName == User.Name).Id;
@@ -65,7 +70,12 @@ namespace GeneratorBase.MVC.Controllers
                 {
                     filterContext.Result = Redirect(Url.Action("Index", "Home", new { RegistrationEntity = string.Join(",", User.permissions.Where(p => p.SelfRegistration.Value).Select(p => p.EntityName)), TokenId = userid }));
                 }
+                if (Request.Url.PathAndQuery.ToUpper().Contains("/BULKUPDATE"))
+                {
+                    filterContext.Result = Redirect(Url.Action("Index", "Home"));
+                }
             }
+            
             objFavorite = db.FavoriteItems.Where(p => p.LastUpdatedByUser == User.Name && p.LinkAddress == HttpContext.Request.Url.PathAndQuery).FirstOrDefault();
             string entity = filterContext.ActionDescriptor.ControllerDescriptor.ControllerName;
             if (User.CanView(entity))
@@ -80,8 +90,13 @@ namespace GeneratorBase.MVC.Controllers
         }
         protected override void OnActionExecuted(ActionExecutedContext filterContext)
         {
-            FavoriteUrl = HttpContext.Request.Url.PathAndQuery;
-            FavoriteUrlEntityName = filterContext.ActionDescriptor.ControllerDescriptor.ControllerName;
+            var EntityName = filterContext.ActionDescriptor.ControllerDescriptor.ControllerName;
+            if (!(Request.IsAjaxRequest() || EntityName.ToLower() == "document"))
+            {
+                FavoriteUrlEntityName = EntityName;
+                FavoriteUrl = getfavoriteUrl();
+            }
+
             base.OnActionExecuted(filterContext);
         }
         protected long SaveDocument(HttpPostedFileBase file)
@@ -249,7 +264,7 @@ namespace GeneratorBase.MVC.Controllers
                 ViewBag.ApplicationError = alertMsg;
             }
             return isFileValid;
-           
+
         }
         private bool IsPasswordExpired(int duration, string userId)
         {
@@ -265,7 +280,7 @@ namespace GeneratorBase.MVC.Controllers
             }
             return false;
         }
- private bool IsAutoRegistration(string userid)
+        private bool IsAutoRegistration(string userid)
         {
             var result = false;
             var Permission = User.permissions.Where(p => p.SelfRegistration != null && p.SelfRegistration.Value);
@@ -276,13 +291,38 @@ namespace GeneratorBase.MVC.Controllers
                 Type controller = Type.GetType("GeneratorBase.MVC.Controllers." + EntityName + "Controller");
                 object objController = Activator.CreateInstance(controller, null);
                 System.Reflection.MethodInfo mc = controller.GetMethod("IsAlreadyRegistred");
-                object[] MethodParams = new object[] { userid,db };
+                object[] MethodParams = new object[] { userid, db };
                 var result1 = mc.Invoke(objController, MethodParams);
                 if (Convert.ToBoolean(result1))
                     return false;
             }
 
             return result;
+        }
+        public static string GetBaseUrl()
+        {
+            var request = System.Web.HttpContext.Current.Request;
+            var appUrl = HttpRuntime.AppDomainAppVirtualPath;
+
+            if (appUrl != "/")
+                appUrl = appUrl + "/";
+
+            var baseUrl = string.Format("{0}://{1}{2}", request.Url.Scheme, request.Url.Authority, appUrl);
+
+            return baseUrl;
+        }
+        public string getfavoriteUrl()
+        {
+            string baseUri = "";
+            Uri uri = new Uri(Request.Url.AbsoluteUri);
+            string pathQuery = uri.PathAndQuery;
+            string hostName = uri.ToString().Replace(pathQuery, "");
+            var virtualurl = VirtualPathUtility.ToAbsolute("~/");
+            if (virtualurl == "/" || string.IsNullOrEmpty(virtualurl))
+                baseUri = pathQuery.ToString().Replace(hostName, "/");
+            else
+                baseUri = pathQuery.ToString().Replace(virtualurl, ""); ;
+            return baseUri;
         }
     }
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, Inherited = true, AllowMultiple = false)]

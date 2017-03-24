@@ -23,7 +23,8 @@ namespace GeneratorBase.MVC
                 {
                     Name = t.Name,
                     DisplayName = GetDisplayName(t) ?? t.Name,
-                    IsDefault = GetDisplayName(t) == null ? true : false,
+                    IsDefault = GetDisplayName(t) == null || Enum.IsDefined(typeof(IgnoreEntities), t.Name) ? true : false,
+                    IsExternalEntity = GetDBTableAttribute(t),
                     Properties = GetDisplayPropertiesForEntity(t).OrderBy(prop => prop.DisplayName).ToList(),
                     Associations = GetAssociationsForEntity(t).OrderBy(asso => asso.DisplayName).ToList(),
                     //code for verb action security
@@ -32,6 +33,17 @@ namespace GeneratorBase.MVC
                     IsAdminEntity = (Enum.IsDefined(typeof(AdminEntities), t.Name))
                 }
             ).OrderBy(p => p.IsDefault).ThenBy(p => p.DisplayName).ToList();
+        }
+        private static bool GetDBTableAttribute(Type t)
+        {
+            var result = false;
+            var attr = t.GetCustomAttribute<TableAttribute>(false);
+            if (attr != null)
+            {
+                result = false;
+            }
+            else result = true;
+            return result;
         }
         private static string GetDisplayName(Type t)
         {
@@ -50,7 +62,8 @@ namespace GeneratorBase.MVC
             {
                 if (type.Name == "UserBasedSecurity" || type.Name == "UserDefinePages" || type.Name == "UserDefinePagesRole") continue;
                 var attr = type.GetCustomAttribute<TableAttribute>(true);
-                if (attr != null)
+                var attr1 = type.GetCustomAttribute<DisplayNameAttribute>(true);
+                if (attr != null || attr1 != null)
                 {
                     yield return type;
                 }
@@ -139,6 +152,7 @@ namespace GeneratorBase.MVC
             //
             public bool IsAdminEntity { get; set; }
             public bool IsDefault { get; set; }
+            public bool IsExternalEntity { get; set; }
         }
         [DebuggerDisplay("{DisplayName,nq}")]
         public class Property
@@ -176,6 +190,24 @@ namespace GeneratorBase.MVC
             Condition,
             Permission,
             RuleAction
+        }
+        public enum IgnoreEntities
+        {
+            PropertyMapping,
+            T_RecurrenceDays,
+            T_RecurringEndType,
+            T_RecurringFrequency,
+            T_RecurringScheduleDetailstype,
+            T_RepeatOn,
+            T_Schedule,
+            T_Scheduletype,
+            DataSourceParameters,
+            Document,
+            EntityDataSource,
+            T_MonthlyRepeatType,
+ 	    ApiToken,
+            MultiTenantExtraAccess,
+            MultiTenantLoginSelected,
         }
     }
 }

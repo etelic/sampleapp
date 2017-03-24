@@ -1,17 +1,20 @@
 ﻿@model PagedList.IPagedList<GeneratorBase.MVC.Models.FileDocument>
 @using PagedList.Mvc;
 @{
+	
     var ActionNameUrl = "Index";
     if (HttpContext.Current.Request.RequestContext.RouteData.Values["action"].ToString().ToUpper() == "FSEARCH")
     {
         ActionNameUrl = "FSearch";
     }
 	var BackUrl =  Request.Url;
-	if (ViewData["HostingEntity"]!=null && Request.QueryString["TabToken"]!=null)
+	if (ViewData["HostingEntity"] != null && (Request.QueryString["TabToken"] != null || Request.IsAjaxRequest()))
 	{
 		BackUrl =  Request.UrlReferrer;
 	}
+	var EntityReflector = ModelReflector.Entities.FirstOrDefault(p => p.Name == "FileDocument");
 }
+
 <div id="FileDocument">
 <style>
     .table-responsive > .fixed-column {
@@ -41,6 +44,7 @@
 	        {
                 $("#" + "@ViewData["HostingEntity"]" + "_FileDocument").hide();
 	        }
+			FSearchColumnsShowHide('@ViewData["HideColumns"]', 'FileDocument');
         }
 	    $("#SearchStringFileDocument").keypress(function (e) {
 			if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
@@ -80,6 +84,11 @@
   DateLastUpdatedFrom = Request.QueryString["DateLastUpdatedFrom"],
   DateLastUpdatedTo = Request.QueryString["DateLastUpdatedTo"],
 				search=Request.QueryString["search"],
+				SortOrder = Request.QueryString["SortOrder"],
+				viewtype = ViewBag.TemplatesName,
+				HideColumns = ViewData["HideColumns"],
+				 GroupByColumn = ViewBag.GroupByColumn,
+				 FilterCondition = ViewBag.FilterCondition,
             };
         }
         else
@@ -102,6 +111,11 @@
   DateLastUpdatedFrom = Request.QueryString["DateLastUpdatedFrom"],
   DateLastUpdatedTo = Request.QueryString["DateLastUpdatedTo"],
 		search=Request.QueryString["search"],
+		SortOrder = Request.QueryString["SortOrder"],
+		viewtype = ViewBag.TemplatesName,
+		HideColumns = ViewData["HideColumns"],
+		 GroupByColumn = ViewBag.GroupByColumn,
+		 FilterCondition = ViewBag.FilterCondition,
             };
         }
     }
@@ -109,24 +123,25 @@
 <div class="row">
     <div class="col-md-12 col-sm-12 col-sx-12">
         <div class="panel panel-default">
-            <div class="panel-heading clearfix" style="margin:0px; padding:8px;">
+            <div class="panel-heading clearfix" style="margin:0px; padding:2px;">
                  <div class="btn-group" id='@ViewData["HostingEntity"]_FileDocument'>
 				  @if (User.Identity.IsAuthenticated && User != null && User.CanAdd("FileDocument"))
 				  {
 						
-					<button class="btn btn-default tip-top" data-placement="top" data-original-title="Quick Add" style="padding:3px 5px;" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Document','dvPopup','" + Url.Action("CreateQuick", "FileDocument", new { UrlReferrer = BackUrl, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), TS=DateTime.Now }) + "')")">
+					<button class="btn btn-default tip-top" data-placement="top" data-original-title="Quick Add" style="padding:3px 5px;" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Document','dvPopup','" + Url.Action("CreateQuick", "FileDocument", new { UrlReferrer = BackUrl, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), TS=DateTime.Now,viewtype = Convert.ToString(ViewBag.TemplatesName) }) + "')")">
 						<span class="fam-add"></span>
                     </button>
 			}
 			@if (ViewData["HostingEntity"] != null && User.CanEdit(ViewData["HostingEntity"].ToString()))
 			{
-				<button class="btn btn-default tip-top" data-placement="top" data-original-title="Associate Document with @GeneratorBase.MVC.Models.ModelConversion.GetDisplayNameOfEntity(ViewData["HostingEntity"].ToString())" style="padding:3px 5px;" data-toggle="modal" data-target="#dvPopupBulkOperation" onclick="@Html.Raw("OpenPopUpEntity1M(this,'PopupBulkOperation','Document','dvPopupBulkOperation','" + Url.Action("Index", "FileDocument", new { BulkOperation = "multiple", BulkAssociate = true, UrlReferrer = BackUrl, AssociatedType = ViewData["AssociatedType"], HostingEntity = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), TS = DateTime.Now }) + "')")">
+				<button class="btn btn-default tip-top" data-placement="top" data-original-title="Associate Document with @GeneratorBase.MVC.Models.ModelConversion.GetDisplayNameOfEntity(ViewData["HostingEntity"].ToString())" style="padding:3px 5px;" data-toggle="modal" data-target="#dvPopupBulkOperation" onclick="@Html.Raw("OpenPopUpEntity1M(this,'PopupBulkOperation','Document','dvPopupBulkOperation','" + Url.Action("Index", "FileDocument", new { BulkOperation = "multiple", BulkAssociate = true, UrlReferrer = BackUrl, AssociatedType = ViewData["AssociatedType"], HostingEntity = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), TS = DateTime.Now,viewtype = Convert.ToString(ViewBag.TemplatesName) }) + "')")">
 					<span class="fam-chart-organisation"></span>
 				</button>
 			}
                 </div>
 				<div class="btn-group">
-			@if (User.Identity.IsAuthenticated && User != null && User.CanAdd("FileDocument"))
+
+				@if (User.Identity.IsAuthenticated && User != null && User.CanAdd("FileDocument"))
 			{
 				if (ViewData["HostingEntity"]==null)
 				{ 
@@ -149,33 +164,51 @@
            <span class="fa fa-wrench"></span> Bulk
         </a>
         <ul class="dropdown-menu" role="menu">
-	<li>
-	@if (User.Identity.IsAuthenticated && User != null &&  !User.CanUseVerb("BulkUpdate","FileDocument"))
-	{
-		<a data-placement="top" data-toggle="modal" data-target="#dvPopup"
-			onclick="@Html.Raw("OpenPopUpBulKUpdate('addPopup','Bulk Update Document','dvPopup','" + Url.Action("BulkUpdate", "FileDocument", new { UrlReferrer = BackUrl, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), TS = DateTime.Now }) + "')")">Update</a>
-	}
-	</li>
- <li>
-	 @if (User.Identity.IsAuthenticated && User != null && !User.CanUseVerb("BulkDelete","FileDocument"))
+ 
+	 @if (User.Identity.IsAuthenticated && User != null && User.CanDelete("FileDocument") && User.CanUseVerb("BulkDelete","FileDocument",User))
      {
-		<a onclick="PerformBulkOperation(this,'FileDocument','Bulk Delete','@Url.Action("DeleteBulk", "FileDocument")');">Delete</a>
-	 } </li>
+	 <li>
+		<a style="cursor:pointer;" onclick="PerformBulkOperation(this,'FileDocument','Bulk Delete','@Url.Action("DeleteBulk", "FileDocument")');">Delete</a>
+	 </li>
+	
+	 }
                         </ul>
                     </div>
+					 <div class="btn-group">
+                        <a class="btn btn-default dropdown-toggle tip-top" data-original-title="View Grid As" style="padding:3px 5px;" data-toggle="dropdown">
+                            <span class="fa fa fa-table"></span>
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu" role="menu" style="min-width:110px">
+                            <li>
+                                <a data-placement="top" style="cursor:pointer;"
+                                   onclick="@Html.Raw("LoadTabTemplate('FileDocument','" + Url.Action("Index", "FileDocument", new { UrlReferrer = BackUrl, AssociatedType = ViewData["AssociatedType"], HostingEntity = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), TS = DateTime.Now, viewtype = "IndexPartialGallery" }) + "')")">
+                                    <span class="fa fa-th"></span> Gallery
+                                </a>
+                            </li>
+                            <li>
+                                <a style="display:block; margin:0px;"
+                                   onclick="@Html.Raw("LoadTabTemplate('FileDocument','" + Url.Action("Index", "FileDocument", new { UrlReferrer = BackUrl, AssociatedType = ViewData["AssociatedType"], HostingEntity = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), TS = DateTime.Now, viewtype = "IndexPartialList" }) + "')")">
+                                    <span class="fa fa-list"></span> List
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+					
+
 				<div class="pull-right" style="width:250px;">
                         <div class="input-group">
                             @Html.TextBox("SearchStringFileDocument", ViewBag.CurrentFilter as string, null, new { @class = "form-control fixsearchbox", @value = ViewBag.Homeval, @placeholder = "Search" })
                             <div class="input-group-btn">
-                              <a id="FileDocumentSearch" onclick="SearchClick(event, 'FileDocument', '@Html.Raw(Url.Action("Index", "FileDocument", new { IsFilter = ViewData["IsFilter"], IsDeepSearch = false, searchString = "_SearchString", HostingEntity = Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]), SearchTimeStamp = DateTime.Now }))','@User.JavaScriptEncodedName');" data-original-title="Grid Search" class="btn btn-default btn-default tip-top" style="padding:3px 5px;"><span class="fam-zoom"></span></a>
+                              <a id="FileDocumentSearch" onclick="SearchClick(event, 'FileDocument', '@Html.Raw(Url.Action("Index", "FileDocument", new { IsFilter = ViewData["IsFilter"], IsDeepSearch = false, searchString = "_SearchString", HostingEntity = Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]),HideColumns = ViewData["HideColumns"], SearchTimeStamp = DateTime.Now.Ticks.ToString(),viewtype = Convert.ToString(ViewBag.TemplatesName) }))','@User.JavaScriptEncodedName');" data-original-title="Grid Search" class="btn btn-default btn-default tip-top" style="padding:3px 5px;"><span class="fam-zoom"></span></a>
  @if (ViewData["HostingEntity"]==null)
 	{ 
 			 <a href="@(Url.Action("SetFSearch", "FileDocument")+Request.Url.Query)" data-original-title="Faceted Search" class="btn btn-default btn-default tip-top" style="padding:3px 5px;"><span class="fam-page-find"></span></a>
 	}
-								<button id="FileDocumentCancel" type="button" class="btn btn-default btn-default collapse-data-btn tip-top" onclick="CancelSearch('FileDocument','@Html.Raw(Url.Action("Index", "FileDocument", new {IsFilter=ViewData["IsFilter"], HostingEntity = Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]), ClearSearchTimeStamp = DateTime.Now }))','@User.JavaScriptEncodedName')" data-original-title="Clear Search" data-placement="top" style="padding:3px 5px;">
+								<button id="FileDocumentCancel" type="button" class="btn btn-default btn-default collapse-data-btn tip-top" onclick="CancelSearch('FileDocument','@Html.Raw(Url.Action("Index", "FileDocument", new {IsFilter=ViewData["IsFilter"], HostingEntity = Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]), HideColumns = ViewData["HideColumns"], ClearSearchTimeStamp = DateTime.Now.Ticks.ToString(),viewtype = Convert.ToString(ViewBag.TemplatesName) }))','@User.JavaScriptEncodedName')" data-original-title="Clear Search" data-placement="top" style="padding:3px 5px;">
                                     <span class="fam-delete"></span>
                                 </button>
-                                <button id="FileDocumentSearchCancel" type="button" class="btn btn-default btn-default collapse-data-btn tip-top" onclick="CancelSearch('FileDocument','@Html.Raw(Url.Action("Index", "FileDocument", new {IsFilter=ViewData["IsFilter"], HostingEntity = Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]), ClearSearchTimeStamp = DateTime.Now }))','@User.JavaScriptEncodedName')" data-original-title="Refresh Grid" data-placement="top" style="padding:3px 5px;">
+                                <button id="FileDocumentSearchCancel" type="button" class="btn btn-default btn-default collapse-data-btn tip-top" onclick="CancelSearch('FileDocument','@Html.Raw(Url.Action("Index", "FileDocument", new {IsFilter=ViewData["IsFilter"], HostingEntity = Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]),HideColumns = ViewData["HideColumns"], ClearSearchTimeStamp = DateTime.Now.Ticks.ToString(),viewtype = Convert.ToString(ViewBag.TemplatesName)}))','@User.JavaScriptEncodedName')" data-original-title="Refresh Grid" data-placement="top" style="padding:3px 5px;">
                                     <span class="fam-arrow-refresh"></span>
                                 </button>
                             </div>
@@ -189,7 +222,7 @@
                             {
 			<div id="fsearchFileDocument" class="collapse MessageFSearch">
                         @Html.Raw(Html.Encode(ViewBag.SearchResult).Replace(Environment.NewLine, "<br/>"))
-						 <a href="@Url.Action("Index", "FileDocument")" style="margin-left:5px;float:right"><span class="glyphicon glyphicon-remove-sign"></span> Clear</a>
+						 <a href="@Url.Action("Index", "FileDocument",new{viewtype = Convert.ToString(ViewBag.TemplatesName)})" style="margin-left:5px;float:right"><span class="glyphicon glyphicon-remove-sign"></span> Clear</a>
 						  <a href="@(Url.Action("SetFSearch", "FileDocument")+Request.Url.Query)" style="float:right" ><span class="glyphicon glyphicon-edit"></span> Modify</a>
             </div>
 	}
@@ -199,14 +232,18 @@
         <table class="table table-striped table-bordered table-hover table-condensed">
             <thead>
                 <tr>
+
 	 <th class="col0" style="width:20px;">
 		<input type="checkbox" class="tip-top" data-placement="top" data-original-title="Select All" onclick="SelectAllRows(this);" />
         @Html.Hidden("SelectedItems")
 	</th>
+
 					<th class="col1" style="width:70px;">Actions</th>
 @if(User.CanView("FileDocument","DocumentName") )
 {	
-			<th class="col2">@Html.ActionLink("Document Name", ActionNameUrl, "FileDocument",getSortHtmlAttributes("DocumentName", false, null, false),new {  @onclick = "SortLinkClick(event,'FileDocument');" }) 
+			var SortPropertyName = EntityReflector.Properties.FirstOrDefault(q => q.Name == "DocumentName");
+			<th class="col2">
+			@Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "FileDocument",getSortHtmlAttributes("DocumentName", false, null, false),new {  @onclick = "SortLinkClick(event,'FileDocument');" }) 
 				@if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "DocumentName")
                 {<i class="fa fa-sort-desc"></i>}
                 @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "DocumentName")
@@ -215,7 +252,9 @@
 }
 @if(User.CanView("FileDocument","Description") )
 {	
-			<th class="col3">@Html.ActionLink("Description", ActionNameUrl, "FileDocument",getSortHtmlAttributes("Description", false, null, false),new {  @onclick = "SortLinkClick(event,'FileDocument');" }) 
+			var SortPropertyName = EntityReflector.Properties.FirstOrDefault(q => q.Name == "Description");
+			<th class="col3">
+			@Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "FileDocument",getSortHtmlAttributes("Description", false, null, false),new {  @onclick = "SortLinkClick(event,'FileDocument');" }) 
 				@if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "Description")
                 {<i class="fa fa-sort-desc"></i>}
                 @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "Description")
@@ -224,7 +263,9 @@
 }
 @if(User.CanView("FileDocument","AttachDocument") && User.CanView("Document"))
 {	
-			<th class="col4">@Html.ActionLink("Attach Document", ActionNameUrl, "FileDocument",getSortHtmlAttributes("AttachDocument", false, null, false),new {  @onclick = "SortLinkClick(event,'FileDocument');" }) 
+			var SortPropertyName = EntityReflector.Properties.FirstOrDefault(q => q.Name == "AttachDocument");
+			<th class="col4">
+			@Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "FileDocument",getSortHtmlAttributes("AttachDocument", false, null, false),new {  @onclick = "SortLinkClick(event,'FileDocument');" }) 
 				@if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "AttachDocument")
                 {<i class="fa fa-sort-desc"></i>}
                 @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "AttachDocument")
@@ -233,7 +274,9 @@
 }
 @if(User.CanView("FileDocument","DateCreated") )
 {	
-			<th class="col5">@Html.ActionLink("Created", ActionNameUrl, "FileDocument",getSortHtmlAttributes("DateCreated", false, null, false),new {  @onclick = "SortLinkClick(event,'FileDocument');" }) 
+			var SortPropertyName = EntityReflector.Properties.FirstOrDefault(q => q.Name == "DateCreated");
+			<th class="col5">
+			@Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "FileDocument",getSortHtmlAttributes("DateCreated", false, null, false),new {  @onclick = "SortLinkClick(event,'FileDocument');" }) 
 				@if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "DateCreated")
                 {<i class="fa fa-sort-desc"></i>}
                 @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "DateCreated")
@@ -242,7 +285,9 @@
 }
 @if(User.CanView("FileDocument","DateLastUpdated") )
 {	
-			<th class="col6">@Html.ActionLink("Last Updated", ActionNameUrl, "FileDocument",getSortHtmlAttributes("DateLastUpdated", false, null, false),new {  @onclick = "SortLinkClick(event,'FileDocument');" }) 
+			var SortPropertyName = EntityReflector.Properties.FirstOrDefault(q => q.Name == "DateLastUpdated");
+			<th class="col6">
+			@Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "FileDocument",getSortHtmlAttributes("DateLastUpdated", false, null, false),new {  @onclick = "SortLinkClick(event,'FileDocument');" }) 
 				@if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "DateLastUpdated")
                 {<i class="fa fa-sort-desc"></i>}
                 @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "DateLastUpdated")
@@ -250,11 +295,41 @@
 			</th>
 }
        </tr>
-@foreach (var item in Model) {
-      <tr ondblclick="DoubleClickRow(@item.Id,'@Url.Action("Details", "FileDocument", new { id = item.Id, UrlReferrer = BackUrl, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null)');">
+@{ bool isFirst = true; var oldKey = string.Empty; }
+                                @foreach (var item in Model)
+                                {
+                                    if (ViewBag.IsGroupBy != null && Convert.ToBoolean(ViewBag.IsGroupBy))
+                                    {
+                                        var groupKey = item.m_DisplayValue;
+                                        if (oldKey != groupKey)
+                                        {
+                                            isFirst = true;
+                                            oldKey = item.m_DisplayValue;
+                                        }
+                                        if (isFirst || (string.IsNullOrEmpty(oldKey)))
+                                        {
+                                            isFirst = false;
+											var groupCnt = Model.Where(grp => grp.m_DisplayValue == groupKey).Count();
+                                            string groupString = string.Empty;
+                                            if (groupCnt > 1)
+                                            {
+                                                groupString = "(" + groupCnt + " Records)";
+                                            }
+                                            else
+                                            {
+                                                groupString = "(" + groupCnt + " Record)";
+                                            }
+                                            <tr>
+                                                <td colspan="7" style="background: #EDF5FA; font-weight:bold"> @groupKey @groupString</td>
+                                            </tr>
+                                        }
+                                    }
+      <tr  ondblclick="DoubleClickRow(@item.Id,'@Url.Action("Details", "FileDocument", new { id = item.Id, UrlReferrer = BackUrl, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null)');">
+	
 	 <td>
 			 <input type="checkbox" id="@item.Id" onclick="SelectForBulkOperation(this,'@item.Id');" />
 	</td>
+	
 		   <td>
 	   <div style="width:60px; margin-top:-2px;">
 		<div class="btn-group" style="position:absolute;">
@@ -266,45 +341,49 @@
 				<li>
                     <a href="@Url.Action("Details", "FileDocument", new { id = item.Id, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"])  }, null)"><i class="glyphicon glyphicon-eye-open"></i>  View</a>
                 </li>
-				 <li>
-					@if (User.CanEditItem("FileDocument", item, User))
+								@if (User.CanEdit("FileDocument"))
 					{
-						<a data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Edit Document','dvPopup','" + Url.Action("EditQuick", "FileDocument", new
+				 <li>
+					
+						<a   id='aBtnQuickEditFileDocument_@item.Id' style="cursor:pointer;" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Edit Document','dvPopup','" + Url.Action("EditQuick", "FileDocument", new
 																			{
 																				id = item.Id,
 																				UrlReferrer = Request.Url,
 																				AssociatedType = ViewData["AssociatedType"],
 																				HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]),
 																				HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),
-																				TS = DateTime.Now
-																			}) + "')")"> <i class="glyphicon glyphicon-edit"></i> Quick Edit</a>
-					}
+																				TS = DateTime.Now,viewtype = Convert.ToString(ViewBag.TemplatesName)
+																			}) + "')")"> <i class="fa fa-pencil"></i> Quick Edit</a>
+					
 				</li>
+				}
+				@if (User.CanEdit("FileDocument"))
+                {
 				<li>
-                    @if (User.CanEditItem("FileDocument", item, User))
-                    {
-                        <a href="@Url.Action("Edit","FileDocument", new { id = item.Id,  UrlReferrer = BackUrl, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) },null)"><i class="glyphicon glyphicon-edit"></i>  Edit</a>
-                    }
+                        <a href="@Url.Action("Edit","FileDocument", new { id = item.Id,  UrlReferrer = BackUrl, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),viewtype = Convert.ToString(ViewBag.TemplatesName) },null)"><i class="glyphicon glyphicon-edit"></i>  Edit</a>
+                    
                 </li>             
+				}
+			@if (User.CanDelete("FileDocument"))
+                 {
+				 <li class="divider" style="clear:both"></li>
 				<li>
-                    @if (User.CanDeleteItem("FileDocument", item, User))
-                    {
-                        <a href="@Url.Action("Delete", "FileDocument", new { id = item.Id, UrlReferrer = BackUrl, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null)"><i class="glyphicon glyphicon-remove-sign"></i>  Delete</a>
-                    }
+                    <a href="@Url.Action("Delete", "FileDocument", new { id = item.Id, UrlReferrer = BackUrl, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),viewtype = Convert.ToString(ViewBag.TemplatesName) }, null)"><i class="glyphicon glyphicon-remove-sign" style="color: #E7574B;"></i> Delete</a>
                 </li>
+				}
 			</ul>
 		</div>
 		</div>
 	</td>
 	@if(User.CanView("FileDocument","DocumentName"))
 {
-		<td>
+		<td onclick="OpenQuickEdit('FileDocument','@item.Id',event);">
             @Html.DisplayFor(modelItem => item.DocumentName)
         </td>
 }
 @if(User.CanView("FileDocument","Description"))
 {
-		<td>
+		<td onclick="OpenQuickEdit('FileDocument','@item.Id',event);">
             @Html.DisplayFor(modelItem => item.Description)
         </td>
 }
@@ -312,22 +391,24 @@
 {
 		<td>
 		 @if(!string.IsNullOrEmpty(Html.DisplayFor(modelItem => item.AttachDocument).ToString())){
-		 			<a href="@(Url.Content("~/Files/") + Url.Content(Html.DisplayFor(modelItem => item.AttachDocument).ToString()))" @("download = " + Html.DisplayFor(modelItem => item.AttachDocument).ToString())>Download</a>
-		  }else{ <label>NA</label>} 
+		 						@Html.ActionLink(item.AttachDocument, "Download", new { filename= item.AttachDocument}) 
+			 
+							  }else{ <label>NA</label>} 
         </td>
 		}
-@if(User.CanView("FileDocument","DateCreated"))
-{
-		<td>
-            @Html.DisplayFor(modelItem => item.DateCreated)
-        </td>
-}
-@if(User.CanView("FileDocument","DateLastUpdated"))
-{
-		<td>
-            @Html.DisplayFor(modelItem => item.DateLastUpdated)
-        </td>
-}
+		@if(User.CanView("FileDocument","DateCreated"))
+			{
+			<td onclick="OpenQuickEdit('FileDocument','@item.Id',event);" id=@Html.Raw("'timeDateCreated" + item.Id + "'")>
+			</td>
+			 @Html.Raw("<script> $(function () {$('timeDateCreated" + item.Id + "').datetimepickerIndex({divid:'timeDateCreated" + item.Id + "',format: 'MM/DD/YYYY hh:mm',val:'" +  @Html.DisplayFor(modelItem => item.DateCreated) + "'})});</script>")        
+			}
+  		@if(User.CanView("FileDocument","DateLastUpdated"))
+			{
+			<td onclick="OpenQuickEdit('FileDocument','@item.Id',event);" id=@Html.Raw("'timeDateLastUpdated" + item.Id + "'")>
+			</td>
+			 @Html.Raw("<script> $(function () {$('timeDateLastUpdated" + item.Id + "').datetimepickerIndex({divid:'timeDateLastUpdated" + item.Id + "',format: 'MM/DD/YYYY hh:mm',val:'" +  @Html.DisplayFor(modelItem => item.DateLastUpdated) + "'})});</script>")        
+			}
+  
                                 </tr>
                             }
                     </table>
@@ -352,7 +433,7 @@
 {
 		<p><span class="text-primary"> Attach Document </span> : <span>
 		 @if(!string.IsNullOrEmpty(Html.DisplayFor(modelItem => item.AttachDocument).ToString())){
-			<a href="@(Url.Content("~/Files/") + Url.Content(Html.DisplayFor(modelItem => item.AttachDocument).ToString()))" @("download = " + Html.DisplayFor(modelItem => item.AttachDocument).ToString())>Download</a>
+						@Html.ActionLink("Download", "Download", new { filename = item.AttachDocument }) 
         }
 		else{<label>NA</label>}
 		</span> </p>
@@ -373,13 +454,13 @@
 @Html.ActionLink("View", "Details","FileDocument", new { id = item.Id },null)
 </span>
 <span class="label label-warning text-linkwhite"> 
-@if (User.CanEditItem("FileDocument", item, User))
+@if (User.CanEdit("FileDocument"))
 				 {
 					@Html.ActionLink("Edit", "Edit","FileDocument", new { id = item.Id, UrlReferrer = BackUrl, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) },null)  
 				 }
 				 </span>
 				<span class="label label-danger text-linkwhite"> 
-				@if (User.CanDeleteItem("FileDocument", item, User))
+				@if (User.CanDelete("FileDocument"))
 				 {
 					@Html.ActionLink("Delete", "Delete", "FileDocument", new { id = item.Id, UrlReferrer = BackUrl, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null)    
 				 }
@@ -401,6 +482,13 @@
 							 getSortHtmlAttributes(ViewBag.CurrentSort, ViewBag.Pages == 1 ? false : true,
 							 null, false), null)) })
 							<span style="text-align:right;"> Total Count: @(Model.TotalItemCount)</span>
+							<script>
+                                    $(document).ready(function () {
+                                        $.validator.setDefaults({
+                                            ignore: "#pagesizelistFileDocument"
+                                        })
+                                    }); 
+                                </script>
                         </div>
                     </div>
                 }
@@ -409,3 +497,4 @@
     </div> 
  </div>
 </div>
+

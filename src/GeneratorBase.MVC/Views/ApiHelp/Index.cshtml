@@ -1,0 +1,46 @@
+@using System.Web.Http
+@using System.Web.Http.Description
+@using System.Collections.ObjectModel
+@using GeneratorBase.MVC.Models
+@model Collection<ApiDescription>
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    
+    ViewBag.Title = "ASP.NET Web API Help Page";
+    // Group APIs by controller
+    ILookup<string, ApiDescription> apiGroups = Model.ToLookup(api => api.ActionDescriptor.ControllerDescriptor.ControllerName);
+}
+
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-title">
+            <i class="glyphicon glyphicon-thumbs-up text-primary" style="margin-bottom:-20px;"></i> Web Api Access for <i class="glyphicon glyphicon-chevron-right small"></i>  <span>@User.Name</span>
+            @if (@ViewData["Token"] != null)
+            {
+                <span class="pull-right"> Token : @ViewData["Token"]</span>
+            }
+        </h1>
+       
+    </div>
+</div>
+<div class="row">
+    <section class="content-wrapper main-content clear-fix">
+        @foreach (var group in apiGroups.OrderBy(p => p.Key))
+        {
+            var name = group.Key;
+            var modelentity = ModelReflector.Entities.FirstOrDefault(p => p.Name == group.Key);
+            if (modelentity != null)
+            {
+                name = modelentity.DisplayName;
+            }
+           <label>@name</label>
+            @Html.DisplayFor(m => group, "ApiGroup",ViewData["Token"])
+
+        }
+    </section>
+</div>
+
+@section Scripts {
+    <link type="text/css" href="~/Content/HelpPage.css" rel="stylesheet" />
+}

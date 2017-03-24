@@ -1,0 +1,326 @@
+﻿@model GeneratorBase.MVC.Models.T_Address
+@using PagedList;
+@{
+    ViewBag.Title = "Edit Address";
+	var EditPermission = User.CanEditItem("T_Address", Model, User);
+	var DeletePermission = User.CanDeleteItem("T_Address", Model, User);
+	Layout = null;
+}
+@functions {
+    object getHtmlAttributes(string Property)
+    {
+        if (User.CanEdit("T_Address", Property))
+        {
+            return new { @class = "form-control" };
+        } return new { @class = "form-control", @readonly = "readonly" };
+    }
+}
+<script>
+    $(document).ready(function () {
+        try {
+            var hostingEntityName = "";
+            if ('@Convert.ToString(ViewData["AssociatedType"])' != null) {
+                hostingEntityName = '@Convert.ToString(ViewData["AssociatedType"])';
+				if( '@Convert.ToBoolean(ViewData["IsFilter"])'!="False")
+				$('#' + hostingEntityName + 'ID').attr("lock","true");
+				$('#' + hostingEntityName + 'ID').trigger("change");
+				 $("input[type='radio'][name='" + hostingEntityName + "ID']").each(function () {
+                    if (!this.checked)
+                        this.closest("li").style.display = "none";
+                });		
+						
+            }
+        }
+        catch (ex) { }
+    });
+</script>
+
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_AddressIsHiddenRule))
+    {
+        @Html.Raw(ViewBag.T_AddressIsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_AddressIsSetValueUIRule))
+    {
+        @Html.Raw(ViewBag.T_AddressIsSetValueUIRule);
+    }
+}
+<link href="~/Content/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+<div class="row">
+    <div class="col-lg-12">
+        @*<label id="ErrMsg" class="text-primary small pull-right" style="color:red; vertical-align:middle; font-weight:100;"></label>*@
+		<input type="hidden" id="ErrMsg" />
+		<div id="errorContainerEdit" style="display: none">
+            <div id="errorsMsgEdit"></div>
+            <div id="errorsEdit"></div>
+        </div>
+      <h2 class="text-primary">
+	  <span id="HostingEntityDisplayValue">@Html.DisplayFor(model => model.DisplayValue)</span>
+	   </h2>
+    </div>
+    <!-- /.col-lg-12 -->
+	<div id="divDisplayBRmsgBeforeSaveProp" style="display:none;">
+</div>
+<div id="divDisplayBRmsgMandatory" style="display:none;">
+</div>
+<div id="divDisplayLockRecord" style="display:none;">
+</div>
+<div id="divDisplayBRReadOnly" style="display:none;">
+</div>
+<br/>
+</div>
+	
+@using (Html.BeginForm("EditQuick","T_Address",new {UrlReferrer =Convert.ToString(ViewData["T_AddressParentUrl"])}, FormMethod.Post, new { enctype = "multipart/form-data", @id = "frmQEditT_Address" }))
+{
+     Html.ValidationSummary(true);
+                Html.EnableClientValidation();
+    @Html.HiddenFor(model => model.Id)
+	@Html.HiddenFor(model => model.ConcurrencyKey)
+	 <div class="row">
+                <div class="col-md-12 col-sm-12 col-xs-12" style="padding:0px; margin:0px;">
+                    <div class="panel panel-default AppForm">
+						<div class="panel-body">
+						    @Html.Hidden("AssociatedEntity", Convert.ToString(ViewData["AssociatedType"]))
+											<div class="row">
+				@if(User.CanView("T_Address","T_AddressLine1"))
+{
+
+
+					<div class='col-sm-6 col-md-6 col-xs-12' id="dvT_AddressLine1">
+							<div class='form-group' title="AddressLine1">
+								<label  >@Html.LabelFor(model => model.T_AddressLine1)   </label>
+                                
+											
+									@Html.TextBoxFor(model => model.T_AddressLine1,  getHtmlAttributes("T_AddressLine1"))
+									@Html.ValidationMessageFor(model => model.T_AddressLine1)
+									
+								
+                             </div>
+						</div>
+
+				
+					
+
+
+} else { @Html.HiddenFor(model => model.T_AddressLine1, new { @class = "form-control" })}
+@if(User.CanView("T_Address","T_AddressLine2"))
+{
+
+
+					<div class='col-sm-6 col-md-6 col-xs-12' id="dvT_AddressLine2">
+							<div class='form-group' title="AddressLine2">
+								<label  >@Html.LabelFor(model => model.T_AddressLine2)   </label>
+                                
+											
+									@Html.TextBoxFor(model => model.T_AddressLine2,  getHtmlAttributes("T_AddressLine2"))
+									@Html.ValidationMessageFor(model => model.T_AddressLine2)
+									
+								
+                             </div>
+						</div>
+
+				
+					
+
+
+} else { @Html.HiddenFor(model => model.T_AddressLine2, new { @class = "form-control" })}
+@if(User.CanView("T_Address","T_ZipCode"))
+{
+
+
+					<div class='col-sm-6 col-md-6 col-xs-12' id="dvT_ZipCode">
+							<div class='form-group' title="ZipCode">
+								<label  >@Html.LabelFor(model => model.T_ZipCode)   </label>
+                                
+											
+									@Html.TextBoxFor(model => model.T_ZipCode,  getHtmlAttributes("T_ZipCode"))
+									@Html.ValidationMessageFor(model => model.T_ZipCode)
+									
+								
+                             </div>
+						</div>
+
+				
+					
+
+
+} else { @Html.HiddenFor(model => model.T_ZipCode, new { @class = "form-control" })}
+				@if(User.CanView("T_Address","T_AddressCountryID"))
+				{
+
+				   <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_AddressCountryID">
+                        <div class='form-group'>
+                            <label  >@Html.LabelFor(model => model.T_AddressCountryID) </label>
+							
+							<div class="input-group" style="width:100%;">									
+									@if (User.CanEdit("T_Address", "T_AddressCountryID"))
+		{
+			@Html.DropDownList("T_AddressCountryID", null, "-- Select --", new {     @onchange = Html.Raw("ClearChildDD('T_AddressStateID',this,'false');ClearChildDD('T_AddressCityID',this,'false');") ,  @class = "chosen-select form-control", @HostingName = "T_Country", @dataurl = Url.Action("GetAllValue", "T_Country",new { caller = "T_AddressCountryID" }) })
+		}
+		else
+		{
+			@Html.HiddenFor(model => model.T_AddressCountryID, new { @class = "form-control" })
+			@Html.DropDownList("T_AddressCountryID", null, "-- Select --", new {    @onchange = Html.Raw("ClearChildDD('T_AddressStateID',this,'false');ClearChildDD('T_AddressCityID',this,'false');") ,  @class = "chosen-select form-control", @disabled="disabled", @HostingName = "T_Country", @dataurl = Url.Action("GetAllValue", "T_Country",new { caller = "T_AddressCountryID" }) })
+		}
+                                @Html.ValidationMessageFor(model => model.T_AddressCountryID)
+								 
+							</div>
+							
+                        </div>
+                    </div>
+                 
+					} else { @Html.HiddenFor(model => model.T_AddressCountryID, new { @class = "form-control" })}
+				@if(User.CanView("T_Address","T_AddressStateID"))
+				{
+
+				   <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_AddressStateID">
+                        <div class='form-group'>
+                            <label  >@Html.LabelFor(model => model.T_AddressStateID) </label>
+							
+							<div class="input-group" style="width:100%;">									
+									@if (User.CanEdit("T_Address", "T_AddressStateID"))
+		{
+			@Html.DropDownList("T_AddressStateID", null, "-- Select --", new {   @ParentDD = "T_AddressCountryID" , @AssoNameWithParent = "T_StateCountryID" ,  @onchange = Html.Raw("ClearChildDD('T_AddressCityID',this,'false');") ,  @class = "chosen-select form-control", @HostingName = "T_State", @dataurl = Url.Action("GetAllValue", "T_State",new { caller = "T_AddressStateID" }) })
+		}
+		else
+		{
+			@Html.HiddenFor(model => model.T_AddressStateID, new { @class = "form-control" })
+			@Html.DropDownList("T_AddressStateID", null, "-- Select --", new {  @ParentDD = "T_AddressCountryID" , @AssoNameWithParent = "T_StateCountryID" ,  @onchange = Html.Raw("ClearChildDD('T_AddressCityID',this,'false');") ,  @class = "chosen-select form-control", @disabled="disabled", @HostingName = "T_State", @dataurl = Url.Action("GetAllValue", "T_State",new { caller = "T_AddressStateID" }) })
+		}
+                                @Html.ValidationMessageFor(model => model.T_AddressStateID)
+								 
+							</div>
+							
+                        </div>
+                    </div>
+                 
+					} else { @Html.HiddenFor(model => model.T_AddressStateID, new { @class = "form-control" })}
+				@if(User.CanView("T_Address","T_AddressCityID"))
+				{
+
+				   <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_AddressCityID">
+                        <div class='form-group'>
+                            <label  >@Html.LabelFor(model => model.T_AddressCityID) </label>
+							
+							<div class="input-group" style="width:100%;">									
+									@if (User.CanEdit("T_Address", "T_AddressCityID"))
+		{
+			@Html.DropDownList("T_AddressCityID", null, "-- Select --", new {   @ParentDD = "T_AddressCountryID,T_AddressStateID" , @AssoNameWithParent = "T_CityCountryID,T_CityStateID" ,   @class = "chosen-select form-control", @HostingName = "T_City", @dataurl = Url.Action("GetAllValue", "T_City",new { caller = "T_AddressCityID" }) })
+		}
+		else
+		{
+			@Html.HiddenFor(model => model.T_AddressCityID, new { @class = "form-control" })
+			@Html.DropDownList("T_AddressCityID", null, "-- Select --", new {  @ParentDD = "T_AddressCountryID,T_AddressStateID" , @AssoNameWithParent = "T_CityCountryID,T_CityStateID" ,   @class = "chosen-select form-control", @disabled="disabled", @HostingName = "T_City", @dataurl = Url.Action("GetAllValue", "T_City",new { caller = "T_AddressCityID" }) })
+		}
+                                @Html.ValidationMessageFor(model => model.T_AddressCityID)
+								 
+							</div>
+							
+                        </div>
+                    </div>
+                 
+					} else { @Html.HiddenFor(model => model.T_AddressCityID, new { @class = "form-control" })}
+       </div>
+
+
+	            </div>
+        </div>
+	</div>
+</div>
+		 @Html.AntiForgeryToken();
+		 var businessrule1 = User.businessrules.Where(p => p.EntityName == "T_Address").ToList();
+		 var lstinlineentityname = "";
+		 var lstinlineassocdispname ="";
+		 var lstinlineassocname = "";
+		 <button id="CancelQuickAdd" type="button" class="btn btn-default btn-sm" data-dismiss="modal" aria-hidden="true">Cancel</button>
+		 if (EditPermission)
+         {
+			    <input type="submit" name="command" value="Save" class="btn btn-primary btn-sm" onclick="QuickEditFromGrid(event,true,'T_Address','@ViewData["AssociatedType"]',false,'@businessrule1',@businessrule1.Count,'OnEdit','ErrMsg',false,'@lstinlineassocname','@lstinlineassocdispname','@lstinlineentityname');" />
+				<input type="hidden" name="hdncommand" value="" />
+  		 }	
+}
+<script src="@Url.Content("~/bundles/jqueryval")" type="text/javascript"></script>
+<script src="@Url.Content("~/bundles/common3")" type="text/javascript"></script>
+<script type="text/javascript">
+    var config = {
+        '.chosen-select': {},
+        '.chosen-select-deselect': { allow_single_deselect: true },
+        '.chosen-select-no-single': { disable_search_threshold: 10 },
+        '.chosen-select-no-results': { no_results_text: 'Oops, nothing found!' },
+        '.chosen-select-width': { width: "95%" }
+    }
+    for (var selector in config) {
+        $(selector).chosen(config[selector]);
+    }
+</script>
+<script>
+    $("input[type='submit']").click(function () {
+        var $this = $(this);
+        $('input:hidden[name="hdncommand"]').val($this.val());
+    });
+</script>
+@{
+var businessrule = User.businessrules.Where(p => p.EntityName == "T_Address").ToList();
+
+
+	
+
+
+if ((businessrule != null && businessrule.Count > 0) )
+{
+    <script>
+    $(document).ready(function () {
+	document.getElementById("ErrMsg").innerHTML = "";
+		 var flag = true;
+                var dataurl = "";
+                var form = "";
+                var inlinecount = "0";
+
+				 form = $("#frmQEditT_Address").serialize();
+					 dataurl = "@Url.Action("businessruletype", "T_Address", new { ruleType = "OnEdit"})";
+            ApplyBusinessRuleOnPageLoad(dataurl, "T_Address", false, "ErrMsg", form);
+			//business rules on inline associations
+    });
+</script>
+<script>
+    $("form").submit(function () {
+	document.getElementById("ErrMsg").innerHTML = "";
+            var flag = true;
+		var form = $("#frmQEditT_Address").serialize();
+		    
+				 $(document).ready(function () {
+					$("input[type='submit']").on('blur', function () {
+					$("input[type='submit']").removeAttr('disabled');
+					});
+				});
+			});
+</script>
+}
+ 
+}
+
+<script type='text/javascript'>
+    $(document).ready(function () {
+        try {
+            document.getElementsByTagName("body")[0].focus();
+            $("#addPopup").removeAttr("tabindex");
+            var cltcoll = $("#dvPopup").find('input[type=text]:not([class=hidden]):not([readonly]),textarea:not([readonly])')
+            var cltid = "";
+            $(cltcoll).each(function () {
+			  if ($(this).attr("id") == undefined)
+                    return
+                var dvhidden = $("#dv" + $(this).attr("id"));
+                if (!(dvhidden.css('display') == 'none')) {
+                    cltid = $(this);
+                    return false;
+                }
+            });
+            if (cltid != "" && cltid != undefined)
+                setTimeout(function () { $(cltid).focus(); }, 500)
+        }
+        catch (ex) { }
+    });
+</script>
+

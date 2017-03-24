@@ -19,20 +19,20 @@
             }
             // return false;
             if (elementText != undefined && elementText.length > 0) {
-                OpenNotes(prototypeurl, elementText.trim(), elementType.trim(), event);
+                OpenNotes(prototypeurl, elementText.trim(), elementType.trim(), e);
             }
             else
                 if (elementId != undefined && elementId.length > 0)
-                    OpenNotes(prototypeurl, elementId.trim(), elementType.trim(), event);
+                    OpenNotes(prototypeurl, elementId.trim(), elementType.trim(), e);
                 else
                     if (elementValue != undefined && elementValue.length > 0) {
                         if (btnType != null) {
                             elementType = btnType;
                         }
-                        OpenNotes(prototypeurl, elementValue.trim(), elementType.trim(), event);
+                        OpenNotes(prototypeurl, elementValue.trim(), elementType.trim(), e);
                     }
                     else {
-                        OpenNotes(prototypeurl, "", "", event);
+                        OpenNotes(prototypeurl, "", "", e);
                     }
         }
         else if (e.which == 1)

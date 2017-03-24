@@ -24,26 +24,27 @@ namespace GeneratorBase.MVC
            "~/Scripts/Common1/analytics.js",
            "~/Scripts/Common1/html5shiv.js",
            "~/Scripts/Common1/custom-forms.js",
-           "~/Scripts/Common1/bootstrap-multiselect.js",
-           "~/Scripts/Common1/bwizard.js",
-            "~/Scripts/Common1/jquery.cookie.js",
-            "~/Scripts/Common1/jquery.are-you-sure.js"
-            ));
+            "~/Scripts/Common1/jquery.cookie.js"));
+
             bundles.Add(new ScriptBundle("~/bundles/common2").Include(
            "~/Scripts/Common2/responsive2.js",
            "~/Scripts/Common2/jquery.are-you-sure.js",
            "~/Scripts/Common2/moment-2.4.0.js",
            "~/Scripts/Common2/bootstrap-datetimepicker.js",
-           "~/Scripts/Common2/jquery.metisMenu.js",
             "~/Scripts/Common2/dashboard.js",
             "~/Scripts/Common2/bootstrap-multiselect.js",
             "~/Scripts/Common2/bwizard.js",
- 	    "~/Scripts/Common2/jquery.prettyPhoto.js"
-            ));
+            "~/Scripts/Common2/jquery.prettyPhoto.js",
+            "~/Scripts/Common2/businessrule.js"));
+
             bundles.Add(new ScriptBundle("~/bundles/common3").Include(
             "~/Scripts/Common3/jquery.maskedinput.js",
+            "~/Scripts/Common3/currencyformat.js",
             "~/Scripts/Common3/jquery.ba-throttle-debounce.min.js",
             "~/Scripts/Common3/chosen.jquery.js"));
+
+            bundles.Add(new ScriptBundle("~/bundles/select2js").Include("~/Scripts/select2.full.js"));
+
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/bootstrap-datetimepicker.min.css",
                       "~/Content/bootstrap-multiselect.css",
@@ -57,6 +58,11 @@ namespace GeneratorBase.MVC
                       "~/Content/font-awesome/css/*.css"));
             bundles.Add(new StyleBundle("~/Content/csstheme").Include(
                      "~/Content/themes/base/*.css"));
+
+            bundles.Add(new StyleBundle("~/Content/select2css").Include("~/Content/select2.min.css"));
+
+            bundles.Add(new ScriptBundle("~/bundles/WebApi").Include(
+                      "~/ScriptWebApi/*.js"));
             //BundleTable.EnableOptimizations = true;
         }
     }

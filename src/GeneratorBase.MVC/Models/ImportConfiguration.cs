@@ -52,7 +52,7 @@ namespace GeneratorBase.MVC.Models
         public bool IsDefaultMapping { get; set; }
         public string getDisplayValue() {
             var dispValue = Convert.ToString(this.Name);
-            dispValue = dispValue.TrimEnd(" - ".ToCharArray());
+            //dispValue = dispValue.TrimEnd(" - ".ToCharArray());
             this.m_DisplayValue = dispValue;
             return dispValue;
         }

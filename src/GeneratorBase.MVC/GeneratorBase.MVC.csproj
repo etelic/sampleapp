@@ -20,6 +20,8 @@
     <IISExpressAnonymousAuthentication>enabled</IISExpressAnonymousAuthentication>
     <IISExpressWindowsAuthentication>disabled</IISExpressWindowsAuthentication>
     <IISExpressUseClassicPipelineMode>false</IISExpressUseClassicPipelineMode>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <UseGlobalApplicationHostFile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -29,7 +31,6 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-<GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -38,11 +39,16 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-<GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Antlr3.Runtime">
       <HintPath>..\packages\Antlr.3.5.0.2\lib\Antlr3.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="AttributeRouting.Web.Http">
+      <HintPath>..\packages\AttributeRouting.Core.Http.3.5.6\lib\net40\AttributeRouting.Web.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="AttributeRouting.Web.Http.WebHost">
+      <HintPath>..\packages\AttributeRouting.WebApi.3.5.6\lib\net40\AttributeRouting.Web.Http.WebHost.dll</HintPath>
     </Reference>
     <Reference Include="DocX, Version=1.0.0.18, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -77,6 +83,27 @@
     </Reference>
     <Reference Include="EntityFramework.SqlServer">
       <HintPath>..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="Glimpse.Ado">
+      <HintPath>..\packages\Glimpse.Ado.1.7.3\lib\net45\Glimpse.Ado.dll</HintPath>
+    </Reference>
+    <Reference Include="Glimpse.AspNet">
+      <HintPath>..\packages\Glimpse.AspNet.1.9.1\lib\net45\Glimpse.AspNet.dll</HintPath>
+    </Reference>
+    <Reference Include="Glimpse.Core">
+      <HintPath>..\packages\Glimpse.1.8.6\lib\net45\Glimpse.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Glimpse.EF6">
+      <HintPath>..\packages\Glimpse.EF6.1.6.5\lib\net45\Glimpse.EF6.dll</HintPath>
+    </Reference>
+    <Reference Include="Glimpse.Mvc5">
+      <HintPath>..\packages\Glimpse.Mvc5.1.5.3\lib\net45\Glimpse.Mvc5.dll</HintPath>
+    </Reference>
+    <Reference Include="Glimpse.WebForms">
+      <HintPath>..\packages\Glimpse.WebForms.1.1.1\lib\net45\Glimpse.WebForms.dll</HintPath>
+    </Reference>
+    <Reference Include="ICSharpCode.SharpZipLib">
+      <HintPath>..\packages\ICSharpCode.SharpZipLib.dll</HintPath>
     </Reference>
     <Reference Include="InteractivePreGeneratedViews">
       <HintPath>..\packages\EFInteractiveViews.1.0.1\lib\net45\InteractivePreGeneratedViews.dll</HintPath>
@@ -139,7 +166,9 @@
     <Reference Include="Microsoft.ReportViewer.WebForms, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.VisualBasic" />
+    <Reference Include="Microsoft.VisualBasic">
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.Web.WebPages.OAuth, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Microsoft.AspNet.WebPages.OAuth.3.2.3-beta1\lib\net45\Microsoft.Web.WebPages.OAuth.dll</HintPath>
@@ -189,18 +218,24 @@
     <Reference Include="System.Json">
       <HintPath>..\packages\System.Json.4.0.20126.16343\lib\net40\System.Json.dll</HintPath>
     </Reference>
+    <Reference Include="System.Linq.Dynamic">
+      <HintPath>..\packages\System.Linq.Dynamic.1.0.6\lib\net40\System.Linq.Dynamic.dll</HintPath>
+    </Reference>
     <Reference Include="System.Net.Http.Extensions">
       <HintPath>..\packages\Microsoft.Net.Http.2.2.28\lib\net45\System.Net.Http.Extensions.dll</HintPath>
     </Reference>
-    <Reference Include="System.Net.Http.Formatting, Version=5.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+    <Reference Include="System.Net.Http.Formatting, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.0\lib\net45\System.Net.Http.Formatting.dll</HintPath>
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.3\lib\net45\System.Net.Http.Formatting.dll</HintPath>
     </Reference>
     <Reference Include="System.Net.Http.Primitives">
       <HintPath>..\packages\Microsoft.Net.Http.2.2.28\lib\net45\System.Net.Http.Primitives.dll</HintPath>
     </Reference>
     <Reference Include="System.Spatial, Version=5.6.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Spatial.5.6.0\lib\net40\System.Spatial.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.DataVisualization">
+      <Private>True</Private>
     </Reference>
     <Reference Include="System.Web.DynamicData">
       <Private>True</Private>
@@ -224,16 +259,16 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.2\lib\net45\System.Web.Helpers.dll</HintPath>
     </Reference>
-    <Reference Include="System.Web.Http, Version=5.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+    <Reference Include="System.Web.Http, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.0\lib\net45\System.Web.Http.dll</HintPath>
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.3\lib\net45\System.Web.Http.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.Http.OData">
       <HintPath>..\packages\Microsoft.AspNet.WebApi.OData.5.2.0\lib\net45\System.Web.Http.OData.dll</HintPath>
     </Reference>
-    <Reference Include="System.Web.Http.WebHost, Version=5.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+    <Reference Include="System.Web.Http.WebHost, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Microsoft.AspNet.WebApi.WebHost.5.2.0\lib\net45\System.Web.Http.WebHost.dll</HintPath>
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.WebHost.5.2.3\lib\net45\System.Web.Http.WebHost.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.Mvc, Version=5.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -295,6 +330,9 @@
     <Reference Include="System.Web.Optimization">
       <HintPath>..\packages\Microsoft.AspNet.Web.Optimization.1.1.1\lib\net40\System.Web.Optimization.dll</HintPath>
     </Reference>
+    <Reference Include="WebActivator">
+      <HintPath>..\packages\WebActivator.1.0.0.0\lib\WebActivator.dll</HintPath>
+    </Reference>
     <Reference Include="WebActivatorEx">
       <HintPath>..\packages\WebActivatorEx.2.0.5\lib\net40\WebActivatorEx.dll</HintPath>
     </Reference>
@@ -303,10 +341,23 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ApiController\ApiBaseController.cs" />
+    <Compile Include="ApiController\WebApi\ActionFilters\AuthorizationRequiredAttribute.cs" />
+    <Compile Include="ApiController\WebApi\AuthenticationController.cs" />
+    <Compile Include="ApiController\WebApi\DocumentApiController.cs" />
+    <Compile Include="ApiController\WebApi\Filters\ApiAuthenticationFilter.cs" />
+    <Compile Include="ApiController\WebApi\Filters\BasicAuthenticationIdentity.cs" />
+    <Compile Include="ApiController\WebApi\Filters\GenericAuthenticationFilter.cs" />
+    <Compile Include="ApiController\WebApi\TokenServicesController.cs" />
+    <Compile Include="ApiController\WebApi\UserServicesController.cs" />
     <Compile Include="App_Start\ActiveDirectoryLookup.cs" />
     <Compile Include="App_Start\AppWarmUp.cs" />
+    <Compile Include="App_Start\AttributeRoutingHttpConfig.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
+    <Compile Include="App_Start\CorsHandler.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
+    <Compile Include="App_Start\HandleAntiforgeryTokenErrorAttribute.cs" />
+    <Compile Include="App_Start\HelpPageConfig.cs" />
     <Compile Include="App_Start\ModelReflector.cs" />
     <Compile Include="App_Start\RadioButtonList.cs" />
     <Compile Include="App_Start\RazorGeneratorMvcStart.cs" />
@@ -318,6 +369,7 @@
     <Compile Include="Controllers\Account_Permission\DynamicRoleMappingController.cs" />
     <Compile Include="Controllers\Account_Permission\DynamicRoleMappingCRUDController.cs" />
     <Compile Include="Controllers\Account_Permission\PermissionController.cs" />
+    <Compile Include="Controllers\ApiHelp\HelpController.cs" />
     <Compile Include="Controllers\AuditLog.cs" />
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\Document\DocumentController.cs" />
@@ -342,7 +394,25 @@
     <Compile Include="Controllers\GenAppBusinessRules\ConditionController.cs" />
     <Compile Include="Controllers\GenAppBusinessRules\RuleActionController.cs" />
     <Compile Include="Controllers\GenAppBusinessRules\TimeBasedAlertController.cs" />
+    <Compile Include="Controllers\GenAppBusinessRules\T_MonthlyRepeatType\T_MonthlyRepeatTypeController.cs" />
+    <Compile Include="Controllers\GenAppBusinessRules\T_MonthlyRepeatType\T_MonthlyRepeatTypeCRUDController.cs" />
+    <Compile Include="Controllers\GenAppBusinessRules\T_RecurrenceDays\T_RecurrenceDaysController.cs" />
+    <Compile Include="Controllers\GenAppBusinessRules\T_RecurrenceDays\T_RecurrenceDaysCRUDController.cs" />
+    <Compile Include="Controllers\GenAppBusinessRules\T_RecurringEndType\T_RecurringEndTypeController.cs" />
+    <Compile Include="Controllers\GenAppBusinessRules\T_RecurringEndType\T_RecurringEndTypeCRUDController.cs" />
+    <Compile Include="Controllers\GenAppBusinessRules\T_RecurringFrequency\T_RecurringFrequencyController.cs" />
+    <Compile Include="Controllers\GenAppBusinessRules\T_RecurringFrequency\T_RecurringFrequencyCRUDController.cs" />
+    <Compile Include="Controllers\GenAppBusinessRules\T_RecurringScheduleDetailstype\T_RecurringScheduleDetailstypeController.cs" />
+    <Compile Include="Controllers\GenAppBusinessRules\T_RecurringScheduleDetailstype\T_RecurringScheduleDetailstypeCRUDController.cs" />
+    <Compile Include="Controllers\GenAppBusinessRules\T_RepeatOn\T_RepeatOnController.cs" />
+    <Compile Include="Controllers\GenAppBusinessRules\T_RepeatOn\T_RepeatOnCRUDController.cs" />
+    <Compile Include="Controllers\GenAppBusinessRules\T_Scheduletype\T_ScheduletypeController.cs" />
+    <Compile Include="Controllers\GenAppBusinessRules\T_Scheduletype\T_ScheduletypeCRUDController.cs" />
+    <Compile Include="Controllers\GenAppBusinessRules\T_Schedule\T_ScheduleController.cs" />
+    <Compile Include="Controllers\GenAppBusinessRules\T_Schedule\T_ScheduleControllerActions.cs" />
+    <Compile Include="Controllers\GenAppBusinessRules\T_Schedule\T_ScheduleCRUDController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\IdentityBaseController.cs" />
     <Compile Include="Controllers\ImportConfiguration\ImportConfigurationController.cs" />
     <Compile Include="Controllers\ImportConfiguration\ImportConfigurationCRUDController.cs" />
     <Compile Include="Controllers\LiveMonitoring.cs" />
@@ -350,26 +420,46 @@
     <Compile Include="Controllers\ODataServices\BaseODataController.cs" />
     <Compile Include="Controllers\ODataServices\ODataServicesController.cs" />
     <Compile Include="Controllers\OtherDefaultControllers\AppSettingController.cs" />
+    <Compile Include="Controllers\OtherDefaultControllers\ChartController.cs" />
     <Compile Include="Controllers\OtherDefaultControllers\CompanyProfileController.cs" />
+    <Compile Include="Controllers\OtherDefaultControllers\CustomReportController.cs" />
+    <Compile Include="Controllers\OtherDefaultControllers\DataSourceParameters\DataSourceParametersController.cs" />
+    <Compile Include="Controllers\OtherDefaultControllers\DataSourceParameters\DataSourceParametersCRUDController.cs" />
     <Compile Include="Controllers\OtherDefaultControllers\DefaultEntityPageController.cs" />
     <Compile Include="Controllers\OtherDefaultControllers\DefaultEntityPageCRUDController.cs" />
     <Compile Include="Controllers\OtherDefaultControllers\EmailTemplateController.cs" />
+    <Compile Include="Controllers\OtherDefaultControllers\EntityDataSource\EntityDataSourceController.cs" />
+    <Compile Include="Controllers\OtherDefaultControllers\EntityDataSource\EntityDataSourceCRUDController.cs" />
     <Compile Include="Controllers\OtherDefaultControllers\ErrorController.cs" />
     <Compile Include="Controllers\OtherDefaultControllers\JournalEntryController.cs" />
     <Compile Include="Controllers\OtherDefaultControllers\PreloadController.cs" />
+    <Compile Include="Controllers\OtherDefaultControllers\PropertyMapping\PropertyMappingController.cs" />
+    <Compile Include="Controllers\OtherDefaultControllers\PropertyMapping\PropertyMappingCRUDController.cs" />
     <Compile Include="Controllers\OtherDefaultControllers\ReportsController.cs" />
+    <Compile Include="Controllers\OtherDefaultControllers\ResourceLocalizationController.cs" />
     <Compile Include="Controllers\OtherDefaultControllers\TemplateController.cs" />
     <Compile Include="Controllers\OtherDefaultControllers\ThemeController.cs" />
     <Compile Include="Controllers\OtherDefaultControllers\ThirdPartyLoginController.cs" />
     <Compile Include="Controllers\OtherDefaultControllers\UserDefinePagesController.cs" />
-    <Compile Include="Controllers\T_Department\T_DepartmentController.cs" />
-    <Compile Include="Controllers\T_Department\T_DepartmentCRUDController.cs" />
-    <Compile Include="Controllers\T_School\T_SchoolController.cs" />
-    <Compile Include="Controllers\T_School\T_SchoolCRUDController.cs" />
-    <Compile Include="Controllers\T_StudentPerformance\T_StudentPerformanceController.cs" />
-    <Compile Include="Controllers\T_StudentPerformance\T_StudentPerformanceCRUDController.cs" />
-    <Compile Include="Controllers\T_Student\T_StudentController.cs" />
-    <Compile Include="Controllers\T_Student\T_StudentCRUDController.cs" />
+    <Compile Include="Controllers\T_Address\T_AddressController.cs" />
+    <Compile Include="Controllers\T_Address\T_AddressCRUDController.cs" />
+    <Compile Include="Controllers\T_City\T_CityController.cs" />
+    <Compile Include="Controllers\T_City\T_CityCRUDController.cs" />
+    <Compile Include="Controllers\T_Country\T_CountryController.cs" />
+    <Compile Include="Controllers\T_Country\T_CountryCRUDController.cs" />
+    <Compile Include="Controllers\T_EmployeeOrganizationAssociation\T_EmployeeOrganizationAssociationController.cs" />
+    <Compile Include="Controllers\T_EmployeeOrganizationAssociation\T_EmployeeOrganizationAssociationCRUDController.cs" />
+    <Compile Include="Controllers\T_Employeestatus\T_EmployeestatusController.cs" />
+    <Compile Include="Controllers\T_Employeestatus\T_EmployeestatusCRUDController.cs" />
+    <Compile Include="Controllers\T_Employeetype\T_EmployeetypeController.cs" />
+    <Compile Include="Controllers\T_Employeetype\T_EmployeetypeCRUDController.cs" />
+    <Compile Include="Controllers\T_Employee\T_EmployeeController.cs" />
+    <Compile Include="Controllers\T_Employee\T_EmployeeCRUDController.cs" />
+    <Compile Include="Controllers\T_Organization\T_OrganizationController.cs" />
+    <Compile Include="Controllers\T_Organization\T_OrganizationCRUDController.cs" />
+    <Compile Include="Controllers\T_State\T_StateController.cs" />
+    <Compile Include="Controllers\T_State\T_StateCRUDController.cs" />
+    <Compile Include="GlimpseSecurityPolicy.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -379,6 +469,23 @@
     <Compile Include="Models\ActionType.cs" />
     <Compile Include="Models\AdminSettings.cs" />
     <Compile Include="Models\AdminSettingsRepository.cs" />
+    <Compile Include="Models\Api\ApiDescriptionExtensions.cs" />
+    <Compile Include="Models\Api\ApiToken.cs" />
+    <Compile Include="Models\Api\ApiUser.cs" />
+    <Compile Include="Models\Api\HelpPageApiModel.cs" />
+    <Compile Include="Models\Api\HelpPageAreaRegistration.cs" />
+    <Compile Include="Models\Api\HelpPageConfigurationExtensions.cs" />
+    <Compile Include="Models\Api\HelpPageSampleGenerator.cs" />
+    <Compile Include="Models\Api\HelpPageSampleKey.cs" />
+    <Compile Include="Models\Api\ImageSample.cs" />
+    <Compile Include="Models\Api\IModelDocumentationProvider.cs" />
+    <Compile Include="Models\Api\InvalidSample.cs" />
+    <Compile Include="Models\Api\IXmlDocumentationProvider.cs" />
+    <Compile Include="Models\Api\ObjectGenerator.cs" />
+    <Compile Include="Models\Api\SampleDirection.cs" />
+    <Compile Include="Models\Api\TextSample.cs" />
+    <Compile Include="Models\Api\TypeDocumentation.cs" />
+    <Compile Include="Models\Api\XmlDocumentationProvider.cs" />
     <Compile Include="Models\ApplicationContextMethods.cs" />
     <Compile Include="Models\ApplicationSecurityFilter.cs" />
     <Compile Include="Models\ActionTypeContext.cs" />
@@ -390,13 +497,39 @@
     <Compile Include="Models\BusinessRuleType.cs" />
     <Compile Include="Models\BusinessRuleTypeContext.cs" />
     <Compile Include="Models\CaptchaImage.cs" />
+    <Compile Include="Models\CustomReport.cs" />
     <Compile Include="Models\EmailTemplate.cs" />
     <Compile Include="Models\EmailTemplateType.cs" />
+    <Compile Include="Models\EntityDataSource\DataSourceParameters.cs" />
+    <Compile Include="Models\EntityDataSource\EntityDataSource.cs" />
+    <Compile Include="Models\EntityDataSource\PropertyMapping.cs" />
     <Compile Include="Models\FileDocument.cs" />
-    <Compile Include="Models\T_Department.cs" />
-    <Compile Include="Models\T_School.cs" />
-    <Compile Include="Models\T_Student.cs" />
-    <Compile Include="Models\T_StudentPerformance.cs" />
+    <Compile Include="Models\InternalUser.cs" />
+    <Compile Include="Models\MultiTenantExtraAccess.cs" />
+    <Compile Include="Models\MultiTenantLoginSelected.cs" />
+    <Compile Include="Models\PermissionAdminPrivilege.cs" />
+    <Compile Include="Models\RecurrenceTaskModels\TemplateEvents.cs" />
+    <Compile Include="Models\RecurrenceTaskModels\T_MonthlyRepeatType.cs" />
+    <Compile Include="Models\RecurrenceTaskModels\T_RecurrenceDays.cs" />
+    <Compile Include="Models\RecurrenceTaskModels\T_RecurringEndType.cs" />
+    <Compile Include="Models\RecurrenceTaskModels\T_RecurringFrequency.cs" />
+    <Compile Include="Models\RecurrenceTaskModels\T_RecurringScheduleDetailstype.cs" />
+    <Compile Include="Models\RecurrenceTaskModels\T_RepeatOn.cs" />
+    <Compile Include="Models\RecurrenceTaskModels\T_Schedule.cs" />
+    <Compile Include="Models\RecurrenceTaskModels\T_Scheduletype.cs" />
+    <Compile Include="Models\ScheduledTaskHistory.cs" />
+    <Compile Include="Models\ScheduledTaskHistoryContext.cs" />
+    <Compile Include="Models\ScheduleEvents.cs" />
+    <Compile Include="Models\T_Address.cs" />
+    <Compile Include="Models\T_Chart.cs" />
+    <Compile Include="Models\T_City.cs" />
+    <Compile Include="Models\T_Country.cs" />
+    <Compile Include="Models\T_Employee.cs" />
+    <Compile Include="Models\T_EmployeeOrganizationAssociation.cs" />
+    <Compile Include="Models\T_Employeestatus.cs" />
+    <Compile Include="Models\T_Employeetype.cs" />
+    <Compile Include="Models\T_Organization.cs" />
+    <Compile Include="Models\T_State.cs" />
     <Compile Include="Models\UserAudit.cs" />
     <Compile Include="Utils\ChartTheme.cs" />
     <Compile Include="Utils\CommonFunction.cs" />
@@ -469,8 +602,18 @@
       <DependentUpon>ReportViewer.aspx</DependentUpon>
     </Compile>
     <Compile Include="Startup.cs" />
+    <Compile Include="Utils\DailyRecurrenceSettings.cs" />
+    <Compile Include="Utils\DynamicQueryable.cs" />
     <Compile Include="Utils\FileHandler.cs" />
     <Compile Include="Utils\FilterApplicationDropdowns.cs" />
+    <Compile Include="Utils\MonthlyRecurrenceSettings.cs" />
+    <Compile Include="Utils\RecurrenceHelper.cs" />
+    <Compile Include="Utils\RecurrenceInfo.cs" />
+    <Compile Include="Utils\RecurrenceMananger.cs" />
+    <Compile Include="Utils\RecurrenceSettings.cs" />
+    <Compile Include="Utils\RecurrenceValues.cs" />
+    <Compile Include="Utils\WeeklyRecurrenceSettings.cs" />
+    <Compile Include="Utils\YearlyRecurrenceSettings.cs" />
     <Compile Include="Web References\WebReference\Reference.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -512,6 +655,7 @@
     <Content Include="bin\DocX.dll" />
     <Content Include="Content\bootstrap-datetimepicker.min.css" />
     <Content Include="Content\bootstrap-multiselect.css" />
+    <Content Include="Content\bootstrap-select.min.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\chosen.css" />
@@ -528,6 +672,8 @@
     <Content Include="Content\font-awesome\css\font-awesome.min.css" />
     <Content Include="Content\font-awesome\fonts\fontawesome-webfont.svg" />
     <Content Include="Content\font-awesome\fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="Content\fullcalendar.css" />
+    <Content Include="Content\HelpPage.css" />
     <Content Include="Content\IE8\ie8.css" />
     <Content Include="Content\images\famfamfam-icons.png" />
     <Content Include="Content\images\prettyPhoto\dark_rounded\btnNext.png" />
@@ -570,6 +716,9 @@
     <Content Include="Content\images\prettyPhoto\light_square\sprite.png" />
     <Content Include="Content\loading.css" />
     <Content Include="Content\PagedList.css" />
+    <Content Include="Content\select2.min.css" />
+    <Content Include="Content\sidebar.css" />
+    <Content Include="Content\SiteOriginal.css" />
     <Content Include="Content\Sitetemp.css" />
     <Content Include="Content\slider\css\jquery.slider.css" />
     <Content Include="Content\slider\images\admin.png" />
@@ -594,6 +743,7 @@
     <Content Include="Content\src\js\colorpicker-color.js" />
     <Content Include="Content\src\js\colorpicker.js" />
     <Content Include="Content\src\js\docs.js" />
+    <Content Include="Content\TestClient.css" />
     <Content Include="Content\themes\base\images\ui-bg_flat_0_aaaaaa_40x100.png" />
     <Content Include="Content\themes\base\images\ui-bg_flat_75_ffffff_40x100.png" />
     <Content Include="Content\themes\base\images\ui-bg_glass_55_fbf9ee_1x400.png" />
@@ -608,6 +758,23 @@
     <Content Include="Content\themes\base\images\ui-icons_888888_256x240.png" />
     <Content Include="Content\themes\base\images\ui-icons_cd0a0a_256x240.png" />
     <Content Include="Content\themes\base\jquery-ui.css" />
+    <Content Include="Content\themes\base\jquery.ui.accordion.css" />
+    <Content Include="Content\themes\base\jquery.ui.all.css" />
+    <Content Include="Content\themes\base\jquery.ui.autocomplete.css" />
+    <Content Include="Content\themes\base\jquery.ui.base.css" />
+    <Content Include="Content\themes\base\jquery.ui.button.css" />
+    <Content Include="Content\themes\base\jquery.ui.core.css" />
+    <Content Include="Content\themes\base\jquery.ui.datepicker.css" />
+    <Content Include="Content\themes\base\jquery.ui.dialog.css" />
+    <Content Include="Content\themes\base\jquery.ui.menu.css" />
+    <Content Include="Content\themes\base\jquery.ui.progressbar.css" />
+    <Content Include="Content\themes\base\jquery.ui.resizable.css" />
+    <Content Include="Content\themes\base\jquery.ui.selectable.css" />
+    <Content Include="Content\themes\base\jquery.ui.slider.css" />
+    <Content Include="Content\themes\base\jquery.ui.spinner.css" />
+    <Content Include="Content\themes\base\jquery.ui.tabs.css" />
+    <Content Include="Content\themes\base\jquery.ui.theme.css" />
+    <Content Include="Content\themes\base\jquery.ui.tooltip.css" />
     <Content Include="Content\themes\images\famfamfam-icons.png" />
     <Content Include="favicon.ico" />
     <Content Include="Files\Help.txt" />
@@ -618,6 +785,112 @@
     <Content Include="logo\chosen-sprite%402x.png" />
     <Content Include="logo\chosen-sprite.png" />
     <Content Include="logo\logo.gif" />
+    <Content Include="logo\logo_white.png" />
+    <Content Include="PageBuilder\css\animate.css" />
+    <Content Include="PageBuilder\css\default.min.css" />
+    <Content Include="PageBuilder\css\HomePage-builder.css" />
+    <Content Include="PageBuilder\css\HomePage.css" />
+    <Content Include="PageBuilder\css\HomePage1.css" />
+    <Content Include="PageBuilder\css\Icomoon\icomoon.svg" />
+    <Content Include="PageBuilder\css\Icomoon\style.css" />
+    <Content Include="PageBuilder\css\images\arrow_off.png" />
+    <Content Include="PageBuilder\css\images\arrow_on.png" />
+    <Content Include="PageBuilder\css\images\arrow_right.png" />
+    <Content Include="PageBuilder\css\images\arrow_white.png" />
+    <Content Include="PageBuilder\css\jquery.domenu.css" />
+    <Content Include="PageBuilder\css\megamenu.css" />
+    <Content Include="PageBuilder\css\menu.css" />
+    <Content Include="PageBuilder\css\theme.css" />
+    <Content Include="PageBuilder\font-awesome\css\font-awesome.css" />
+    <Content Include="PageBuilder\font-awesome\css\font-awesome.min.css" />
+    <Content Include="PageBuilder\font-awesome\fonts\fontawesome-webfont.svg" />
+    <Content Include="PageBuilder\font-awesome\HELP-US-OUT.txt" />
+    <Content Include="PageBuilder\scripts\bootstrap-colorselector.js" />
+    <Content Include="PageBuilder\scripts\jquery-2.0.2.min.js" />
+    <Content Include="PageBuilder\scripts\jquery-ui-1.10.4.min.js" />
+    <Content Include="PageBuilder\scripts\jquery.dcverticalmegamenu.1.3.js" />
+    <Content Include="PageBuilder\scripts\jquery.domenu.js" />
+    <Content Include="PageBuilder\scripts\jquery.domenu.min.js" />
+    <Content Include="PageBuilder\scripts\jquery.hoverIntent.minified.js" />
+    <Content Include="PageBuilder\scripts\turanto.js" />
+    <Content Include="PageBuilder\tinymce\jquery.tinymce.min.js" />
+    <Content Include="PageBuilder\tinymce\license.txt" />
+    <Content Include="PageBuilder\tinymce\plugins\advlist\plugin.min.js" />
+    <Content Include="PageBuilder\tinymce\plugins\anchor\plugin.min.js" />
+    <Content Include="PageBuilder\tinymce\plugins\autolink\plugin.min.js" />
+    <Content Include="PageBuilder\tinymce\plugins\autoresize\plugin.min.js" />
+    <Content Include="PageBuilder\tinymce\plugins\autosave\plugin.min.js" />
+    <Content Include="PageBuilder\tinymce\plugins\bbcode\plugin.min.js" />
+    <Content Include="PageBuilder\tinymce\plugins\charmap\plugin.min.js" />
+    <Content Include="PageBuilder\tinymce\plugins\codesample\css\prism.css" />
+    <Content Include="PageBuilder\tinymce\plugins\codesample\plugin.min.js" />
+    <Content Include="PageBuilder\tinymce\plugins\code\plugin.min.js" />
+    <Content Include="PageBuilder\tinymce\plugins\colorpicker\plugin.min.js" />
+    <Content Include="PageBuilder\tinymce\plugins\contextmenu\plugin.min.js" />
+    <Content Include="PageBuilder\tinymce\plugins\directionality\plugin.min.js" />
+    <Content Include="PageBuilder\tinymce\plugins\emoticons\img\smiley-cool.gif" />
+    <Content Include="PageBuilder\tinymce\plugins\emoticons\img\smiley-cry.gif" />
+    <Content Include="PageBuilder\tinymce\plugins\emoticons\img\smiley-embarassed.gif" />
+    <Content Include="PageBuilder\tinymce\plugins\emoticons\img\smiley-foot-in-mouth.gif" />
+    <Content Include="PageBuilder\tinymce\plugins\emoticons\img\smiley-frown.gif" />
+    <Content Include="PageBuilder\tinymce\plugins\emoticons\img\smiley-innocent.gif" />
+    <Content Include="PageBuilder\tinymce\plugins\emoticons\img\smiley-kiss.gif" />
+    <Content Include="PageBuilder\tinymce\plugins\emoticons\img\smiley-laughing.gif" />
+    <Content Include="PageBuilder\tinymce\plugins\emoticons\img\smiley-money-mouth.gif" />
+    <Content Include="PageBuilder\tinymce\plugins\emoticons\img\smiley-sealed.gif" />
+    <Content Include="PageBuilder\tinymce\plugins\emoticons\img\smiley-smile.gif" />
+    <Content Include="PageBuilder\tinymce\plugins\emoticons\img\smiley-surprised.gif" />
+    <Content Include="PageBuilder\tinymce\plugins\emoticons\img\smiley-tongue-out.gif" />
+    <Content Include="PageBuilder\tinymce\plugins\emoticons\img\smiley-undecided.gif" />
+    <Content Include="PageBuilder\tinymce\plugins\emoticons\img\smiley-wink.gif" />
+    <Content Include="PageBuilder\tinymce\plugins\emoticons\img\smiley-yell.gif" />
+    <Content Include="PageBuilder\tinymce\plugins\emoticons\plugin.min.js" />
+    <Content Include="PageBuilder\tinymce\plugins\example\dialog.html" />
+    <Content Include="PageBuilder\tinymce\plugins\example\plugin.min.js" />
+    <Content Include="PageBuilder\tinymce\plugins\example_dependency\plugin.min.js" />
+    <Content Include="PageBuilder\tinymce\plugins\fullpage\plugin.min.js" />
+    <Content Include="PageBuilder\tinymce\plugins\fullscreen\plugin.min.js" />
+    <Content Include="PageBuilder\tinymce\plugins\hr\plugin.min.js" />
+    <Content Include="PageBuilder\tinymce\plugins\imagetools\plugin.min.js" />
+    <Content Include="PageBuilder\tinymce\plugins\image\plugin.min.js" />
+    <Content Include="PageBuilder\tinymce\plugins\importcss\plugin.min.js" />
+    <Content Include="PageBuilder\tinymce\plugins\insertdatetime\plugin.min.js" />
+    <Content Include="PageBuilder\tinymce\plugins\layer\plugin.min.js" />
+    <Content Include="PageBuilder\tinymce\plugins\legacyoutput\plugin.min.js" />
+    <Content Include="PageBuilder\tinymce\plugins\link\plugin.min.js" />
+    <Content Include="PageBuilder\tinymce\plugins\lists\plugin.min.js" />
+    <Content Include="PageBuilder\tinymce\plugins\media\moxieplayer.swf" />
+    <Content Include="PageBuilder\tinymce\plugins\media\plugin.min.js" />
+    <Content Include="PageBuilder\tinymce\plugins\nonbreaking\plugin.min.js" />
+    <Content Include="PageBuilder\tinymce\plugins\noneditable\plugin.min.js" />
+    <Content Include="PageBuilder\tinymce\plugins\pagebreak\plugin.min.js" />
+    <Content Include="PageBuilder\tinymce\plugins\paste\plugin.min.js" />
+    <Content Include="PageBuilder\tinymce\plugins\preview\plugin.min.js" />
+    <Content Include="PageBuilder\tinymce\plugins\print\plugin.min.js" />
+    <Content Include="PageBuilder\tinymce\plugins\save\plugin.min.js" />
+    <Content Include="PageBuilder\tinymce\plugins\searchreplace\plugin.min.js" />
+    <Content Include="PageBuilder\tinymce\plugins\spellchecker\plugin.min.js" />
+    <Content Include="PageBuilder\tinymce\plugins\tabfocus\plugin.min.js" />
+    <Content Include="PageBuilder\tinymce\plugins\table\plugin.min.js" />
+    <Content Include="PageBuilder\tinymce\plugins\template\plugin.min.js" />
+    <Content Include="PageBuilder\tinymce\plugins\textcolor\plugin.min.js" />
+    <Content Include="PageBuilder\tinymce\plugins\textpattern\plugin.min.js" />
+    <Content Include="PageBuilder\tinymce\plugins\visualblocks\css\visualblocks.css" />
+    <Content Include="PageBuilder\tinymce\plugins\visualblocks\plugin.min.js" />
+    <Content Include="PageBuilder\tinymce\plugins\visualchars\plugin.min.js" />
+    <Content Include="PageBuilder\tinymce\plugins\wordcount\plugin.min.js" />
+    <Content Include="PageBuilder\tinymce\skins\lightgray\content.inline.min.css" />
+    <Content Include="PageBuilder\tinymce\skins\lightgray\content.min.css" />
+    <Content Include="PageBuilder\tinymce\skins\lightgray\fonts\tinymce-small.svg" />
+    <Content Include="PageBuilder\tinymce\skins\lightgray\fonts\tinymce.svg" />
+    <Content Include="PageBuilder\tinymce\skins\lightgray\img\anchor.gif" />
+    <Content Include="PageBuilder\tinymce\skins\lightgray\img\loader.gif" />
+    <Content Include="PageBuilder\tinymce\skins\lightgray\img\object.gif" />
+    <Content Include="PageBuilder\tinymce\skins\lightgray\img\trans.gif" />
+    <Content Include="PageBuilder\tinymce\skins\lightgray\skin.ie7.min.css" />
+    <Content Include="PageBuilder\tinymce\skins\lightgray\skin.min.css" />
+    <Content Include="PageBuilder\tinymce\themes\modern\theme.min.js" />
+    <Content Include="PageBuilder\tinymce\tinymce.min.js" />
     <Content Include="Report\ReportViewer.aspx" />
     <Content Include="Scripts\bootstrap-datetimepicker.min.js" />
     <Content Include="Scripts\bootstrap-datetimepicker.ru.js" />
@@ -661,6 +934,52 @@
     <Content Include="assets\fonts\glyphicons-halflings-regular.eot" />
     <Content Include="assets\fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="assets\fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="PageBuilder\css\Icomoon\icomoon.eot" />
+    <Content Include="PageBuilder\css\Icomoon\icomoon.ttf" />
+    <Content Include="PageBuilder\css\Icomoon\icomoon.woff" />
+    <Content Include="PageBuilder\font-awesome\fonts\fontawesome-webfont.eot" />
+    <Content Include="PageBuilder\font-awesome\fonts\fontawesome-webfont.ttf" />
+    <Content Include="PageBuilder\font-awesome\fonts\fontawesome-webfont.woff" />
+    <Content Include="PageBuilder\font-awesome\fonts\fontawesome-webfont.woff2" />
+    <Content Include="PageBuilder\font-awesome\fonts\FontAwesome.otf" />
+    <Content Include="PageBuilder\font-awesome\less\animated.less" />
+    <Content Include="PageBuilder\font-awesome\less\bordered-pulled.less" />
+    <Content Include="PageBuilder\font-awesome\less\core.less" />
+    <Content Include="PageBuilder\font-awesome\less\fixed-width.less" />
+    <Content Include="PageBuilder\font-awesome\less\font-awesome.less" />
+    <Content Include="PageBuilder\font-awesome\less\icons.less" />
+    <Content Include="PageBuilder\font-awesome\less\larger.less" />
+    <Content Include="PageBuilder\font-awesome\less\list.less" />
+    <Content Include="PageBuilder\font-awesome\less\mixins.less" />
+    <Content Include="PageBuilder\font-awesome\less\path.less" />
+    <Content Include="PageBuilder\font-awesome\less\rotated-flipped.less" />
+    <Content Include="PageBuilder\font-awesome\less\screen-reader.less" />
+    <Content Include="PageBuilder\font-awesome\less\stacked.less" />
+    <Content Include="PageBuilder\font-awesome\less\variables.less" />
+    <Content Include="PageBuilder\font-awesome\scss\font-awesome.scss" />
+    <Content Include="PageBuilder\font-awesome\scss\_animated.scss" />
+    <Content Include="PageBuilder\font-awesome\scss\_bordered-pulled.scss" />
+    <Content Include="PageBuilder\font-awesome\scss\_core.scss" />
+    <Content Include="PageBuilder\font-awesome\scss\_fixed-width.scss" />
+    <Content Include="PageBuilder\font-awesome\scss\_icons.scss" />
+    <Content Include="PageBuilder\font-awesome\scss\_larger.scss" />
+    <Content Include="PageBuilder\font-awesome\scss\_list.scss" />
+    <Content Include="PageBuilder\font-awesome\scss\_mixins.scss" />
+    <Content Include="PageBuilder\font-awesome\scss\_path.scss" />
+    <Content Include="PageBuilder\font-awesome\scss\_rotated-flipped.scss" />
+    <Content Include="PageBuilder\font-awesome\scss\_screen-reader.scss" />
+    <Content Include="PageBuilder\font-awesome\scss\_stacked.scss" />
+    <Content Include="PageBuilder\font-awesome\scss\_variables.scss" />
+    <Content Include="PageBuilder\tinymce\langs\readme.md" />
+    <Content Include="PageBuilder\tinymce\skins\lightgray\fonts\tinymce-small.eot" />
+    <Content Include="PageBuilder\tinymce\skins\lightgray\fonts\tinymce-small.ttf" />
+    <Content Include="PageBuilder\tinymce\skins\lightgray\fonts\tinymce-small.woff" />
+    <Content Include="PageBuilder\tinymce\skins\lightgray\fonts\tinymce.eot" />
+    <Content Include="PageBuilder\tinymce\skins\lightgray\fonts\tinymce.ttf" />
+    <Content Include="PageBuilder\tinymce\skins\lightgray\fonts\tinymce.woff" />
+    <Content Include="PolicyAndService\Licensing.pdf" />
+    <Content Include="PolicyAndService\PrivacyPolicy.pdf" />
+    <Content Include="PolicyAndService\Terms_Of_Service.pdf" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -671,12 +990,11 @@
     <Content Include="Scripts\chatingAppWeb.js" />
     <Content Include="Scripts\chatMessages.js" />
     <Content Include="Scripts\Common1\analytics.js" />
-    <Content Include="Scripts\Common1\bootstrap-multiselect.js" />
-    <Content Include="Scripts\Common1\bwizard.js" />
     <Content Include="Scripts\Common1\custom-forms.js" />
+    <Content Include="Scripts\Common2\businessrule.js" />
+    <Content Include="Scripts\Common3\currencyformat.js" />
     <Content Include="Scripts\gps.js" />
     <Content Include="Scripts\Common1\html5shiv.js" />
-    <Content Include="Scripts\Common1\jquery.are-you-sure.js" />
     <Content Include="Scripts\Common1\jquery.cookie.js" />
     <Content Include="Scripts\Common1\responsive1.js" />
     <Content Include="Scripts\Common1\summernote.js" />
@@ -685,7 +1003,6 @@
     <Content Include="Scripts\Common2\bwizard.js" />
     <Content Include="Scripts\Common2\dashboard.js" />
     <Content Include="Scripts\Common2\jquery.are-you-sure.js" />
-    <Content Include="Scripts\Common2\jquery.metisMenu.js" />
     <Content Include="Scripts\Common2\jquery.prettyPhoto.js" />
     <Content Include="Scripts\Common2\moment-2.4.0.js" />
     <Content Include="Scripts\Common2\responsive2.js" />
@@ -694,8 +1011,6 @@
     <Content Include="Scripts\Common3\jquery.ba-throttle-debounce.min.js" />
     <Content Include="Scripts\Common3\jquery.maskedinput.js" />
     <Content Include="Scripts\Entity.js" />
-    <Content Include="Scripts\ion.sound.js" />
-    <Content Include="Scripts\ion.sound.min.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
@@ -707,16 +1022,32 @@
     <Content Include="Scripts\jquery.validate.min.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
-    <Content Include="Scripts\jquery.vibrate.js" />
-    <Content Include="Scripts\jquery.vibrate.min.js" />
     <Content Include="Scripts\modernizr-2.6.2.js" />
     <Content Include="Scripts\PrototypeCommenting.js" />
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
+    <Content Include="Scripts\select2.full.js" />
     <Content Include="Scripts\summernote.css" />
     <Content Include="Scripts\summernote.js" />
     <Content Include="Scripts\summernote.min.js" />
     <Content Include="Scripts\_references.js" />
+    <None Include="ScriptWebApi\jquery-1.7.1-vsdoc.js" />
+    <Content Include="ScriptWebApi\jquery-1.7.1.js" />
+    <Content Include="ScriptWebApi\jquery-1.7.1.min.js" />
+    <Content Include="ScriptWebApi\jquery-ui-1.9.2.js" />
+    <Content Include="ScriptWebApi\jquery-ui-1.9.2.min.js" />
+    <Content Include="ScriptWebApi\jquery.unobtrusive-ajax.js" />
+    <Content Include="ScriptWebApi\jquery.unobtrusive-ajax.min.js" />
+    <None Include="ScriptWebApi\jquery.validate-vsdoc.js" />
+    <Content Include="ScriptWebApi\jquery.validate.js" />
+    <Content Include="ScriptWebApi\jquery.validate.min.js" />
+    <Content Include="ScriptWebApi\jquery.validate.unobtrusive.js" />
+    <Content Include="ScriptWebApi\jquery.validate.unobtrusive.min.js" />
+    <Content Include="ScriptWebApi\knockout-2.2.1.debug.js" />
+    <Content Include="ScriptWebApi\knockout-2.2.1.js" />
+    <Content Include="ScriptWebApi\modernizr-2.5.3.js" />
+    <Content Include="ScriptWebApi\WebApiTestClient.js" />
+    <None Include="ScriptWebApi\_references.js" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -1081,10 +1412,111 @@
     <Content Include="Views\EmailTemplate\Index.cshtml" />
     <Content Include="Views\EmailTemplate\IndexPartial.cshtml" />
     <Content Include="Views\ActionArgs\CreateQuickEmail.cshtml" />
-    <Content Include="Scripts\jquery.vibrate.js.map" />
-    <Content Include="Scripts\jquery.vibrate.min.map" />
     <Content Include="Views\Account\_ExternalLoginsListPartial.Mobile.cshtml" />
     <Content Include="Views\Account\IndexPartial.cshtml" />
+    <Content Include="Views\Account\UsersInRolePartial.cshtml" />
+    <Content Include="Views\DataSourceParameters\BulkOperation.cshtml" />
+    <Content Include="Views\DataSourceParameters\BulkUpdate.cshtml" />
+    <Content Include="Views\DataSourceParameters\Create.cshtml" />
+    <Content Include="Views\DataSourceParameters\CreatePartial.cshtml" />
+    <Content Include="Views\DataSourceParameters\CreateQuick.cshtml" />
+    <Content Include="Views\DataSourceParameters\Delete.cshtml" />
+    <Content Include="Views\DataSourceParameters\Details.cshtml" />
+    <Content Include="Views\DataSourceParameters\Edit.cshtml" />
+    <Content Include="Views\DataSourceParameters\EditQuick.cshtml" />
+    <Content Include="Views\DataSourceParameters\ExcelExport.cshtml" />
+    <Content Include="Views\DataSourceParameters\Index.cshtml" />
+    <Content Include="Views\DataSourceParameters\IndexPartial.cshtml" />
+    <Content Include="Views\DataSourceParameters\SetFSearch.cshtml" />
+    <Content Include="Views\DataSourceParameters\ShowHideColumns.cshtml" />
+    <Content Include="Views\DataSourceParameters\Upload.cshtml" />
+    <Content Include="Views\EntityDataSource\BulkOperation.cshtml" />
+    <Content Include="Views\EntityDataSource\BulkUpdate.cshtml" />
+    <Content Include="Views\EntityDataSource\Create.cshtml" />
+    <Content Include="Views\EntityDataSource\CreatePartial.cshtml" />
+    <Content Include="Views\EntityDataSource\CreateQuick.cshtml" />
+    <Content Include="Views\EntityDataSource\Delete.cshtml" />
+    <Content Include="Views\EntityDataSource\Details.cshtml" />
+    <Content Include="Views\EntityDataSource\Edit.cshtml" />
+    <Content Include="Views\EntityDataSource\EditQuick.cshtml" />
+    <Content Include="Views\EntityDataSource\ExcelExport.cshtml" />
+    <Content Include="Views\EntityDataSource\Index.cshtml" />
+    <Content Include="Views\EntityDataSource\IndexPartial.cshtml" />
+    <Content Include="Views\EntityDataSource\SetFSearch.cshtml" />
+    <Content Include="Views\EntityDataSource\ShowHideColumns.cshtml" />
+    <Content Include="Views\EntityDataSource\Upload.cshtml" />
+    <Content Include="Views\PropertyMapping\BulkOperation.cshtml" />
+    <Content Include="Views\PropertyMapping\BulkUpdate.cshtml" />
+    <Content Include="Views\PropertyMapping\Create.cshtml" />
+    <Content Include="Views\PropertyMapping\CreatePartial.cshtml" />
+    <Content Include="Views\PropertyMapping\CreateQuick.cshtml" />
+    <Content Include="Views\PropertyMapping\Delete.cshtml" />
+    <Content Include="Views\PropertyMapping\Details.cshtml" />
+    <Content Include="Views\PropertyMapping\Edit.cshtml" />
+    <Content Include="Views\PropertyMapping\EditQuick.cshtml" />
+    <Content Include="Views\PropertyMapping\ExcelExport.cshtml" />
+    <Content Include="Views\PropertyMapping\Index.cshtml" />
+    <Content Include="Views\PropertyMapping\IndexPartial.cshtml" />
+    <Content Include="Views\PropertyMapping\SetFSearch.cshtml" />
+    <Content Include="Views\PropertyMapping\ShowHideColumns.cshtml" />
+    <Content Include="Views\PropertyMapping\Upload.cshtml" />
+    <Content Include="Views\BusinessRule\TaskHistory.cshtml" />
+    <Content Include="Views\T_Schedule\BulkOperation.cshtml" />
+    <Content Include="Views\T_Schedule\BulkUpdate.cshtml" />
+    <Content Include="Views\T_Schedule\Create.cshtml" />
+    <Content Include="Views\T_Schedule\CreatePartial.cshtml" />
+    <Content Include="Views\T_Schedule\CreateQuick.cshtml" />
+    <Content Include="Views\T_Schedule\CreateWizard.cshtml" />
+    <Content Include="Views\T_Schedule\Delete.cshtml" />
+    <Content Include="Views\T_Schedule\Details.cshtml" />
+    <Content Include="Views\T_Schedule\DetailsContent.cshtml" />
+    <Content Include="Views\T_Schedule\Edit.cshtml" />
+    <Content Include="Views\T_Schedule\EditQuick.cshtml" />
+    <Content Include="Views\T_Schedule\EditWizard.cshtml" />
+    <Content Include="Views\T_Schedule\ExcelExport.cshtml" />
+    <Content Include="Views\T_Schedule\Index.cshtml" />
+    <Content Include="Views\T_Schedule\IndexPartial.cshtml" />
+    <Content Include="Views\T_Schedule\IndexPartialGallery.cshtml" />
+    <Content Include="Views\T_Schedule\IndexPartialList.cshtml" />
+    <Content Include="Views\T_Schedule\SetFSearch.cshtml" />
+    <Content Include="Views\T_Schedule\ShowHideColumns.cshtml" />
+    <Content Include="Views\T_Schedule\Upload.cshtml" />
+    <Content Include="Views\ResourceLocalization\Create.cshtml" />
+    <Content Include="Views\ResourceLocalization\Index.cshtml" />
+    <Content Include="Views\ResourceLocalization\IndexPartial.cshtml" />
+    <Content Include="Views\Account\ApplicationExtraSecurity.cshtml" />
+    <Content Include="Views\Account\ApplicationExtraSecurityByMainEntity.cshtml" />
+    <Content Include="Views\T_Schedule\CalendarView.cshtml" />
+    <Content Include="Views\T_Schedule\EventsUpdate.cshtml" />
+    <Content Include="Views\Chart\CreateQuick.cshtml" />
+    <Content Include="Views\Chart\Delete.cshtml" />
+    <Content Include="Views\Chart\Edit.cshtml" />
+    <Content Include="Views\Chart\Index.cshtml" />
+    <Content Include="Views\Chart\IndexPartial.cshtml" />
+    <Content Include="Views\T_Schedule\ShowFullCalendar.cshtml" />
+    <Content Include="Views\T_Schedule\CreateEvent.cshtml" />
+    <Content Include="Views\ApiHelp\Api.cshtml" />
+    <Content Include="Views\ApiHelp\DisplayTemplates\ApiGroup.cshtml" />
+    <Content Include="Views\ApiHelp\DisplayTemplates\HelpPageApiModel.cshtml" />
+    <Content Include="Views\ApiHelp\DisplayTemplates\ImageSample.cshtml" />
+    <Content Include="Views\ApiHelp\DisplayTemplates\InvalidSample.cshtml" />
+    <Content Include="Views\ApiHelp\DisplayTemplates\Parameters.cshtml" />
+    <Content Include="Views\ApiHelp\DisplayTemplates\Samples.cshtml" />
+    <Content Include="Views\ApiHelp\DisplayTemplates\TestClientDialogs.cshtml" />
+    <Content Include="Views\ApiHelp\DisplayTemplates\TestClientReferences.cshtml" />
+    <Content Include="Views\ApiHelp\DisplayTemplates\TextSample.cshtml" />
+    <Content Include="Views\ApiHelp\Index.cshtml" />
+    <Content Include="Views\Shared\_LayoutWebApi.cshtml" />
+    <Content Include="Views\CustomReport\Create.cshtml" />
+    <Content Include="Views\CustomReport\CreatePartial.cshtml" />
+    <Content Include="Views\CustomReport\Details.cshtml" />
+    <Content Include="Views\CustomReport\Edit.cshtml" />
+    <Content Include="Views\CustomReport\ExcelExport.cshtml" />
+    <Content Include="Views\CustomReport\Index.cshtml" />
+    <Content Include="Views\CustomReport\IndexPartial.cshtml" />
+    <Content Include="Views\Shared\_Layoutpwd.cshtml" />
+    <Content Include="Views\Error\ActivationLink.cshtml" />
+    <Content Include="Views\Error\NotFound404.cshtml" />
     <None Include="Web References\WebReference\ReportService2005.wsdl" />
     <Content Include="Web References\WebReference\Role.datasource">
       <DependentUpon>Reference.map</DependentUpon>
@@ -1117,84 +1549,209 @@
     <Content Include="fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="fonts\glyphicons-halflings-regular.eot" />
     <Content Include="packages.config" />
+    <Content Include="SeleniumTestScript\Login_TestScript.html" />
+    <Content Include="SeleniumTestScript\T_Employee_TestScript.html" />
+    <Content Include="SeleniumTestScript\T_Organization_TestScript.html" />
     <Content Include="Views\FileDocument\BulkOperation.cshtml" />
     <Content Include="Views\FileDocument\BulkUpdate.cshtml" />
     <Content Include="Views\FileDocument\Create.cshtml" />
     <Content Include="Views\FileDocument\CreatePartial.cshtml" />
     <Content Include="Views\FileDocument\CreateQuick.cshtml" />
+    <Content Include="Views\FileDocument\CustomReportResult.cshtml" />
+    <Content Include="Views\FileDocument\CustomReportSearch.cshtml" />
     <Content Include="Views\FileDocument\Delete.cshtml" />
     <Content Include="Views\FileDocument\Details.cshtml" />
+    <Content Include="Views\FileDocument\DetailsContent.cshtml" />
     <Content Include="Views\FileDocument\Edit.cshtml" />
     <Content Include="Views\FileDocument\EditQuick.cshtml" />
     <Content Include="Views\FileDocument\ExcelExport.cshtml" />
     <Content Include="Views\FileDocument\Index.cshtml" />
     <Content Include="Views\FileDocument\IndexPartial.cshtml" />
+    <Content Include="Views\FileDocument\IndexPartialGallery.cshtml" />
+    <Content Include="Views\FileDocument\IndexPartialList.cshtml" />
     <Content Include="Views\FileDocument\SetFSearch.cshtml" />
     <Content Include="Views\FileDocument\ShowHideColumns.cshtml" />
     <Content Include="Views\FileDocument\Upload.cshtml" />
-    <Content Include="Views\Home\LiveMonitoring.cshtml" />
-    <Content Include="Views\T_Department\BulkOperation.cshtml" />
-    <Content Include="Views\T_Department\BulkUpdate.cshtml" />
-    <Content Include="Views\T_Department\Create.cshtml" />
-    <Content Include="Views\T_Department\CreatePartial.cshtml" />
-    <Content Include="Views\T_Department\CreateQuick.cshtml" />
-    <Content Include="Views\T_Department\Delete.cshtml" />
-    <Content Include="Views\T_Department\Details.cshtml" />
-    <Content Include="Views\T_Department\Edit.cshtml" />
-    <Content Include="Views\T_Department\EditQuick.cshtml" />
-    <Content Include="Views\T_Department\ExcelExport.cshtml" />
-    <Content Include="Views\T_Department\Index.cshtml" />
-    <Content Include="Views\T_Department\IndexPartial.cshtml" />
-    <Content Include="Views\T_Department\SetFSearch.cshtml" />
-    <Content Include="Views\T_Department\ShowHideColumns.cshtml" />
-    <Content Include="Views\T_Department\Upload.cshtml" />
-    <Content Include="Views\T_School\BulkOperation.cshtml" />
-    <Content Include="Views\T_School\BulkUpdate.cshtml" />
-    <Content Include="Views\T_School\Create.cshtml" />
-    <Content Include="Views\T_School\CreatePartial.cshtml" />
-    <Content Include="Views\T_School\CreateQuick.cshtml" />
-    <Content Include="Views\T_School\Delete.cshtml" />
-    <Content Include="Views\T_School\Details.cshtml" />
-    <Content Include="Views\T_School\Edit.cshtml" />
-    <Content Include="Views\T_School\EditQuick.cshtml" />
-    <Content Include="Views\T_School\ExcelExport.cshtml" />
-    <Content Include="Views\T_School\Index.cshtml" />
-    <Content Include="Views\T_School\IndexPartial.cshtml" />
-    <Content Include="Views\T_School\SetFSearch.cshtml" />
-    <Content Include="Views\T_School\ShowHideColumns.cshtml" />
-    <Content Include="Views\T_School\Upload.cshtml" />
-    <Content Include="Views\T_StudentPerformance\BulkOperation.cshtml" />
-    <Content Include="Views\T_StudentPerformance\BulkUpdate.cshtml" />
-    <Content Include="Views\T_StudentPerformance\Create.cshtml" />
-    <Content Include="Views\T_StudentPerformance\CreatePartial.cshtml" />
-    <Content Include="Views\T_StudentPerformance\CreateQuick.cshtml" />
-    <Content Include="Views\T_StudentPerformance\Delete.cshtml" />
-    <Content Include="Views\T_StudentPerformance\Details.cshtml" />
-    <Content Include="Views\T_StudentPerformance\Edit.cshtml" />
-    <Content Include="Views\T_StudentPerformance\EditQuick.cshtml" />
-    <Content Include="Views\T_StudentPerformance\ExcelExport.cshtml" />
-    <Content Include="Views\T_StudentPerformance\Index.cshtml" />
-    <Content Include="Views\T_StudentPerformance\IndexPartial.cshtml" />
-    <Content Include="Views\T_StudentPerformance\SetFSearch.cshtml" />
-    <Content Include="Views\T_StudentPerformance\ShowHideColumns.cshtml" />
-    <Content Include="Views\T_StudentPerformance\Upload.cshtml" />
-    <Content Include="Views\T_Student\BulkOperation.cshtml" />
-    <Content Include="Views\T_Student\BulkUpdate.cshtml" />
-    <Content Include="Views\T_Student\Create.cshtml" />
-    <Content Include="Views\T_Student\CreatePartial.cshtml" />
-    <Content Include="Views\T_Student\CreateQuick.cshtml" />
-    <Content Include="Views\T_Student\CreateWizard.cshtml" />
-    <Content Include="Views\T_Student\Delete.cshtml" />
-    <Content Include="Views\T_Student\Details.cshtml" />
-    <Content Include="Views\T_Student\Edit.cshtml" />
-    <Content Include="Views\T_Student\EditQuick.cshtml" />
-    <Content Include="Views\T_Student\EditWizard.cshtml" />
-    <Content Include="Views\T_Student\ExcelExport.cshtml" />
-    <Content Include="Views\T_Student\Index.cshtml" />
-    <Content Include="Views\T_Student\IndexPartial.cshtml" />
-    <Content Include="Views\T_Student\SetFSearch.cshtml" />
-    <Content Include="Views\T_Student\ShowHideColumns.cshtml" />
-    <Content Include="Views\T_Student\Upload.cshtml" />
+    <Content Include="Views\T_Address\BulkOperation.cshtml" />
+    <Content Include="Views\T_Address\BulkUpdate.cshtml" />
+    <Content Include="Views\T_Address\Create.cshtml" />
+    <Content Include="Views\T_Address\CreatePartial.cshtml" />
+    <Content Include="Views\T_Address\CreateQuick.cshtml" />
+    <Content Include="Views\T_Address\CustomReportResult.cshtml" />
+    <Content Include="Views\T_Address\CustomReportSearch.cshtml" />
+    <Content Include="Views\T_Address\Delete.cshtml" />
+    <Content Include="Views\T_Address\Details.cshtml" />
+    <Content Include="Views\T_Address\DetailsContent.cshtml" />
+    <Content Include="Views\T_Address\Edit.cshtml" />
+    <Content Include="Views\T_Address\EditQuick.cshtml" />
+    <Content Include="Views\T_Address\ExcelExport.cshtml" />
+    <Content Include="Views\T_Address\Index.cshtml" />
+    <Content Include="Views\T_Address\IndexPartial.cshtml" />
+    <Content Include="Views\T_Address\IndexPartialGallery.cshtml" />
+    <Content Include="Views\T_Address\IndexPartialList.cshtml" />
+    <Content Include="Views\T_Address\SetFSearch.cshtml" />
+    <Content Include="Views\T_Address\ShowHideColumns.cshtml" />
+    <Content Include="Views\T_Address\Upload.cshtml" />
+    <Content Include="Views\T_City\BulkOperation.cshtml" />
+    <Content Include="Views\T_City\BulkUpdate.cshtml" />
+    <Content Include="Views\T_City\Create.cshtml" />
+    <Content Include="Views\T_City\CreatePartial.cshtml" />
+    <Content Include="Views\T_City\CreateQuick.cshtml" />
+    <Content Include="Views\T_City\CustomReportResult.cshtml" />
+    <Content Include="Views\T_City\CustomReportSearch.cshtml" />
+    <Content Include="Views\T_City\Delete.cshtml" />
+    <Content Include="Views\T_City\Details.cshtml" />
+    <Content Include="Views\T_City\DetailsContent.cshtml" />
+    <Content Include="Views\T_City\Edit.cshtml" />
+    <Content Include="Views\T_City\EditQuick.cshtml" />
+    <Content Include="Views\T_City\ExcelExport.cshtml" />
+    <Content Include="Views\T_City\Index.cshtml" />
+    <Content Include="Views\T_City\IndexPartial.cshtml" />
+    <Content Include="Views\T_City\IndexPartialGallery.cshtml" />
+    <Content Include="Views\T_City\IndexPartialList.cshtml" />
+    <Content Include="Views\T_City\SetFSearch.cshtml" />
+    <Content Include="Views\T_City\ShowHideColumns.cshtml" />
+    <Content Include="Views\T_City\Upload.cshtml" />
+    <Content Include="Views\T_Country\BulkOperation.cshtml" />
+    <Content Include="Views\T_Country\BulkUpdate.cshtml" />
+    <Content Include="Views\T_Country\Create.cshtml" />
+    <Content Include="Views\T_Country\CreatePartial.cshtml" />
+    <Content Include="Views\T_Country\CreateQuick.cshtml" />
+    <Content Include="Views\T_Country\CustomReportResult.cshtml" />
+    <Content Include="Views\T_Country\CustomReportSearch.cshtml" />
+    <Content Include="Views\T_Country\Delete.cshtml" />
+    <Content Include="Views\T_Country\Details.cshtml" />
+    <Content Include="Views\T_Country\DetailsContent.cshtml" />
+    <Content Include="Views\T_Country\Edit.cshtml" />
+    <Content Include="Views\T_Country\EditQuick.cshtml" />
+    <Content Include="Views\T_Country\ExcelExport.cshtml" />
+    <Content Include="Views\T_Country\Index.cshtml" />
+    <Content Include="Views\T_Country\IndexPartial.cshtml" />
+    <Content Include="Views\T_Country\IndexPartialGallery.cshtml" />
+    <Content Include="Views\T_Country\IndexPartialList.cshtml" />
+    <Content Include="Views\T_Country\SetFSearch.cshtml" />
+    <Content Include="Views\T_Country\ShowHideColumns.cshtml" />
+    <Content Include="Views\T_Country\Upload.cshtml" />
+    <Content Include="Views\T_EmployeeOrganizationAssociation\BulkOperation.cshtml" />
+    <Content Include="Views\T_EmployeeOrganizationAssociation\BulkUpdate.cshtml" />
+    <Content Include="Views\T_EmployeeOrganizationAssociation\Create.cshtml" />
+    <Content Include="Views\T_EmployeeOrganizationAssociation\CreatePartial.cshtml" />
+    <Content Include="Views\T_EmployeeOrganizationAssociation\CreateQuick.cshtml" />
+    <Content Include="Views\T_EmployeeOrganizationAssociation\CustomReportResult.cshtml" />
+    <Content Include="Views\T_EmployeeOrganizationAssociation\CustomReportSearch.cshtml" />
+    <Content Include="Views\T_EmployeeOrganizationAssociation\Delete.cshtml" />
+    <Content Include="Views\T_EmployeeOrganizationAssociation\Details.cshtml" />
+    <Content Include="Views\T_EmployeeOrganizationAssociation\DetailsContent.cshtml" />
+    <Content Include="Views\T_EmployeeOrganizationAssociation\Edit.cshtml" />
+    <Content Include="Views\T_EmployeeOrganizationAssociation\EditQuick.cshtml" />
+    <Content Include="Views\T_EmployeeOrganizationAssociation\ExcelExport.cshtml" />
+    <Content Include="Views\T_EmployeeOrganizationAssociation\Index.cshtml" />
+    <Content Include="Views\T_EmployeeOrganizationAssociation\IndexPartial.cshtml" />
+    <Content Include="Views\T_EmployeeOrganizationAssociation\IndexPartialGallery.cshtml" />
+    <Content Include="Views\T_EmployeeOrganizationAssociation\IndexPartialList.cshtml" />
+    <Content Include="Views\T_EmployeeOrganizationAssociation\SetFSearch.cshtml" />
+    <Content Include="Views\T_EmployeeOrganizationAssociation\ShowHideColumns.cshtml" />
+    <Content Include="Views\T_EmployeeOrganizationAssociation\Upload.cshtml" />
+    <Content Include="Views\T_Employeestatus\BulkOperation.cshtml" />
+    <Content Include="Views\T_Employeestatus\BulkUpdate.cshtml" />
+    <Content Include="Views\T_Employeestatus\Create.cshtml" />
+    <Content Include="Views\T_Employeestatus\CreatePartial.cshtml" />
+    <Content Include="Views\T_Employeestatus\CreateQuick.cshtml" />
+    <Content Include="Views\T_Employeestatus\CustomReportResult.cshtml" />
+    <Content Include="Views\T_Employeestatus\CustomReportSearch.cshtml" />
+    <Content Include="Views\T_Employeestatus\Delete.cshtml" />
+    <Content Include="Views\T_Employeestatus\Details.cshtml" />
+    <Content Include="Views\T_Employeestatus\DetailsContent.cshtml" />
+    <Content Include="Views\T_Employeestatus\Edit.cshtml" />
+    <Content Include="Views\T_Employeestatus\EditQuick.cshtml" />
+    <Content Include="Views\T_Employeestatus\ExcelExport.cshtml" />
+    <Content Include="Views\T_Employeestatus\Index.cshtml" />
+    <Content Include="Views\T_Employeestatus\IndexPartial.cshtml" />
+    <Content Include="Views\T_Employeestatus\IndexPartialGallery.cshtml" />
+    <Content Include="Views\T_Employeestatus\IndexPartialList.cshtml" />
+    <Content Include="Views\T_Employeestatus\SetFSearch.cshtml" />
+    <Content Include="Views\T_Employeestatus\ShowHideColumns.cshtml" />
+    <Content Include="Views\T_Employeestatus\Upload.cshtml" />
+    <Content Include="Views\T_Employeetype\BulkOperation.cshtml" />
+    <Content Include="Views\T_Employeetype\BulkUpdate.cshtml" />
+    <Content Include="Views\T_Employeetype\Create.cshtml" />
+    <Content Include="Views\T_Employeetype\CreatePartial.cshtml" />
+    <Content Include="Views\T_Employeetype\CreateQuick.cshtml" />
+    <Content Include="Views\T_Employeetype\CustomReportResult.cshtml" />
+    <Content Include="Views\T_Employeetype\CustomReportSearch.cshtml" />
+    <Content Include="Views\T_Employeetype\Delete.cshtml" />
+    <Content Include="Views\T_Employeetype\Details.cshtml" />
+    <Content Include="Views\T_Employeetype\DetailsContent.cshtml" />
+    <Content Include="Views\T_Employeetype\Edit.cshtml" />
+    <Content Include="Views\T_Employeetype\EditQuick.cshtml" />
+    <Content Include="Views\T_Employeetype\ExcelExport.cshtml" />
+    <Content Include="Views\T_Employeetype\Index.cshtml" />
+    <Content Include="Views\T_Employeetype\IndexPartial.cshtml" />
+    <Content Include="Views\T_Employeetype\IndexPartialGallery.cshtml" />
+    <Content Include="Views\T_Employeetype\IndexPartialList.cshtml" />
+    <Content Include="Views\T_Employeetype\SetFSearch.cshtml" />
+    <Content Include="Views\T_Employeetype\ShowHideColumns.cshtml" />
+    <Content Include="Views\T_Employeetype\Upload.cshtml" />
+    <Content Include="Views\T_Employee\BulkOperation.cshtml" />
+    <Content Include="Views\T_Employee\BulkUpdate.cshtml" />
+    <Content Include="Views\T_Employee\Create.cshtml" />
+    <Content Include="Views\T_Employee\CreatePartial.cshtml" />
+    <Content Include="Views\T_Employee\CreateQuick.cshtml" />
+    <Content Include="Views\T_Employee\CustomReportResult.cshtml" />
+    <Content Include="Views\T_Employee\CustomReportSearch.cshtml" />
+    <Content Include="Views\T_Employee\Delete.cshtml" />
+    <Content Include="Views\T_Employee\Details.cshtml" />
+    <Content Include="Views\T_Employee\DetailsContent.cshtml" />
+    <Content Include="Views\T_Employee\Edit.cshtml" />
+    <Content Include="Views\T_Employee\EditQuick.cshtml" />
+    <Content Include="Views\T_Employee\ExcelExport.cshtml" />
+    <Content Include="Views\T_Employee\Index.cshtml" />
+    <Content Include="Views\T_Employee\IndexPartial.cshtml" />
+    <Content Include="Views\T_Employee\IndexPartialGallery.cshtml" />
+    <Content Include="Views\T_Employee\IndexPartialList.cshtml" />
+    <Content Include="Views\T_Employee\SetFSearch.cshtml" />
+    <Content Include="Views\T_Employee\ShowHideColumns.cshtml" />
+    <Content Include="Views\T_Employee\Upload.cshtml" />
+    <Content Include="Views\T_Organization\BulkOperation.cshtml" />
+    <Content Include="Views\T_Organization\BulkUpdate.cshtml" />
+    <Content Include="Views\T_Organization\Create.cshtml" />
+    <Content Include="Views\T_Organization\CreatePartial.cshtml" />
+    <Content Include="Views\T_Organization\CreateQuick.cshtml" />
+    <Content Include="Views\T_Organization\CustomReportResult.cshtml" />
+    <Content Include="Views\T_Organization\CustomReportSearch.cshtml" />
+    <Content Include="Views\T_Organization\Delete.cshtml" />
+    <Content Include="Views\T_Organization\Details.cshtml" />
+    <Content Include="Views\T_Organization\DetailsContent.cshtml" />
+    <Content Include="Views\T_Organization\Edit.cshtml" />
+    <Content Include="Views\T_Organization\EditQuick.cshtml" />
+    <Content Include="Views\T_Organization\ExcelExport.cshtml" />
+    <Content Include="Views\T_Organization\Index.cshtml" />
+    <Content Include="Views\T_Organization\IndexPartial.cshtml" />
+    <Content Include="Views\T_Organization\IndexPartialGallery.cshtml" />
+    <Content Include="Views\T_Organization\IndexPartialList.cshtml" />
+    <Content Include="Views\T_Organization\SetFSearch.cshtml" />
+    <Content Include="Views\T_Organization\ShowHideColumns.cshtml" />
+    <Content Include="Views\T_Organization\Upload.cshtml" />
+    <Content Include="Views\T_State\BulkOperation.cshtml" />
+    <Content Include="Views\T_State\BulkUpdate.cshtml" />
+    <Content Include="Views\T_State\Create.cshtml" />
+    <Content Include="Views\T_State\CreatePartial.cshtml" />
+    <Content Include="Views\T_State\CreateQuick.cshtml" />
+    <Content Include="Views\T_State\CustomReportResult.cshtml" />
+    <Content Include="Views\T_State\CustomReportSearch.cshtml" />
+    <Content Include="Views\T_State\Delete.cshtml" />
+    <Content Include="Views\T_State\Details.cshtml" />
+    <Content Include="Views\T_State\DetailsContent.cshtml" />
+    <Content Include="Views\T_State\Edit.cshtml" />
+    <Content Include="Views\T_State\EditQuick.cshtml" />
+    <Content Include="Views\T_State\ExcelExport.cshtml" />
+    <Content Include="Views\T_State\Index.cshtml" />
+    <Content Include="Views\T_State\IndexPartial.cshtml" />
+    <Content Include="Views\T_State\IndexPartialGallery.cshtml" />
+    <Content Include="Views\T_State\IndexPartialList.cshtml" />
+    <Content Include="Views\T_State\SetFSearch.cshtml" />
+    <Content Include="Views\T_State\ShowHideColumns.cshtml" />
+    <Content Include="Views\T_State\Upload.cshtml" />
     <None Include="Project_Readme.html" />
   </ItemGroup>
   <ItemGroup>

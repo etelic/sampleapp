@@ -23,7 +23,7 @@ namespace GeneratorBase.MVC.Controllers
     public class JournalEntryController : BaseController
     {
         private JournalEntryContext db = new JournalEntryContext();
-        public ActionResult Index(string currentFilter, string searchString, string sortBy, string isAsc, int? page, int? itemsPerPage, string HostingEntity, int? HostingEntityID, string AssociatedType, bool? IsExport, bool? IsDeepSearch, bool? IsMobileRequest, bool? IsFilter, bool? RenderPartial)
+        public ActionResult Index(string currentFilter, string searchString, string sortBy, string isAsc, int? page, int? itemsPerPage, string HostingEntity, int? HostingEntityID, string AssociatedType, bool? IsExport, bool? IsDeepSearch, bool? IsMobileRequest, bool? IsFilter, bool? RenderPartial, string FilterHostingEntityID, string FilterHostingEntity)
         {
             if (string.IsNullOrEmpty(isAsc) && !string.IsNullOrEmpty(sortBy))
             {
@@ -34,6 +34,7 @@ namespace GeneratorBase.MVC.Controllers
             ViewData["HostingEntity"] = HostingEntity;
             ViewData["HostingEntityID"] = HostingEntityID;
             ViewData["AssociatedType"] = AssociatedType;
+            EntityNameJournal = AssociatedType;
             ViewData["IsFilter"] = IsFilter;
             if (searchString != null)
                 page = null;
@@ -54,8 +55,17 @@ namespace GeneratorBase.MVC.Controllers
             {
                 lstJournal = lstJournal.Where(p => p.UserName == AssociatedType).OrderByDescending(p => p.Id);
             }
+            if ((IsFilter == null ? false : IsFilter.Value) && HostingEntity == "PropertyName")
+            {
+                lstJournal = lstJournal.Where(p => p.PropertyName == AssociatedType).OrderByDescending(p => p.Id);
+            }
             if (HostingEntity != null && HostingEntityID != null)
                 lstJournal = lstJournal.Where(p => p.EntityName == HostingEntity && p.RecordId == HostingEntityID).OrderByDescending(p => p.Id);
+            if (FilterHostingEntity != null && FilterHostingEntityID != null)
+            {
+                var hostid = Convert.ToInt64(FilterHostingEntityID);
+                lstJournal = lstJournal.Where(p => p.EntityName == FilterHostingEntity && p.RecordId == hostid).OrderByDescending(p => p.Id);
+            }
             if (!String.IsNullOrEmpty(searchString))
             {
                 lstJournal = searchRecords(lstJournal, searchString.ToUpper(), IsDeepSearch);
@@ -200,28 +210,97 @@ namespace GeneratorBase.MVC.Controllers
             base.Dispose(disposing);
         }
         [AcceptVerbs(HttpVerbs.Get)]
-        public JsonResult GetAllValue(string HostingEntityName)
+        public JsonResult GetAllValue(string HostingEntityName, string HostingEntity, string HostingEntityID)
         {
             IQueryable<JournalEntry> list = db.JournalEntries;
-            if(HostingEntityName == "EntityName")
+
+            if (HostingEntity != null && HostingEntityID != null)
             {
-                var data = from x in list.Select(p=>p.EntityName).Distinct().ToList()
-                           select new { Id = x, Name = x };
-                return Json(data, JsonRequestBehavior.AllowGet);
+                var hostid = Convert.ToInt64(HostingEntityID);
+                list = list.Where(p => p.EntityName == HostingEntity && p.RecordId == hostid).OrderByDescending(p => p.Id);
             }
-            if(HostingEntityName == "Type")
+            if (HostingEntityName == "EntityName")
+            {
+                if (HostingEntity != null && FavoriteUrlEntityName != "JournalEntry")
+                {
+                    var query = list.Where(x => x.EntityName == HostingEntity)
+                   .GroupBy(x => x.EntityName)
+                   .OrderByDescending(group1 => group1.Count()).ToList()
+                   .Select(grouped => new { Id = grouped.Key, Name = getEntityDisplayName(grouped.Key) });
+                    return Json(query, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                    var query = from x in list
+                    .GroupBy(s => s.EntityName) // groups identical strings into an IGrouping
+                    .OrderByDescending(group1 => group1.Count()).ToList() // IGrouping is a collection, so you can count it
+                                select new { Id = x.Key, Name = getEntityDisplayName(x.Key) };
+                    return Json(query, JsonRequestBehavior.AllowGet);
+                }
+            }
+            if (HostingEntityName == "Type")
             {
                 var data = from x in list.Select(p => p.Type).Distinct().ToList()
                            select new { Id = x, Name = x };
                 return Json(data, JsonRequestBehavior.AllowGet);
             }
-            if(HostingEntityName == "UserName")
+            if (HostingEntityName == "UserName")
             {
-                var data = from x in list.Select(p => p.UserName).Distinct().ToList()
-                           select new { Id = x, Name = x };
-                return Json(data, JsonRequestBehavior.AllowGet);
+                var query = from x in list
+                 .GroupBy(s => s.UserName) // groups identical strings into an IGrouping
+                 .OrderByDescending(group1 => group1.Count()).ToList() // IGrouping is a collection, so you can count it
+                            select new { Id = x.Key, Name = x.Key };
+
+                return Json(query, JsonRequestBehavior.AllowGet);
+            }
+            if (HostingEntityName == "PropertyName")
+            {
+                //var data = from x in list.Select(p => p.PropertyName).Distinct().ToList()
+                //           select new { Id = x, Name = x };
+                var query = list.Where(x => x.PropertyName != null && x.EntityName == EntityNameJournal)
+                  .GroupBy(x => new { x.PropertyName, x.EntityName })
+                  .OrderByDescending(group1 => group1.Count()).ToList()
+                  .Select(grouped => new { Id = grouped.Key.PropertyName, Name = getPropertyDisplayName(grouped.Key.PropertyName, EntityNameJournal) });
+
+                return Json(query, JsonRequestBehavior.AllowGet);
             }
             return Json(null, JsonRequestBehavior.AllowGet);
+        }
+
+        private string getPropertyDisplayName(object p)
+        {
+            throw new NotImplementedException();
+        }
+
+
+        public string getPropertyDisplayName(string Property, string EntityName)
+        {
+            string prop = "";
+            try
+            {
+                var EntityReflector = ModelReflector.Entities.FirstOrDefault(p => p.Name == EntityName);
+                prop = EntityReflector.Properties.FirstOrDefault(q => q.Name == Property).DisplayName;
+            }
+            catch (Exception ex)
+            {
+                prop = Property;
+            }
+
+            return prop;
+        }
+        public string getEntityDisplayName(string EntityName)
+        {
+            string prop = "";
+            try
+            {
+                var EntityReflector = ModelReflector.Entities.FirstOrDefault(p => p.Name == EntityName);
+                prop = EntityReflector.DisplayName;
+            }
+            catch (Exception ex)
+            {
+                prop = EntityName;
+            }
+            return prop;
         }
     }
 }

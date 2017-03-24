@@ -1,0 +1,38 @@
+@using System.Web.Http
+@using System.Web.Http.Description
+
+@using GeneratorBase.MVC.Models
+@model IGrouping<string, ApiDescription>
+
+@{
+    //Layout = "~/Views/Shared/_LayoutWebApi.cshtml";
+}
+<div class="panel-body" style="margin:0px; padding:8px;">
+    <div id="Des_Table" class="table-responsive" style="overflow-x:auto;">
+        <table class="table table-striped table-bordered table-hover table-condensed">
+            <thead>
+                <tr><th>API</th><th>Description</th></tr>
+            </thead>
+            <tbody>
+                @foreach (var api in Model)
+            {
+                <tr>
+                    <td class="api-name">
+                        <a href="@Url.Action("Api", "ApiHelp", new { apiId = api.GetFriendlyId(), Token = ViewData["Token"] })">@api.HttpMethod.Method @api.RelativePath</a>
+                    </td>
+                    <td class="api-documentation">
+                        @if (api.Documentation != null)
+                        {
+                    <p>@api.Documentation</p>
+                        }
+                        else
+                        {
+                    <p>No documentation available.</p>
+                        }
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</div>

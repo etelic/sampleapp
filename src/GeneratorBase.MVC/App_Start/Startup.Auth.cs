@@ -16,22 +16,44 @@ using Owin.Security.Providers.GooglePlus;
 using System.Security.Claims;
 using System.Xml.Linq;
 using System.Web;
+using System.Web.Configuration;
+using System.Linq;
+using Microsoft.Owin.Security.DataProtection;
 namespace GeneratorBase.MVC
 {
     public partial class Startup
     {
         // For more information on configuring authentication, please visit http://go.microsoft.com/fwlink/?LinkId=301864
+		internal static IDataProtectionProvider DataProtectionProvider { get; private set; }
         public void ConfigureAuth(IAppBuilder app)
         {
-			app.MapSignalR();
+		DataProtectionProvider = app.GetDataProtectionProvider();
 		var UseActiveDirectory = System.Configuration.ConfigurationManager.AppSettings["UseActiveDirectory"]; //CommonFunction.Instance.UseActiveDirectory();
         if (!Convert.ToBoolean(UseActiveDirectory))
         {
-            // Enable the application to use a cookie to store information for the signed in user
+				// Enable the application to use a cookie to store information for the signed in user
+
+				//set session time out value from appsetting
+				ApplicationContext db = new ApplicationContext(new SystemUser());
+                var appSettings = db.AppSettings;
+                string timeout = appSettings.Where(p => p.Key == "ApplicationSessionTimeOut").FirstOrDefault().Value;
+				 string AppUrl = appSettings.Where(p => p.Key == "AppURL").FirstOrDefault().Value;
+                Int64 TimeOutValue = 525600;
+                if (!string.IsNullOrEmpty(timeout))
+                {
+                    if (Int64.TryParse(timeout, out TimeOutValue))
+                    {
+                        if (TimeOutValue == 0)
+                            TimeOutValue = Convert.ToInt64(525600);
+                    }
+                    else
+                        TimeOutValue = 525600;
+                }
+				//
             app.UseCookieAuthentication(new CookieAuthenticationOptions
             {
-				ExpireTimeSpan = TimeSpan.FromMinutes(20),
-                CookieName = "Students",
+                CookieName = AppUrl,
+				ExpireTimeSpan = TimeSpan.FromMinutes(TimeOutValue),
                 AuthenticationType = DefaultAuthenticationTypes.ApplicationCookie,
                 LoginPath = new PathString("/Account/Login")
             });

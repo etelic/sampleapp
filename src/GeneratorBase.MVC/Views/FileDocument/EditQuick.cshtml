@@ -21,25 +21,38 @@
             var hostingEntityName = "";
             if ('@Convert.ToString(ViewData["AssociatedType"])' != null) {
                 hostingEntityName = '@Convert.ToString(ViewData["AssociatedType"])';
+				if( '@Convert.ToBoolean(ViewData["IsFilter"])'!="False")
 				$('#' + hostingEntityName + 'ID').attr("lock","true");
-				$('#' + hostingEntityName + 'ID').trigger("change");				
+				$('#' + hostingEntityName + 'ID').trigger("change");
+				 $("input[type='radio'][name='" + hostingEntityName + "ID']").each(function () {
+                    if (!this.checked)
+                        this.closest("li").style.display = "none";
+                });		
+						
             }
         }
         catch (ex) { }
     });
 </script>
+
 @{
     if (!string.IsNullOrEmpty(ViewBag.FileDocumentIsHiddenRule))
     {
         @Html.Raw(ViewBag.FileDocumentIsHiddenRule);
     }
 }
+@{
+    if (!string.IsNullOrEmpty(ViewBag.FileDocumentIsSetValueUIRule))
+    {
+        @Html.Raw(ViewBag.FileDocumentIsSetValueUIRule);
+    }
+}
 <link href="~/Content/bootstrap-datetimepicker.min.css" rel="stylesheet" />
 <div class="row">
     <div class="col-lg-12">
-        
-<label id="ErrMsg" class="text-primary small pull-right" style="color:red; vertical-align:middle; font-weight:100;"></label>
-<div id="errorContainerEdit" style="display: none">
+        @*<label id="ErrMsg" class="text-primary small pull-right" style="color:red; vertical-align:middle; font-weight:100;"></label>*@
+		<input type="hidden" id="ErrMsg" />
+		<div id="errorContainerEdit" style="display: none">
             <div id="errorsMsgEdit"></div>
             <div id="errorsEdit"></div>
         </div>
@@ -48,8 +61,18 @@
 	   </h2>
     </div>
     <!-- /.col-lg-12 -->
+	<div id="divDisplayBRmsgBeforeSaveProp" style="display:none;">
 </div>
-@using (Html.BeginForm("EditQuick","FileDocument",new {UrlReferrer =Convert.ToString(ViewData["FileDocumentParentUrl"])}, FormMethod.Post, new { enctype = "multipart/form-data" }))
+<div id="divDisplayBRmsgMandatory" style="display:none;">
+</div>
+<div id="divDisplayLockRecord" style="display:none;">
+</div>
+<div id="divDisplayBRReadOnly" style="display:none;">
+</div>
+<br/>
+</div>
+	
+@using (Html.BeginForm("EditQuick","FileDocument",new {UrlReferrer =Convert.ToString(ViewData["FileDocumentParentUrl"])}, FormMethod.Post, new { enctype = "multipart/form-data", @id = "frmQEditFileDocument" }))
 {
      Html.ValidationSummary(true);
                 Html.EnableClientValidation();
@@ -60,85 +83,124 @@
                     <div class="panel panel-default AppForm">
 						<div class="panel-body">
 						    @Html.Hidden("AssociatedEntity", Convert.ToString(ViewData["AssociatedType"]))
-						<div class="row">
-@if(User.CanView("FileDocument","DocumentName"))
+											<div class="row">
+				@if(User.CanView("FileDocument","DocumentName"))
 {
-						<div class='col-sm-6 col-md-6 col-xs-12' id="dvDocumentName">
-							<div class='form-group'>
-								<label class="col-sm-5 col-md-5 col-xs-12" >@Html.LabelFor(model => model.DocumentName)  <span class="text-danger-reg">*</span> </label>
-                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+
+
+					<div class='col-sm-6 col-md-6 col-xs-12' id="dvDocumentName">
+							<div class='form-group' title="">
+								<label  >@Html.LabelFor(model => model.DocumentName)  <span class="text-danger-reg">*</span> </label>
+                                
 											
 									@Html.TextBoxFor(model => model.DocumentName,  getHtmlAttributes("DocumentName"))
 									@Html.ValidationMessageFor(model => model.DocumentName)
-								</div>
+									
+								
                              </div>
 						</div>
+
+				
+					
+
+
 } else { @Html.HiddenFor(model => model.DocumentName, new { @class = "form-control" })}
 @if(User.CanView("FileDocument","Description"))
 {
-						<div class='col-sm-6 col-md-6 col-xs-12' id="dvDescription">
-							<div class='form-group'>
-								<label class="col-sm-5 col-md-5 col-xs-12" >@Html.LabelFor(model => model.Description)   </label>
-                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+
+
+					<div class='col-sm-6 col-md-6 col-xs-12' id="dvDescription">
+							<div class='form-group' title="">
+								<label  >@Html.LabelFor(model => model.Description)   </label>
+                                
 											
 									@Html.TextBoxFor(model => model.Description,  getHtmlAttributes("Description"))
 									@Html.ValidationMessageFor(model => model.Description)
-								</div>
+									
+								
                              </div>
 						</div>
+
+				
+					
+
+
 } else { @Html.HiddenFor(model => model.Description, new { @class = "form-control" })}
 				@if(User.CanView("FileDocument","AttachDocument") && User.CanView("Document"))
 				{
-				  <div class='col-sm-6 col-md-6 col-xs-12' id="dvAttachDocument">
-                            <div class='form-group'>
+
+								 <div class='col-sm-6 col-md-6 col-xs-12' id="dvAttachDocument">
+                            <div class='form-group' title="">
 							@Html.TextBoxFor(model => model.AttachDocument, new { @class = "hidden" })
-                                   <label class="col-sm-5 col-md-5 col-xs-12" >@Html.LabelFor(model => model.AttachDocument) </label>
-                                     <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                   <label  >@Html.LabelFor(model => model.AttachDocument) </label>
+                                     
 									 <div style="position:relative;">
 										 <a class='btn btn-primary btnupload' href='javascript:;'>
 											 Upload File
-										 <input id="File_AttachDocument"  type="file" style='position:absolute;z-index:2;top:0;left:0;filter: alpha(opacity=0);-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";opacity:0;background-color:transparent;color:transparent;width:105px;' name="File_AttachDocument" onchange='$("#upload-file-infoFile_AttachDocument").html($(this).val());'>
+										 <input id="File_AttachDocument"  type="file" style='position:absolute;z-index:2;top:0;left:0;filter: alpha(opacity=0);-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";opacity:0;background-color:transparent;color:transparent;width:105px;' name="File_AttachDocument" onchange='uploadedFileName("upload-file-infoFile_AttachDocument",$(this).val());'>
 										</a>
 										&nbsp;
 										<span class='label uploadlblFix' id="upload-file-infoFile_AttachDocument"></span>
-									</div> 
-									</div>
+	
+										 <p>
+										                                                 @if (!string.IsNullOrEmpty(Model.AttachDocument))
+												{
+																									@Html.ActionLink(Model.AttachDocument, "Download", new { filename = Model.AttachDocument }, new { @Class = "small pull-left", @Style = "vertical-align:middle;font-size: 11px;"}) 
+												 
+                                                                        
+                                                }
+                                                <span class='label uploadlblFix pull-left' style="color: brown; vertical-align: middle; font-size: 10px;" id="upload-file-infoFile_AttachDocument"></span>  
+                                                                                      </p>									
+																			</div> 
+									
                             </div>
                    </div>
+				
+
+
+				 
 } else { @Html.HiddenFor(model => model.AttachDocument, new { @class = "form-control" })}
 @if(User.CanView("FileDocument","DateCreated"))
 {
-                            <div class='col-sm-6 col-md-6 col-xs-12' id="dvDateCreated">
-							  <div class="form-group">
-                                <label class="col-sm-5 col-md-5 col-xs-12" >@Html.LabelFor(model => model.DateCreated) <span class="text-danger-reg">*</span></label>
-								<div class="input-group col-sm-7 col-md-7 col-xs-12">
+                      
+					  						 <div class='col-sm-6 col-md-6 col-xs-12' id="dvDateCreated">
+							  <div class="form-group" title="">
+                                <label  >@Html.LabelFor(model => model.DateCreated) <span class="text-danger-reg">*</span></label>
+								
                                     <div class="input-group date" id="datetimepickerDateCreated">
- @Html.TextBoxFor(model => model.DateCreated, "{0:MM/dd/yyyy hh:mm tt}", User.CanEdit("FileDocument", "DateCreated") ? (object)new {@class = "form-control" , @readonly="readonly"} : (object)new { @class = "form-control", @readonly="readonly"})
+ @Html.TextBoxFor(model => model.DateCreated, "{0:MM/dd/yyyy HH:mm}", User.CanEdit("FileDocument", "DateCreated") ? (object)new {@class = "form-control" , @readonly="readonly",@format = "MM/DD/YYYY hh:mm"} : (object)new { @class = "form-control", @readonly="readonly",@format = "MM/DD/YYYY hh:mm"})
+
                                         <span class="input-group-addon btn-default calendar">
                                            <i class="fa fa-calendar"></i>
                                         </span>
                                     </div>
                                     @Html.ValidationMessageFor(model => model.DateCreated)
-								</div>
+								
                                 </div>
                             </div>
+											  
+					        
 } else { @Html.HiddenFor(model => model.DateCreated, new { @class = "form-control" })}
 @if(User.CanView("FileDocument","DateLastUpdated"))
 {
-                            <div class='col-sm-6 col-md-6 col-xs-12' id="dvDateLastUpdated">
-							  <div class="form-group">
-                                <label class="col-sm-5 col-md-5 col-xs-12" >@Html.LabelFor(model => model.DateLastUpdated) <span class="text-danger-reg">*</span></label>
-								<div class="input-group col-sm-7 col-md-7 col-xs-12">
+                      
+					  						 <div class='col-sm-6 col-md-6 col-xs-12' id="dvDateLastUpdated">
+							  <div class="form-group" title="">
+                                <label  >@Html.LabelFor(model => model.DateLastUpdated) <span class="text-danger-reg">*</span></label>
+								
                                     <div class="input-group date" id="datetimepickerDateLastUpdated">
- @Html.TextBox("DateLastUpdated",DateTime.Now, "{0:MM/dd/yyyy hh:mm tt}", User.CanEdit("FileDocument", "DateLastUpdated") ? (object)new {@class = "form-control",@readonly="readonly" } : (object)new { @class = "form-control", @readonly="readonly"})
+ @Html.TextBox("DateLastUpdated",DateTime.Now, "{0:MM/dd/yyyy HH:mm}", User.CanEdit("FileDocument", "DateLastUpdated") ? (object)new {@class = "form-control",@readonly="readonly" ,@format = "MM/DD/YYYY hh:mm"} : (object)new { @class = "form-control", @readonly="readonly",@format = "MM/DD/YYYY hh:mm"})
+
                                         <span class="input-group-addon btn-default calendar">
                                            <i class="fa fa-calendar"></i>
                                         </span>
                                     </div>
                                     @Html.ValidationMessageFor(model => model.DateLastUpdated)
-								</div>
+								
                                 </div>
                             </div>
+											  
+					        
 } else { @Html.HiddenFor(model => model.DateLastUpdated, new { @class = "form-control" })}
        </div>
 
@@ -148,16 +210,19 @@
 	</div>
 </div>
 		 @Html.AntiForgeryToken();
+		 var businessrule1 = User.businessrules.Where(p => p.EntityName == "FileDocument").ToList();
+		 var lstinlineentityname = "";
+		 var lstinlineassocdispname ="";
+		 var lstinlineassocname = "";
 		 <button id="CancelQuickAdd" type="button" class="btn btn-default btn-sm" data-dismiss="modal" aria-hidden="true">Cancel</button>
 		 if (EditPermission)
          {
-		 			    <input type="submit" name="command" value="Save" class="btn btn-primary btn-sm" onclick="QuickEditFromGrid(event,true,'FileDocument','@ViewData["AssociatedType"]');" />
+			    <input type="submit" name="command" value="Save" class="btn btn-primary btn-sm" onclick="QuickEditFromGrid(event,true,'FileDocument','@ViewData["AssociatedType"]',false,'@businessrule1',@businessrule1.Count,'OnEdit','ErrMsg',false,'@lstinlineassocname','@lstinlineassocdispname','@lstinlineentityname');" />
 				<input type="hidden" name="hdncommand" value="" />
   		 }	
 }
-
-@Scripts.Render("~/bundles/jqueryval")
-<script src="~/Scripts/Common3/chosen.jquery.js" type="text/javascript"></script>
+<script src="@Url.Content("~/bundles/jqueryval")" type="text/javascript"></script>
+<script src="@Url.Content("~/bundles/common3")" type="text/javascript"></script>
 <script type="text/javascript">
     var config = {
         '.chosen-select': {},
@@ -177,81 +242,65 @@
     });
 </script>
 @{
-var busineesrule = User.businessrules.Where(p => p.EntityName == "FileDocument").ToList();
-if ((busineesrule != null && busineesrule.Count > 0))
+var businessrule = User.businessrules.Where(p => p.EntityName == "FileDocument").ToList();
+
+
+	
+
+
+if ((businessrule != null && businessrule.Count > 0) )
 {
     <script>
     $(document).ready(function () {
-        $.ajax({
-            async: false,
-            type: "GET",
-            url: "@Url.Action("GetLockBusinessRules", "FileDocument")",
-            data: $("form").serialize(),
-        success: function (data) {
-            if (data.length > 0) {
-                $(':input:not([readonly])', 'form').attr('disabled', 'disabled').attr('readonly', 'readonly').trigger("chosen:updated");
-                document.getElementById('ErrMsg').innerHTML = data + " Rules applied";
-            }
-        },
-        error: function (jqXHR, textStatus, errorThrown) {
-        }
-    });
-	$.ajax({
-            async: false,
-            type: "GET",
-            url: "@Url.Action("GetReadOnlyProperties", "FileDocument")",
-            data: $("form").serialize(),
-            success: function (data) {
-                for (var key in data) {
-                    $('#' + key).attr('disabled', 'disabled').attr('readonly', 'readonly').trigger("chosen:updated");
-					$("input[type='radio'][name='" + key + "']").attr('disabled', 'disabled').attr('readonly', 'readonly');
-					$('form').append('<input type="hidden" name="' + key + '" id="' + key + '" value="' + $('#' + key).val() + '" />');
-                }
-            },
-            error: function (jqXHR, textStatus, errorThrown) {
-            }
-        });
+	document.getElementById("ErrMsg").innerHTML = "";
+		 var flag = true;
+                var dataurl = "";
+                var form = "";
+                var inlinecount = "0";
+
+				 form = $("#frmQEditFileDocument").serialize();
+					 dataurl = "@Url.Action("businessruletype", "FileDocument", new { ruleType = "OnEdit"})";
+            ApplyBusinessRuleOnPageLoad(dataurl, "FileDocument", false, "ErrMsg", form);
+			//business rules on inline associations
     });
 </script>
 <script>
     $("form").submit(function () {
+	document.getElementById("ErrMsg").innerHTML = "";
             var flag = true;
-      
-            $.ajax({
-                async: false,
-                type: "GET",
-                url: "@Url.Action("GetMandatoryProperties", "FileDocument")",
-                data: $(this).serialize(),
-                 success: function (data) {
-                        $('[businessrule="mandatory"]').each(function () {
-                            $(this).removeAttr('required');
-                        });
-                        document.getElementById('ErrMsg').innerHTML = "";
-                        for (var key in data) {
-                            if ($.trim($('#' + key).val()).length == 0 && $.trim($("input[type='radio'][name='" + key + "']:checked").val()).length == 0)
-                            {
-                                $('#' + key).attr('required', 'required');
-                                $('#' + key).attr('businessrule', 'mandatory');
-                                $("input[type='radio'][name='" + key + "']").attr('required', 'required');
-                                $("input[type='radio'][name='" + key + "']").attr('businessrule', 'mandatory');
-                                flag = false;
-                                document.getElementById('ErrMsg').innerHTML += data[key] + " is Mandatory.<br/>";
-                            }
-                        }
-                    },
-                error: function (jqXHR, textStatus, errorThrown) {
-                }
-            });
-			 if (flag)
-                    $("form").find(':input').removeAttr('disabled');
-            return flag;
-    });
+		var form = $("#frmQEditFileDocument").serialize();
+		    
+				 $(document).ready(function () {
+					$("input[type='submit']").on('blur', function () {
+					$("input[type='submit']").removeAttr('disabled');
+					});
+				});
+			});
 </script>
 }
- else
-    {
-           
-    }
+ 
 }
 
+<script type='text/javascript'>
+    $(document).ready(function () {
+        try {
+            document.getElementsByTagName("body")[0].focus();
+            $("#addPopup").removeAttr("tabindex");
+            var cltcoll = $("#dvPopup").find('input[type=text]:not([class=hidden]):not([readonly]),textarea:not([readonly])')
+            var cltid = "";
+            $(cltcoll).each(function () {
+			  if ($(this).attr("id") == undefined)
+                    return
+                var dvhidden = $("#dv" + $(this).attr("id"));
+                if (!(dvhidden.css('display') == 'none')) {
+                    cltid = $(this);
+                    return false;
+                }
+            });
+            if (cltid != "" && cltid != undefined)
+                setTimeout(function () { $(cltid).focus(); }, 500)
+        }
+        catch (ex) { }
+    });
+</script>
 

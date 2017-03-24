@@ -19,6 +19,16 @@ namespace GeneratorBase.MVC.Controllers
             string fileName = doc.DisplayValue;
             return File(fileBytes, System.Net.Mime.MediaTypeNames.Application.Octet, fileName);
         }
+        [AcceptVerbs(HttpVerbs.Get)]
+        public JsonResult GetDocumentName(long? id)
+        {
+
+            var doc = db.Documents.Find(id);
+            if (doc == null)
+                return Json("NA", JsonRequestBehavior.AllowGet);
+            else
+                return Json(doc.DocumentName, JsonRequestBehavior.AllowGet);
+        }
         public void DisplayImage(long id, int? maxSize, int? maxHeight, int? maxWidth)
         {
             //maxSize = 30;

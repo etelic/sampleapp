@@ -94,21 +94,40 @@
     <div class="row">
         <div class="col-md-12 col-sm-12 col-sx-12">
             <div class="panel panel-default">
-                <div class="panel-heading clearfix" style="margin:0px; padding:8px;">
+                <div class="panel-heading clearfix" style="margin:0px; padding:2px;">
                     <div class="btn-group">
                         @if (User.Identity.IsAuthenticated && User != null && User.CanAdd("DefaultEntityPage"))
                         {
-                            <button class="btn btn-default tip-top" data-placement="top" data-original-title="Quick Add" style="padding:3px 5px;" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','DefaultEntityPage','dvPopup','" + Url.Action("CreateQuick", "DefaultEntityPage", new { UrlReferrer = Request.Url, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), TS=DateTime.Now }) + "')")">
+                            <button class="btn btn-default tip-top" data-placement="top" data-original-title="Quick Add"
+                                    style="padding:3px 5px;"
+                                    data-toggle="modal"
+                                    data-target="#dvPopup"
+                                    onclick="@Html.Raw("OpenPopUpEntityDefaultEntityPage('addPopup','Set Default Pages for Entity','dvPopup','" +
+                                    Url.Action("CreateQuick", "DefaultEntityPage",
+                                    new { UrlReferrer = Request.Url, AssociatedType=ViewData["AssociatedType"],
+                                        HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]),
+                                        HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), TS=DateTime.Now }) + "')")">
                                 <span class="fam-add"></span>
                             </button>
                         }
                     </div>
                     <div class="btn-group">
-                    </div>
-                    <div class="btn-group">
                         <button type="button" class="btn btn-default btn-default collapse-data-btn tip-top" id="btnShowHideDefaultEntityPage" data-original-title="Show/Hide Column" data-placement="top" style="padding:3px 5px;" onclick=@Html.Raw("showhideColumns(event,'DefaultEntityPage');")>
                             <span class="fam-table-row-delete"></span>
                         </button>
+                    </div>
+                    <div class="btn-group">
+                        <a class="btn btn-default dropdown-toggle tip-top" data-original-title="Bulk Actions" style="padding:3px 5px;" data-toggle="dropdown" href="#">
+                            <span class="fa fa-wrench"></span> Bulk
+                        </a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li>
+                                @if (User.Identity.IsAuthenticated && User != null && User.CanUseVerb("BulkDelete", "DefaultEntityPage",User))
+                                {
+                                    <a style="cursor:pointer;" onclick="PerformBulkOperation(this,'DefaultEntityPage','Bulk Delete','@Url.Action("DeleteBulk", "DefaultEntityPage")');">Delete</a>
+                                }
+                            </li>
+                        </ul>
                     </div>
                     <div class="pull-right" style="width:250px;">
                         <div class="input-group">
@@ -186,10 +205,50 @@
                                             {<i class="fa fa-sort-asc"></i>}
                                         </th>
                                     }
+                                    @if (User.CanView("DefaultEntityPage", "ViewEntityPage"))
+                                    {
+                                        <th class="col5">
+                                            @Html.ActionLink("View Entit yPage", ActionNameUrl, "DefaultEntityPage", getSortHtmlAttributes("ViewEntityPage", false, null, false), new { @onclick = "SortLinkClick(event,'DefaultEntityPage');" })
+                                            @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "ViewEntityPage")
+                                            {<i class="fa fa-sort-desc"></i>}
+                                            @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "ViewEntityPage")
+                                            {<i class="fa fa-sort-asc"></i>}
+                                        </th>
+                                    }
+                                    @if (User.CanView("DefaultEntityPage", "ListEntityPage"))
+                                    {
+                                        <th class="col5">
+                                            @Html.ActionLink("List Entity Page", ActionNameUrl, "DefaultEntityPage", getSortHtmlAttributes("ListEntityPage", false, null, false), new { @onclick = "SortLinkClick(event,'DefaultEntityPage');" })
+                                            @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "ListEntityPage")
+                                            {<i class="fa fa-sort-desc"></i>}
+                                            @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "ListEntityPage")
+                                            {<i class="fa fa-sort-asc"></i>}
+                                        </th>
+                                    }
+                                    @if (User.CanView("DefaultEntityPage", "EditEntityPage"))
+                                    {
+                                        <th class="col5">
+                                            @Html.ActionLink("Edit Entity Page", ActionNameUrl, "DefaultEntityPage", getSortHtmlAttributes("EditEntityPage", false, null, false), new { @onclick = "SortLinkClick(event,'DefaultEntityPage');" })
+                                            @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "ListEntityPage")
+                                            {<i class="fa fa-sort-desc"></i>}
+                                            @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "ListEntityPage")
+                                            {<i class="fa fa-sort-asc"></i>}
+                                        </th>
+                                    }
+                                    @if (User.CanView("DefaultEntityPage", "SearchEntityPage"))
+                                    {
+                                        <th class="col5">
+                                            @Html.ActionLink("Search Entity Page", ActionNameUrl, "DefaultEntityPage", getSortHtmlAttributes("SearchEntityPage", false, null, false), new { @onclick = "SortLinkClick(event,'DefaultEntityPage');" })
+                                            @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "SearchEntityPage")
+                                            {<i class="fa fa-sort-desc"></i>}
+                                            @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "SearchEntityPage")
+                                            {<i class="fa fa-sort-asc"></i>}
+                                        </th>
+                                    }
                                 </tr>
                                 @foreach (var item in Model)
                                 {
-                                    <tr ondblclick="DoubleClickRow(@item.Id,'@Url.Action("Details", "DefaultEntityPage", new { id = item.Id, UrlReferrer = Request.Url, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null)');">
+                                    <tr>
                                         <td>
                                             <input type="checkbox" id="@item.Id" onclick="SelectForBulkOperation(this,'@item.Id');" />
                                         </td>
@@ -247,7 +306,53 @@
                                         @if (User.CanView("DefaultEntityPage", "Other"))
                                         {
                                             <td>
-                                                <a href='/@GeneratorBase.MVC.Models.CommonFunction.Instance.AppURL().ToString()@item.PageUrl' target="_blank">@item.Other</a>
+                                                <a href='@GeneratorBase.MVC.Models.CommonFunction.Instance.getBaseUri()@item.PageUrl' target="_blank">@item.Other</a>
+                                            </td>
+                                        }
+                                        @if (User.CanView("DefaultEntityPage", "ViewEntityPage"))
+                                        {
+                                            <td>
+                                             @if (item.ViewEntityPage.ToLower() == "details")
+                                                {
+                                                    <p>Detail(Default)</p>
+                                                }
+                                                else
+                                                {
+                                                    @Html.Raw(Html.DisplayFor(modelItem => item.ViewEntityPage)).ToString().Replace("Details", "")
+                                                }
+                                            </td>
+                                        }
+                                        @if (User.CanView("DefaultEntityPage", "ListEntityPage"))
+                                        {
+                                            <td>
+                                                @if (item.ListEntityPage.ToLower() == "indexpartial")
+                                                {
+                                                    <p>Table(Default)</p>
+                                                }
+                                                else
+                                                {
+                                                    @Html.Raw(Html.DisplayFor(modelItem => item.ListEntityPage)).ToString().Replace("IndexPartial", "")
+                                                }
+                                            </td>
+                                        }
+                                        @if (User.CanView("DefaultEntityPage", "EditEntityPage"))
+                                        {
+                                            
+                                            <td>
+                                                @if (item.EditEntityPage.ToLower() == "edit")
+                                                {
+                                                    <p>Edit(Default)</p>
+                                                }
+                                                else
+                                                {
+                                                    @Html.Raw(Html.DisplayFor(modelItem => item.EditEntityPage)).ToString().Replace("Edit", "")
+                                                }
+                                            </td>
+                                        }
+                                        @if (User.CanView("DefaultEntityPage", "SearchEntityPage"))
+                                        {
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.SearchEntityPage)
                                             </td>
                                         }
                                     </tr>
@@ -298,6 +403,38 @@
                                         </span>
                                     </p>
                                 }
+                                @if (User.CanView("DefaultEntityPage", "ViewEntityPage"))
+                                {
+                                    <p>
+                                        <span class="text-primary"> View Entity Page </span> : <span>
+                                            @Html.DisplayFor(modelItem => item.ViewEntityPage)
+                                        </span>
+                                    </p>
+                                }
+                                @if (User.CanView("DefaultEntityPage", "ListEntityPage"))
+                                {
+                                    <p>
+                                        <span class="text-primary">List Entity Page </span> : <span>
+                                            @Html.DisplayFor(modelItem => item.ListEntityPage)
+                                        </span>
+                                    </p>
+                                }
+                                @if (User.CanView("DefaultEntityPage", "EditEntityPage"))
+                                {
+                                    <p>
+                                        <span class="text-primary">Edit Entity Page </span> : <span>
+                                            @Html.DisplayFor(modelItem => item.EditEntityPage)
+                                        </span>
+                                    </p>
+                                }
+                                @if (User.CanView("DefaultEntityPage", "SearchEntityPage"))
+                                {
+                                    <p>
+                                        <span class="text-primary">Search Entity Page </span> : <span>
+                                            @Html.DisplayFor(modelItem => item.SearchEntityPage)
+                                        </span>
+                                    </p>
+                                }
                                 <span class="label label-primary text-linkwhite">
                                     @Html.ActionLink("View", "Details", "DefaultEntityPage", new { id = item.Id }, null)
                                 </span>
@@ -338,10 +475,21 @@
                     }
                 </div>
             </div>
-            @if (User.Identity.IsAuthenticated && User != null && User.CanDelete("DefaultEntityPage"))
-            {
-                <a class="btn btn-primary btn-sm" onclick="PerformBulkOperation(this,'DefaultEntityPage','Bulk Delete','@Url.Action("DeleteBulk", "DefaultEntityPage")');">Delete</a>
-            }
         </div>
     </div>
 </div>
+<script>
+    function OpenPopUpEntityDefaultEntityPage(Popup, EntityName, dvName, url) {
+        $("#" + Popup + 'Label').html();
+        if ((EntityName.indexOf("Edit") == -1) && (EntityName.indexOf("Delete") == -1)) {
+            $("#" + Popup + 'Label').html(EntityName);
+        }
+        else {
+            $("#" + Popup + 'Label').html(EntityName);
+        }
+        $("#" + Popup).modal('show');
+        $("#" + dvName).html('');
+        $("#" + dvName + "Error").html('');
+        $("#" + dvName).load(url);
+    }
+</script>

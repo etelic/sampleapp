@@ -11,9 +11,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace GeneratorBase.MVC.Controllers
 {
-    public class PermissionController : Controller
+    public class PermissionController : IdentityBaseController
     {
-        private PermissionContext db = new PermissionContext();
+        //private PermissionContext db = new PermissionContext(LogggedInUser);
 
         [HttpPost]
         // [Authorize(Roles = "Admin")]
@@ -21,7 +21,7 @@ namespace GeneratorBase.MVC.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult SaveUBS(USB model)
         {
-            if (!((CustomPrincipal)User).IsAdmin())
+            if (!((CustomPrincipal)User).CanAddAdminFeature("UserBasedSecurity"))
                 return RedirectToAction("Index", "Home");
             if (ModelState.IsValid)
             {
@@ -40,7 +40,7 @@ namespace GeneratorBase.MVC.Controllers
 
         public ActionResult ClearUBS()
         {
-            if (!((CustomPrincipal)User).IsAdmin())
+            if (!((CustomPrincipal)User).CanAddAdminFeature("UserBasedSecurity"))
                 return RedirectToAction("Index", "Home");
             var Db = new UserBasedSecurityContext();
             Db.UserBasedSecurities.RemoveRange(Db.UserBasedSecurities);
@@ -51,7 +51,7 @@ namespace GeneratorBase.MVC.Controllers
 
         public ActionResult UserBasedSecurity(string key)
         {
-            if (!((CustomPrincipal)User).IsAdmin())
+            if (!((CustomPrincipal)User).CanViewAdminFeature("UserBasedSecurity"))
                 return RedirectToAction("Index", "Home");
             string setEntity = key;
             var Db = new UserBasedSecurityContext();
@@ -153,11 +153,23 @@ namespace GeneratorBase.MVC.Controllers
         // GET: /Permission/
         public ActionResult Index(string RoleName)
         {
-            if (!((CustomPrincipal)User).IsAdmin())
+            if (!((CustomPrincipal)User).CanViewAdminFeature("RoleEntityPermission"))
                 return RedirectToAction("Index", "Home");
             var Db = new ApplicationDbContext();
             var roles = Db.Roles;
             var model = new SelectEntityRolesViewModel(RoleName);
+
+            //var adminfeaturelist = new List<PermissionAdminPrivilege>();
+            //foreach (var item in Enum.GetValues(typeof(AdminFeatures)))
+            //{
+            //    var obj = new PermissionAdminPrivilege();
+            //    obj.RoleName = RoleName;
+            //    obj.IsAllow = false;
+            //    obj.AdminFeature = item.ToString();
+            //    adminfeaturelist.Add(obj);
+            //}
+            
+            //model.privileges = adminfeaturelist;
             return View(model);
 
             //return View(db.Permissions.ToList());
@@ -166,7 +178,7 @@ namespace GeneratorBase.MVC.Controllers
         // GET: /Permission/
         public ActionResult Fls(string RoleName, string key)
         {
-            if (!((CustomPrincipal)User).IsAdmin())
+            if (!((CustomPrincipal)User).CanViewAdminFeature("FieldLevelSecurity"))
                 return RedirectToAction("Index", "Home");
             string setEntity = key;
             if (key == null)
@@ -181,7 +193,8 @@ namespace GeneratorBase.MVC.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult SaveFls(SelectFlsViewModel model)
         {
-            if (!((CustomPrincipal)User).IsAdmin())
+            PermissionContext db = new PermissionContext(LogggedInUser);
+            if (!((CustomPrincipal)User).CanEditAdminFeature("FieldLevelSecurity"))
                 return RedirectToAction("Index", "Home");
             if (ModelState.IsValid)
             {
@@ -222,12 +235,44 @@ namespace GeneratorBase.MVC.Controllers
         }
 
         [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public ActionResult SaveAdminPrivilege(SelectEntityRolesViewModel model)
+        {
+            PermissionContext db = new PermissionContext(LogggedInUser);
+             if (!((CustomPrincipal)User).IsAdmin)
+                return RedirectToAction("Index", "Home");
+             if (ModelState.IsValid)
+             {
+                 foreach (var ent in model.privileges)
+                 {
+                     var list = db.AdminPrivileges.FirstOrDefault(q => q.RoleName == model.RoleName && ent.AdminFeature == q.AdminFeature);
+                     PermissionAdminPrivilege permission = (list != null ? list : new PermissionAdminPrivilege());
+                     permission.IsAllow = ent.IsAllow;
+                     permission.IsEdit = ent.IsEdit;
+                     permission.IsAdd = ent.IsAdd;
+                     permission.IsDelete = ent.IsDelete;
+                     permission.AdminFeature = ent.AdminFeature;
+                     permission.RoleName = ent.RoleName;
+                     if (list == null)
+                         db.AdminPrivileges.Add(permission);
+                     db.SaveChanges();
+                 }
+             }
+             return RedirectToAction("Index", new { RoleName =  model.RoleName});
+            // return Json("FROMPAGE", "application/json", System.Text.Encoding.UTF8, JsonRequestBehavior.AllowGet);
+        }
+
+
+
+        [HttpPost]
         // [Authorize(Roles = "Admin")]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public ActionResult SavePermission(SelectEntityRolesViewModel model)
         {
-            if (!((CustomPrincipal)User).IsAdmin())
+            PermissionContext db = new PermissionContext(LogggedInUser);
+            if (!((CustomPrincipal)User).CanEditAdminFeature("RoleEntityPermission"))
                 return RedirectToAction("Index", "Home");
             if (ModelState.IsValid)
             {
@@ -263,7 +308,8 @@ namespace GeneratorBase.MVC.Controllers
         // GET: /Permission/Details/5
         public ActionResult Details(long? id)
         {
-            if (!((CustomPrincipal)User).IsAdmin())
+            PermissionContext db = new PermissionContext(LogggedInUser);
+            if (!((CustomPrincipal)User).CanViewAdminFeature("RoleEntityPermission"))
                 return RedirectToAction("Index", "Home");
             if (id == null)
             {
@@ -280,7 +326,7 @@ namespace GeneratorBase.MVC.Controllers
         // GET: /Permission/Create
         public ActionResult Create()
         {
-            if (!((CustomPrincipal)User).IsAdmin())
+            if (!((CustomPrincipal)User).CanAddAdminFeature("RoleEntityPermission"))
                 return RedirectToAction("Index", "Home");
             return View();
         }
@@ -292,7 +338,8 @@ namespace GeneratorBase.MVC.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "Id,EntityName,RoleName,CanEdit,CanDelete,CanView,CanAdd")] Permission permission)
         {
-            if (!((CustomPrincipal)User).IsAdmin())
+            PermissionContext db = new PermissionContext(LogggedInUser);
+            if (!((CustomPrincipal)User).CanAddAdminFeature("RoleEntityPermission"))
                 return RedirectToAction("Index", "Home");
             if (ModelState.IsValid)
             {
@@ -307,12 +354,13 @@ namespace GeneratorBase.MVC.Controllers
         // GET: /Permission/Edit/5
         public ActionResult Edit(long? id)
         {
-            if (!((CustomPrincipal)User).IsAdmin())
+            if (!((CustomPrincipal)User).CanEditAdminFeature("RoleEntityPermission"))
                 return RedirectToAction("Index", "Home");
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
+            PermissionContext db = new PermissionContext(LogggedInUser);
             Permission permission = db.Permissions.Find(id);
             if (permission == null)
             {
@@ -328,10 +376,11 @@ namespace GeneratorBase.MVC.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "Id,EntityName,RoleName,CanEdit,CanDelete,CanView,CanAdd")] Permission permission)
         {
-            if (!((CustomPrincipal)User).IsAdmin())
+            if (!((CustomPrincipal)User).CanEditAdminFeature("RoleEntityPermission"))
                 return RedirectToAction("Index", "Home");
             if (ModelState.IsValid)
             {
+                PermissionContext db = new PermissionContext(LogggedInUser);
                 db.Entry(permission).State = EntityState.Modified;
                 db.SaveChanges();
                 return RedirectToAction("Index");
@@ -342,12 +391,12 @@ namespace GeneratorBase.MVC.Controllers
         // GET: /Permission/Delete/5
         public ActionResult Delete(long? id)
         {
-            if (!((CustomPrincipal)User).IsAdmin())
+            if (!((CustomPrincipal)User).CanDeleteAdminFeature("RoleEntityPermission"))
                 return RedirectToAction("Index", "Home");
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
+            } PermissionContext db = new PermissionContext(LogggedInUser);
             Permission permission = db.Permissions.Find(id);
             if (permission == null)
             {
@@ -361,8 +410,8 @@ namespace GeneratorBase.MVC.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(long id)
         {
-            if (!((CustomPrincipal)User).IsAdmin())
-                return RedirectToAction("Index", "Home");
+            if (!((CustomPrincipal)User).CanDeleteAdminFeature("RoleEntityPermission"))
+                return RedirectToAction("Index", "Home"); PermissionContext db = new PermissionContext(LogggedInUser);
             Permission permission = db.Permissions.Find(id);
             db.Permissions.Remove(permission);
             db.SaveChanges();
@@ -373,7 +422,7 @@ namespace GeneratorBase.MVC.Controllers
         {
             if (disposing)
             {
-                db.Dispose();
+                
             }
             base.Dispose(disposing);
         }

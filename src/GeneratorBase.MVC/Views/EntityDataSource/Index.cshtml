@@ -1,0 +1,15 @@
+﻿@model IEnumerable<GeneratorBase.MVC.Models.EntityDataSource>
+@{
+    ViewBag.Title = "Entity Data Source List";
+	Layout ="~/Views/Shared/_Layout.cshtml";
+}
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-title">
+            <i class="glyphicon glyphicon-thumbs-up text-primary" style="margin-bottom:-20px;"></i> Entity Data Source  <i class="glyphicon glyphicon-chevron-right small"></i>  <span>List</span>
+</h1>
+    </div>
+</div>
+<div id="dvEntityDataSourceFilter"></div>
+@Html.Partial("~/Views/EntityDataSource/IndexPartial.cshtml", Model)
+

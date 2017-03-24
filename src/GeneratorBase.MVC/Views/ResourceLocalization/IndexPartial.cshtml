@@ -1,0 +1,46 @@
+﻿@model List<ModelReflector.Entity>
+<div id="ResourceLocalization">
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-sx-12">
+            <div>
+                <div>
+                    <div id="Des_Table" class="table-responsive" style="overflow-x:auto;">
+                        <table id="tblResourceLocalizationList" class="table table-striped table-bordered table-hover table-condensed">
+                            <thead>
+                                <tr>
+                                    <th class="col1">
+                                        Name
+                                    </th>
+                                    <th class="col1">
+                                        Display Mapping
+                                    </th>
+                                    <th class="col1">Add/Edit</th>
+                                </tr>
+                            </thead>
+                            @foreach (var item in Model)
+                            {
+                                var filepath = System.Web.HttpContext.Current.Server.MapPath("~/ResourceFiles/");
+                                var fileexist = System.IO.File.Exists(filepath + item.Name + ".resx");
+                                <tr>
+                                    <td>@item.DisplayName</td>
+                                    @if (fileexist)
+                                    {
+                                        <td> Customized </td>
+                                    }
+                                    else
+                                    {
+                                        <td> Default </td>
+                                    }
+                                    <td>
+                                        <a href="@Url.Action("Create", "ResourceLocalization", new { name = item.Name }, null)"><i class="fam-building-edit"></i> </a>
+                                    </td>
+                                </tr>
+                            }
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

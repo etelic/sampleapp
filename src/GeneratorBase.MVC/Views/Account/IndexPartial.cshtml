@@ -11,6 +11,7 @@
     {
         BackUrl = Request.UrlReferrer;
     }
+    ApplicationContext db = new ApplicationContext(new GeneratorBase.MVC.Models.SystemUser());
 }
 <div id="Account">
     <style>
@@ -84,7 +85,7 @@
                 @Html.TextBox("SearchStringAccount", ViewBag.CurrentFilter as string, null, new { @class = "form-control fixsearchbox", @placeholder = "Search" })
                 <div class="input-group-btn">
                     <a id="AccountSearch" onclick="SearchClick(event, 'Account', '@Html.Raw(Url.Action("Index", "Account", new {searchString = "_SearchString",SearchTimeStamp = DateTime.Now }))','@User.JavaScriptEncodedName');"
-                     data-original-title="Grid Search" class="btn btn-default btn-default tip-top" style="padding:3px 5px;"><span class="fam-zoom"></span></a>
+                       data-original-title="Grid Search" class="btn btn-default btn-default tip-top" style="padding:3px 5px;"><span class="fam-zoom"></span></a>
                     <button id="AccountCancel" type="button"
                             class="btn btn-default btn-default collapse-data-btn tip-top"
                             onclick="CancelSearch('Account','@Html.Raw(Url.Action("Index", "Account", new { ClearSearchTimeStamp = DateTime.Now }))','@User.JavaScriptEncodedName')" data-original-title="Clear Search" data-placement="top" style="padding:3px 5px;">
@@ -98,17 +99,20 @@
         <div class="col-md-12 col-sm-12 col-sx-12">
             <div class="panel panel-default ">
                 <div class="panel-heading clearfix" style="margin:0px; padding:8px;">
-                    <button class="btn btn-default tip-top" data-placement="top" data-original-title="Add New User" style="padding:3px 5px;" data-toggle="modal" data-target="#quickaddUser" onclick=@Html.Raw("OpenQuickQddPopUp('dvQAddquickaddUser');")>
-                        <span class="fam-add"></span> Create User
-                    </button>
-                    @if (GeneratorBase.MVC.Models.CommonFunction.Instance.NeedSharedUserSystem() == "yes")
+                    @if (User.CanAddAdminFeature("User"))
                     {
-                        <a href="http://@GeneratorBase.MVC.Models.CommonFunction.Instance.Server()/Authentication/Account/Register?AppName=@Url.Action("Login","Account",null,Url.RequestContext.HttpContext.Request.Url.Scheme)" class="btn">Create User in Shared User System</a>
+                        <button class="btn btn-default tip-top" data-placement="top" data-original-title="Add New User" style="padding:3px 5px;" data-toggle="modal" data-target="#quickaddUser" onclick=@Html.Raw("OpenQuickQddPopUp('dvQAddquickaddUser');")>
+                            <span class="fam-add"></span> Create User
+                        </button>
+                        if (GeneratorBase.MVC.Models.CommonFunction.Instance.NeedSharedUserSystem() == "yes")
+                        {
+                            <a href="http://@GeneratorBase.MVC.Models.CommonFunction.Instance.Server()/Authentication/Account/Register?AppName=@Url.Action("Login","Account",null,Url.RequestContext.HttpContext.Request.Url.Scheme)" class="btn">Create User in Shared User System</a>
+                        }
                     }
                 </div>
 
                 <div id="Des_Table" class="table-responsive" style="overflow-x:auto;">
-                    <table class="table table-striped table-bordered">
+                    <table class="table table-striped table-bordered table-hover table-condensed">
                         <tr>
                             <th>Action</th>
                             <th class="col2">
@@ -124,7 +128,7 @@
                                 {<i class="fa fa-sort-desc"></i>}
                                 @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "FirstName")
                                 {<i class="fa fa-sort-asc"></i>}
-                               
+
                             </th>
                             <th class="col4">
                                 @Html.ActionLink("Last Name", ActionNameUrl, "Account", getSortHtmlAttributes("LastName", false, null, false), new { @onclick = "SortLinkClick(event,'Account');" })
@@ -132,7 +136,7 @@
                                 {<i class="fa fa-sort-desc"></i>}
                                 @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "LastName")
                                 {<i class="fa fa-sort-asc"></i>}
-                               
+
                             </th>
                             <th class="col5">
                                 @Html.ActionLink("Email", ActionNameUrl, "Account", getSortHtmlAttributes("Email", false, null, false), new { @onclick = "SortLinkClick(event,'Account');" })
@@ -141,10 +145,13 @@
                                 @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "Email")
                                 {<i class="fa fa-sort-asc"></i>}
                             </th>
+                            <th>Api Token</th>
                             <th>User's Status</th>
                         </tr>
                         @foreach (var item in Model)
                         {
+                            var userId = item.Id;
+                            var token = db.ApiTokens.FirstOrDefault(p => p.T_UsersID == userId);
                             <tr>
                                 <td>
                                     <div style="width:60px; margin-top:-2px;">
@@ -154,26 +161,41 @@
                                                 <span class="caret">    </span>
                                             </button>
                                             <ul class="dropdown-menu pull-left">
-                                                <li>
-                                                    <a href="@Url.Action("UserRoles", "Account", new { id = item.Id})"><i class="glyphicon glyphicon-eye-open"></i>  Roles</a>
-                                                </li>
-                                                <li>
-                                                    <a href="@Url.Action("Edit", "Account", new { id = item.Id }, null)"><i class="glyphicon glyphicon-edit"></i>  Edit</a>
-                                                </li>
-                                                <li>
-                                                    <a href="@Url.Action("Delete", "Account", new { id = item.Id }, null)"><i class="glyphicon glyphicon-remove-sign"></i>  Delete</a>
-                                                </li>
-                                                @if (item.LockoutEndDateUtc > DateTime.UtcNow || item.LockoutEndDateUtc != null)
+                                                @if (User.CanViewAdminFeature("AssignUserRole"))
                                                 {
                                                     <li>
-                                                        <a onclick="return confirm('Are you sure?')" href="@Url.Action("LockUnLockUser", "Account", new { id = item.Id,lockuser=false }, null)"><i class="glyphicon glyphicon-remove-sign"></i>  UnLock User</a>
+                                                        <a href="@Url.Action("UserRoles", "Account", new { id = item.Id})"><i class="glyphicon glyphicon-eye-open"></i>  Roles</a>
                                                     </li>
+                                                }
+                                                @if (User.CanEditAdminFeature("User"))
+                                                {
+                                                    <li>
+                                                        <a href="@Url.Action("Edit", "Account", new { id = item.Id }, null)"><i class="glyphicon glyphicon-edit"></i>  Edit</a>
+                                                    </li>
+                                                }
+                                                @if (User.CanDeleteAdminFeature("User"))
+                                                {
+                                                    <li>
+                                                        <a href="@Url.Action("Delete", "Account", new { id = item.Id }, null)"><i class="glyphicon glyphicon-remove-sign"></i>  Delete</a>
+                                                    </li>
+                                                }
+                                                @if (item.LockoutEndDateUtc > DateTime.UtcNow || item.LockoutEndDateUtc != null)
+                                                {
+                                                    if (User.CanEditAdminFeature("User"))
+                                                    {
+                                                        <li>
+                                                            <a onclick="return confirm('Are you sure?')" href="@Url.Action("LockUnLockUser", "Account", new { id = item.Id,lockuser=false }, null)"><i class="glyphicon glyphicon-remove-sign"></i>  UnLock User</a>
+                                                        </li>
+                                                    }
                                                 }
                                                 else
                                                 {
-                                                    <li>
-                                                        <a onclick="return confirm('Are you sure?')" href="@Url.Action("LockUnLockUser", "Account", new { id = item.Id,lockuser=true }, null)"><i class="glyphicon glyphicon-remove-sign"></i>  Lock User</a>
-                                                    </li>
+                                                    if (User.CanEditAdminFeature("User"))
+                                                    {
+                                                        <li>
+                                                            <a onclick="return confirm('Are you sure?')" href="@Url.Action("LockUnLockUser", "Account", new { id = item.Id,lockuser=true }, null)"><i class="glyphicon glyphicon-remove-sign"></i>  Lock User</a>
+                                                        </li>
+                                                    }
                                                 }
                                             </ul>
                                         </div>
@@ -190,6 +212,12 @@
                                 </td>
                                 <td>
                                     @Html.DisplayFor(modelItem => item.Email)
+                                </td>
+                                <td>
+                                    @if (token != null)
+                                    {
+                                        <label>@token.T_AuthToken</label>
+                                    }
                                 </td>
                                 <td>
                                     @if (item.LockoutEndDateUtc > DateTime.UtcNow || item.LockoutEndDateUtc != null)

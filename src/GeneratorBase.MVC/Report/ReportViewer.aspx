@@ -8,7 +8,7 @@
 <body>
     <form id="form1" runat="server">
         <rsweb:ReportViewer ID="MyReportViewer" ShowParameterPrompts="false" ShowFindControls="false"
-            ShowPageNavigationControls="false" ShowPrintButton="false" ShowZoomControl="false"
+            ShowPageNavigationControls="true" ShowPrintButton="false" ShowZoomControl="false"
             ShowRefreshButton="false" Width="100%" Height="100%" AsyncRendering="false" runat="server" ProcessingMode="Remote">
         </rsweb:ReportViewer>
     </form>

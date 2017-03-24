@@ -8,7 +8,8 @@ namespace GeneratorBase.MVC.Models
     {
         public string Name { get { return "System"; } }
         public string JavaScriptEncodedName { get { return "System"; } }
-        public bool IsAdmin()
+        public bool IsAdmin { get { return true; } }
+        public bool IsAdminUser()
         {
             return true;
         }
@@ -70,5 +71,7 @@ namespace GeneratorBase.MVC.Models
         }
         public List<BusinessRule> businessrules { get { return new List<BusinessRule>(); } }
         public List<Permission> permissions { get { return new List<Permission>(); } }
+        public List<MultiTenantLoginSelected> MultiTenantLoginSelected { get; set; }
+        public List<PermissionAdminPrivilege> adminprivileges { get; set; }
     }
 }

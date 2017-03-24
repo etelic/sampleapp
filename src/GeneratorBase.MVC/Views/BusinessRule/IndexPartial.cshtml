@@ -238,7 +238,8 @@
                             </div>
                         }
                     </div>
-                    <div class="pull-right" style="width:200px;">
+                   
+                    <div class="pull-right" style="width:300px;">
                         <div class="input-group">
                             @Html.TextBox("SearchStringBusinessRule", ViewBag.CurrentFilter as string, null, new { @class = "form-control fixsearchbox", @placeholder = "Search" })
                             <div class="input-group-btn">
@@ -258,9 +259,13 @@
                                         style="padding:3px 5px;">
                                     <span class="fam-arrow-refresh"></span>
                                 </button>
+                                @Html.ActionLink("Restart All Daily Tasks", "RestartDailyTask", null, new { @class = "btn btn-default tip-top", @style = "padding:3px 5px;" })
+
+
                             </div>
-                        </div>
+                                  </div>
                     </div>
+
                 </div>
                 <div class="panel-body" style="margin:0px; padding:8px;">
                     @if (ViewData["HostingEntity"] == null)
@@ -401,7 +406,10 @@
                                             Rule Actions
                                         </th>
                                         <th class="col8">
-                                            Disabled
+                                            Rule Disable
+                                        </th>
+                                        <th class="col9">
+                                            Rule Freeze
                                         </th>
                                     }
                                 </tr>
@@ -429,12 +437,12 @@
                                                                 <a href="@Url.Action("Details", "BusinessRule", new { id = item.Id }, null)"><i class="glyphicon glyphicon-eye-open"></i>  View</a>
                                                             </li>
                                                         }
-                                                        <li>
-                                                            @if (User.Identity.IsAuthenticated && User != null && User.CanEdit("BusinessRule"))
-                                                            {
-                                                                <a href="@Url.Action("Edit","BusinessRule", new { id = item.Id },null)"><i class="glyphicon glyphicon-edit"></i>  Edit</a>
-                                                            }
-                                                        </li>
+                                                        @*<li>
+                                                                @if (User.Identity.IsAuthenticated && User != null && User.CanEdit("BusinessRule"))
+                                                                {
+                                                                    <a href="@Url.Action("Edit","BusinessRule", new { id = item.Id },null)"><i class="glyphicon glyphicon-edit"></i>  Edit</a>
+                                                                }
+                                                            </li>*@
                                                         <li>
                                                             @if (item.Disable)
                                                             {
@@ -443,6 +451,16 @@
                                                             else
                                                             {
                                                                 <a href="@Url.Action("EnableDisableRule", "BusinessRule", new { id = item.Id }, null)"><i class="glyphicon glyphicon-circle-arrow-down"></i>  Disable</a>
+                                                            }
+                                                        </li>
+                                                        <li>
+                                                            @if (item.Freeze)
+                                                            {
+                                                                <a href="@Url.Action("FreezeRule", "BusinessRule", new { id = item.Id }, null)"><i class="glyphicon glyphicon-circle-arrow-up"></i>  UnFreeze</a>
+                                                            }
+                                                            else
+                                                            {
+                                                                <a href="@Url.Action("FreezeRule", "BusinessRule", new { id = item.Id }, null)"><i class="glyphicon glyphicon-circle-arrow-down"></i>  Freeze</a>
                                                             }
                                                         </li>
                                                         <li class="divider"></li>
@@ -501,10 +519,21 @@
                                         @if (User.CanView("BusinessRule"))
                                         {
                                             <td>
+                                                @if (item.t_schedulertask != null)
+                                                {
+                                                    <span>Scheduled Task,</span>
+                                                }
                                                 @String.Join(",", item.ruleaction.Where(q => q.associatedactiontype != null).Select(p => p.associatedactiontype.ActionTypeName))
                                             </td>
                                             <td>
                                                 @Html.DisplayFor(modelItem => item.Disable)
+                                            </td>
+                                        }
+                                        @if (User.CanView("BusinessRule"))
+                                        {
+
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.Freeze)
                                             </td>
                                         }
                                     </tr>

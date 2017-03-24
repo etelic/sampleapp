@@ -35,7 +35,7 @@ namespace GeneratorBase.MVC.Models
                 m_LastUpdatedBy = value;
             }
         }
-        string m_LastUpdatedByUser = HttpContext.Current.User.Identity.Name;
+        string m_LastUpdatedByUser = HttpContext.Current != null && HttpContext.Current.User != null ? HttpContext.Current.User.Identity.Name : "System";
         [DisplayName("LastUpdatedByUser")]
         public string LastUpdatedByUser
         {

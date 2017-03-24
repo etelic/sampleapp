@@ -13,7 +13,7 @@
         $('.fooDelete').each(function () { this.checked = source.checked; });
     }
     function toggleView(source) {
-       // checkboxes = $('.fooView');
+        // checkboxes = $('.fooView');
         $('.fooView').each(function () { this.checked = source.checked; });
     }
 </script>
@@ -25,8 +25,7 @@
             $("#" + entity + "Owner").prop('checked', true);
             $("#" + entity + "Ownertxt").val(value);
         }
-        else
-        {
+        else {
             $("#" + entity + "Owner").prop('checked', false);
             $("#" + entity + "Ownertxt").val("");
         }
@@ -51,69 +50,143 @@
         </h1>
     </div>
 </div>
-<div class="col-md-12 col-sm-12 col-xs-12" style="padding:0px; margin:0px;">
-    @using (Html.BeginForm("SavePermission", "Permission", FormMethod.Post, new { encType = "multipart/form-data", name = "myform" }))
-    {
-        @Html.AntiForgeryToken()
-        <div class="row">
-            <div class="col-md-12 col-sm-12 col-xs-12">
-                <div class="panel panel-default">
-                    <div class="panel-heading clearfix " style="margin:0px; padding:8px;">
-                        Set Permission for Role
-                    </div>
-                    <div class="panel-body  AppForm">
-                        <div class="form-horizontal">
-                            @Html.ValidationSummary(true)
-                            @*<span>Select All  <input type="checkbox" onclick="toggle(this)" /></span>*@
-                            <div class="tabbable responsive">
-                                @*<div class="form-group">
-                                    <div class="col-md-10">*@
-                                        @Html.HiddenFor(model => model.RoleName)
-                                    @*</div>
+<div class="tabbable responsive">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="#Details" data-toggle="tab">Entity Permission</a></li>
+        @if (User.IsAdmin)
+        {
+            <li><a href="#AdminPrivileges" data-toggle="tab">Admin Privileges</a></li>
+        }
+    </ul>
+</div>
+<div class="tab-content">
+    <div class="tab-pane fade in active" id="Details">
+        <div class="col-md-12 col-sm-12 col-xs-12" style="padding:0px; margin:0px;">
+            @using (Html.BeginForm("SavePermission", "Permission", FormMethod.Post, new { encType = "multipart/form-data", name = "myform" }))
+            {
+                @Html.AntiForgeryToken()
+                <div class="row">
+                    <div class="col-md-12 col-sm-12 col-xs-12">
+                        <div class="panel panel-default">
+                            @*<div class="panel-heading clearfix " style="margin:0px; padding:8px;">
+                                    Set Permission for Role
                                 </div>*@
-                                <div id="Des_Table" class="table-responsive" style="overflow-x:auto;">
-                                    <table class="table table-bordered table-hover table-condensed">
-                                        <tr style="background: #EDF5FA">
-                                            <th style="text-align:center">
-                                                Entity
-                                            </th>
-                                            <th style="text-align:center">
-                                                <input type="checkbox" onclick="toggleAdd(this)" />  Add
-                                            </th>
-                                            <th style="text-align:center">
-                                                <input type="checkbox" onclick="toggleEdit(this)" /> Edit
-                                            </th>
-                                            <th style="text-align:center">
-                                                <input type="checkbox" onclick="toggleDelete(this)" /> Delete
-                                            </th>
-                                            <th style="text-align:center">
-                                                <input type="checkbox" onclick="toggleView(this)" /> View
-                                            </th>
-                                            @*code for verb action security*@
-                                            <th style="text-align:center">
-                                                Disable Verbs
-                                            </th>
-                                            <th style="text-align:center">
-                                                Self Service Only
-                                            </th>
-                                            <th style="text-align:center">
-                                               Auto Registration
-                                            </th>
-                                        </tr>
-                                        @Html.EditorFor(model => model.Entities)
-                                    </table>
+                            <div class="panel-body  AppForm">
+                                <div class="form-horizontal">
+                                    @Html.ValidationSummary(true)
+                                    @*<span>Select All  <input type="checkbox" onclick="toggle(this)" /></span>*@
+                                    <div class="tabbable responsive">
+                                        @*<div class="form-group">
+                                            <div class="col-md-10">*@
+                                        @Html.HiddenFor(model => model.RoleName)
+                                        @*</div>
+                                            </div>*@
+                                        <div id="Des_Table" class="table-responsive" style="overflow-x:auto;">
+                                            <table class="table table-bordered table-hover table-condensed">
+                                                <tr style="background: #EDF5FA">
+                                                    <th style="text-align:center">
+                                                        Entity
+                                                    </th>
+                                                    <th style="text-align:center">
+                                                        <input type="checkbox" onclick="toggleAdd(this)" />  Add
+                                                    </th>
+                                                    <th style="text-align:center">
+                                                        <input type="checkbox" onclick="toggleEdit(this)" /> Edit
+                                                    </th>
+                                                    <th style="text-align:center">
+                                                        <input type="checkbox" onclick="toggleDelete(this)" /> Delete
+                                                    </th>
+                                                    <th style="text-align:center">
+                                                        <input type="checkbox" onclick="toggleView(this)" /> View
+                                                    </th>
+                                                    @*code for verb action security*@
+                                                    <th style="text-align:center">
+                                                        Enable Verbs
+                                                    </th>
+                                                    <th style="text-align:center">
+                                                        Self Service Only
+                                                    </th>
+                                                    <th style="text-align:center">
+                                                        Auto Registration
+                                                    </th>
+                                                </tr>
+                                                @Html.EditorFor(model => model.Entities)
+                                            </table>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
+                <div class="row deletefix">
+                    <div class="col-md-12 col-sm-12 col-xs-12">
+                        @Html.ActionLink("Back to Role List", "RoleList", "Account", null, new { @class = "btn btn-default btn-sm", @id = "BackToRoleList" })
+                        @if (User.CanEditAdminFeature("RoleEntityPermission"))
+                        {
+                        <input type="submit" value="Save" onclick="SetRolePermission(event);" class="btn btn-primary btn-sm" />
+                        }
+                    </div>
+                </div>
+            }
         </div>
-        <div class="row deletefix">
-            <div class="col-md-12 col-sm-12 col-xs-12">
-                @Html.ActionLink("Back to Role List", "RoleList", "Account", null, new { @class = "btn btn-default btn-sm", @id = "BackToRoleList" })
-                <input type="submit" value="Save" onclick="SetRolePermission(event);" class="btn btn-primary btn-sm" />
-            </div>
+    </div>
+    @if (User.IsAdmin)
+    {
+        <div class="tab-pane fade in" id="AdminPrivileges">
+            @using (Html.BeginForm("SaveAdminPrivilege", "Permission", FormMethod.Post, new { encType = "multipart/form-data", name = "myform" }))
+            {
+                @Html.AntiForgeryToken()
+                <div id="Des_Table" class="table-responsive" style="overflow-x:inherit;">
+                    @Html.HiddenFor(model => model.RoleName)
+                    <table class="table table-striped table-bordered table-hover table-condensed">
+                        <tr>
+                            <th class="hidden">RoleName</th>
+                            <th>Admin Feature</th>
+                            <th>Add</th>
+                            <th>Edit</th>
+                            <th>Delete</th>
+                            <th>View</th>
+                        </tr>
+
+                        @for (int i = 0; i < Model.privileges.Count; i++)
+                        {
+                            var obj = (new GeneratorBase.MVC.Models.AdminFeaturesDictionary()).getDictionary().FirstOrDefault(p => p.Key == Model.privileges[i].AdminFeature);
+                            <tr>
+                                <td class="hidden">
+                                    @Html.HiddenFor(modelItem => Model.privileges[i].RoleName)
+
+                                </td>
+                                <td>
+                                    @Html.HiddenFor(modelItem => Model.privileges[i].AdminFeature)
+                                    @Html.DisplayFor(modelItem => Model.privileges[i].AdminFeature)
+                                    <p class="small" style="padding:0px;margin:0px;">@obj.Value</p>
+                                </td>
+                                <td>
+                                    @Html.CheckBoxFor(modelItem => Model.privileges[i].IsAdd)
+                                </td>
+                                <td>
+                                    @Html.CheckBoxFor(modelItem => Model.privileges[i].IsEdit)
+                                </td>
+                                <td>
+                                    @Html.CheckBoxFor(modelItem => Model.privileges[i].IsDelete)
+                                </td>
+                                <td>
+                                    @Html.CheckBoxFor(modelItem => Model.privileges[i].IsAllow)
+                                </td>
+                            </tr>
+
+                        }
+
+                    </table>
+                </div>
+                <br />
+                <div class="row deletefix">
+                    <div class="col-md-12 col-sm-12 col-xs-12">
+                        <input type="submit" value="Save" class="btn btn-primary btn-sm" />
+                    </div>
+                </div>
+            }
         </div>
     }
 </div>
@@ -121,6 +194,16 @@
     <br /><br />
 </div>
 <script>
+    $('.header').click(function () {
+        $(this).toggleClass('expand').nextUntil('tr.header').slideToggle(500);
+    });
+
+    function ChangeViewPermissionOfEntity(source) {
+        var id = source.name.replace("Entities[", '').replace("].CanView", '');
+        $("#Entities_" + id + "__CanAdd").attr("checked", source.checked);
+        $("#Entities_" + id + "__CanEdit").attr("checked", source.checked);
+        $("#Entities_" + id + "__CanDelete").attr("checked", source.checked);
+    }
     function SetRolePermission(e) {
         var target;
         if (e.srcElement) target = e.srcElement;
@@ -182,5 +265,7 @@
         $('select[multiple=multiple]').multiselect({
             buttonWidth: '100%'
         });
+
+        $('#trDefaultHeader').click();
     });
 </script>

@@ -29,10 +29,12 @@
                                 </th>
                             }
                             <th class="col1">Action Parameters</th>
+                            <th class="col1">Is Else Action</th>
                             <th class="col1">Remove</th>
                         </tr>
                         @foreach (var item in Model)
                         {
+                            if (item.AssociatedActionTypeID == 9) { continue; }
                             <tr ondblclick="DoubleClickRuleAction(@item.Id);">
                                 @if (User.CanView("RuleAction", "RuleActionID"))
                                 {
@@ -49,28 +51,28 @@
                                 }
                                 @if (item.associatedactiontype != null && (item.associatedactiontype.TypeNo == 2 || item.associatedactiontype.TypeNo == 4 || item.associatedactiontype.TypeNo == 6 || item.associatedactiontype.TypeNo == 7 || item.associatedactiontype.TypeNo == 8 || item.associatedactiontype.TypeNo == 5))
                                 {
-                                        foreach (var item1 in  item.actionarguments)
+                                    foreach (var item1 in item.actionarguments)
+                                    {
+                                        if (item.associatedactiontype.TypeNo == 7)
                                         {
-                                            if(item.associatedactiontype.TypeNo == 7)
-                                            {
-                                            propertyValue += item1.ParameterName + "="+item1.ParameterValue + "<br/>";
-                                            }
-                                            else
-                                            {
-                                                propertyValue += item1.ParameterName + ","; 
-                                            }
+                                            propertyValue += item1.ParameterName + "=" + item1.ParameterValue + "<br/>";
                                         }
+                                        else
+                                        {
+                                            propertyValue += item1.ParameterName + ",";
+                                        }
+                                    }
                                     <td style="word-wrap:break-word">
                                         @if (item.associatedactiontype.TypeNo == 7 || item.associatedactiontype.TypeNo == 8 || item.associatedactiontype.TypeNo == 5)
-                                        { 
-                                              @Html.Raw(propertyValue.TrimEnd(','))
+                                        {
+                                            @Html.Raw(propertyValue.TrimEnd(','))
                                         }
                                         else
                                         {
                                             <a style="cursor:pointer;" data-target="#quickaddActionArgs" data-toggle="modal" onclick=@Html.Raw("OpenQuickActionArgs('dvQAddquickaddActionArgs','"+item.Id+"','"+item.AssociatedActionTypeID+"');")><i class="glyphicon glyphicon-add-sign"></i>@Html.Raw(propertyValue.TrimEnd(','))</a>
                                         }
                                     </td>
-                                    propertyValue = "";
+                                        propertyValue = "";
                                 }
                                 else
                                 {
@@ -94,6 +96,9 @@
                                         <td> No parameter required</td>
                                     }
                                 }
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.IsElseAction)
+                                </td>
                                 <td>
                                     <a href="@Url.Action("Delete", "RuleAction", new { id = item.Id }, null)"><i class="fam-delete"></i> </a>
                                 </td>

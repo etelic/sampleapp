@@ -98,7 +98,7 @@
 			<div class="row">
 				<div class="col-md-12 col-sm-12 col-xs-12">
 					@Html.ActionLink("Back", "Cancel", new { UrlReferrer = Request.UrlReferrer }, new { @class = "btn btn-default btn-sm" })
-					 if (User.Identity.IsAuthenticated && User != null && User.CanEdit("DefaultEntityPage"))
+					 @if (User.Identity.IsAuthenticated && User != null && User.CanEdit("DefaultEntityPage"))
                      {
                           @Html.ActionLink("Edit", "Edit", new { id = Model.Id, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, new { @class = "btn btn-primary btn-sm" })
                      }

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Web;
 using System.ComponentModel;
 using Microsoft.AspNet.Identity.EntityFramework;
+using System.Web.Mvc;
 namespace GeneratorBase.MVC.Models
 {
     [Table("tbl_UserDefinePages")]
@@ -24,7 +25,7 @@ namespace GeneratorBase.MVC.Models
     {
         public CreateUserDefinePageViewModel()
         {
-            this.Roles = new List<SelectUserRoleEditorViewModel>();
+            //this.Roles = new List<SelectUserRoleEditorViewModel>();
         }
         public CreateUserDefinePageViewModel(UserDefinePages userpages)
             : this()
@@ -33,15 +34,27 @@ namespace GeneratorBase.MVC.Models
             this.PageContent = userpages.PageContent;
             var Db = new ApplicationDbContext();
             var allRoles = Db.Roles;
-            foreach (var role in allRoles)
-            {
-                var rvm = new SelectUserRoleEditorViewModel(role);
-                this.Roles.Add(rvm);
-            }
+            //foreach (var role in allRoles)
+            //{
+            //    var rvm = new SelectUserRoleEditorViewModel(role);
+            //    this.Roles.Add(rvm);
+            //}
+            var userdefinepagesrole = new UserDefinePagesRoleContext();
+            var disableroles = userdefinepagesrole.UserDefinePagesRoles.Where(u => u.PageId != userpages.Id);
+            //foreach (var userRole in disableroles)
+            //{
+            //    var checkUserRole = this.Roles.Find(r => r.RoleName == userRole.RoleName);
+            //    checkUserRole.isdisabled = true;
+            //}
+            var roleslist = disableroles.Select(a => a.RoleName).ToList();
+            this.RoleList = new SelectList(allRoles.Where(r => !roleslist.Any(dr => dr == r.Name)).ToList(), "Name", "Name", null);
         }
+        [DisplayName("Page Name")]
+        [Required]
         public string PageName { get; set; }
         public string PageContent { get; set; }
-        public List<SelectUserRoleEditorViewModel> Roles { get; set; }
+        public SelectList RoleList { get; set; }
+        //public List<SelectUserRoleEditorViewModel> Roles { get; set; }
     }
     public class EditUserDefinePageViewModel
     {
@@ -77,7 +90,7 @@ namespace GeneratorBase.MVC.Models
             foreach (var userRole in disableroles)
             {
                 var checkUserRole = this.Roles.Find(r => r.RoleName == userRole.RoleName);
-                checkUserRole.isdisabled =  true;
+                checkUserRole.isdisabled = true;
             }
         }
         public Int64 Id { get; set; }
