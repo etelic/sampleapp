@@ -1,2 +1,2 @@
 [config]
-command = SCM_SCRIPT_GENERATOR_ARGS=--basic -p FolderToDeploy
+command = SCM_SCRIPT_GENERATOR_ARGS=--basic -p /src/GeneratorBase.MVC
