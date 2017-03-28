@@ -1,7 +1,7 @@
 [config]
 ; full path to the project file to be built (ASP.NET) or directory
-project = /src/GeneratorBase.MVC/GeneratorBase.MVC.csproj
+project = \src\GeneratorBase.MVC\GeneratorBase.MVC.csproj
 
 
 ; override the arguments send to the deployment script
-SCM_SCRIPT_GENERATOR_ARGS=--basic -p /src/GeneratorBase.MVC
+SCM_SCRIPT_GENERATOR_ARGS=--basic -p \src\GeneratorBase.MVC
