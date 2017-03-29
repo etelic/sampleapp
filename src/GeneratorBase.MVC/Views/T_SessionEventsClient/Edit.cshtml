@@ -1,0 +1,372 @@
+﻿@model GeneratorBase.MVC.Models.T_SessionEventsClient
+@using PagedList;
+@{
+    ViewBag.Title = "Edit Session EventsClient";
+	var EditPermission = User.CanEditItem("T_SessionEventsClient", Model, User);
+	var DeletePermission = User.CanDeleteItem("T_SessionEventsClient", Model, User);
+	var EntityDisplayNameReflector = ModelReflector.Entities.FirstOrDefault(p => p.Name == "T_SessionEventsClient");
+    var EntityDisplayName = EntityDisplayNameReflector != null ? EntityDisplayNameReflector.DisplayName : "Session EventsClient";
+}
+@functions {
+    object getHtmlAttributes(string Property)
+    {
+        if (User.CanEdit("T_SessionEventsClient", Property))
+        {
+            return new { @class = "form-control" };
+        } return new { @class = "form-control", @readonly = "readonly" };
+    }
+}
+<script>
+    $(document).ready(function () {
+        try {
+            var hostingEntityName = "";
+             if ('@Convert.ToString(ViewData["AssociatedType"])'.length > 0) {
+                hostingEntityName = '@Convert.ToString(ViewData["AssociatedType"])';
+				$('#' + hostingEntityName + 'ID').attr("lock","true");
+				 $('#' + hostingEntityName + 'ID').trigger("change");
+				  $("input[type='radio'][name='" + hostingEntityName + "ID']").each(function () {
+                    if (!this.checked)
+                        this.closest("li").style.display = "none";
+                });
+            }
+			if ($.cookie('@User.JavaScriptEncodedName@Model.Id' + 'TabCookie') != null) {
+				$('a[href="#' + $.cookie('@User.JavaScriptEncodedName@Model.Id' + 'TabCookie') + '"]').click();
+			}
+			 
+        }
+        catch (ex) { }
+    });
+</script>
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_SessionEventsClientIsHiddenRule))
+    {
+        @Html.Raw(ViewBag.T_SessionEventsClientIsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_SessionEventsClientIsGroupsHiddenRule))
+    {
+        @Html.Raw(ViewBag.T_SessionEventsClientIsGroupsHiddenRule);
+    }
+}
+
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_SessionEventsClientIsSetValueUIRule))
+    {
+        @Html.Raw(ViewBag.T_SessionEventsClientIsSetValueUIRule);
+    }
+}
+	<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-title">
+            <i class="glyphicon glyphicon-edit text-primary"></i> @EntityDisplayName  <i class="glyphicon glyphicon-chevron-right small"></i> <span>Edit</span>
+
+			  <div class="btn-group pull-right" style="margin-top:3px;">
+            <button data-toggle="dropdown" class="btn btn-xs dropdown-toggle btn-default">
+                Action
+                <span class="caret">    </span>
+            </button>
+			<ul class="dropdown-menu pull-left">
+				<li>
+                    <a href="@Url.Action("Details", "T_SessionEventsClient", new { id = Model.Id, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"])  }, null)"><i class="glyphicon glyphicon-eye-open"></i>  View</a>
+                </li>
+				<li>
+                    @if (User.Identity.IsAuthenticated && User != null && User.CanEdit("T_SessionEventsClient"))
+                    {
+                        <a href="@Url.Action("Edit","T_SessionEventsClient", new { id = Model.Id,  UrlReferrer = Request.Url, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) },null)"><i class="glyphicon glyphicon-edit"></i>  Edit</a>
+                    }
+                </li>             
+				<li>
+                    @if (User.Identity.IsAuthenticated && User != null && User.CanDelete("T_SessionEventsClient"))
+                    {
+                        <a href="@Url.Action("Delete", "T_SessionEventsClient", new { id = Model.Id, UrlReferrer = Request.Url, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null)"><i class="glyphicon glyphicon-remove-sign"></i>  Delete</a>
+                    }
+                </li>
+			</ul>
+		</div>
+
+        </h1>
+
+      <h2 class="text-primary">
+	  <span id="HostingEntityDisplayValue" class="EntityDisplayName" title="@Html.DisplayFor(model => model.DisplayValue)">@Html.DisplayFor(model => model.DisplayValue)</span>
+			<div class="pull-right EntityDisplayBut">
+				@Html.ActionLink("Cancel", "Cancel", new { UrlReferrer = ViewData["T_SessionEventsClientParentUrl"] }, new { @onclick = "",  @class="btn btn-default btn-xs pull-right formbuttonfix" })
+
+				
+            </div>
+	 </h2>
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+<input type="hidden" id="ErrMsg" />
+<div id="errorContainerEdit" style="display: none">
+            <div id="errorsMsgEdit"></div>
+            <div id="errorsEdit"></div>
+        </div>
+
+<div id="divDisplayBRmsgBeforeSaveProp" style="display:none;">
+</div>
+<div id="divDisplayBRmsgMandatory" style="display:none;">
+</div>
+<div id="divDisplayLockRecord" style="display:none;">
+</div>
+<div id="divDisplayBRReadOnly" style="display:none;">
+</div>
+<div id="divDisplayCodeFragment" style="display:none;">
+</div>
+ <div class="tabbable responsive">
+    <ul class="nav nav-tabs">
+	 <li class="active"><a href="#Details" onclick="ClearTabCookie('@User.JavaScriptEncodedName@Model.Id');" data-toggle="tab">Details</a></li>
+
+    </ul>
+		<div class="tab-content">
+        <div class="tab-pane fade in active" id="Details">
+@using (Html.BeginForm("Edit","T_SessionEventsClient",new {UrlReferrer =Convert.ToString(ViewData["T_SessionEventsClientParentUrl"])}, FormMethod.Post, new { enctype = "multipart/form-data",@id="frmT_SessionEventsClient" }))
+{
+     Html.ValidationSummary(true);
+                Html.EnableClientValidation();
+    @Html.HiddenFor(model => model.Id)
+	@Html.HiddenFor(model => model.ConcurrencyKey)
+                <div class="col-md-12 col-sm-12 col-xs-12" style="padding:0px; margin:0px;">
+                    <div class="panel panel-default AppForm">
+						<div class="panel-body">
+											<div class="row">
+								@if(User.CanView("T_SessionEventsClient","T_ClientID"))
+				{
+									 <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_ClientID">
+                        <div class='form-group'>
+                            <label class="col-sm-5 col-md-5 col-xs-12" >@Html.LabelFor(model => model.T_ClientID) </label>
+							<div class="input-group col-sm-7 col-md-7 col-xs-12">
+							<div class="input-group" style="width:100%;">									
+									@if (User.CanEdit("T_SessionEventsClient", "T_ClientID"))
+		{
+			@Html.DropDownList("T_ClientID", null, "-- Select --", new {      @class = "chosen-select form-control", @HostingName = "T_Client", @dataurl = Url.Action("GetAllValue", "T_Client",new { caller = "T_ClientID" }) })
+		}
+		else
+		{
+			@Html.HiddenFor(model => model.T_ClientID, new { @class = "form-control" })
+			@Html.DropDownList("T_ClientID", null, "-- Select --", new {     @class = "chosen-select form-control", @disabled="disabled", @HostingName = "T_Client", @dataurl = Url.Action("GetAllValue", "T_Client",new { caller = "T_ClientID" }) })
+		}
+									@Html.ValidationMessageFor(model => model.T_ClientID)
+									@if (User.Identity.IsAuthenticated && User != null && User.CanAdd("T_Client"))
+                                    {
+									<div class="input-group-btn">
+										<a class="btn btn-default btn ie8fix"  data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Client','dvPopup','" + Url.Action("CreateQuick", "T_Client", new { UrlReferrer = Request.Url, HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), IsAddPop=true }) + "')")">
+											<span class="glyphicon glyphicon-plus-sign"></span>
+										</a>
+									</div>
+									}
+								
+
+								                                            
+											 @if (User.Identity.IsAuthenticated && User != null && User.CanView("T_Client"))
+                                                    {
+                                                        <div class="input-group-btn" id="dvLinkToT_Client" title="">
+                                                            <a class="btn btn-default btn ie8fix" id="aLinkToT_Client" target="_blank" href="@Url.Action("Details", "T_Client", new { Id = Html.DisplayFor(model => model.t_client.Id).ToString(), UrlReferrer=Request.UrlReferrer}, null)"><i class="glyphicon glyphicon-eye-open"></i></a>
+                                                        </div>
+                                                        if (Model.t_client == null)
+                                                        {
+                                                            <script>
+                                                                $(function () {
+                                                                    $("#dvLinkToT_Client").hide();
+                                                                });
+                                                            </script>
+                                                        }
+                                                        else
+                                                        {
+                                                            <script>
+                                                                $(function () {
+                                                                    $("#dvLinkToT_Client").attr("title", '@Model.t_client.DisplayValue');
+                                                                });
+                                                            </script>
+                                                        }
+                                                    }
+                                        							</div>
+							</div>
+                        </div>
+                    </div>
+
+
+                   
+					} else { @Html.HiddenFor(model => model.T_ClientID, new { @class = "form-control" })}
+				@if(User.CanView("T_SessionEventsClient","T_SessionEventsID"))
+				{
+									 <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_SessionEventsID">
+                        <div class='form-group'>
+                            <label class="col-sm-5 col-md-5 col-xs-12" >@Html.LabelFor(model => model.T_SessionEventsID) </label>
+							<div class="input-group col-sm-7 col-md-7 col-xs-12">
+							<div class="input-group" style="width:100%;">									
+									@if (User.CanEdit("T_SessionEventsClient", "T_SessionEventsID"))
+		{
+			@Html.DropDownList("T_SessionEventsID", null, "-- Select --", new {      @class = "chosen-select form-control", @HostingName = "T_SessionEvents", @dataurl = Url.Action("GetAllValue", "T_SessionEvents",new { caller = "T_SessionEventsID" }) })
+		}
+		else
+		{
+			@Html.HiddenFor(model => model.T_SessionEventsID, new { @class = "form-control" })
+			@Html.DropDownList("T_SessionEventsID", null, "-- Select --", new {     @class = "chosen-select form-control", @disabled="disabled", @HostingName = "T_SessionEvents", @dataurl = Url.Action("GetAllValue", "T_SessionEvents",new { caller = "T_SessionEventsID" }) })
+		}
+									@Html.ValidationMessageFor(model => model.T_SessionEventsID)
+									@if (User.Identity.IsAuthenticated && User != null && User.CanAdd("T_SessionEvents"))
+                                    {
+									<div class="input-group-btn">
+										<a class="btn btn-default btn ie8fix"  data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Session Events','dvPopup','" + Url.Action("CreateQuick", "T_SessionEvents", new { UrlReferrer = Request.Url, HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), IsAddPop=true }) + "')")">
+											<span class="glyphicon glyphicon-plus-sign"></span>
+										</a>
+									</div>
+									}
+								
+
+								                                            
+											 @if (User.Identity.IsAuthenticated && User != null && User.CanView("T_SessionEvents"))
+                                                    {
+                                                        <div class="input-group-btn" id="dvLinkToT_SessionEvents" title="">
+                                                            <a class="btn btn-default btn ie8fix" id="aLinkToT_SessionEvents" target="_blank" href="@Url.Action("Details", "T_SessionEvents", new { Id = Html.DisplayFor(model => model.t_sessionevents.Id).ToString(), UrlReferrer=Request.UrlReferrer}, null)"><i class="glyphicon glyphicon-eye-open"></i></a>
+                                                        </div>
+                                                        if (Model.t_sessionevents == null)
+                                                        {
+                                                            <script>
+                                                                $(function () {
+                                                                    $("#dvLinkToT_SessionEvents").hide();
+                                                                });
+                                                            </script>
+                                                        }
+                                                        else
+                                                        {
+                                                            <script>
+                                                                $(function () {
+                                                                    $("#dvLinkToT_SessionEvents").attr("title", '@Model.t_sessionevents.DisplayValue');
+                                                                });
+                                                            </script>
+                                                        }
+                                                    }
+                                        							</div>
+							</div>
+                        </div>
+                    </div>
+
+
+                   
+					} else { @Html.HiddenFor(model => model.T_SessionEventsID, new { @class = "form-control" })}
+       </div>
+	            </div>
+        </div>
+		</div>
+		 @Html.AntiForgeryToken();
+		 @Html.ActionLink("Cancel", "Cancel", new { UrlReferrer = ViewData["T_SessionEventsClientParentUrl"] }, new { @onclick = "", @class = "btn btn-default btn-sm pull-left formbuttonfix" })
+		 if (EditPermission)
+         {
+ 				<input type="submit" name="command" value="Save" class="btn btn-primary btn-sm pull-left formbuttonfix" />
+				<input type="submit" name="command" value="Save & Continue" class="btn btn-primary btn-sm pull-left formbuttonfix" />
+		}	
+				<input type="hidden" name="hdncommand" value="" />
+}
+<div class="dropdown pull-left formbuttonfix">
+<button type="button" class="btn btn-primary btn-sm dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown">
+            Add Association
+            <span class="caret"></span>
+        </button>
+		 <ul class="dropdown-menu " role="menu" aria-labelledby="dropdownMenu1">
+</ul>
+
+			</div><div class="clearfix" style="clear:both"></div>
+</div>
+
+</div> <!-- /tab-content --><br />
+
+<br/>
+</div>
+	<script>
+	   
+    $(function () {
+        var userAgent = navigator.userAgent.toLowerCase();
+        // Figure out what browser is being used
+        var browser = {
+            version: (userAgent.match(/.+(?:rv|it|ra|ie)[\/: ]([\d.]+)/) || [])[1],
+            safari: /webkit/.test(userAgent),
+            opera: /opera/.test(userAgent),
+            msie: /msie/.test(userAgent) && !/opera/.test(userAgent),
+            mozilla: /mozilla/.test(userAgent) && !/(compatible|webkit)/.test(userAgent)
+        };
+        if (!browser.msie) {
+            $('form').areYouSure();
+        }
+        else if (browser.version > 8.0) {
+            $('form').areYouSure();
+        }
+    });
+</script>
+	
+
+@{
+var businessrule = User.businessrules.Where(p => p.EntityName == "T_SessionEventsClient").ToList();
+
+if ((businessrule != null && businessrule.Count > 0) )
+{
+    <script>
+		$(document).ready(function () {
+				document.getElementById("ErrMsg").innerHTML = "";
+				var flag = true;
+                var dataurl = "";
+                var form = "";
+                var inlinecount = "0";
+
+				 form = $("#frmT_SessionEventsClient").serialize();
+				dataurl = "@Url.Action("businessruletype", "T_SessionEventsClient", new { ruleType = "OnEdit"})";
+                ApplyBusinessRuleOnPageLoad(dataurl, "T_SessionEventsClient", false, "ErrMsg", form);
+				//business rules on inline associations
+
+    });
+</script>
+<script>
+    $("form").submit(function () {
+			document.getElementById("ErrMsg").innerHTML = "";
+            var flag = true;
+            var dataurl = "";
+            var form = "";
+            var inlinecount = "0";
+ form = $("#frmT_SessionEventsClient").serialize();
+    
+				 dataurl = "@Url.Action("businessruletype", "T_SessionEventsClient", new { ruleType = "OnEdit"})";
+                 flag = ApplyBusinessRuleOnSubmit(dataurl, "T_SessionEventsClient", false, "ErrMsg", form);
+
+  				 //business rules on inline associations
+               
+			 if (flag)
+				{
+				                    SaveServerTime(this, true);
+                    $('input:hidden[name="hdncommand"]').val($(this.id).context.activeElement.value);
+                    $("form").find(':input').removeAttr('disabled');
+					}
+            return flag;
+		});
+		 $(document).ready(function () {
+                $("input[type='submit']").on('blur', function () {
+                    $("input[type='submit']").removeAttr('disabled');
+                });
+               
+            });
+</script>
+}
+ else
+    {
+       <script>
+    $("input[type='submit']").click(function (event) {
+        var $this = $(this);
+		SaveServerTime(this);
+        $('input:hidden[name="hdncommand"]').val($this.val());
+    });
+	</script>
+    }
+ 
+}
+
+<script type='text/javascript'>
+    $(document).ready(function () {
+        try {
+		focusOnControl('frmT_SessionEventsClient');
+        }
+        catch (ex) { }
+    });
+</script>
+
+

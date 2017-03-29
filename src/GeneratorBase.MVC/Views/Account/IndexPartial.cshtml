@@ -154,52 +154,57 @@
                             var token = db.ApiTokens.FirstOrDefault(p => p.T_UsersID == userId);
                             <tr>
                                 <td>
+
                                     <div style="width:60px; margin-top:-2px;">
                                         <div class="btn-group" style="position:absolute;">
                                             <button data-toggle="dropdown" class="btn btn-xs dropdown-toggle btn-default">
                                                 Action
                                                 <span class="caret">    </span>
                                             </button>
-                                            <ul class="dropdown-menu pull-left">
-                                                @if (User.CanViewAdminFeature("AssignUserRole"))
+                                            @if (User.Name != item.UserName && !((GeneratorBase.MVC.Models.CustomPrincipal)User).IsAdminUser(item.UserName))
+                                            {
+                                                <ul class="dropdown-menu pull-left">
+                                                    @if (User.CanViewAdminFeature("AssignUserRole"))
                                                 {
-                                                    <li>
-                                                        <a href="@Url.Action("UserRoles", "Account", new { id = item.Id})"><i class="glyphicon glyphicon-eye-open"></i>  Roles</a>
-                                                    </li>
+                                                <li>
+                                                    <a href="@Url.Action("UserRoles", "Account", new { id = item.Id})"><i class="glyphicon glyphicon-eye-open"></i>  Roles</a>
+                                                </li>
                                                 }
-                                                @if (User.CanEditAdminFeature("User"))
+                                                    @if (User.CanEditAdminFeature("User"))
                                                 {
-                                                    <li>
-                                                        <a href="@Url.Action("Edit", "Account", new { id = item.Id }, null)"><i class="glyphicon glyphicon-edit"></i>  Edit</a>
-                                                    </li>
+                                                <li>
+                                                    <a href="@Url.Action("Edit", "Account", new { id = item.Id }, null)"><i class="glyphicon glyphicon-edit"></i>  Edit</a>
+                                                </li>
                                                 }
-                                                @if (User.CanDeleteAdminFeature("User"))
+                                                    @if (User.CanDeleteAdminFeature("User"))
                                                 {
-                                                    <li>
-                                                        <a href="@Url.Action("Delete", "Account", new { id = item.Id }, null)"><i class="glyphicon glyphicon-remove-sign"></i>  Delete</a>
-                                                    </li>
+                                                <li>
+                                                    <a href="@Url.Action("Delete", "Account", new { id = item.Id }, null)"><i class="glyphicon glyphicon-remove-sign"></i>  Delete</a>
+                                                </li>
                                                 }
-                                                @if (item.LockoutEndDateUtc > DateTime.UtcNow || item.LockoutEndDateUtc != null)
+                                                    @if (item.LockoutEndDateUtc > DateTime.UtcNow || item.LockoutEndDateUtc != null)
                                                 {
                                                     if (User.CanEditAdminFeature("User"))
                                                     {
-                                                        <li>
-                                                            <a onclick="return confirm('Are you sure?')" href="@Url.Action("LockUnLockUser", "Account", new { id = item.Id,lockuser=false }, null)"><i class="glyphicon glyphicon-remove-sign"></i>  UnLock User</a>
-                                                        </li>
+                                                <li>
+                                                    <a onclick="return confirm('Are you sure?')" href="@Url.Action("LockUnLockUser", "Account", new { id = item.Id,lockuser=false }, null)"><i class="glyphicon glyphicon-remove-sign"></i>  UnLock User</a>
+                                                </li>
                                                     }
                                                 }
                                                 else
                                                 {
                                                     if (User.CanEditAdminFeature("User"))
                                                     {
-                                                        <li>
-                                                            <a onclick="return confirm('Are you sure?')" href="@Url.Action("LockUnLockUser", "Account", new { id = item.Id,lockuser=true }, null)"><i class="glyphicon glyphicon-remove-sign"></i>  Lock User</a>
-                                                        </li>
+                                                <li>
+                                                    <a onclick="return confirm('Are you sure?')" href="@Url.Action("LockUnLockUser", "Account", new { id = item.Id,lockuser=true }, null)"><i class="glyphicon glyphicon-remove-sign"></i>  Lock User</a>
+                                                </li>
                                                     }
                                                 }
-                                            </ul>
+                                                </ul>
+                                            }
                                         </div>
                                     </div>
+
                                 </td>
                                 <td>
                                     @Html.DisplayFor(modelItem => item.UserName)

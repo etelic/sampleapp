@@ -1,0 +1,281 @@
+﻿@model PagedList.IPagedList<GeneratorBase.MVC.Models.T_TimeSlots>
+@using PagedList.Mvc;
+@{
+    var ActionNameUrl = "Index";
+    if (HttpContext.Current.Request.RequestContext.RouteData.Values["action"].ToString().ToUpper() == "FSEARCH")
+    {
+        ActionNameUrl = "FSearch";
+    }
+	var BackUrl =  Request.Url;
+	if (ViewData["HostingEntity"] != null && (Request.QueryString["TabToken"] != null || Request.IsAjaxRequest()))
+	{
+		BackUrl =  Request.UrlReferrer;
+	}
+	var EntityReflector = ModelReflector.Entities.FirstOrDefault(p => p.Name == "T_TimeSlots");
+	var reportUrl = GeneratorBase.MVC.Controllers.BaseController.FavoriteUrl.ToString();
+    var fromview = Request.QueryString["FromViewReport"];
+    var rptId = Request.QueryString["rptId"];
+}
+
+<div id="T_TimeSlots">
+<style>
+    .table-responsive > .fixed-column {
+        position: absolute;
+        display: block;
+        width: auto;
+        border: 0px solid transparent;
+        border-top: 1px solid #c3ddec;
+    }
+    .fixed-column th {
+        background: #fff;
+    }
+    .fixed-column td {
+        background: #fff;
+    }
+
+</style>
+<script type="text/javascript"> 
+    $(document).ready(function () {
+	 $(".pagination a").click(function (e) {
+			PaginationClick(e, 'T_TimeSlots','@User.JavaScriptEncodedName',true @(fromview == null || fromview == "" ? ",false" : "," + fromview) @(rptId==null||rptId==""?",false":","+rptId))
+        })
+	    if("@HttpContext.Current.Request.RequestContext.RouteData.Values["action"].ToString().ToUpper()" == "FSEARCH")
+        {
+            $("#fsearchT_TimeSlots").addClass('in');
+			if('@ViewData["HostingEntity"]'.length>0)
+	        {
+                $("#" + "@ViewData["HostingEntity"]" + "_T_TimeSlots").hide();
+	        }
+			FSearchColumnsShowHide('@ViewData["HideColumns"]', 'T_TimeSlots');
+        }
+    });
+</script>
+@functions {
+    object getSortHtmlAttributes(string sortby, bool IsPaging, int? page, bool? IsExport)
+    {
+        if (IsPaging)
+        {
+            return new
+            {
+                page,
+                sortBy = ViewBag.CurrentSort,
+                isAsc = ViewBag.IsAsc,
+                currentFilter = ViewBag.CurrentFilter,
+                HostingEntity = @Convert.ToString(ViewData["HostingEntity"]),
+                AssociatedType = @Convert.ToString(ViewData["AssociatedType"]),
+                HostingEntityID = ViewData["HostingEntityID"],
+				IsExport = IsExport,
+				FSFilter = ViewBag.FSFilter == null ? "Fsearch" : ViewBag.FSFilter,
+				IsFilter = @Convert.ToBoolean(ViewData["IsFilter"]),
+                
+ t_learningcentertimeslotsassociation = Request.QueryString["t_learningcentertimeslotsassociation"],
+  T_SlotNoFrom = Request.QueryString["T_SlotNoFrom"],
+  T_SlotNoTo = Request.QueryString["T_SlotNoTo"],
+  T_StartTimeFrom = Request.QueryString["T_StartTimeFrom"],
+  T_StartTimeTo = Request.QueryString["T_StartTimeTo"],
+  T_EndTimeFrom = Request.QueryString["T_EndTimeFrom"],
+  T_EndTimeTo = Request.QueryString["T_EndTimeTo"],
+				search=Request.QueryString["search"],
+				SortOrder = Request.QueryString["SortOrder"],
+				viewtype = ViewBag.TemplatesName,
+				HideColumns = ViewData["HideColumns"],
+				 GroupByColumn = ViewBag.GroupByColumn,
+				 FilterCondition = ViewBag.FilterCondition,
+            };
+        }
+        else
+        {
+            return new
+            {
+                sortBy = sortby,
+                currentFilter = Request.QueryString["currentFilter"],
+                searchString = Request.QueryString["searchString"],
+                isAsc = (ViewBag.IsAsc == "ASC" ? "DESC" : ""),
+                page = ViewBag.Pages,
+                HostingEntity = @Convert.ToString(ViewData["HostingEntity"]),
+                HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),
+                AssociatedType = @Convert.ToString(ViewData["AssociatedType"]),
+				IsExport = IsExport,
+				FSFilter = ViewBag.FSFilter == null ? "Fsearch" : ViewBag.FSFilter,
+				IsFilter = @Convert.ToBoolean(ViewData["IsFilter"]),
+ t_learningcentertimeslotsassociation = Request.QueryString["t_learningcentertimeslotsassociation"],
+  T_SlotNoFrom = Request.QueryString["T_SlotNoFrom"],
+  T_SlotNoTo = Request.QueryString["T_SlotNoTo"],
+  T_StartTimeFrom = Request.QueryString["T_StartTimeFrom"],
+  T_StartTimeTo = Request.QueryString["T_StartTimeTo"],
+  T_EndTimeFrom = Request.QueryString["T_EndTimeFrom"],
+  T_EndTimeTo = Request.QueryString["T_EndTimeTo"],
+		search=Request.QueryString["search"],
+		SortOrder = Request.QueryString["SortOrder"],
+		viewtype = ViewBag.TemplatesName,
+		HideColumns = ViewData["HideColumns"],
+		 GroupByColumn = ViewBag.GroupByColumn,
+		 FilterCondition = ViewBag.FilterCondition,
+            };
+        }
+    }
+}
+<div class="row">
+    <div class="col-md-12 col-sm-12 col-sx-12">
+        <div class="panel panel-default">
+            <div class="panel-body" style="margin:0px; padding:8px;">
+	@if (ViewData["HostingEntity"]==null)
+		{ 
+			if (ViewBag.SearchResult != "" )
+                            {
+			<div id="fsearchT_TimeSlots" class="collapse MessageFSearch">
+                        @Html.Raw(Html.Encode(ViewBag.SearchResult).Replace(Environment.NewLine, "<br/>"))
+            </div>
+		}
+	}
+	
+    <div id="Des_Table" class="table-responsive" style="overflow-x:auto;">
+        <table id="tblReportResult" class="table table-striped table-bordered table-hover table-condensed">
+            <thead>
+                <tr>
+				<th class="col0" style="display: none;">
+                                        <input type="checkbox" style="visibility: hidden;"/>
+                                    </th>
+                                    <th class="col1" style="display: none;"></th>
+@if(User.CanView("T_TimeSlots","T_SlotNo") )
+{	
+			var SortPropertyName = EntityReflector.Properties.FirstOrDefault(q => q.Name == "T_SlotNo");
+			<th class="col2">
+			@Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "T_TimeSlots",getSortHtmlAttributes("T_SlotNo", false, null, false),new {  @onclick = "SortLinkClick(event,'T_TimeSlots',true" + (fromview == null || fromview == "" ? ",false" : "," + fromview)+ (rptId==null||rptId==""?",false":","+rptId)+ ");" })
+				@if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "T_SlotNo")
+                {<i class="fa fa-sort-desc"></i>}
+                @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "T_SlotNo")
+                {<i class="fa fa-sort-asc"></i>}
+			</th>
+}
+@if(User.CanView("T_TimeSlots","T_LearningCenterTimeSlotsAssociationID"))
+{
+			var SortPropertyName = EntityReflector.Properties.FirstOrDefault(q => q.Name == "T_LearningCenterTimeSlotsAssociationID");
+			<th class="col3" @(Convert.ToString(ViewData["HostingEntity"]) == "T_LearningCenter" && Convert.ToString(ViewData["AssociatedType"]) == "T_LearningCenterTimeSlotsAssociation"?"hidden":"")>
+				@Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "T_TimeSlots",getSortHtmlAttributes("T_LearningCenterTimeSlotsAssociationID", false, null, false),new {  @onclick = "SortLinkClick(event,'T_TimeSlots',true" + (fromview == null || fromview == "" ? ",false" : "," + fromview)+ (rptId==null||rptId==""?",false":","+rptId)+ ");" })
+				@if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "T_LearningCenterTimeSlotsAssociationID")
+				{<i class="fa fa-sort-desc"></i>}
+				@if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "T_LearningCenterTimeSlotsAssociationID")
+				{<i class="fa fa-sort-asc"></i>}
+			 </th>
+}
+@if(User.CanView("T_TimeSlots","T_StartTime") )
+{	
+			var SortPropertyName = EntityReflector.Properties.FirstOrDefault(q => q.Name == "T_StartTime");
+			<th class="col4">
+			@Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "T_TimeSlots",getSortHtmlAttributes("T_StartTime", false, null, false),new {  @onclick = "SortLinkClick(event,'T_TimeSlots',true" + (fromview == null || fromview == "" ? ",false" : "," + fromview)+ (rptId==null||rptId==""?",false":","+rptId)+ ");" })
+				@if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "T_StartTime")
+                {<i class="fa fa-sort-desc"></i>}
+                @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "T_StartTime")
+                {<i class="fa fa-sort-asc"></i>}
+			</th>
+}
+@if(User.CanView("T_TimeSlots","T_EndTime") )
+{	
+			var SortPropertyName = EntityReflector.Properties.FirstOrDefault(q => q.Name == "T_EndTime");
+			<th class="col5">
+			@Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "T_TimeSlots",getSortHtmlAttributes("T_EndTime", false, null, false),new {  @onclick = "SortLinkClick(event,'T_TimeSlots',true" + (fromview == null || fromview == "" ? ",false" : "," + fromview)+ (rptId==null||rptId==""?",false":","+rptId)+ ");" })
+				@if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "T_EndTime")
+                {<i class="fa fa-sort-desc"></i>}
+                @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "T_EndTime")
+                {<i class="fa fa-sort-asc"></i>}
+			</th>
+}
+       </tr>
+</thead>
+@{ bool isFirst = true; var oldKey = string.Empty; }
+                                @foreach (var item in Model)
+                                {
+                                    if (ViewBag.IsGroupBy != null && Convert.ToBoolean(ViewBag.IsGroupBy))
+                                    {
+                                        var groupKey = item.m_DisplayValue;
+                                        if (oldKey != groupKey)
+                                        {
+                                            isFirst = true;
+                                            oldKey = item.m_DisplayValue;
+                                        }
+                                        if (isFirst || (string.IsNullOrEmpty(oldKey)))
+                                        {
+                                            isFirst = false;
+											var groupCnt = Model.Where(grp => grp.m_DisplayValue == groupKey).Count();
+                                            string groupString = string.Empty;
+                                            if (groupCnt > 1)
+                                            {
+                                                groupString = "(" + groupCnt + " Records)";
+                                            }
+                                            else
+                                            {
+                                                groupString = "(" + groupCnt + " Record)";
+                                            }
+                                            <tr>
+                                                <td colspan="6" style="background: #EDF5FA; font-weight:bold"> @groupKey @groupString</td>
+                                            </tr>
+                                        }
+                                    }
+
+		<tr>
+	 <td style="display: none;">
+                                        <input type="checkbox" style="display:none;" id="@item.Id" />
+                                    </td>
+                                    <td style="display: none;"></td>
+	@if(User.CanView("T_TimeSlots","T_SlotNo"))
+{
+		<td >
+            @Html.DisplayFor(modelItem => item.T_SlotNo)
+        </td>
+}
+@if(User.CanView("T_TimeSlots","T_LearningCenterTimeSlotsAssociationID"))
+{
+		
+		
+					<td  @(Convert.ToString(ViewData["HostingEntity"]) == "T_LearningCenter" && Convert.ToString(ViewData["AssociatedType"]) == "T_LearningCenterTimeSlotsAssociation"?"hidden":"") >
+            @Html.DisplayFor(modelItem => item.t_learningcentertimeslotsassociation.DisplayValue)
+			        </td>
+}
+		@if(User.CanView("T_TimeSlots","T_StartTime"))
+			{
+			<td  id=@Html.Raw("'timeT_StartTime" + item.Id + "'")>
+			</td>
+			 @Html.Raw("<script> $(function () {$('timeT_StartTime" + item.Id + "').datetimepickerIndex({divid:'timeT_StartTime" + item.Id + "',format: 'hh:mm',val:'" + String.Format("{0:HH:mm}",item.T_StartTime) + "'})});</script>")        
+			}
+  		@if(User.CanView("T_TimeSlots","T_EndTime"))
+			{
+			<td  id=@Html.Raw("'timeT_EndTime" + item.Id + "'")>
+			</td>
+			 @Html.Raw("<script> $(function () {$('timeT_EndTime" + item.Id + "').datetimepickerIndex({divid:'timeT_EndTime" + item.Id + "',format: 'hh:mm',val:'" + String.Format("{0:HH:mm}",item.T_EndTime) + "'})});</script>")        
+			}
+  
+             </tr>
+                            }
+                    </table>
+                </div>
+  			   @if (Model.Count > 0)
+                {
+                    <div id="pagination">
+                        @Html.PagedListPager(Model, page => Url.Action(ActionNameUrl, "T_TimeSlots", getSortHtmlAttributes(null, true, page, false)))
+                        <div class="fixPageSize">
+                            Page Size :
+                            @Html.DropDownList("PageSize", new SelectList(new Dictionary<string, int> { { "10", 10 }, { "20", 20 }, { "50", 50 }, { "100", 100 } }, "Key", "Value")
+							, new { @id = "pagesizelistT_TimeSlots",
+							 @onchange = @Html.Raw("pagesizelistChange(event,'T_TimeSlots','"
+							  + @User.JavaScriptEncodedName + "',true" + (fromview == null || fromview == "" ? ",false" : "," + fromview) + (rptId == null || rptId == "" ? ",false" : "," + rptId) + ")"),
+							 @Url = Html.Raw(@Url.Action(ActionNameUrl, "T_TimeSlots",
+							 getSortHtmlAttributes(ViewBag.CurrentSort, ViewBag.Pages == 1 ? false : true,
+							 null, false), null)) })
+							<span style="text-align:right;"> Total Count: @(Model.TotalItemCount)</span>
+							<script>
+                                    $(document).ready(function () {
+                                        $.validator.setDefaults({
+                                            ignore: "#pagesizelistT_TimeSlots"
+                                        })
+                                    }); 
+                                </script>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div> 
+ </div>
+</div>
+

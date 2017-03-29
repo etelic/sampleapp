@@ -132,16 +132,6 @@ namespace GeneratorBase.MVC
                     }
                 }
                 ((CustomPrincipal)User).businessrules = businessrules.ToList();
-				List<MultiTenantLoginSelected> appsecurityaccess = new List<MultiTenantLoginSelected>();
-                using (var appsecurity = new ApplicationDbContext())
-                {
-                    var app = appsecurity.MultiTenantLoginSelected.Where(p=>p.T_User == ((CustomPrincipal)User).Name);
-                    foreach (var rules in app)
-                    {
-                        appsecurityaccess.Add(rules);
-                    }
-                }
-                ((CustomPrincipal)User).MultiTenantLoginSelected = appsecurityaccess.ToList();
             }
         }
 		protected void Application_Error(object sender, EventArgs e)

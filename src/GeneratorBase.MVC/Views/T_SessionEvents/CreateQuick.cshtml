@@ -1,0 +1,254 @@
+﻿@model GeneratorBase.MVC.Models.T_SessionEvents
+@{
+    ViewBag.Title = "Create Session Events";
+    Layout = null;
+}
+<script>
+    $(document).ready(function () {
+        try {
+            var hostingEntityName = "";
+            if ('@Convert.ToString(ViewData["AssociatedType"])' != null) {
+                hostingEntityName = '@Convert.ToString(ViewData["AssociatedType"])';
+                 $('#' + hostingEntityName + 'ID').attr("lock","true");
+				  $('#' + hostingEntityName + 'ID').trigger("change");
+            }
+			
+        }
+        catch (ex) { }
+		
+		 
+    });
+</script>
+
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_SessionEventsIsHiddenRule))
+    {
+        @Html.Raw(ViewBag.T_SessionEventsIsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_SessionEventsIsGroupsHiddenRule))
+    {
+        @Html.Raw(ViewBag.T_SessionEventsIsGroupsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_SessionEventsIsSetValueUIRule))
+    {
+        @Html.Raw(ViewBag.T_SessionEventsIsSetValueUIRule);
+    }
+}
+<link href="~/Content/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+<link href="@Url.Content("~/Content/chosen.css")" rel="stylesheet" type="text/css" />
+@using (Html.BeginForm("CreateQuick", "T_SessionEvents",FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken();
+    Html.ValidationSummary(true);
+    Html.EnableClientValidation();
+	<input type="hidden" id="ErrMsgQuickAdd" />
+	@*<label id="ErrMsgQuickAdd" class="text-primary small pull-right" style="color:red; vertical-align:middle; font-weight:100;"></label>*@
+    <div id="errorContainerQuickAdd" style="display: none">
+        <div id="errorsMsgQuickAdd"></div>
+        <div id="errorsQuickAdd"></div>
+    </div>
+	<div id="divDisplayThresholdLimit" style="display:none;">
+	</div>
+	 <div id="divDisplayBRmsgMandatory" style="display:none;">
+	</div>
+	<div id="divDisplayBRmsgBeforeSaveProp" style="display:none;">
+	</div>
+		    <div class="row">
+	@Html.Hidden("AssociatedEntity", Convert.ToString(ViewData["AssociatedType"]))
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="panel panel-default AppForm">
+                <div class="panel-body">
+               					<div class="row">
+				        
+							<div class='col-sm-6' id="dvT_Title">
+                                <div class='form-group' title="">
+                                    <label>@Html.LabelFor(model => model.T_Title) <span class="text-danger-reg">*</span></label>
+									 
+                                    @Html.TextBoxFor(model => model.T_Title, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.T_Title)
+									
+                                </div>
+					</div>
+     
+				
+
+     
+                            <div class='col-sm-6' id="dvT_EventDate">
+                                <label >@Html.LabelFor(model => model.T_EventDate)</label>
+                                <div class="form-group" title="">
+                                    <div class="input-group date" id="datetimepickerT_EventDate">
+							@Html.TextBoxFor(model => model.T_EventDate, new {@id = "T_EventDate" ,@class = "form-control" })
+										<span class="input-group-addon btn-default calendar">
+                                           <i class="fa fa-calendar"></i>
+                                        </span>
+                                    </div>
+                                    @Html.ValidationMessageFor(model => model.T_EventDate)
+                                </div>
+                                <script type="text/javascript">
+                                    $(function () {
+										$('#T_EventDate').datetimepicker({ pickTime:false });
+                                        $('#datetimepickerT_EventDate').datetimepicker({ pickTime:false });
+                                    });
+                                </script>
+                            </div>
+
+
+							<div class='col-sm-6'  id="dvT_SessionEventsLearningCenterID">
+                        <div class='form-group'>
+                            <label>@Html.LabelFor(model => model.T_SessionEventsLearningCenterID) </label>
+                            <div class="input-group" style="width: 100%;">
+									@Html.DropDownList("T_SessionEventsLearningCenterID", null, "-- Select --", new {       @class = "chosen-select form-control", @HostingName = "T_LearningCenter", @dataurl = Url.Action("GetAllValue", "T_LearningCenter",new { caller = "T_SessionEventsLearningCenterID" }) })
+ @*<script>
+    $(function () {
+        LoadUserDropdown('ID');
+    });
+</script>*@
+                                @Html.ValidationMessageFor(model => model.T_SessionEventsLearningCenterID)
+                            </div>
+                        </div>
+                    </div>
+     
+				 
+
+     
+                            <div class='col-sm-6' id="dvT_StartTime">
+                                <label >@Html.LabelFor(model => model.T_StartTime)</label>
+                                <div class="form-group" title="">
+                                    <div class="input-group date" id="datetimepickerT_StartTime">
+							@Html.TextBoxFor(model => model.T_StartTime, new {@id = "T_StartTime" ,@class = "form-control" ,@format = "hh:mm"})
+										<span class="input-group-addon btn-default calendar">
+                                           <i class="fa fa-calendar"></i>
+                                        </span>
+                                    </div>
+                                    @Html.ValidationMessageFor(model => model.T_StartTime)
+                                </div>
+                                <script type="text/javascript">
+                                    $(function () {
+										$('#T_StartTime').datetimepicker({ pickDate:false, minuteStepping: 15 });
+                                        $('#datetimepickerT_StartTime').datetimepicker({ pickDate:false, minuteStepping: 15 });
+                                    });
+                                </script>
+                            </div>
+
+
+
+     
+                            <div class='col-sm-6' id="dvT_EndTime">
+                                <label >@Html.LabelFor(model => model.T_EndTime)</label>
+                                <div class="form-group" title="">
+                                    <div class="input-group date" id="datetimepickerT_EndTime">
+							@Html.TextBoxFor(model => model.T_EndTime, new {@id = "T_EndTime" ,@class = "form-control" ,@format = "hh:mm"})
+										<span class="input-group-addon btn-default calendar">
+                                           <i class="fa fa-calendar"></i>
+                                        </span>
+                                    </div>
+                                    @Html.ValidationMessageFor(model => model.T_EndTime)
+                                </div>
+                                <script type="text/javascript">
+                                    $(function () {
+										$('#T_EndTime').datetimepicker({ pickDate:false, minuteStepping: 15 });
+                                        $('#datetimepickerT_EndTime').datetimepicker({ pickDate:false, minuteStepping: 15 });
+                                    });
+                                </script>
+                            </div>
+
+
+
+			     						<div class='col-sm-6' id="dvT_IsCancelled">
+                                <label >
+                                    @Html.LabelFor(model => model.T_IsCancelled) 
+                                </label>
+                                <div class="form-group" title="">
+									@Html.CheckBox("T_IsCancelled", false)
+                                    @Html.ValidationMessageFor(model => model.T_IsCancelled)
+                                </div>
+                            </div>
+                            
+							<div class='col-sm-6' id="dvT_Description">
+                                <div class='form-group' title="">
+                                    <label>@Html.LabelFor(model => model.T_Description) </label>
+                                    @Html.TextAreaFor(model => model.T_Description, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.T_Description)
+                                </div>
+							</div>
+							<div class='col-sm-6'  id="dvT_SessionEventsTimeSlotsID">
+                        <div class='form-group'>
+                            <label>@Html.LabelFor(model => model.T_SessionEventsTimeSlotsID) </label>
+                            <div class="input-group" style="width: 100%;">
+									@Html.DropDownList("T_SessionEventsTimeSlotsID", null, "-- Select --", new {       @class = "chosen-select form-control", @HostingName = "T_TimeSlots", @dataurl = Url.Action("GetAllValue", "T_TimeSlots",new { caller = "T_SessionEventsTimeSlotsID" }) })
+ @*<script>
+    $(function () {
+        LoadUserDropdown('ID');
+    });
+</script>*@
+                                @Html.ValidationMessageFor(model => model.T_SessionEventsTimeSlotsID)
+                            </div>
+                        </div>
+                    </div>
+     
+				 
+					@Html.HiddenFor(model => model.ScheduleID, new {@class = "form-control", Value = @ViewData["HostingEntityID"] })
+       </div>
+                        </div>
+                    </div>
+                </div>
+        </div>
+		<button id="CancelQuickAdd" type="button" class="btn btn-default btn-sm" data-dismiss="modal" aria-hidden="true">Cancel</button>
+
+		var busineesrule = User.businessrules.Where(p => p.EntityName == "T_SessionEvents").ToList();
+		 var lstinlineentityname = "";
+		 var lstinlineassocdispname ="";
+		 var lstinlineassocname = "";
+        if (ViewBag.IsAddPop != null)
+		{
+			<input type="submit" value="Create" class="btn btn-primary btn-sm" onclick="QuickAdd(event,'T_SessionEvents','@busineesrule',@busineesrule.Count,'OnCreate','ErrMsgQuickAdd',false,'@lstinlineassocname','@lstinlineassocdispname','@lstinlineentityname');" />
+		}
+		else
+		{
+			<input type="submit" value="Create" class="btn btn-primary btn-sm" onclick="QuickAddFromIndex(event,true,'T_SessionEvents','@ViewData["AssociatedType"]','@busineesrule',@busineesrule.Count,'OnCreate','ErrMsgQuickAdd',false,'@lstinlineassocname','@lstinlineassocdispname','@lstinlineentityname');" />
+		}
+}
+<script src="@Url.Content("~/bundles/jqueryval")" type="text/javascript"></script>
+<script src="@Url.Content("~/bundles/common3")" type="text/javascript"></script>
+<script type="text/javascript">
+    var config = {
+        '.chosen-select': {},
+        '.chosen-select-deselect': { allow_single_deselect: true },
+        '.chosen-select-no-single': { disable_search_threshold: 10 },
+        '.chosen-select-no-results': { no_results_text: 'Oops, nothing found!' },
+        '.chosen-select-width': { width: "95%" }
+    }
+    for (var selector in config) {
+        $(selector).chosen(config[selector]);
+    }
+</script>
+
+<script type='text/javascript'>
+    $(document).ready(function () {
+        try {
+            document.getElementsByTagName("body")[0].focus();
+            $("#addPopup").removeAttr("tabindex");
+            var cltcoll = $("#dvPopup").find('input[type=text]:not([class=hidden]):not([readonly]),textarea:not([readonly])');
+            var cltid = "";
+            $(cltcoll).each(function () {
+			  if ($(this).attr("id") == undefined)
+                    return
+                var dvhidden = $("#dv" + $(this).attr("id"));
+				var dvDate = $("#datetimepicker" + $(this).attr("id")).attr("id");
+
+                if (!(dvhidden.css('display') == 'none') && dvDate == undefined) {
+                    cltid = $(this);
+                    return false;
+                }
+            });
+            if (cltid != "" && cltid != undefined)
+                setTimeout(function () { $(cltid).focus(); }, 500)
+        }
+        catch (ex) { }
+    });
+</script>
+

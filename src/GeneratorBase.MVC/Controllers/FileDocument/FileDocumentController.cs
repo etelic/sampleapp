@@ -1886,7 +1886,7 @@ namespace GeneratorBase.MVC.Controllers
 			return Json(Convert.ToString(PropValue), JsonRequestBehavior.AllowGet);
 			           
         }
-		public string checkHidden(string entityName, string brType)
+		public string checkHidden(string entityName, string brType, bool isHiddenGroup)
         {
             System.Text.StringBuilder chkHidden = new System.Text.StringBuilder();
             System.Text.StringBuilder chkFnHidden = new System.Text.StringBuilder();
@@ -1900,6 +1900,8 @@ namespace GeneratorBase.MVC.Controllers
                 foreach (BusinessRule objBR in businessRules)
                 {
                     long ActionTypeId = 6;
+					if (isHiddenGroup)
+                        ActionTypeId = 12;
                     var objRuleActionList = objRuleAction.RuleActions.Where(ra => ra.AssociatedActionTypeID.Value == ActionTypeId && ra.RuleActionID.Value == objBR.Id);
                     if (objRuleActionList.Count() > 0)
                     {
@@ -1933,34 +1935,37 @@ namespace GeneratorBase.MVC.Controllers
                                     var rbcheck = false;
                                     if (rbList != null && rbList.Contains(objCon.PropertyName))
                                         rbcheck = true;
-                                    chkHidden.Append((rbcheck ? " $('input:radio[name=" + objCon.PropertyName + "]')" : " $('#" + objCon.PropertyName + "')") + ".change(function() { " + fnCondition + "; });");
+                                    
                                     if (datatype == "Association")
                                     {
+                                        var propertyName = objCon.PropertyName.Replace('[', ' ').Remove(objCon.PropertyName.IndexOf('.')).Trim();
+                                        chkHidden.Append((rbcheck ? " $('input:radio[name=" + propertyName + "]')" : " $('#" + propertyName + "')") + ".change(function() { " + fnCondition + "; });");
                                         if (operand.Length > 2)
                                         {
                                             if (string.IsNullOrEmpty(fnConditionValue))
                                             {
-                                                fnConditionValue = (rbcheck ? "($('input:radio[name= "+ objCon.PropertyName +"]:checked').next('span:first')" : "($('option:selected', '#" + objCon.PropertyName + "')") + ".text().toLowerCase().indexOf('" + condValue + "'.toLowerCase()) > -1)";
+                                                fnConditionValue = (rbcheck ? "($('input:radio[name= " + propertyName + "]:checked').next('span:first')" : "($('option:selected', '#" + propertyName + "')") + ".text().toLowerCase().indexOf('" + condValue + "'.toLowerCase()) > -1)";
                                             }
                                             else
                                             {
-                                                fnConditionValue += (rbcheck ? "&& ($('input:radio[name= "+ objCon.PropertyName +"]:checked').next('span:first')" : " && ($('option:selected', '#" + objCon.PropertyName + "')") + ".text().toLowerCase().indexOf('" + condValue + "'.toLowerCase()) > -1)";
+                                                fnConditionValue += (rbcheck ? "&& ($('input:radio[name= " + propertyName + "]:checked').next('span:first')" : " && ($('option:selected', '#" + propertyName + "')") + ".text().toLowerCase().indexOf('" + condValue + "'.toLowerCase()) > -1)";
                                             }
                                         }
                                         else
                                         {
                                             if (string.IsNullOrEmpty(fnConditionValue))
                                             {
-                                                fnConditionValue = (rbcheck ? "($('input:radio[name= " + objCon.PropertyName + "]:checked').next('span:first')" : "($('option:selected', '#" + objCon.PropertyName + "') ") + ".text().toLowerCase() " + operand + " '" + condValue + "'.toLowerCase())";
+                                                fnConditionValue = (rbcheck ? "($('input:radio[name= " + propertyName + "]:checked').next('span:first')" : "($('option:selected', '#" + propertyName + "') ") + ".text().toLowerCase() " + operand + " '" + condValue + "'.toLowerCase())";
                                             }
                                             else
                                             {
-                                                fnConditionValue += (rbcheck ? "&& ($('input:radio[name= "+ objCon.PropertyName +"]:checked').next('span:first')" : " && ($('option:selected', '#" + objCon.PropertyName + "')") + ".text().toLowerCase() " + operand + " '" + condValue + "'.toLowerCase())";
+                                                fnConditionValue += (rbcheck ? "&& ($('input:radio[name= " + propertyName + "]:checked').next('span:first')" : " && ($('option:selected', '#" + propertyName + "')") + ".text().toLowerCase() " + operand + " '" + condValue + "'.toLowerCase())";
                                             }
                                         }
                                     }
                                     else
                                     {
+										chkHidden.Append((rbcheck ? " $('input:radio[name=" + objCon.PropertyName + "]')" : " $('#" + objCon.PropertyName + "')") + ".change(function() { " + fnCondition + "; });");
                                         if (operand.Length > 2)
                                         {
                                             if (string.IsNullOrEmpty(fnConditionValue))
@@ -2003,7 +2008,10 @@ namespace GeneratorBase.MVC.Controllers
                                         {
                                             fn += objaa.Id.ToString();
                                             //change for inline association
-                                            fnProp += "$('#dv" + objaa.ParameterName.Replace('.','_') + "').css('display', type);";
+                                            if (isHiddenGroup)
+												fnProp += "$('#dvGroup" + objaa.ParameterName.Remove(objaa.ParameterName.IndexOf('|')) + "').css('display', type);";
+                                            else
+                                                fnProp += "$('#dv" + objaa.ParameterName.Replace('.', '_') + "').css('display', type);";
                                         }
                                         if (!string.IsNullOrEmpty(fn))
                                             fnName = "hiddenProp" + fn;
@@ -2075,34 +2083,36 @@ namespace GeneratorBase.MVC.Controllers
                                     var rbcheck = false;
                                     if (rbList != null && rbList.Contains(objCon.PropertyName))
                                         rbcheck = true;
-                                    chkHidden.Append((rbcheck ? " $('input:radio[name=" + objCon.PropertyName + "]')" : " $('#" + objCon.PropertyName + "')") + ".change(function() { " + fnCondition + "; });");
                                     if (datatype == "Association")
                                     {
+                                        var propertyName = objCon.PropertyName.Replace('[', ' ').Remove(objCon.PropertyName.IndexOf('.')).Trim();
+                                        chkHidden.Append((rbcheck ? " $('input:radio[name=" + propertyName + "]')" : " $('#" + propertyName + "')") + ".change(function() { " + fnCondition + "; });");
                                         if (operand.Length > 2)
                                         {
                                             if (string.IsNullOrEmpty(fnConditionValue))
                                             {
-                                                fnConditionValue = (rbcheck ? "($('input:radio[name= " + objCon.PropertyName + "]:checked').next('span:first')" : "($('option:selected', '#" + objCon.PropertyName + "')") + ".text().toLowerCase().indexOf('" + condValue + "'.toLowerCase()) > -1)";
+                                                fnConditionValue = (rbcheck ? "($('input:radio[name= " + propertyName + "]:checked').next('span:first')" : "($('option:selected', '#" + propertyName + "')") + ".text().toLowerCase().indexOf('" + condValue + "'.toLowerCase()) > -1)";
                                             }
                                             else
                                             {
-                                                fnConditionValue += (rbcheck ? "&& ($('input:radio[name= " + objCon.PropertyName + "]:checked').next('span:first')" : " && ($('option:selected', '#" + objCon.PropertyName + "')") + ".text().toLowerCase().indexOf('" + condValue + "'.toLowerCase()) > -1)";
+                                                fnConditionValue += (rbcheck ? "&& ($('input:radio[name= " + propertyName + "]:checked').next('span:first')" : " && ($('option:selected', '#" + propertyName + "')") + ".text().toLowerCase().indexOf('" + condValue + "'.toLowerCase()) > -1)";
                                             }
                                         }
                                         else
                                         {
                                             if (string.IsNullOrEmpty(fnConditionValue))
                                             {
-                                                fnConditionValue = (rbcheck ? "($('input:radio[name= " + objCon.PropertyName + "]:checked').next('span:first')" : "($('option:selected', '#" + objCon.PropertyName + "') ") + ".text().toLowerCase() " + operand + " '" + condValue + "'.toLowerCase())";
+                                                fnConditionValue = (rbcheck ? "($('input:radio[name= " + propertyName + "]:checked').next('span:first')" : "($('option:selected', '#" + propertyName + "') ") + ".text().toLowerCase() " + operand + " '" + condValue + "'.toLowerCase())";
                                             }
                                             else
                                             {
-                                                fnConditionValue += (rbcheck ? "&& ($('input:radio[name= " + objCon.PropertyName + "]:checked').next('span:first')" : " && ($('option:selected', '#" + objCon.PropertyName + "')") + ".text().toLowerCase() " + operand + " '" + condValue + "'.toLowerCase())";
+                                                fnConditionValue += (rbcheck ? "&& ($('input:radio[name= " + propertyName + "]:checked').next('span:first')" : " && ($('option:selected', '#" + propertyName + "')") + ".text().toLowerCase() " + operand + " '" + condValue + "'.toLowerCase())";
                                             }
                                         }
                                     }
                                     else
                                     {
+										chkHidden.Append((rbcheck ? " $('input:radio[name=" + objCon.PropertyName + "]')" : " $('#" + objCon.PropertyName + "')") + ".change(function() { " + fnCondition + "; });");
                                         if (operand.Length > 2)
                                         {
                                             if (string.IsNullOrEmpty(fnConditionValue))
@@ -2286,7 +2296,6 @@ namespace GeneratorBase.MVC.Controllers
 		public void AfterSave(FileDocument filedocument)
         {
 
-
             // Write your logic here
  
 		}
@@ -2297,7 +2306,13 @@ namespace GeneratorBase.MVC.Controllers
             return Verbsarr;
         }
         //
-				[HttpPost]
+		//code for list of groups
+        public string[][] getGroupsName()
+        {
+            string[][] groupsarr = new string[][] {  };
+            return groupsarr;
+        }
+		[HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult GetCalculationValues(FileDocument filedocument)
         {

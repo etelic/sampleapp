@@ -1,0 +1,298 @@
+﻿@model GeneratorBase.MVC.Models.T_Session
+@using PagedList;
+@{
+    ViewBag.Title = "View Session";
+	var EntityDisplayNameReflector = ModelReflector.Entities.FirstOrDefault(p => p.Name == "T_Session");
+    var EntityDisplayName = EntityDisplayNameReflector != null ? EntityDisplayNameReflector.DisplayName : "Session";
+}
+<script>
+    $(document).ready(function () {
+			 if ($.cookie('@User.JavaScriptEncodedName@Model.Id' + 'TabCookie') != null) {
+				$('a[href="#' + $.cookie('@User.JavaScriptEncodedName@Model.Id' + 'TabCookie') + '"]').click();
+			 }
+    });
+</script>
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_SessionIsHiddenRule))
+    {
+        @Html.Raw(ViewBag.T_SessionIsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_SessionIsGroupsHiddenRule))
+    {
+        @Html.Raw(ViewBag.T_SessionIsGroupsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_SessionIsSetValueUIRule))
+    {
+        @Html.Raw(ViewBag.T_SessionIsSetValueUIRule);
+    }
+}
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-title">
+            <i class="glyphicon glyphicon-hand-down text-primary"></i> @EntityDisplayName  <i class="glyphicon glyphicon-chevron-right small"></i> <span>View</span>
+        </h1>
+        <h2 class="text-primary"><span id="HostingEntityDisplayValue">@Html.DisplayFor(model => model.DisplayValue)</span>
+			<div class="btn-group pull-right fixactionbut">
+            <button data-toggle="dropdown" class="btn btn-xs dropdown-toggle btn-default pull-right">
+                Action
+                <span class="caret">    </span>
+            </button>
+			<ul class="dropdown-menu pull-left">               
+				<li>
+                    @if (User.Identity.IsAuthenticated && User != null && User.CanEdit("T_Session"))
+                    {
+                        <a href="@Url.Action("Edit","T_Session", new { id = Model.Id,  UrlReferrer = Request.Url, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) },null)"><i class="glyphicon glyphicon-edit"></i>  Edit</a>
+                    }
+                </li>             
+				<li>
+                    @if (User.Identity.IsAuthenticated && User != null && User.CanDelete("T_Session"))
+                    {
+                        <a href="@Url.Action("Delete", "T_Session", new { id = Model.Id, UrlReferrer = Request.Url, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null)"><i class="glyphicon glyphicon-remove-sign"></i>  Delete</a>
+                    }
+                </li>
+ <li class="divider" style="clear:both"></li>
+ <li class="dropdown-submenu pull-left">
+	<a tabindex="-1" href="#" style="margin-bottom:10px;">Find Matching</a>
+    <ul class="dropdown-menu pull-left">
+<li>
+		<a href="@Url.Action("FindFSearch", "T_TimeSlots", new {sourceEntity="T_Session",id=Model.Id}, null)">Time Slots</a>
+</li>
+<li>
+		<a href="@Url.Action("FindFSearch", "T_SessionEvents", new {sourceEntity="T_Session",id=Model.Id}, null)">Session Events</a>
+</li>
+</ul>
+</li>
+			</ul>
+</div>
+		</h2>
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+<div class="tabbable responsive">
+    <ul class="nav nav-tabs">
+	 <li class="active"><a href="#Details" onclick="ClearTabCookie('@User.JavaScriptEncodedName@Model.Id');" data-toggle="tab">Details</a></li>
+		 <li @(!User.CanView("T_SessionClientAssociation")?"style=display:none;":"")><a onclick="LoadTab('T_SessionClientAssociation_T_Session','@User.JavaScriptEncodedName@Model.Id','@Html.Raw(Url.Action("Index", "T_SessionClientAssociation", new {RenderPartial=true, HostingEntity ="T_Session", HostingEntityID = @Model.Id, AssociatedType = "T_SessionClientAssociation_T_Session",TabToken = DateTime.Now.Ticks,}))')" href="#T_SessionClientAssociation_T_Session" data-toggle="tab">
+		 Client
+		 </a></li>
+    </ul>
+	    <div class="tab-content">
+		   <div class="tab-pane fade in active" id="Details">
+				 <div class="panel panel-default AppForm">
+					<div class="panel-body">
+                                  
+			<div class="row">
+				<div class="col-sm-12 col-md-12 col-xs-12">
+			<div class="row">
+@if(User.CanView("T_Session","T_SessionLearningCenterAssociationID"))
+{
+<div class='col-sm-6 col-md-6 col-xs-12' id="dvT_SessionLearningCenterAssociation">
+	<div class='form-group' >
+		<label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.T_SessionLearningCenterAssociationID)</label>
+		<div class="input-group col-sm-7 col-md-7 col-xs-12">
+		@if (@Model.T_SessionLearningCenterAssociationID == 0 || @Model.T_SessionLearningCenterAssociationID == null || @Model.t_sessionlearningcenterassociation == null)
+		{
+	         <p class="viewlabel"></p>
+        }
+        else
+        {
+		     <p class="viewlabel">@Model.t_sessionlearningcenterassociation.DisplayValue</p>
+        }
+		</div>
+	</div>
+</div>
+}
+@if(User.CanView("T_Session","T_Name"))
+{
+<div class='col-sm-6 col-md-6 col-xs-12' id="dvT_Name">
+	<div class='form-group' title="Name">
+		<label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.T_Name) </label>
+		<div class="input-group col-sm-7 col-md-7 col-xs-12">
+		
+				
+				<p class="viewlabel">@Model.T_Name</p>
+					
+					</div>
+	</div>
+</div>
+}
+@if(User.CanView("T_Session","T_Description"))
+{
+<div class='col-sm-6 col-md-6 col-xs-12' id="dvT_Description">
+	<div class='form-group' title="Description">
+		<label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.T_Description)</label>
+		<div class="input-group col-sm-7 col-md-7 col-xs-12">
+		<p class="viewlabel">@Model.T_Description</p>
+		</div>
+	</div>
+</div>
+}
+@if(User.CanView("T_Session","T_SessionTimeSlotAssociatonID"))
+{
+<div class='col-sm-6 col-md-6 col-xs-12' id="dvT_SessionTimeSlotAssociaton">
+	<div class='form-group' >
+		<label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.T_SessionTimeSlotAssociatonID)</label>
+		<div class="input-group col-sm-7 col-md-7 col-xs-12">
+		@if (@Model.T_SessionTimeSlotAssociatonID == 0 || @Model.T_SessionTimeSlotAssociatonID == null || @Model.t_sessiontimeslotassociaton == null)
+		{
+	         <p class="viewlabel"></p>
+        }
+        else
+        {
+		     <p class="viewlabel">@Model.t_sessiontimeslotassociaton.DisplayValue</p>
+        }
+		</div>
+	</div>
+</div>
+}
+@if(User.CanView("T_Session","T_IsOpen"))
+{
+<div class='col-sm-6 col-md-6 col-xs-12' id="dvT_IsOpen">
+	<div class='form-group' title="Is Open">
+		<label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.T_IsOpen) </label>
+		<div class="input-group col-sm-7 col-md-7 col-xs-12">
+		
+				@Html.DisplayFor(model => model.T_IsOpen)
+		</div>
+	</div>
+</div>
+}
+						@if (User.CanView("T_Session", "ScheduleSessionID") && User.CanView("T_Schedule"))
+						{
+							<div class="col-md-12 col-sm-12 col-xs-12" id="dvScheduleSession">
+								<div class="panel panel-default AppForm">
+									<div class="panel-sub-heading clearfix">
+										<h3 class="panel-title">@Html.LabelFor(model => model.ScheduleSessionID)</h3>
+										</div>
+										<div class="panel-body">
+											<div class="row">
+												<div class="col-md-12 col-sm-12 col-xs-12">
+													<div class="row">
+ @if (Model.schedulesession!=null)
+ { 
+   <div class='col-sm-6' style="display:none;">
+    <div class='form-group'>
+        <label class="col-xs-5">@Html.LabelFor(model => model.schedulesession.Id)</label>
+        <div class="input-group col-xs-7">
+            @Html.TextBoxFor(model => model.schedulesession.Id, new { @class = "form-control" })
+        </div>
+    </div>
+ </div>
+ }
+				@if(User.CanView("T_Schedule","T_Name"))
+				{
+				<div class='col-sm-6 col-md-6 col-xs-12'>
+					<div class='form-group' title="Name">
+						<label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.schedulesession.T_Name)</label>
+						<div class="input-group col-sm-7 col-md-7 col-xs-12">
+						@if (@Model.schedulesession == null)
+						{
+                        <p class="viewlabel"></p>
+                        }
+                        else
+                        {
+                        <p class="viewlabel" >
+						@Model.schedulesession.T_Name</p>
+						
+                        }
+						</div>
+					</div>
+				</div>
+				}
+				@if(User.CanView("T_Schedule","T_Description"))
+				{
+				<div class='col-sm-6 col-md-6 col-xs-12'>
+					<div class='form-group' title="Description">
+						<label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.schedulesession.T_Description)</label>
+						<div class="input-group col-sm-7 col-md-7 col-xs-12">
+						@if (@Model.schedulesession == null)
+						{
+                        <p class="viewlabel"></p>
+                        }
+                        else
+                        {
+                        <p class="viewlabel" >
+						@Model.schedulesession.T_Description</p>
+						
+                        }
+						</div>
+					</div>
+				</div>
+				}
+				@if(User.CanView("T_Schedule","T_StartDateTime"))
+				{
+				<div class='col-sm-6 col-md-6 col-xs-12'>
+					<div class='form-group' title="Start Date Time">
+						<label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.schedulesession.T_StartDateTime)</label>
+						<div class="input-group col-sm-7 col-md-7 col-xs-12">
+						@if (@Model.schedulesession == null)
+						{
+                        <p class="viewlabel"></p>
+                        }
+                        else
+                        {
+                        <p class="viewlabel" >
+						@Model.schedulesession.T_StartDateTime</p>
+						
+                        }
+						</div>
+					</div>
+				</div>
+				}
+				@if(User.CanView("T_Schedule","T_EndDate"))
+				{
+				<div class='col-sm-6 col-md-6 col-xs-12'>
+					<div class='form-group' title="End Date">
+						<label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.schedulesession.T_EndDate)</label>
+						<div class="input-group col-sm-7 col-md-7 col-xs-12">
+						@if (@Model.schedulesession == null)
+						{
+                        <p class="viewlabel"></p>
+                        }
+                        else
+                        {
+                        <p class="viewlabel" >
+						@Model.schedulesession.T_EndDate</p>
+						
+                        }
+						</div>
+					</div>
+				</div>
+				}
+					
+												</div>
+											</div>
+										</div>
+										</div>
+											</div>
+										</div>
+							}
+		</div>
+				</div>
+			</div>
+		</div>
+			</div>
+			<div class="row">
+				<div class="col-md-12 col-sm-12 col-xs-12">
+					@Html.ActionLink("Back", "Cancel", new { UrlReferrer = Request.UrlReferrer }, new { @class = "btn btn-default btn-sm pull-left formbuttonfix" })
+					 @if (User.Identity.IsAuthenticated && User != null && User.CanEdit("T_Session"))
+                     {
+                          @Html.ActionLink("Edit", "Edit", new { id = Model.Id, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, new { @class = "btn btn-primary btn-sm pull-left formbuttonfix" })
+                     }
+				</div>
+			</div>    
+	</div>    
+<div class="tab-pane fade in" id="T_SessionClientAssociation_T_Session">
+     @if (User.Identity.IsAuthenticated && User != null && User.CanView("T_SessionClientAssociation"))
+	{
+	  // Html.RenderAction("Index", "T_SessionClientAssociation", new {RenderPartial=true, HostingEntity = "T_Session", HostingEntityID = @Model.Id, AssociatedType = "T_SessionClientAssociation_T_Session" }); 
+	}
+  </div>
+	</div> <!-- /tab-content --><br />
+
+<br/>
+</div>
+ 

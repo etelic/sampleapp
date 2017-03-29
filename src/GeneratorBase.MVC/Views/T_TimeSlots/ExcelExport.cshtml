@@ -1,0 +1,57 @@
+﻿@model PagedList.IPagedList<GeneratorBase.MVC.Models.T_TimeSlots>
+@using PagedList.Mvc;
+@{
+    ViewBag.Title = "Index";
+    Layout = null;
+    Response.ContentType = "application/vnd.ms-excel";
+    Response.AddHeader("Content-Disposition", "attachment; filename=Time Slots.xls");
+}
+                    <table>
+                            <tr>
+@if(User.CanView("T_TimeSlots","T_SlotNo"))
+{
+		<th>SlotNo</th>
+}
+@if(User.CanView("T_TimeSlots","T_LearningCenterTimeSlotsAssociationID"))
+{
+		<th  @(Convert.ToString(ViewData["HostingEntity"]) == "T_LearningCenter"?"hidden":"")>Learning Center</th>
+}
+@if(User.CanView("T_TimeSlots","T_StartTime"))
+{
+		<th>Start Time</th>
+}
+@if(User.CanView("T_TimeSlots","T_EndTime"))
+{
+		<th>End Time</th>
+}
+    </tr>
+@foreach (var item in Model) {
+    <tr>
+	@if(User.CanView("T_TimeSlots","T_SlotNo"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.T_SlotNo)
+        </td>
+}
+@if(User.CanView("T_TimeSlots","T_LearningCenterTimeSlotsAssociationID"))
+{
+		<td @(Convert.ToString(ViewData["HostingEntity"]) == "T_LearningCenter"?"hidden":"")>
+            @Html.DisplayFor(modelItem => item.t_learningcentertimeslotsassociation.DisplayValue)
+        </td>
+}
+@if(User.CanView("T_TimeSlots","T_StartTime"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.T_StartTime)
+        </td>
+}
+@if(User.CanView("T_TimeSlots","T_EndTime"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.T_EndTime)
+        </td>
+}
+                                </tr>
+                            }
+</table>
+               

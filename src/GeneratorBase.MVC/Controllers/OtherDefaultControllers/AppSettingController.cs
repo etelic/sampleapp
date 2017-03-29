@@ -193,6 +193,9 @@ namespace GeneratorBase.MVC.Controllers.OtherDefaultControllers
         {
             if (ModelState.IsValid)
             {
+                if (appsetting.Key.ToLower() == "reportpass")
+                    appsetting.Value = (new EncryptDecrypt()).EncryptString(appsetting.Value);
+
                 db.Entry(appsetting).State = EntityState.Modified;
                 db.SaveChanges();
                 var appSettings = db.AppSettings;

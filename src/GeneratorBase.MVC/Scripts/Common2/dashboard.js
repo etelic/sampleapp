@@ -353,8 +353,11 @@ function QuickAdd(e, EntityName, bisrule, biscount, ruleType, lblerrormsg, isinl
             processData: false,
             contentType: false,
             success: function (result) {
+                $(target).removeAttr("disabled");
                 if (result == "FROMPOPUP") {
                     form.find('button[aria-hidden="true"]').click();
+                } else {
+                    $('#dvPopupError').html(result);
                 }
             }
         });
@@ -367,8 +370,11 @@ function QuickAdd(e, EntityName, bisrule, biscount, ruleType, lblerrormsg, isinl
             cache: false,
             data: fd,
             success: function (result) {
+		 $(target).removeAttr("disabled");
                 if (result == "FROMPOPUP") {
                     form.find('button[aria-hidden="true"]').click();
+                } else {
+                    $('#dvPopupError').html(result);
                 }
             }
         });
@@ -879,12 +885,10 @@ function SearchListNew1(obj, dataurl, searchstring, hostingentityname, hostingen
                 if (ele.options[o].selected)
                     vals += ele.options[o].value + ",";
             }
+        vals = vals.replace(/^,|,$/g, '');
         if (vals.length > 0) {
-            //if (firstparam == 0)
-            url1 += "&" + association[i] + "=" + vals;
-            //else
-            //    url1 += "&" + association[i] + "=" + vals;
-            //firstparam = 1;
+            //url1 += "&" + association[i] + "=" + vals;
+            url1 = addParameterToURL(url1, association[i], vals);
         }
     }
 

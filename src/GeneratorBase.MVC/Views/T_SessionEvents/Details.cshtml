@@ -1,0 +1,249 @@
+﻿@model GeneratorBase.MVC.Models.T_SessionEvents
+@using PagedList;
+@{
+    ViewBag.Title = "View Session Events";
+	var EntityDisplayNameReflector = ModelReflector.Entities.FirstOrDefault(p => p.Name == "T_SessionEvents");
+    var EntityDisplayName = EntityDisplayNameReflector != null ? EntityDisplayNameReflector.DisplayName : "Session Events";
+}
+<script>
+    $(document).ready(function () {
+			 if ($.cookie('@User.JavaScriptEncodedName@Model.Id' + 'TabCookie') != null) {
+				$('a[href="#' + $.cookie('@User.JavaScriptEncodedName@Model.Id' + 'TabCookie') + '"]').click();
+			 }
+    });
+</script>
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_SessionEventsIsHiddenRule))
+    {
+        @Html.Raw(ViewBag.T_SessionEventsIsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_SessionEventsIsGroupsHiddenRule))
+    {
+        @Html.Raw(ViewBag.T_SessionEventsIsGroupsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_SessionEventsIsSetValueUIRule))
+    {
+        @Html.Raw(ViewBag.T_SessionEventsIsSetValueUIRule);
+    }
+}
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-title">
+            <i class="glyphicon glyphicon-hand-down text-primary"></i> @EntityDisplayName  <i class="glyphicon glyphicon-chevron-right small"></i> <span>View</span>
+        </h1>
+        <h2 class="text-primary"><span id="HostingEntityDisplayValue">@Html.DisplayFor(model => model.DisplayValue)</span>
+			<div class="btn-group pull-right fixactionbut">
+            <button data-toggle="dropdown" class="btn btn-xs dropdown-toggle btn-default pull-right">
+                Action
+                <span class="caret">    </span>
+            </button>
+			<ul class="dropdown-menu pull-left">               
+				<li>
+                    @if (User.Identity.IsAuthenticated && User != null && User.CanEdit("T_SessionEvents"))
+                    {
+                        <a href="@Url.Action("Edit","T_SessionEvents", new { id = Model.Id,  UrlReferrer = Request.Url, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) },null)"><i class="glyphicon glyphicon-edit"></i>  Edit</a>
+                    }
+                </li>             
+				<li>
+                    @if (User.Identity.IsAuthenticated && User != null && User.CanDelete("T_SessionEvents"))
+                    {
+                        <a href="@Url.Action("Delete", "T_SessionEvents", new { id = Model.Id, UrlReferrer = Request.Url, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null)"><i class="glyphicon glyphicon-remove-sign"></i>  Delete</a>
+                    }
+                </li>
+ <li class="divider" style="clear:both"></li>
+ <li class="dropdown-submenu pull-left">
+	<a tabindex="-1" href="#" style="margin-bottom:10px;">Find Matching</a>
+    <ul class="dropdown-menu pull-left">
+<li>
+		<a href="@Url.Action("FindFSearch", "T_Session", new {sourceEntity="T_SessionEvents",id=Model.Id}, null)">Session</a>
+</li>
+<li>
+		<a href="@Url.Action("FindFSearch", "T_TimeSlots", new {sourceEntity="T_SessionEvents",id=Model.Id}, null)">Time Slots</a>
+</li>
+</ul>
+</li>
+			</ul>
+</div>
+		</h2>
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+<div class="tabbable responsive">
+    <ul class="nav nav-tabs">
+	 <li class="active"><a href="#Details" onclick="ClearTabCookie('@User.JavaScriptEncodedName@Model.Id');" data-toggle="tab">Details</a></li>
+		 <li @(!User.CanView("T_SessionEventsClient")?"style=display:none;":"")><a onclick="LoadTab('T_SessionEventsClient_T_SessionEvents','@User.JavaScriptEncodedName@Model.Id','@Html.Raw(Url.Action("Index", "T_SessionEventsClient", new {RenderPartial=true, HostingEntity ="T_SessionEvents", HostingEntityID = @Model.Id, AssociatedType = "T_SessionEventsClient_T_SessionEvents",TabToken = DateTime.Now.Ticks,}))')" href="#T_SessionEventsClient_T_SessionEvents" data-toggle="tab">
+		 Client
+		 </a></li>
+
+    </ul>
+	    <div class="tab-content">
+		   <div class="tab-pane fade in active" id="Details">
+				 <div class="panel panel-default AppForm">
+					<div class="panel-body">
+                                  
+			<div class="row">
+				<div class="col-sm-12 col-md-12 col-xs-12">
+			<div class="row">
+@if(User.CanView("T_SessionEvents","T_Title"))
+{
+<div class='col-sm-6 col-md-6 col-xs-12' id="dvT_Title">
+	<div class='form-group' title="@Model.T_Title">
+		<label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.T_Title) </label>
+		<div class="input-group col-sm-7 col-md-7 col-xs-12">
+		
+				
+				<p class="viewlabel">@Model.T_Title</p>
+					
+					</div>
+	</div>
+</div>
+}
+@if(User.CanView("T_SessionEvents","T_EventDate"))
+{
+<div class='col-sm-6 col-md-6 col-xs-12' id="dvT_EventDate">
+	<div class='form-group' title="@String.Format("{0:MM/dd/yyyy}", Model.T_EventDate)">
+		<label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.T_EventDate) </label>
+		<div class="input-group col-sm-7 col-md-7 col-xs-12">
+		
+				
+				<p class="viewlabel">@String.Format("{0:MM/dd/yyyy}", Model.T_EventDate)</p>
+					
+					</div>
+	</div>
+</div>
+}
+@if(User.CanView("T_SessionEvents","T_SessionEventsLearningCenterID"))
+{
+<div class='col-sm-6 col-md-6 col-xs-12' id="dvT_SessionEventsLearningCenter">
+	<div class='form-group' >
+		<label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.T_SessionEventsLearningCenterID)</label>
+		<div class="input-group col-sm-7 col-md-7 col-xs-12">
+		@if (@Model.T_SessionEventsLearningCenterID == 0 || @Model.T_SessionEventsLearningCenterID == null || @Model.t_sessioneventslearningcenter == null)
+		{
+	         <p class="viewlabel"></p>
+        }
+        else
+        {
+		     <p class="viewlabel" title="@Model.t_sessioneventslearningcenter.DisplayValue">@Model.t_sessioneventslearningcenter.DisplayValue</p>
+        }
+		</div>
+	</div>
+</div>
+}
+@if(User.CanView("T_SessionEvents","T_StartTime"))
+{
+<div class='col-sm-6 col-md-6 col-xs-12' id="dvT_StartTime">
+	<div class='form-group' title="@String.Format("{0:hh:mm tt}", Model.T_StartTime)">
+		<label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.T_StartTime) </label>
+		<div class="input-group col-sm-7 col-md-7 col-xs-12">
+		
+				
+				<p class="viewlabel" id="timeT_StartTime">@String.Format("{0:hh:mm tt}", Model.T_StartTime)</p>
+		@Html.Raw("<script> $(function () {$('timeT_StartTime').datetimepickerIndex({divid:'timeT_StartTime',format: 'hh:mm',val:'" +String.Format("{0:HH:mm}",Model.T_StartTime) + "'})});</script>")        
+				
+					</div>
+	</div>
+</div>
+}
+@if(User.CanView("T_SessionEvents","T_EndTime"))
+{
+<div class='col-sm-6 col-md-6 col-xs-12' id="dvT_EndTime">
+	<div class='form-group' title="@String.Format("{0:hh:mm tt}", Model.T_EndTime)">
+		<label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.T_EndTime) </label>
+		<div class="input-group col-sm-7 col-md-7 col-xs-12">
+		
+				
+				<p class="viewlabel" id="timeT_EndTime">@String.Format("{0:hh:mm tt}", Model.T_EndTime)</p>
+		@Html.Raw("<script> $(function () {$('timeT_EndTime').datetimepickerIndex({divid:'timeT_EndTime',format: 'hh:mm',val:'" +String.Format("{0:HH:mm}",Model.T_EndTime) + "'})});</script>")        
+				
+					</div>
+	</div>
+</div>
+}
+@if(User.CanView("T_SessionEvents","T_IsCancelled"))
+{
+<div class='col-sm-6 col-md-6 col-xs-12' id="dvT_IsCancelled">
+	<div class='form-group' title="@Model.T_IsCancelled">
+		<label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.T_IsCancelled) </label>
+		<div class="input-group col-sm-7 col-md-7 col-xs-12">
+		
+				@Html.DisplayFor(model => model.T_IsCancelled)
+		</div>
+	</div>
+</div>
+}
+@if(User.CanView("T_SessionEvents","T_Description"))
+{
+<div class='col-sm-6 col-md-6 col-xs-12' id="dvT_Description">
+	<div class='form-group' title="@Model.T_Description">
+		<label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.T_Description)</label>
+		<div class="input-group col-sm-7 col-md-7 col-xs-12">
+		<p class="viewlabelmultiline">@Model.T_Description</p>
+		</div>
+	</div>
+</div>
+}
+@if(User.CanView("T_SessionEvents","ScheduleID"))
+{
+<div class='col-sm-6 col-md-6 col-xs-12' id="dvSchedule">
+	<div class='form-group' >
+		<label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.ScheduleID)</label>
+		<div class="input-group col-sm-7 col-md-7 col-xs-12">
+ @if (Model.schedule!=null && !string.IsNullOrEmpty(Model.schedule.DisplayValue))
+        {
+		 <p class="viewlabel">
+		@Html.ActionLink(Html.DisplayFor(model => model.schedule.DisplayValue).ToString(), "Edit", "T_Schedule", new { Id = Html.DisplayFor(model => model.schedule.Id).ToString() }, null)
+		</p>
+		}
+		</div>
+	</div>
+</div>
+}
+@if(User.CanView("T_SessionEvents","T_SessionEventsTimeSlotsID"))
+{
+<div class='col-sm-6 col-md-6 col-xs-12' id="dvT_SessionEventsTimeSlots">
+	<div class='form-group' >
+		<label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.T_SessionEventsTimeSlotsID)</label>
+		<div class="input-group col-sm-7 col-md-7 col-xs-12">
+		@if (@Model.T_SessionEventsTimeSlotsID == 0 || @Model.T_SessionEventsTimeSlotsID == null || @Model.t_sessioneventstimeslots == null)
+		{
+	         <p class="viewlabel"></p>
+        }
+        else
+        {
+		     <p class="viewlabel" title="@Model.t_sessioneventstimeslots.DisplayValue">@Model.t_sessioneventstimeslots.DisplayValue</p>
+        }
+		</div>
+	</div>
+</div>
+}
+		</div>
+				</div>
+			</div>
+		</div>
+			</div>
+			<div class="row">
+				<div class="col-md-12 col-sm-12 col-xs-12">
+					@Html.ActionLink("Back", "Cancel", new { UrlReferrer = Request.UrlReferrer }, new { @class = "btn btn-default btn-sm pull-left formbuttonfix" })
+					 @if (User.Identity.IsAuthenticated && User != null && User.CanEdit("T_SessionEvents"))
+                     {
+                          @Html.ActionLink("Edit", "Edit", new { id = Model.Id, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, new { @class = "btn btn-primary btn-sm pull-left formbuttonfix" })
+                     }
+				</div>
+			</div>    
+	</div>    
+<div class="tab-pane fade in" id="T_SessionEventsClient_T_SessionEvents">
+     @if (User.Identity.IsAuthenticated && User != null && User.CanView("T_SessionEventsClient"))
+	{
+	  // Html.RenderAction("Index", "T_SessionEventsClient", new {RenderPartial=true, HostingEntity = "T_SessionEvents", HostingEntityID = @Model.Id, AssociatedType = "T_SessionEventsClient_T_SessionEvents" }); 
+	}
+  </div>
+	</div> <!-- /tab-content --><br />
+
+<br/>
+</div>
+ 

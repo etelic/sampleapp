@@ -183,16 +183,15 @@ namespace GeneratorBase.MVC.Controllers
 			LoadViewDataBeforeOnEdit(filedocument);	
 			if (!string.IsNullOrEmpty(AssociatedType))
                     LoadViewDataForCount(filedocument, AssociatedType);
-            ViewBag.FileDocumentIsHiddenRule = checkHidden("FileDocument", "OnDetails");
+            ViewBag.FileDocumentIsHiddenRule = checkHidden("FileDocument", "OnDetails", false);
+			ViewBag.FileDocumentIsGroupsHiddenRule = checkHidden("FileDocument", "OnDetails", true);
 			ViewBag.FileDocumentIsSetValueUIRule = checkSetValueUIRule("FileDocument", "OnDetails");
 			return View(ViewBag.TemplatesName,filedocument);
 
         }
 
-
-
         // GET: /FileDocument/Create
-        public ActionResult Create(string UrlReferrer,string HostingEntityName, string HostingEntityID, string AssociatedType, bool? IsDDAdd, string viewtype)
+        public ActionResult Create(string UrlReferrer,string HostingEntityName, string HostingEntityID, string AssociatedType, bool? IsDDAdd, string viewtype )
         {
             if (!User.CanAdd("FileDocument"))
             {
@@ -208,7 +207,8 @@ namespace GeneratorBase.MVC.Controllers
 		  ViewData["HostingEntityName"] = HostingEntityName;
 		  ViewData["HostingEntityID"] = HostingEntityID;
 		  LoadViewDataBeforeOnCreate(HostingEntityName, HostingEntityID, AssociatedType);
-		  ViewBag.FileDocumentIsHiddenRule = checkHidden("FileDocument","OnCreate");
+		  ViewBag.FileDocumentIsHiddenRule = checkHidden("FileDocument", "OnCreate", false);
+			ViewBag.FileDocumentIsGroupsHiddenRule = checkHidden("FileDocument", "OnCreate", true);
 		  ViewBag.FileDocumentIsSetValueUIRule = checkSetValueUIRule("FileDocument", "OnCreate");
           return View();
         }
@@ -225,7 +225,8 @@ namespace GeneratorBase.MVC.Controllers
             GetTemplatesForCreateWizard(viewtype);
 		    ViewData["FileDocumentParentUrl"] = UrlReferrer;
 			LoadViewDataBeforeOnCreate(HostingEntityName, HostingEntityID, AssociatedType);
-			 ViewBag.FileDocumentIsHiddenRule = checkHidden("FileDocument", "OnCreate");
+			 ViewBag.FileDocumentIsHiddenRule = checkHidden("FileDocument", "OnCreate", false);
+			ViewBag.FileDocumentIsGroupsHiddenRule = checkHidden("FileDocument", "OnCreate", true);
 			 ViewBag.FileDocumentIsSetValueUIRule = checkSetValueUIRule("FileDocument", "OnCreate");
             return View();
         }
@@ -256,7 +257,10 @@ namespace GeneratorBase.MVC.Controllers
                 else return RedirectToAction("Index");
             }
 	
-			LoadViewDataAfterOnCreate(filedocument);	
+			LoadViewDataAfterOnCreate(filedocument);
+			ViewBag.FileDocumentIsHiddenRule = checkHidden("FileDocument", "OnCreate", false);
+			ViewBag.FileDocumentIsGroupsHiddenRule = checkHidden("FileDocument", "OnCreate", true);
+			ViewBag.FileDocumentIsSetValueUIRule = checkSetValueUIRule("FileDocument", "OnCreate");	
             return View(filedocument);
         }
 		 // GET: /FileDocument/CreateQuick
@@ -275,7 +279,8 @@ namespace GeneratorBase.MVC.Controllers
            ViewData["HostingEntityName"] = HostingEntityName;
 		   ViewData["HostingEntityID"] = HostingEntityID;
 		   LoadViewDataBeforeOnCreate(HostingEntityName, HostingEntityID, AssociatedType);
-		    ViewBag.FileDocumentIsHiddenRule = checkHidden("FileDocument", "OnCreate");
+		    ViewBag.FileDocumentIsHiddenRule = checkHidden("FileDocument", "OnCreate", false);
+			ViewBag.FileDocumentIsGroupsHiddenRule = checkHidden("FileDocument", "OnCreate", true);
 			ViewBag.FileDocumentIsSetValueUIRule = checkSetValueUIRule("FileDocument", "OnCreate");
             return View();
         }
@@ -323,6 +328,9 @@ namespace GeneratorBase.MVC.Controllers
 				return Json(errors, "application/json", System.Text.Encoding.UTF8, JsonRequestBehavior.AllowGet);
 			}
 			LoadViewDataAfterOnCreate(filedocument);
+			ViewBag.FileDocumentIsHiddenRule = checkHidden("FileDocument", "OnCreate", false);
+			ViewBag.FileDocumentIsGroupsHiddenRule = checkHidden("FileDocument", "OnCreate", true);
+			ViewBag.FileDocumentIsSetValueUIRule = checkSetValueUIRule("FileDocument", "OnCreate");
             if (!string.IsNullOrEmpty(AssociatedEntity))
                     LoadViewDataForCount(filedocument, AssociatedEntity);
 			return View(filedocument);
@@ -379,6 +387,9 @@ namespace GeneratorBase.MVC.Controllers
 		 if (IsDDAdd != null)
               ViewBag.IsDDAdd = Convert.ToBoolean(IsDDAdd);
 		LoadViewDataAfterOnCreate(filedocument);
+			ViewBag.FileDocumentIsHiddenRule = checkHidden("FileDocument", "OnCreate", false);
+			ViewBag.FileDocumentIsGroupsHiddenRule = checkHidden("FileDocument", "OnCreate", true);
+			ViewBag.FileDocumentIsSetValueUIRule = checkSetValueUIRule("FileDocument", "OnCreate");
             return View(filedocument);
         }
 		// GET: /FileDocument/Edit/5
@@ -407,7 +418,8 @@ namespace GeneratorBase.MVC.Controllers
 		 ViewData["HostingEntityName"] = HostingEntityName;
          ViewData["AssociatedType"] = AssociatedType;
 		  LoadViewDataBeforeOnEdit(filedocument);
-		   ViewBag.FileDocumentIsHiddenRule = checkHidden("FileDocument", "OnEdit");
+		   ViewBag.FileDocumentIsHiddenRule = checkHidden("FileDocument", "OnEdit", false);
+			ViewBag.FileDocumentIsGroupsHiddenRule = checkHidden("FileDocument", "OnEdit", true);
 		   ViewBag.FileDocumentIsSetValueUIRule = checkSetValueUIRule("FileDocument", "OnEdit");
           return View(filedocument);
         }
@@ -462,6 +474,9 @@ namespace GeneratorBase.MVC.Controllers
             }
 			
 			LoadViewDataAfterOnEdit(filedocument);
+			ViewBag.FileDocumentIsHiddenRule = checkHidden("FileDocument", "OnEdit", false);
+			ViewBag.FileDocumentIsGroupsHiddenRule = checkHidden("FileDocument", "OnEdit", true);
+			ViewBag.FileDocumentIsSetValueUIRule = checkSetValueUIRule("FileDocument", "OnEdit");
             return View(filedocument);
         }
 
@@ -493,7 +508,8 @@ namespace GeneratorBase.MVC.Controllers
 		 ViewData["HostingEntityName"] = HostingEntityName;
          ViewData["AssociatedType"] = AssociatedType;
 		  LoadViewDataBeforeOnEdit(filedocument);
-		   ViewBag.FileDocumentIsHiddenRule = checkHidden("FileDocument", "OnEdit");
+		   ViewBag.FileDocumentIsHiddenRule = checkHidden("FileDocument", "OnEdit", false);
+			ViewBag.FileDocumentIsGroupsHiddenRule = checkHidden("FileDocument", "OnEdit", true);
 		   ViewBag.FileDocumentIsSetValueUIRule = checkSetValueUIRule("FileDocument", "OnEdit");
           return View(filedocument);
         }
@@ -547,6 +563,9 @@ namespace GeneratorBase.MVC.Controllers
             }
 			
 			LoadViewDataAfterOnEdit(filedocument);
+			ViewBag.FileDocumentIsHiddenRule = checkHidden("FileDocument", "OnEdit", false);
+			ViewBag.FileDocumentIsGroupsHiddenRule = checkHidden("FileDocument", "OnEdit", true);
+			ViewBag.FileDocumentIsSetValueUIRule = checkSetValueUIRule("FileDocument", "OnEdit");
             return View(filedocument);
         }
 		// GET: /FileDocument/EditWizard/5
@@ -574,7 +593,8 @@ namespace GeneratorBase.MVC.Controllers
 		if(ViewData["FileDocumentParentUrl"] == null  && Request.UrlReferrer !=null && ! Request.UrlReferrer.AbsolutePath.EndsWith("/FileDocument"))
 			ViewData["FileDocumentParentUrl"] = Request.UrlReferrer;
 			 LoadViewDataBeforeOnEdit(filedocument);
-			 ViewBag.FileDocumentIsHiddenRule = checkHidden("FileDocument", "OnEdit");
+			 ViewBag.FileDocumentIsHiddenRule = checkHidden("FileDocument", "OnEdit", false);
+			ViewBag.FileDocumentIsGroupsHiddenRule = checkHidden("FileDocument", "OnEdit", true);
 			 ViewBag.FileDocumentIsSetValueUIRule = checkSetValueUIRule("FileDocument", "OnEdit");
           return View(filedocument);
         }
@@ -612,6 +632,9 @@ namespace GeneratorBase.MVC.Controllers
                      return RedirectToAction("Index");
             }
 			LoadViewDataAfterOnEdit(filedocument);
+			ViewBag.FileDocumentIsHiddenRule = checkHidden("FileDocument", "OnEdit", false);
+			ViewBag.FileDocumentIsGroupsHiddenRule = checkHidden("FileDocument", "OnEdit", true);
+			ViewBag.FileDocumentIsSetValueUIRule = checkSetValueUIRule("FileDocument", "OnEdit");
             return View(filedocument);
         }
         // GET: /FileDocument/Delete/5
@@ -647,6 +670,8 @@ namespace GeneratorBase.MVC.Controllers
             {
  //Delete Document
 			db.Entry(filedocument).State = EntityState.Deleted;
+
+
             db.FileDocuments.Remove(filedocument);
             db.SaveChanges();
 			if (!string.IsNullOrEmpty(UrlReferrer))

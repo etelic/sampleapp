@@ -1,0 +1,450 @@
+﻿@model PagedList.IPagedList<GeneratorBase.MVC.Models.T_TimeSlots>
+@using PagedList.Mvc;
+@{
+	
+    var ActionNameUrl = "Index";
+    if (HttpContext.Current.Request.RequestContext.RouteData.Values["action"].ToString().ToUpper() == "FSEARCH")
+    {
+        ActionNameUrl = "FSearch";
+    }
+	var BackUrl =  Request.Url;
+	if (ViewData["HostingEntity"] != null && (Request.QueryString["TabToken"] != null || Request.IsAjaxRequest()))
+	{
+		BackUrl =  Request.UrlReferrer;
+	}
+	var EntityReflector = ModelReflector.Entities.FirstOrDefault(p => p.Name == "T_TimeSlots");
+	 var appdbcontext = new ApplicationContext(User);
+}
+
+<div id="T_TimeSlots">
+<style>
+    .table-responsive > .fixed-column {
+        position: absolute;
+        display: block;
+        width: auto;
+        border: 0px solid transparent;
+        border-top: 1px solid #c3ddec;
+    }
+    .fixed-column th {
+        background: #fff;
+    }
+    .fixed-column td {
+        background: #fff;
+    }
+</style>
+<script type="text/javascript">
+    $(document).ready(function () {
+	 $(".pagination a").click(function (e) {
+            //PaginationClick(e,'T_TimeSlots')
+			PaginationClick(e, 'T_TimeSlots','@User.JavaScriptEncodedName')
+        })
+	    if("@HttpContext.Current.Request.RequestContext.RouteData.Values["action"].ToString().ToUpper()" == "FSEARCH")
+        {
+            $("#fsearchT_TimeSlots").addClass('in');
+			if('@ViewData["HostingEntity"]'.length>0)
+	        {
+                $("#" + "@ViewData["HostingEntity"]" + "_T_TimeSlots").hide();
+	        }
+			FSearchColumnsShowHide('@ViewData["HideColumns"]', 'T_TimeSlots');
+        }
+	    $("#SearchStringT_TimeSlots").keypress(function (e) {
+			if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
+				 $("#T_TimeSlotsSearch").bind("click", (function () {
+                        }));
+                $('#T_TimeSlotsSearch').trigger("click");
+                return false;
+			}
+        })
+        $("#btnShowHideT_TimeSlots").mouseup(function () {
+            if (document.getElementById('ColumnShowHideT_TimeSlots').className == 'collapse') {
+				 $('#lblT_TimeSlots').css('display', 'none');
+            }
+        })
+    });
+</script>
+@functions {
+    object getSortHtmlAttributes(string sortby, bool IsPaging, int? page, bool? IsExport)
+    {
+        if (IsPaging)
+        {
+            return new
+            {
+                page,
+                sortBy = ViewBag.CurrentSort,
+                isAsc = ViewBag.IsAsc,
+                currentFilter = ViewBag.CurrentFilter,
+                HostingEntity = @Convert.ToString(ViewData["HostingEntity"]),
+                AssociatedType = @Convert.ToString(ViewData["AssociatedType"]),
+                HostingEntityID = ViewData["HostingEntityID"],
+				IsExport = IsExport,
+				FSFilter = ViewBag.FSFilter == null ? "Fsearch" : ViewBag.FSFilter,
+				IsFilter = @Convert.ToBoolean(ViewData["IsFilter"]),
+                
+ t_learningcentertimeslotsassociation = Request.QueryString["t_learningcentertimeslotsassociation"],
+  T_SlotNoFrom = Request.QueryString["T_SlotNoFrom"],
+  T_SlotNoTo = Request.QueryString["T_SlotNoTo"],
+  T_StartTimeFrom = Request.QueryString["T_StartTimeFrom"],
+  T_StartTimeTo = Request.QueryString["T_StartTimeTo"],
+  T_EndTimeFrom = Request.QueryString["T_EndTimeFrom"],
+  T_EndTimeTo = Request.QueryString["T_EndTimeTo"],
+				search=Request.QueryString["search"],
+				SortOrder = Request.QueryString["SortOrder"],
+				viewtype = ViewBag.TemplatesName,
+				HideColumns = ViewData["HideColumns"],
+				 GroupByColumn = ViewBag.GroupByColumn,
+				 FilterCondition = ViewBag.FilterCondition,
+            };
+        }
+        else
+        {
+            return new
+            {
+                sortBy = sortby,
+                currentFilter = Request.QueryString["currentFilter"],
+                searchString = Request.QueryString["searchString"],
+                isAsc = (ViewBag.IsAsc == "ASC" ? "DESC" : ""),
+                page = ViewBag.Pages,
+                HostingEntity = @Convert.ToString(ViewData["HostingEntity"]),
+                HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),
+                AssociatedType = @Convert.ToString(ViewData["AssociatedType"]),
+				IsExport = IsExport,
+				FSFilter = ViewBag.FSFilter == null ? "Fsearch" : ViewBag.FSFilter,
+				IsFilter = @Convert.ToBoolean(ViewData["IsFilter"]),
+ t_learningcentertimeslotsassociation = Request.QueryString["t_learningcentertimeslotsassociation"],
+  T_SlotNoFrom = Request.QueryString["T_SlotNoFrom"],
+  T_SlotNoTo = Request.QueryString["T_SlotNoTo"],
+  T_StartTimeFrom = Request.QueryString["T_StartTimeFrom"],
+  T_StartTimeTo = Request.QueryString["T_StartTimeTo"],
+  T_EndTimeFrom = Request.QueryString["T_EndTimeFrom"],
+  T_EndTimeTo = Request.QueryString["T_EndTimeTo"],
+		search=Request.QueryString["search"],
+		SortOrder = Request.QueryString["SortOrder"],
+		viewtype = ViewBag.TemplatesName,
+		HideColumns = ViewData["HideColumns"],
+		 GroupByColumn = ViewBag.GroupByColumn,
+		 FilterCondition = ViewBag.FilterCondition,
+            };
+        }
+    }
+}
+<div class="row">
+    <div class="col-md-12 col-sm-12 col-sx-12">
+        <div class="panel panel-default">
+            <div class="panel-heading clearfix" style="margin:0px; padding:2px;">
+                 <div class="btn-group" id='@ViewData["HostingEntity"]_T_TimeSlots'>
+				  @if (User.Identity.IsAuthenticated && User != null && User.CanAdd("T_TimeSlots"))
+				  {
+						
+					
+					
+			}
+			
+                </div>
+			
+
+			
+				
+		
+		<div class="btn-group">
+             
+            
+</div>
+					
+
+				<div class="pull-right" style="width:250px;">
+                        <div class="input-group">
+                            @Html.TextBox("SearchStringT_TimeSlots", ViewBag.CurrentFilter as string, null, new { @class = "form-control fixsearchbox", @value = ViewBag.Homeval, @placeholder = "Search" })
+                            <div class="input-group-btn">
+                              <a id="T_TimeSlotsSearch" onclick="SearchClick(event, 'T_TimeSlots', '@Html.Raw(Url.Action("Index", "T_TimeSlots", new { IsFilter = ViewData["IsFilter"], IsDeepSearch = false, searchString = "_SearchString", HostingEntity = Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]),HideColumns = ViewData["HideColumns"], SearchTimeStamp = DateTime.Now.Ticks.ToString(),viewtype = Convert.ToString(ViewBag.TemplatesName) }))','@User.JavaScriptEncodedName');" data-original-title="Grid Search" class="btn btn-default btn-default tip-top" style="padding:3px 5px;"><span class="fam-zoom"></span></a>
+ @if (ViewData["HostingEntity"]==null)
+	{ 
+			 <a href="@(Url.Action("SetFSearch", "T_TimeSlots"))" data-original-title="Faceted Search" class="btn btn-default btn-default tip-top" style="padding:3px 5px;"><span class="fam-page-find"></span></a>
+	}
+								<button id="T_TimeSlotsCancel" type="button" class="btn btn-default btn-default collapse-data-btn tip-top" onclick="CancelSearch('T_TimeSlots','@Html.Raw(Url.Action("Index", "T_TimeSlots", new {IsFilter=ViewData["IsFilter"], HostingEntity = Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]), HideColumns = ViewData["HideColumns"], ClearSearchTimeStamp = DateTime.Now.Ticks.ToString(),viewtype = Convert.ToString(ViewBag.TemplatesName) }))','@User.JavaScriptEncodedName')" data-original-title="Clear Search" data-placement="top" style="padding:3px 5px;">
+                                    <span class="fam-delete"></span>
+                                </button>
+                                <button id="T_TimeSlotsSearchCancel" type="button" class="btn btn-default btn-default collapse-data-btn tip-top" onclick="CancelSearch('T_TimeSlots','@Html.Raw(Url.Action("Index", "T_TimeSlots", new {IsFilter=ViewData["IsFilter"], HostingEntity = Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]),HideColumns = ViewData["HideColumns"], ClearSearchTimeStamp = DateTime.Now.Ticks.ToString(),viewtype = Convert.ToString(ViewBag.TemplatesName)}))','@User.JavaScriptEncodedName')" data-original-title="Refresh Grid" data-placement="top" style="padding:3px 5px;">
+                                    <span class="fam-arrow-refresh"></span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+            </div>
+            <div class="panel-body" style="margin:0px; padding:8px;">
+ @if (ViewData["HostingEntity"]==null)
+	{ 
+	if (ViewBag.SearchResult != "" )
+                            {
+			<div id="fsearchT_TimeSlots" class="collapse MessageFSearch">
+                        @Html.Raw(Html.Encode(ViewBag.SearchResult).Replace(Environment.NewLine, "<br/>"))
+						 <a href="@Url.Action("Index", "T_TimeSlots",new{viewtype = Convert.ToString(ViewBag.TemplatesName)})" style="margin-left:5px;float:right"><span class="glyphicon glyphicon-remove-sign"></span> Clear</a>
+						  <a href="@(Url.Action("SetFSearch", "T_TimeSlots"))" style="float:right" ><span class="glyphicon glyphicon-edit"></span> Modify</a>
+            </div>
+	}
+}
+
+   <table class="table table-striped table-bordered table-hover table-condensed">
+            <thead>
+              
+				 <tr>
+					@*@{var SortPropertyNameT_LearningCenterTimeSlotsAssociation = EntityReflector.Properties.FirstOrDefault(q => q.Name == "T_LearningCenterTimeSlotsAssociationID");}
+					<th>
+						@SortPropertyNameT_LearningCenterTimeSlotsAssociation.DisplayName
+					</th>*@
+					<th>
+						Slot
+					</th>
+
+					<th>
+						Mon
+					</th>
+					<th>
+						Tue
+					</th>
+					<th>
+						Wed
+					</th>
+					<th>
+						Thu
+					</th>
+					<th>
+						Fri
+					</th>
+				</tr>
+				 </thead>
+				@{ bool isFirst = true; var oldKey = string.Empty; }
+                                @foreach (var item in Model.OrderBy(p => p.T_LearningCenterTimeSlotsAssociationID))
+                                {
+								    var sessions = item.t_sessiontimeslotassociaton.Where(p => p.schedulesession != null && (p.schedulesession.T_AssociatedRecurringScheduleDetailsTypeID == 2 || p.schedulesession.T_AssociatedRecurringScheduleDetailsTypeID == 1) && p.schedulesession.T_AssociatedScheduleTypeID == 2 && p.schedulesession.AbsoluteEnd(p.schedulesession.T_EndDate.Value) > DateTime.Now);
+			if (Convert.ToString(ViewData["HostingEntity"]) == "T_Client")
+            {
+                var obj = appdbcontext.T_Clients.Find(Convert.ToInt64(ViewData["HostingEntityID"]));
+				if (obj != null)
+				{
+					var filtersessions = obj.T_SessionClientAssociation_t_client.Select(p => p.T_SessionID);
+					sessions = sessions.Where(p => filtersessions.Contains(p.Id));
+				}
+            }
+
+			
+
+					var schedules = sessions.Select(p => p.schedulesession).ToList();
+                    schedules.ForEach(p => p.SelectedT_RecurrenceDays_T_RepeatOn = appdbcontext.T_RepeatOns.Where(a => a.T_ScheduleID == p.Id).Select(m => m.T_RecurrenceDaysID).ToList());
+
+
+                                   if (ViewBag.IsGroupBy != null && Convert.ToBoolean(ViewBag.IsGroupBy))
+                                    {
+                                        var groupKey = item.m_DisplayValue;
+                                        if (oldKey != groupKey)
+                                        {
+                                            isFirst = true;
+                                            oldKey = item.m_DisplayValue;
+                                        }
+                                        if (isFirst || (string.IsNullOrEmpty(oldKey)))
+                                        {
+                                            isFirst = false;
+                                            var groupCnt = Model.Where(grp => grp.m_DisplayValue == groupKey).Count();
+                                            string groupString = string.Empty;
+                                            if (groupCnt > 1)
+                                            {
+                                                groupString = "(" + groupCnt + " Records)";
+                                            }
+                                            else
+                                            {
+                                                groupString = "(" + groupCnt + " Record)";
+                                            }
+                                            <tr>
+                                                <td colspan="6" style="background: #EDF5FA; font-weight:bold"> @groupKey @groupString</td>
+                                            </tr>
+                                        }
+                                    }
+
+     <tr>
+						@*@if(item.t_learningcentertimeslotsassociation != null)
+						{
+                                        <td onclick="OpenQuickEdit('T_TimeSlots','@item.Id',event);">
+                                            @Html.DisplayFor(modelItem => item.t_learningcentertimeslotsassociation.DisplayValue)
+                                        </td>
+						}
+						else
+						{
+						<td></td>
+						}*@
+                                        <td onclick="OpenQuickEdit('T_TimeSlots','@item.Id',event);">
+                                            @Html.DisplayFor(modelItem => item.DisplayValue)
+                                        </td>
+
+                                        <td style="min-width:170px;"> @{var schedulecount = 0;}
+                                            @foreach (var obj in schedules.Where(p => p.SelectedT_RecurrenceDays_T_RepeatOn.Contains(2) || p.T_AssociatedRecurringScheduleDetailsTypeID == 1))
+                                            { schedulecount++;
+                                                <a href="@Url.Action("Edit", "T_Session", new { id= (appdbcontext.T_Sessions.FirstOrDefault(p=>p.ScheduleSessionID == obj.Id)).Id})" title="@obj.T_Name" style="width:80px; white-space: nowrap;overflow: hidden;text-overflow: ellipsis;display:inline-block;">@obj.T_Name</a>
+												if (ViewData["HostingEntity"] == null)
+												{
+													
+        <a class="btn text-muted btn-xs" style="margin-top:-10px;" data-placement="top" title="Quick Associate Client" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','SessionClientAssociation','dvPopup','" + Url.Action("CreateQuick", "T_SessionClientAssociation", new {AssociatedType = "T_SessionClientAssociation_T_Session", HostingEntity = "T_Session", HostingEntityName = "T_Session", HostingEntityID = appdbcontext.T_Sessions.FirstOrDefault(p=>p.ScheduleSessionID == obj.Id).Id }) + "')")">
+            <i class="fa fa-group"></i>
+        </a>
+		
+                                       
+											    }
+                                            }
+											@if (schedulecount == 0)
+                                            {
+
+				if (Convert.ToString(ViewData["HostingEntity"]) == "T_Client")
+				{
+					 <a class="btn text-muted btn-xs pull-right" data-placement="top" title="Quick Associate Client" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','SessionClientAssociation','dvPopup','" + Url.Action("CreateQuick", "T_SessionClientAssociation", new {TimeSlotId=item.Id, AssociatedType = "T_SessionClientAssociation_T_Client", HostingEntity = "T_Client", HostingEntityName = "T_Client", HostingEntityID = ViewData["HostingEntityID"] }) + "')")">
+						<i class="fa fa-user"></i>
+					 </a>
+				 }
+                                            }
+                                            <a class="btn text-muted btn-xs pull-right" onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Create", "T_Session", new { UrlReferrer = Request.UrlReferrer, AssociatedType = ViewData["AssociatedType"], HostingEntityName = "T_TimeSlots", HostingEntityID = item.Id, startDate = DateTime.Now.ToShortDateString(), slotID = item.Id}, null) + "');")>
+                                                <i class="fa fa-plus"></i>
+                                            </a>
+                                        </td>
+                                        <td style="min-width:170px;">
+										 @{schedulecount = 0;}
+                                            @foreach (var obj in schedules.Where(p => p.SelectedT_RecurrenceDays_T_RepeatOn.Contains(3) || p.T_AssociatedRecurringScheduleDetailsTypeID == 1))
+                                            { schedulecount++;
+                                               <a href="@Url.Action("Edit", "T_Session", new { id= (appdbcontext.T_Sessions.FirstOrDefault(p=>p.ScheduleSessionID == obj.Id)).Id})" title="@obj.T_Name" style="width:80px; white-space: nowrap;overflow: hidden;text-overflow: ellipsis;display:inline-block;">@obj.T_Name</a>
+											    if (ViewData["HostingEntity"] == null)
+												{
+													
+        <a class="btn text-muted btn-xs" style="margin-top:-10px;" data-placement="top" title="Quick Associate Client" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','SessionClientAssociation','dvPopup','" + Url.Action("CreateQuick", "T_SessionClientAssociation", new {AssociatedType = "T_SessionClientAssociation_T_Session", HostingEntity = "T_Session", HostingEntityName = "T_Session", HostingEntityID = appdbcontext.T_Sessions.FirstOrDefault(p=>p.ScheduleSessionID == obj.Id).Id }) + "')")">
+            <i class="fa fa-group"></i>
+        </a>
+		
+                                       
+											    }
+                                            }
+											@if (schedulecount == 0)
+                                            {
+
+				if (Convert.ToString(ViewData["HostingEntity"]) == "T_Client")
+				{
+					 <a class="btn text-muted btn-xs pull-right" data-placement="top" title="Quick Associate Client" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','SessionClientAssociation','dvPopup','" + Url.Action("CreateQuick", "T_SessionClientAssociation", new {TimeSlotId=item.Id, AssociatedType = "T_SessionClientAssociation_T_Client", HostingEntity = "T_Client", HostingEntityName = "T_Client", HostingEntityID = ViewData["HostingEntityID"] }) + "')")">
+						<i class="fa fa-user"></i>
+					 </a>
+				 }
+                                            }
+                                            <a class="btn text-muted btn-xs pull-right" onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Create", "T_Session", new { UrlReferrer = Request.UrlReferrer, AssociatedType = ViewData["AssociatedType"], HostingEntityName = "T_TimeSlots", HostingEntityID = item.Id, startDate = DateTime.Now.ToShortDateString(), slotID = item.Id}, null) + "');")>
+                                                <i class="fa fa-plus"></i>
+                                            </a>
+                                        </td>
+                                        <td style="min-width:170px;">@{schedulecount = 0;}
+                                            @foreach (var obj in schedules.Where(p => p.SelectedT_RecurrenceDays_T_RepeatOn.Contains(4) || p.T_AssociatedRecurringScheduleDetailsTypeID == 1))
+                                            { schedulecount++;
+                                                 <a href="@Url.Action("Edit", "T_Session", new { id= (appdbcontext.T_Sessions.FirstOrDefault(p=>p.ScheduleSessionID == obj.Id)).Id})" title="@obj.T_Name" style="width:80px; white-space: nowrap;overflow: hidden;text-overflow: ellipsis;display:inline-block;">@obj.T_Name</a>
+												if (ViewData["HostingEntity"] == null)
+												{
+													
+        <a class="btn text-muted btn-xs" style="margin-top:-10px;" data-placement="top" title="Quick Associate Client" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','SessionClientAssociation','dvPopup','" + Url.Action("CreateQuick", "T_SessionClientAssociation", new {AssociatedType = "T_SessionClientAssociation_T_Session", HostingEntity = "T_Session", HostingEntityName = "T_Session", HostingEntityID = appdbcontext.T_Sessions.FirstOrDefault(p=>p.ScheduleSessionID == obj.Id).Id }) + "')")">
+            <i class="fa fa-group"></i>
+        </a>
+		
+                                       
+											    }
+                                            }
+											@if (schedulecount == 0)
+                                            {
+
+				if (Convert.ToString(ViewData["HostingEntity"]) == "T_Client")
+				{
+					 <a class="btn text-muted btn-xs pull-right" data-placement="top" title="Quick Associate Client" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','SessionClientAssociation','dvPopup','" + Url.Action("CreateQuick", "T_SessionClientAssociation", new {TimeSlotId=item.Id, AssociatedType = "T_SessionClientAssociation_T_Client", HostingEntity = "T_Client", HostingEntityName = "T_Client", HostingEntityID = ViewData["HostingEntityID"] }) + "')")">
+						<i class="fa fa-user"></i>
+					 </a>
+				 }
+                                            }
+                                            <a class="btn text-muted btn-xs pull-right" onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Create", "T_Session", new { UrlReferrer = Request.UrlReferrer, AssociatedType = ViewData["AssociatedType"], HostingEntityName = "T_TimeSlots", HostingEntityID = item.Id, startDate = DateTime.Now.ToShortDateString(), slotID = item.Id}, null) + "');")>
+                                                <i class="fa fa-plus"></i>
+                                            </a>
+                                        </td>
+                                        <td style="min-width:170px;">@{schedulecount = 0;}
+                                            @foreach (var obj in schedules.Where(p => p.SelectedT_RecurrenceDays_T_RepeatOn.Contains(5) || p.T_AssociatedRecurringScheduleDetailsTypeID == 1))
+                                            { schedulecount++;
+                                                <a href="@Url.Action("Edit", "T_Session", new { id= (appdbcontext.T_Sessions.FirstOrDefault(p=>p.ScheduleSessionID == obj.Id)).Id})" title="@obj.T_Name" style="width:80px; white-space: nowrap;overflow: hidden;text-overflow: ellipsis;display:inline-block;">@obj.T_Name</a>
+											   if (ViewData["HostingEntity"] == null)
+												{
+													
+        <a class="btn text-muted btn-xs" style="margin-top:-10px;" data-placement="top" title="Quick Associate Client" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','SessionClientAssociation','dvPopup','" + Url.Action("CreateQuick", "T_SessionClientAssociation", new {AssociatedType = "T_SessionClientAssociation_T_Session", HostingEntity = "T_Session", HostingEntityName = "T_Session", HostingEntityID = appdbcontext.T_Sessions.FirstOrDefault(p=>p.ScheduleSessionID == obj.Id).Id }) + "')")">
+            <i class="fa fa-group"></i>
+        </a>
+		
+                                       
+											    }
+                                            }
+											@if (schedulecount == 0)
+                                            {
+
+				if (Convert.ToString(ViewData["HostingEntity"]) == "T_Client")
+				{
+					 <a class="btn text-muted btn-xs pull-right" data-placement="top" title="Quick Associate Client" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','SessionClientAssociation','dvPopup','" + Url.Action("CreateQuick", "T_SessionClientAssociation", new {TimeSlotId=item.Id, AssociatedType = "T_SessionClientAssociation_T_Client", HostingEntity = "T_Client", HostingEntityName = "T_Client", HostingEntityID = ViewData["HostingEntityID"] }) + "')")">
+						<i class="fa fa-user"></i>
+					 </a>
+				 }
+                                            }
+                                            <a class="btn text-muted btn-xs pull-right" onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Create", "T_Session", new { UrlReferrer = Request.UrlReferrer, AssociatedType = ViewData["AssociatedType"], HostingEntityName = "T_TimeSlots", HostingEntityID = item.Id, startDate = DateTime.Now.ToShortDateString(), slotID = item.Id}, null) + "');")>
+                                                <i class="fa fa-plus"></i>
+                                            </a>
+                                        </td>
+                                        <td style="min-width:170px;">@{schedulecount = 0;}
+                                            @foreach (var obj in schedules.Where(p => p.SelectedT_RecurrenceDays_T_RepeatOn.Contains(6) || p.T_AssociatedRecurringScheduleDetailsTypeID == 1))
+                                            { schedulecount++;
+                                                 <a href="@Url.Action("Edit", "T_Session", new { id= (appdbcontext.T_Sessions.FirstOrDefault(p=>p.ScheduleSessionID == obj.Id)).Id})" title="@obj.T_Name" style="width:80px; white-space: nowrap;overflow: hidden;text-overflow: ellipsis;display:inline-block;">@obj.T_Name</a>
+												if (ViewData["HostingEntity"] == null)
+												{
+													
+        <a class="btn text-muted btn-xs" style="margin-top:-10px;" data-placement="top" title="Quick Associate Client" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','SessionClientAssociation','dvPopup','" + Url.Action("CreateQuick", "T_SessionClientAssociation", new {AssociatedType = "T_SessionClientAssociation_T_Session", HostingEntity = "T_Session", HostingEntityName = "T_Session", HostingEntityID = appdbcontext.T_Sessions.FirstOrDefault(p=>p.ScheduleSessionID == obj.Id).Id }) + "')")">
+            <i class="fa fa-group"></i>
+        </a>
+		
+                                       
+											    }
+                                            }
+											@if (schedulecount == 0)
+                                            {
+				if (Convert.ToString(ViewData["HostingEntity"]) == "T_Client")
+				{
+					 <a class="btn text-muted btn-xs pull-right" data-placement="top" title="Quick Associate Client" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','SessionClientAssociation','dvPopup','" + Url.Action("CreateQuick", "T_SessionClientAssociation", new {TimeSlotId=item.Id, AssociatedType = "T_SessionClientAssociation_T_Client", HostingEntity = "T_Client", HostingEntityName = "T_Client", HostingEntityID = ViewData["HostingEntityID"] }) + "')")">
+						<i class="fa fa-user"></i>
+					 </a>
+				 }
+                                            }
+                                            <a class="btn text-muted btn-xs pull-right" onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Create", "T_Session", new { UrlReferrer = Request.UrlReferrer, AssociatedType = ViewData["AssociatedType"], HostingEntityName = "T_TimeSlots", HostingEntityID = item.Id, startDate = DateTime.Now.ToShortDateString(), slotID = item.Id}, null) + "');")>
+                                                <i class="fa fa-plus"></i>
+                                            </a>
+                                        </td>
+                                    </tr> 
+                            }
+                    </table>
+                </div>
+				
+  			   @if (Model.Count > 0)
+                {
+                    <div id="pagination">
+                        @Html.PagedListPager(Model, page => Url.Action(ActionNameUrl, "T_TimeSlots", getSortHtmlAttributes(null, true, page, false)))
+                        <div class="fixPageSize">
+                            Page Size :
+                            @Html.DropDownList("PageSize", new SelectList(new Dictionary<string, int> { { "10", 10 }, { "20", 20 }, { "50", 50 }, { "100", 100 } }, "Key", "Value")
+							, new { @id = "pagesizelistT_TimeSlots",
+							 @onchange = @Html.Raw("pagesizelistChange(event,'T_TimeSlots','"
+							  + @User.JavaScriptEncodedName + "')"),
+							 @Url = Html.Raw(@Url.Action(ActionNameUrl, "T_TimeSlots",
+							 getSortHtmlAttributes(ViewBag.CurrentSort, ViewBag.Pages == 1 ? false : true,
+							 null, false), null)) })
+							<span style="text-align:right;"> Total Count: @(Model.TotalItemCount)</span>
+							<script>
+                                    $(document).ready(function () {
+                                        $.validator.setDefaults({
+                                            ignore: "#pagesizelistT_TimeSlots"
+                                        })
+                                    }); 
+                                </script>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div> 
+ </div>
+

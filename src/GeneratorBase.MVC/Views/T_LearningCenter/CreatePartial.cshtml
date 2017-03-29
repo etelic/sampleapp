@@ -1,0 +1,185 @@
+﻿@model GeneratorBase.MVC.Models.T_LearningCenter
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_LearningCenterIsHiddenRule))
+    {
+        @Html.Raw(ViewBag.T_LearningCenterIsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_LearningCenterIsGroupsHiddenRule))
+    {
+        @Html.Raw(ViewBag.T_LearningCenterIsGroupsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_LearningCenterIsSetValueUIRule))
+    {
+        @Html.Raw(ViewBag.T_LearningCenterIsSetValueUIRule);
+    }
+}
+@using (Html.BeginForm("Create", "T_LearningCenter",new {UrlReferrer = Convert.ToString(ViewData["T_LearningCenterParentUrl"]), IsDDAdd = ViewBag.IsDDAdd }, FormMethod.Post, new { enctype = "multipart/form-data",id="frmT_LearningCenter" }))
+{
+   @Html.AntiForgeryToken();
+    Html.ValidationSummary(true);
+    Html.EnableClientValidation();
+	<input type="hidden" id="ErrMsg" />
+	@*<label id="ErrMsg" class="text-primary small pull-right" style="color:red; vertical-align:middle; font-weight:100;"></label>*@
+    <div id="errorContainer" style="display: none">
+        <div id="errorsMsg"></div>
+        <div id="errors"></div>
+    </div>
+	 <h2>
+	<div class="pull-right" style="margin-top:-10px;margin-bottom:10px">
+	 @Html.ActionLink("Cancel", "Cancel", new { UrlReferrer = ViewData["T_LearningCenterParentUrl"] }, new { @onclick = "", @class="btn btn-default btn-xs" })
+	<input type="submit" name="command" value="Create" class="btn btn-primary btn-xs" />
+    @if (ViewBag.IsDDAdd == null && User.CanEdit("T_LearningCenter"))
+    {
+	<input type="submit" name="command" value="Create & Continue" class="btn btn-primary btn-xs" />
+	}
+	</div>
+	 </h2>
+	 <div id="divDisplayThresholdLimit" style="display:none;">
+	</div>
+	 <div id="divDisplayBRmsgMandatory" style="display:none;">
+	</div>
+	<div id="divDisplayBRmsgBeforeSaveProp" style="display:none;">
+	</div>
+	<div id="divDisplayCodeFragment" style="display:none;">
+	</div>
+
+	<div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="panel panel-default AppForm">
+                <div class="panel-body">
+               					<div class="row">
+				       
+			     <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_Name">
+                                <div class='form-group' title="Name">
+                                   <label class="col-sm-5 col-md-5 col-xs-12" >@Html.LabelFor(model => model.T_Name) <span class="text-danger-reg">*</span></label>
+									<div class="input-group col-sm-7 col-md-7 col-xs-12">
+									
+                                    @Html.TextBoxFor(model => model.T_Name, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.T_Name)
+									</div>
+                                </div>
+					</div>
+
+					
+
+
+						<div class='col-sm-6 col-md-6 col-xs-12' id="dvT_Description">
+                                <div class='form-group' title="Description">
+                                   <label class="col-sm-5 col-md-5 col-xs-12" >@Html.LabelFor(model => model.T_Description) </label>
+									<div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                    @Html.TextAreaFor(model => model.T_Description, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.T_Description)
+									</div>
+                                </div>
+								
+						</div>
+       </div>
+                        </div>
+                    </div>
+                </div>
+        </div>
+          @Html.ActionLink("Cancel", "Cancel", new { UrlReferrer = ViewData["T_LearningCenterParentUrl"] }, new { @onclick = "", @class = "btn btn-default btn-sm" })
+	<input type="submit" name="command" value="Create" class="btn btn-primary btn-sm" />
+    if (ViewBag.IsDDAdd == null && User.CanEdit("T_LearningCenter"))
+    {
+	<input type="submit" name="command" value="Create & Continue" class="btn btn-primary btn-sm" />
+	}
+	 <input type="hidden" name="hdncommand" value="" />
+	<br/><br/>
+}
+	<script>
+	    $(function () {
+        var userAgent = navigator.userAgent.toLowerCase();
+        // Figure out what browser is being used
+        var browser = {
+            version: (userAgent.match(/.+(?:rv|it|ra|ie)[\/: ]([\d.]+)/) || [])[1],
+            safari: /webkit/.test(userAgent),
+            opera: /opera/.test(userAgent),
+            msie: /msie/.test(userAgent) && !/opera/.test(userAgent),
+            mozilla: /mozilla/.test(userAgent) && !/(compatible|webkit)/.test(userAgent)
+        };
+        if (!browser.msie) {
+            $('form').areYouSure();
+        }
+        else if (browser.version > 8.0) {
+            $('form').areYouSure();
+        }
+    });
+</script>
+	
+@{
+		var businessrule = User.businessrules.Where(p => p.EntityName == "T_LearningCenter").ToList();
+		
+if ((businessrule != null && businessrule.Count > 0) )
+    {
+        <script>
+            $("form").submit(function () {
+				document.getElementById("ErrMsg").innerHTML = "";
+                var flag = true;
+                var dataurl = "";
+                var form = "";
+                var inlinecount = "0";
+                
+              
+                //var form = $(this).serialize();
+ form = $("#frmT_LearningCenter").serialize();
+  
+                dataurl = "@Url.Action("businessruletype", "T_LearningCenter", new { ruleType = "OnCreate"})";
+                flag = ApplyBusinessRuleOnSubmit(dataurl, "T_LearningCenter", false, "ErrMsg", form);
+				//business rules on inline associations
+				if (flag) {
+						
+                    SaveServerTime(this, true);
+                    $('input:hidden[name="hdncommand"]').val($("input[type='submit']").val());
+                    $("form").find(':input').removeAttr('disabled');
+                }
+				return flag;
+			 });	
+            $(document).ready(function () {
+                $("input[type='submit']").on('blur', function () {
+                    $("input[type='submit']").removeAttr('disabled');
+                });
+            });
+        </script>
+    }
+    else
+    {
+	<script>
+            $("input[type='submit']").click(function (event) {
+                var $this = $(this);
+				 SaveServerTime(this);
+                $('input:hidden[name="hdncommand"]').val($this.val());
+            });
+	</script>
+           
+    }
+}
+
+
+<script type='text/javascript'>
+    $(document).ready(function () {
+        try {
+		 focusOnControl('frmT_LearningCenter');
+        }
+        catch (ex) { }
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        try {
+            var hostingEntityName = "";
+            if ('@Convert.ToString(ViewData["AssociatedType"])'.length > 0) {
+                hostingEntityName = '@Convert.ToString(ViewData["AssociatedType"])';
+                 $('#' + hostingEntityName + 'ID').attr("lock","true");
+				  $('#' + hostingEntityName + 'ID').trigger("change");
+            }
+			
+        }
+        catch (ex) { }
+		});
+</script>
+

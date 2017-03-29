@@ -47,11 +47,13 @@
         $('select[multiple="multiple"]').each(function () {
             $(this).multiselect({ buttonWidth: '100%' });
         });
+        debugger;
         var ids = ('@String.Join(",",Model.SelectedT_RecurrenceDays_T_RepeatOn.Select(p=>p.Value.ToString()).ToList())')
         var eleT_AssociatedRecurringScheduleDetailsType = document.getElementById("SelectedT_RecurrenceDays_T_RepeatOn");
-        for (i = 0; i < ids.split(",").length; i++) {
+        var idsArray = ids.split(",");
+        for (i = 0; i < idsArray.length; i++) {
             for (var o = 0; o < eleT_AssociatedRecurringScheduleDetailsType.options.length; o++) {
-                if (eleT_AssociatedRecurringScheduleDetailsType.options[o].value == ids[i])
+                if (eleT_AssociatedRecurringScheduleDetailsType.options[o].value == idsArray[i])
                     eleT_AssociatedRecurringScheduleDetailsType.options[o].selected = true;
             }
         }

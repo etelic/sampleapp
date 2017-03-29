@@ -27,6 +27,12 @@
     }
 }
 @{
+    if (!string.IsNullOrEmpty(ViewBag.FileDocumentIsGroupsHiddenRule))
+    {
+        @Html.Raw(ViewBag.FileDocumentIsGroupsHiddenRule);
+    }
+}
+@{
     if (!string.IsNullOrEmpty(ViewBag.FileDocumentIsSetValueUIRule))
     {
         @Html.Raw(ViewBag.FileDocumentIsSetValueUIRule);
@@ -177,7 +183,9 @@
 			  if ($(this).attr("id") == undefined)
                     return
                 var dvhidden = $("#dv" + $(this).attr("id"));
-                if (!(dvhidden.css('display') == 'none')) {
+				var dvDate = $("#datetimepicker" + $(this).attr("id")).attr("id");
+
+                if (!(dvhidden.css('display') == 'none') && dvDate == undefined) {
                     cltid = $(this);
                     return false;
                 }

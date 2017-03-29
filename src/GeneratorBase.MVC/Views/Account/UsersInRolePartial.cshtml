@@ -147,3 +147,9 @@
     </div>
     <div style="clear:both; margin-bottom:20px;"></div>
 </div>
+<script>
+    $("input[type='submit']").click(function (event) {
+        
+        $("#UsersInRole").find(':input').removeAttr('disabled');
+    });
+</script>

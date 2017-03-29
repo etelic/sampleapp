@@ -24,15 +24,13 @@ namespace GeneratorBase.MVC
                      });
         }	
         public IDbSet<FileDocument> FileDocuments { get; set; }
-        public IDbSet<T_Employee> T_Employees { get; set; }
-        public IDbSet<T_Country> T_Countrys { get; set; }
-        public IDbSet<T_State> T_States { get; set; }
-        public IDbSet<T_City> T_Citys { get; set; }
-        public IDbSet<T_Address> T_Addresss { get; set; }
-        public IDbSet<T_Employeetype> T_Employeetypes { get; set; }
-        public IDbSet<T_Employeestatus> T_Employeestatuss { get; set; }
-        public IDbSet<T_Organization> T_Organizations { get; set; }
-        public IDbSet<T_EmployeeOrganizationAssociation> T_EmployeeOrganizationAssociations { get; set; }
+        public IDbSet<T_Client> T_Clients { get; set; }
+        public IDbSet<T_LearningCenter> T_LearningCenters { get; set; }
+        public IDbSet<T_Session> T_Sessions { get; set; }
+        public IDbSet<T_TimeSlots> T_TimeSlotss { get; set; }
+        public IDbSet<T_SessionEvents> T_SessionEventss { get; set; }
+        public IDbSet<T_SessionClientAssociation> T_SessionClientAssociations { get; set; }
+        public IDbSet<T_SessionEventsClient> T_SessionEventsClients { get; set; }
 		//Default DbSet for Application
 		public IDbSet<Document> Documents { get; set; }
 		public IDbSet<ImportConfiguration> ImportConfigurations { get; set; }     
@@ -79,6 +77,7 @@ namespace GeneratorBase.MVC
             var originalStates = new Dictionary<DbEntityEntry, EntityState>();
             foreach (var entry in entries)
             {
+				if (!CheckIfModified(entry)) { CancelChanges(entry); continue; }
                 if (ValidateBeforeSave(entry) == false)
                 {
                     CancelChanges(entry); continue;

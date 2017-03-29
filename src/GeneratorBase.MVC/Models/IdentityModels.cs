@@ -131,10 +131,10 @@ namespace GeneratorBase.MVC.Models
                 .ToTable("AspNetRoles");
             role.Property(r => r.Name).IsRequired();
             role.HasMany(r => r.Users).WithRequired().HasForeignKey(ur => ur.RoleId);
-			modelBuilder.Entity<T_Employee>().ToTable("tbl_T_Employee");
-            modelBuilder.Entity<T_Employee>().HasOptional<IdentityUser>(p=>p.t_employeeuserlogin).WithMany().WillCascadeOnDelete(false);;
-			modelBuilder.Entity<T_Employee>().ToTable("tbl_T_Employee");
-            modelBuilder.Entity<T_Employee>().HasOptional<T_Address>(p => p.t_employeeaddress).WithMany().WillCascadeOnDelete(false); ;
+			modelBuilder.Entity<T_Session>().ToTable("tbl_T_Session");
+            modelBuilder.Entity<T_Session>().HasOptional<T_Schedule>(p => p.schedulesession).WithMany().WillCascadeOnDelete(false); ;
+			modelBuilder.Entity<T_SessionEvents>().ToTable("tbl_T_SessionEvents");
+            modelBuilder.Entity<T_SessionEvents>().HasOptional<T_Schedule>(p => p.schedule).WithMany().WillCascadeOnDelete(false); ;
         }
 		public void ApplyFilters(IList<IFilter<ApplicationDbContext>> filters)
         {

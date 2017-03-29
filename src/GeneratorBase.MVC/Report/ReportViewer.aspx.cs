@@ -26,8 +26,10 @@ namespace GeneratorBase.MVC.Report
             if (!string.IsNullOrEmpty(reportName))
             {
                 MyReportViewer.ProcessingMode = Microsoft.Reporting.WebForms.ProcessingMode.Remote;
-                MyReportViewer.ServerReport.ReportServerCredentials = new ReportServerCredentials(System.Configuration.ConfigurationManager.AppSettings["ReportUser"], System.Configuration.ConfigurationManager.AppSettings["ReportPass"], System.Configuration.ConfigurationManager.AppSettings["ReportPath"]);
-                MyReportViewer.ServerReport.ReportServerUrl = new Uri(System.Configuration.ConfigurationManager.AppSettings["ReportPath"]);
+                //MyReportViewer.ServerReport.ReportServerCredentials = new ReportServerCredentials(System.Configuration.ConfigurationManager.AppSettings["ReportUser"], System.Configuration.ConfigurationManager.AppSettings["ReportPass"], System.Configuration.ConfigurationManager.AppSettings["ReportPath"]);
+                //MyReportViewer.ServerReport.ReportServerUrl = new Uri(System.Configuration.ConfigurationManager.AppSettings["ReportPath"]);
+                MyReportViewer.ServerReport.ReportServerCredentials = new ReportServerCredentials(CommonFunction.Instance.ReportUser(), CommonFunction.Instance.ReportPass(), CommonFunction.Instance.ReportPath());
+                MyReportViewer.ServerReport.ReportServerUrl = new Uri(CommonFunction.Instance.ReportPath());
                 MyReportViewer.ServerReport.ReportPath = reportName;
                 if (!string.IsNullOrEmpty(ID))
                 {

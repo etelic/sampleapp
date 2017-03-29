@@ -1,20 +1,124 @@
 ﻿@model List<long>
-<div class="row">
-    <div class="col-md-12 col-sm-12 col-xs-12">
+@{
+    var commaSeparatedList = string.Join(",", Model);
+    var commonObj = GeneratorBase.MVC.Models.CommonFunction.Instance;
+}
+<script>
+    function FillSlot(obj) {
+        var entityname = $(obj).attr("HostingName");
+        var entityvalue = $(obj).val();
+        var entitytext = $(obj).children(':selected').text();
+        $.ajax({
+            url: '@Url.Action("getTimeSlots", "T_Schedule", new { EntityName = "_EntityName", id = "_id" })'.replace("_EntityName", entityname).replace("_id", entityvalue),
+            type: "GET",
+            async: false,
+            success: function (jsonObj) {
+                if (jsonObj.length > 0) {
+                    minTime = '';
+                    isslot = true;
+                }
+                for (i in jsonObj) {
+                    if (jsonObj[i].StartTime != undefined) {
+
+
+                        var myEvent = {
+                            title: entitytext,
+                            start: DatechangeSlot(jsonObj[i].StartTime),
+                            end: DatechangeSlot(jsonObj[i].EndTime),
+                            tooltip: jsonObj[i].Title,
+                            id: jsonObj[i].Id,
+                            scheduleid: jsonObj[i].ScheduleID,
+                            entityname: jsonObj[i].EntityName,
+                            filterid: entityvalue,
+                            rendering: 'background',
+                            dow: [1, 2, 3, 4, 5]
+                        };
+                        $('#calendar').fullCalendar('renderEvent', myEvent);
+                    }
+                }
+
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+            }
+        });
+        if (minTime.length > 0 && isslot) {
+            $('#calendar').fullCalendar('option', 'scrollTime', '09:00:00');
+        }
+    }
+</script>
+<div class="row center-block" style="width:100% !important;" id="printCalendar">
+   
         <div>
             <script src="~/Scripts/moment.min.js"></script>
             <script src="@Url.Content("~/Scripts/fullcalendar.js")" type="text/javascript"></script>
             @Styles.Render("~/Content/fullcalendar.css")
             <script>
                 $(document).ready(function () {
-                    $('#calendar').fullCalendar({
+                    var minTime = '';
+                    var maxTime = '';
+                    var isslot = false;
+                    var RegisteredEvents = ',' + '@commaSeparatedList' + ',';
+                   $('#calendar').fullCalendar({
                         header: {
-                            left: 'prev,next',
+                            left: 'prev,next,printButton,toggle,slot',
                             center: 'title',
-                            right: 'month,agendaWeek,agendaDay,listWeek,listMonth,listYear'
+                            right: 'month,agendaWeek,basicWeek,agendaDay,listWeek,listMonth,listYear'
+                        },
+                        customButtons: {
+                            printButton: {
+                                text: "print",
+                                click: function () {
+                                    printDiv();
+                                }
+                            },
+                            slot: {
+                                text: "Slot",
+                                style: "display:none;",
+                                click: function () {
+                                    $('#calendar').fullCalendar('option', 'minTime', '00:00:00');
+                                    $('#calendar').fullCalendar('option', 'maxTime', '24:00:00');
+                                    $('#calendar').fullCalendar('option', 'contentHeight', 'default');
+                                    $('#calendar').fullCalendar('option', 'scrollTime', '09:00:00');
+                                    $('.fc-scroller').scrollTop(0, 0);
+                                    $('.fc-scroller').animate({
+                                        scrollTop: $(".fc-now-indicator").offset().top
+                                    }, 0);
+                                }
+                            },
+                            toggle: {
+                                text: "*",
+                                click: function () {
+                                    $("a").each(function () {
+                                        val = $(this).attr('extra');
+                                        if (val != undefined && val == 'extra')
+                                            $(this).toggle();
+                                    });
+                                    $("tr").each(function () {
+                                        val = $(this).attr('extra');
+                                        if (val != undefined && val == 'extra') {
+                                            $(this).toggle();
+                                        }
+                                    });
+                                    $("tr.fc-list-heading").each(function () {
+                                        next = $(this).nextAll(':visible:first');
+                                        if (next != undefined && next.attr("class") == 'fc-list-heading') {
+                                            $(this).hide();
+                                        }
+                                        else {
+                                            if (next.length == 0)
+                                                $(this).hide();
+                                            else
+                                                $(this).show();
+                                        }
+
+
+                                    });
+
+                                }
+                            }
                         },
                         allDaySlot: true,
-			            scrollTime:'09:00:00',
+                        scrollTime: '09:00:00',
                         defaultView: 'agendaWeek',
                         defaultDate: $.datepicker.formatDate('yy/mm/dd', new Date()),
                         data: "{}",
@@ -23,15 +127,29 @@
                         navLinks: true, // can click day/week names to navigate views
                         editable: true,
                         eventLimit: true, // allow "more" link when too many events
+                        slotDuration: '00:15:00',
+                        // contentHeight: 'auto',
+                        slotEventOverlap: false,
+                        eventOverlap: false,
+                        //theme: true,
+                        allDaySlot: false,
+                        nowIndicator: true,
                         events: function (start, end, timezone, callback) {
+                            var events = [];
+
                             $.ajax({
-                                url: '@Url.Action("getEvents", "T_Schedule", new { ids =string.Join(",",Model)})',
+                                url: '@Url.Action("getAllMeetingEvents", "T_Schedule")',
                                 type: "GET",
-                                async:false,
+                                async: false,
                                 success: function (jsonObj) {
-                                    var events = [];
+
                                     for (i in jsonObj) {
                                         if (jsonObj[i].StartTime != undefined) {
+                                            if (minTime.length == 0)
+                                                minTime = jsonObj[i].StartTime;
+                                            else
+                                                if (jsonObj[i].StartTime < minTime)
+                                                    minTime = jsonObj[i].StartTime;
                                             events.push({
                                                 title: jsonObj[i].Title,
                                                 start: Datechange(jsonObj[i].StartTime),
@@ -44,26 +162,144 @@
                                             });
                                         }
                                     }
-                                    callback(events);
+
                                 },
                                 error: function (jqXHR, textStatus, errorThrown) {
-                                   // alert(errorThrown);
                                 }
                             });
+                            if ('@ViewData["HostingEntity"]'.length > 0) {
+
+                                $.ajax({
+                                    url: '@Url.Action("getTimeSlots", "T_Schedule", new { EntityName = ViewData["HostingEntity"], id = ViewData["HostingEntityID"] })',
+                                    type: "GET",
+                                    async: false,
+                                    success: function (jsonObj) {
+                                        if (jsonObj.length > 0) {
+                                            minTime = '';
+                                            isslot = true;
+                                        }
+                                        for (i in jsonObj) {
+                                            if (jsonObj[i].StartTime != undefined) {
+                                                if (minTime.length == 0)
+                                                    minTime = jsonObj[i].StartTime;
+                                                else
+                                                    if (jsonObj[i].StartTime < minTime)
+                                                        minTime = jsonObj[i].StartTime;
+
+                                                if (maxTime.length == 0)
+                                                    maxTime = jsonObj[i].EndTime;
+                                                else
+                                                    if (jsonObj[i].EndTime > maxTime)
+                                                        maxTime = jsonObj[i].EndTime;
+
+                                                events.push({
+                                                    title: jsonObj[i].Title,
+                                                    start: DatechangeSlot(jsonObj[i].StartTime),
+                                                    end: DatechangeSlot(jsonObj[i].EndTime),
+                                                    tooltip: jsonObj[i].Title,
+                                                    id: jsonObj[i].Id,
+                                                    scheduleid: jsonObj[i].ScheduleID,
+                                                    entityname: jsonObj[i].EntityName,
+                                                    rendering: 'background',
+                                                    dow: [1, 2, 3, 4, 5]
+                                                });
+                                            }
+                                        }
+
+                                    },
+                                    error: function (jqXHR, textStatus, errorThrown) {
+                                    }
+                                });
+                                if (minTime.length > 0 && isslot) {
+                                    $('#calendar').fullCalendar('option', 'minTime', DatechangeSlotMin(minTime));
+                                    $('#calendar').fullCalendar('option', 'maxTime', DatechangeSlot(maxTime));
+                                    $('#calendar').fullCalendar('option', 'contentHeight', 'auto');
+                                }
+                            }
+                            //Timeslots
+                            if ('@ViewData["TimeSlots"]'.length > 0) {
+                                $.ajax({
+                                    url: '@Url.Action("getTimeSlotsByIds", "T_Schedule", new { ids = ViewData["TimeSlots"] })',
+                                    type: "GET",
+                                    async: false,
+                                    success: function (jsonObj) {
+                                        if (jsonObj.length > 0) {
+                                            minTime = '';
+                                            isslot = true;
+                                        }
+                                        for (i in jsonObj) {
+                                            if (jsonObj[i].StartTime != undefined) {
+                                                if (minTime.length == 0)
+                                                    minTime = jsonObj[i].StartTime;
+                                                else
+                                                    if (jsonObj[i].StartTime < minTime)
+                                                        minTime = jsonObj[i].StartTime;
+
+                                                if (maxTime.length == 0)
+                                                    maxTime = jsonObj[i].EndTime;
+                                                else
+                                                    if (jsonObj[i].EndTime > maxTime)
+                                                        maxTime = jsonObj[i].EndTime;
+
+                                                events.push({
+                                                    title: jsonObj[i].Title,
+                                                    start: DatechangeSlot(jsonObj[i].StartTime),
+                                                    end: DatechangeSlot(jsonObj[i].EndTime),
+                                                    tooltip: jsonObj[i].Title,
+                                                    id: jsonObj[i].Id,
+                                                    scheduleid: jsonObj[i].ScheduleID,
+                                                    entityname: jsonObj[i].EntityName,
+                                                    rendering: 'background',
+                                                    dow: [1, 2, 3, 4, 5]
+                                                });
+                                            }
+                                        }
+
+                                    },
+                                    error: function (jqXHR, textStatus, errorThrown) {
+                                    }
+                                });
+                                if (minTime.length > 0 && isslot) {
+                                    $('#calendar').fullCalendar('option', 'minTime', DatechangeSlotMin(minTime));
+                                    $('#calendar').fullCalendar('option', 'maxTime', DatechangeSlot(maxTime));
+                                    $('#calendar').fullCalendar('option', 'contentHeight', 'auto');
+                                }
+                            }
+
+                            //
+
+                            if (minTime.length > 0) {
+                                //if (isslot)
+                                //    $('#calendar').fullCalendar('option', 'contentHeight', 'auto');
+                                //else
+                                //    $('#calendar').fullCalendar('option', 'contentHeight', 'default');
+                                $('#calendar').fullCalendar('option', 'scrollTime', DatechangeSlotMin(minTime));
+
+                                //$('.fc-scroller').scrollTop(0, 0);
+                                //$('.fc-scroller').animate({
+                                //    scrollTop: $(".fc-time[data-start:" + DatechangeSlotMin(minTime) + "]").offset().top
+                                //}, 0);
+                            }
+                            else {
+                                $('#calendar').fullCalendar('option', 'contentHeight', 'default');
+                                $('#calendar').fullCalendar('option', 'scrollTime', '09:00:00');
+                                $('.fc-scroller').scrollTop(0, 0);
+                                $('.fc-scroller').animate({
+                                    scrollTop: $(".fc-now-indicator").offset().top
+                                }, 0);
+                            }
+                            callback(events);
                         },
-                        viewRender:function(event,element)
-                        {
-                            if (event.name == 'listMonth')
-                            {
-                               
+                        viewRender: function (event, element) {
+                            if (event.name == 'listMonth') {
+
                             }
                         },
-                        eventAfterAllRender:function(event,element)
-                        {
+                        eventAfterAllRender: function (event, element) {
                             if (event.name == 'listMonth' || event.name == 'listYear' || event.name == 'listWeek') {
                                 $(".fc-list-item").each(function () {
                                     var attr = $(this).attr("style");
-                                    $(this).attr("style", attr+"color:white;");
+                                    $(this).attr("style", attr + "color:white;");
                                 })
                             }
                         },
@@ -74,27 +310,48 @@
                             },
                             listYear: {
                                 type: 'listYear',
-                            buttonText: 'YearList'
+                                buttonText: 'YearList'
                             },
                             listWeek: {
                                 type: 'listWeek',
                                 buttonText: 'WeekList'
+                            },
+                            basicWeek: {
+                                type: 'basicWeek',
+                                buttonText: 'basic-week'
                             }
                         },
                         eventRender: function (event, element) {
-                            element.attr('title', event.tooltip);
-                            if (event.iscancelled) {
-                                element.css('background-color', 'red');
+                            if (event.id == '0' && event.scheduleid == '0') {
+                                element.css('background-color', '#000');
+                                element.css('style', 'border:1px solid #000');
+                                element.attr('slotId', event.entityname);
+                                if (event.filterid != undefined) {
+                                    var color = getColor(event.filterid);
+                                    element.css('background-color', color);
+                                    element.attr('title', event.title);
+                                }
                             }
-                            else
-                            {
-                                var color = getColor(event.scheduleid);
-                                element.css('background-color', color);
+                            else {
+                                element.attr('title', event.tooltip);
+                                if (event.iscancelled) {
+                                    element.css('background-color', 'red');
+                                }
+                                else {
+                                    var color = getColor(event.scheduleid);
+                                    if (RegisteredEvents.indexOf("," + event.id + ",") > -1) {
+                                        element.css('background-color', color);
+                                    }
+                                    else {
+                                        element.attr("extra", "extra")
+                                        element.attr("style", "color:black;text-decoration:line-through; opacity: 0.8;filter:alpha(opacity=80);background-color: " + color + ";")
+                                    }
+                                }
                             }
                         },
                         eventClick: function (calEvent, jsEvent, view) {
                             $(this).css('border-color', 'red');
-                            OpenPopUpEntity('addPopup', 'Edit Event', 'dvPopup', '@Url.Action("EventsUpdate", "T_Schedule", new
+                            OpenPopUpEntity('addPopup', 'Edit Event - ' + calEvent.title, 'dvPopup', '@Url.Action("EventsUpdate", "T_Schedule", new
                             {
                                 id = "_id",
                                 EntityName="_entityname"
@@ -102,7 +359,14 @@
                         )
                         },
                         dayClick: function (date, jsEvent, view) {
-                            OpenPopUpEntity('addPopup', 'Event', 'dvPopup', '@Url.Action("CreateEvent", "T_Schedule")');
+                            if (jsEvent.target.classList.contains('fc-bgevent')) {
+                                debugger;
+                                var slotid = $(jsEvent.target).attr('slotid');
+                                OpenPopUpEntity('addPopup', 'Event', 'dvPopup', '@Html.Raw(Url.Action("CreateEvent", "T_Schedule", new { startDate = "_startDate", slotID = "_slotId" }))'.replace('_slotId', slotid).replace('_startDate', date._d.toLocaleDateString()));
+                            }
+                            else {
+                                OpenPopUpEntity('addPopup', 'Event', 'dvPopup', '@Html.Raw(Url.Action("CreateEvent", "T_Schedule", new { startDate = "_startDate", slotID = "_slotId" }))'.replace('_slotId', '0').replace('_startDate', date._d.toLocaleDateString()));
+                            }
                         }
                     });
                 });
@@ -111,8 +375,24 @@
                     localDateString = moment(date.toString()).format("MM/DD/YYYY hh:mm A");
                     return localDateString
                 }
+                function DatechangeSlot(Caldate) {
+                    var date = new Date(parseInt(Caldate.substr(6)));
+                    localDateString = moment(date.toString()).format("HH:mm");
+                    return localDateString;
+                }
+                function DatechangeSlotMin(Caldate) {
+                    var date = new Date(parseInt(Caldate.substr(6)));
+
+                    var m = (((date.getMinutes() + 7.5) / 15 | 0) * 15) % 60;
+                    var h = ((((date.getMinutes() / 105) + .5) | 0) + date.getHours()) % 24;
+
+                    date.setMinutes(m, 0, 0);
+                    date.setHours(h, m, 0, 0);
+                    localDateString = moment(date.toString()).format("HH:mm");
+                    return localDateString;
+                }
                 function getColor(num) {
-                    var letters = (num*826837).toString();
+                    var letters = (num * 621831).toString();
                     var color = '#';
                     for (var i = 0; i < 6; i++) {
                         color += letters[i];
@@ -121,7 +401,33 @@
                 }
                 //
             </script>
-            <center><div id="calendar" style="padding:20px 10px 10px 10px;"></div></center>
+            <center>
+                <div id="calendar" style="padding:10px 0px 10px 0px;">
+                </div>
+            </center>
         </div>
-    </div>
+   
 </div>
+<script>
+    function printDiv() {
+        var contents = $("#printCalendar").html();
+        var frame1 = $('<iframe />');
+        frame1[0].name = "frame1";
+        frame1.css({ "position": "absolute", "top": "-1000000px" });
+        $("body").append(frame1);
+        var frameDoc = frame1[0].contentWindow ? frame1[0].contentWindow : frame1[0].contentDocument.document ? frame1[0].contentDocument.document : frame1[0].contentDocument;
+        frameDoc.document.open();
+        frameDoc.document.write('<html><head><title>DIV Contents</title>');
+        frameDoc.document.write('</head><body>');
+        frameDoc.document.write('<link href="@commonObj.getBaseUri()/Content/fullcalendar.print.min.css" rel="stylesheet"/>');
+        frameDoc.document.write(contents);
+        frameDoc.document.write('</body></html>');
+        frameDoc.document.close();
+        setTimeout(function () {
+            window.frames["frame1"].focus();
+            window.frames["frame1"].print();
+            frame1.remove();
+        }, 500);
+    }
+</script>
+

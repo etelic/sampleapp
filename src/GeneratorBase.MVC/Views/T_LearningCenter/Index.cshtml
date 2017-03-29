@@ -1,0 +1,23 @@
+﻿@model IEnumerable<GeneratorBase.MVC.Models.T_LearningCenter>
+@{
+    ViewBag.Title = "Learning Center List";
+	Layout ="~/Views/Shared/_Layout.cshtml";
+	string templatename = ("~/Views/T_LearningCenter/" + ViewBag.TemplatesName + ".cshtml").Replace("?IsAddPop=true", "");
+	 var EntityDisplayNameReflector = ModelReflector.Entities.FirstOrDefault(p => p.Name == "T_LearningCenter");
+    var EntityDisplayName = EntityDisplayNameReflector != null ? EntityDisplayNameReflector.DisplayName : "Learning Center";
+}
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-title">
+            <i class="glyphicon glyphicon-thumbs-up text-primary" style="margin-bottom:-20px;"></i> @EntityDisplayName  <i class="glyphicon glyphicon-chevron-right small"></i>  <span>List</span>
+</h1>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        ClickFilterBtn();
+    });
+</script>
+<div id="dvT_LearningCenterFilter"></div>
+@Html.Partial(templatename, Model)
+

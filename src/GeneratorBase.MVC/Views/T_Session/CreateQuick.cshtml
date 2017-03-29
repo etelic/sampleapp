@@ -1,0 +1,272 @@
+﻿@model GeneratorBase.MVC.Models.T_Session
+@{
+    ViewBag.Title = "Create Session";
+    Layout = null;
+}
+<script>
+    $(document).ready(function () {
+        try {
+            var hostingEntityName = "";
+            if ('@Convert.ToString(ViewData["AssociatedType"])' != null) {
+                hostingEntityName = '@Convert.ToString(ViewData["AssociatedType"])';
+                 $('#' + hostingEntityName + 'ID').attr("lock","true");
+				  $('#' + hostingEntityName + 'ID').trigger("change");
+            }
+			
+        }
+        catch (ex) { }
+		
+		 
+    });
+</script>
+
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_SessionIsHiddenRule))
+    {
+        @Html.Raw(ViewBag.T_SessionIsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_SessionIsGroupsHiddenRule))
+    {
+        @Html.Raw(ViewBag.T_SessionIsGroupsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_SessionIsSetValueUIRule))
+    {
+        @Html.Raw(ViewBag.T_SessionIsSetValueUIRule);
+    }
+}
+<link href="~/Content/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+<link href="@Url.Content("~/Content/chosen.css")" rel="stylesheet" type="text/css" />
+@using (Html.BeginForm("CreateQuick", "T_Session",FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken();
+    Html.ValidationSummary(true);
+    Html.EnableClientValidation();
+	<input type="hidden" id="ErrMsgQuickAdd" />
+	@*<label id="ErrMsgQuickAdd" class="text-primary small pull-right" style="color:red; vertical-align:middle; font-weight:100;"></label>*@
+    <div id="errorContainerQuickAdd" style="display: none">
+        <div id="errorsMsgQuickAdd"></div>
+        <div id="errorsQuickAdd"></div>
+    </div>
+	<div id="divDisplayThresholdLimit" style="display:none;">
+	</div>
+	 <div id="divDisplayBRmsgMandatory" style="display:none;">
+	</div>
+	<div id="divDisplayBRmsgBeforeSaveProp" style="display:none;">
+	</div>
+		    <div class="row">
+	@Html.Hidden("AssociatedEntity", Convert.ToString(ViewData["AssociatedType"]))
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="panel panel-default AppForm">
+                <div class="panel-body">
+               					<div class="row">
+				        
+							<div class='col-sm-6'  id="dvT_SessionLearningCenterAssociationID">
+                        <div class='form-group'>
+                            <label>@Html.LabelFor(model => model.T_SessionLearningCenterAssociationID) </label>
+                            <div class="input-group" style="width: 100%;">
+									@Html.DropDownList("T_SessionLearningCenterAssociationID", null, "-- Select --", new {     @onchange = Html.Raw("ClearChildDD('T_SessionTimeSlotAssociatonID',this,'false');") ,   @class = "chosen-select form-control", @HostingName = "T_LearningCenter", @dataurl = Url.Action("GetAllValue", "T_LearningCenter",new { caller = "T_SessionLearningCenterAssociationID" }) })
+ @*<script>
+    $(function () {
+        LoadUserDropdown('ID');
+    });
+</script>*@
+                                @Html.ValidationMessageFor(model => model.T_SessionLearningCenterAssociationID)
+                            </div>
+                        </div>
+                    </div>
+     
+				 
+							<div class='col-sm-6' id="dvT_Name">
+                                <div class='form-group' title="Name">
+                                    <label>@Html.LabelFor(model => model.T_Name) <span class="text-danger-reg">*</span></label>
+									 
+                                    @Html.TextBoxFor(model => model.T_Name, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.T_Name)
+									
+                                </div>
+					</div>
+     
+				
+							<div class='col-sm-6' id="dvT_Description">
+                                <div class='form-group' title="Description">
+                                    <label>@Html.LabelFor(model => model.T_Description) </label>
+                                    @Html.TextAreaFor(model => model.T_Description, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.T_Description)
+                                </div>
+							</div>
+							<div class='col-sm-6'  id="dvT_SessionTimeSlotAssociatonID">
+                        <div class='form-group'>
+                            <label>@Html.LabelFor(model => model.T_SessionTimeSlotAssociatonID) </label>
+                            <div class="input-group" style="width: 100%;">
+									@Html.DropDownList("T_SessionTimeSlotAssociatonID", null, "-- Select --", new {   @ParentDD = "T_SessionLearningCenterAssociationID" , @AssoNameWithParent = "T_LearningCenterTimeSlotsAssociationID" ,    @class = "chosen-select form-control", @HostingName = "T_TimeSlots", @dataurl = Url.Action("GetAllValue", "T_TimeSlots",new { caller = "T_SessionTimeSlotAssociatonID" }) })
+ @*<script>
+    $(function () {
+        LoadUserDropdown('ID');
+    });
+</script>*@
+                                @Html.ValidationMessageFor(model => model.T_SessionTimeSlotAssociatonID)
+                            </div>
+                        </div>
+                    </div>
+     
+				 
+
+			     						<div class='col-sm-6' id="dvT_IsOpen">
+                                <label >
+                                    @Html.LabelFor(model => model.T_IsOpen) 
+                                </label>
+                                <div class="form-group" title="Is Open">
+									@Html.CheckBox("T_IsOpen", true)
+                                    @Html.ValidationMessageFor(model => model.T_IsOpen)
+                                </div>
+                            </div>
+                            
+			@if(User.CanView("T_Schedule"))
+			{	
+                            <div class="col-md-12 col-sm-12 col-xs-12" id="dvScheduleSessionID">
+                                <div class="panel panel-default">
+                                     <div class="panel-sub-heading clearfix">
+                                        <h3 class="panel-title">@Html.LabelFor(model => model.ScheduleSessionID)</h3>
+                                    </div>
+                                    <div class="panel-body">
+                                        <div class="row">
+                                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                                        <div class="row">
+							<div class='col-sm-6 col-md-6 col-xs-12' id="dvScheduleSessionID_T_Name">
+                            <div class='form-group' title="Name">
+                                <label class="col-sm-5 col-md-5 col-xs-12" >@Html.LabelFor(model => model.schedulesession.T_Name) <span class="text-danger-reg">*</span></label>
+                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+								                                    @Html.TextBoxFor(model => model.schedulesession.T_Name, new { @class = "form-control"  })
+  
+                                    @Html.ValidationMessageFor(model => model.schedulesession.T_Name)
+                                </div>
+                            </div>
+							</div>
+                                               
+						<div class='col-sm-6 col-md-6 col-xs-12' id="dvScheduleSessionID_T_Description">
+                                <div class='form-group' title="Description">
+                                   <label class="col-sm-5 col-md-5 col-xs-12" >@Html.LabelFor(model => model.schedulesession.T_Description) <span class="text-danger-reg">*</span></label>
+									<div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                    @Html.TextAreaFor(model => model.schedulesession.T_Description, new { @class = "form-control"  })
+                                    @Html.ValidationMessageFor(model => model.schedulesession.T_Description)
+									</div>
+                                </div>
+						</div>
+                                               
+					<div class='col-sm-6 col-md-6 col-xs-12' id="dvScheduleSessionID_T_StartDateTime">
+					<div class="form-group" title="Start Date Time">
+                                <label class="col-sm-5 col-md-5 col-xs-12" >@Html.LabelFor(model => model.schedulesession.T_StartDateTime) </label>
+								<div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                    <div class="input-group date" id="datetimepickerschedulesessionT_StartDateTime">
+                                        @Html.TextBoxFor(model => model.schedulesession.T_StartDateTime,   (object)new { @id = "schedulesessionT_StartDateTime", @class = "form-control"  })
+                                        
+										<span class="input-group-addon btn-default calendar">
+                                           <i class="fa fa-calendar"></i>
+                                        </span>
+                                    </div>
+                                    @Html.ValidationMessageFor(model => model.schedulesession.T_StartDateTime)
+								</div>
+                                </div>
+                                <script type="text/javascript">
+                                    $(function () {
+										$('#schedulesessionT_StartDateTime').datetimepicker({});
+                                        $('#datetimepickerschedulesessionT_StartDateTime').datetimepicker({});
+                                    });
+                                </script>
+                            </div>
+                                               
+					<div class='col-sm-6 col-md-6 col-xs-12' id="dvScheduleSessionID_T_EndDate">
+					<div class="form-group" title="End Date">
+                                <label class="col-sm-5 col-md-5 col-xs-12" >@Html.LabelFor(model => model.schedulesession.T_EndDate) </label>
+								<div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                    <div class="input-group date" id="datetimepickerschedulesessionT_EndDate">
+                                        @Html.TextBoxFor(model => model.schedulesession.T_EndDate,   (object)new { @id = "schedulesessionT_EndDate", @class = "form-control"  })
+                                        
+										<span class="input-group-addon btn-default calendar">
+                                           <i class="fa fa-calendar"></i>
+                                        </span>
+                                    </div>
+                                    @Html.ValidationMessageFor(model => model.schedulesession.T_EndDate)
+								</div>
+                                </div>
+                                <script type="text/javascript">
+                                    $(function () {
+										$('#schedulesessionT_EndDate').datetimepicker({});
+                                        $('#datetimepickerschedulesessionT_EndDate').datetimepicker({});
+                                    });
+                                </script>
+                            </div>
+                                               
+					
+                                                </div>
+                                            </div>
+                                        </div>
+                                        @Html.ValidationMessageFor(model => model.ScheduleSessionID)
+                                    </div>
+                                </div>
+                            </div>
+                       }
+       </div>
+                        </div>
+                    </div>
+                </div>
+        </div>
+		<button id="CancelQuickAdd" type="button" class="btn btn-default btn-sm" data-dismiss="modal" aria-hidden="true">Cancel</button>
+
+		var busineesrule = User.businessrules.Where(p => p.EntityName == "T_Session").ToList();
+		 var lstinlineentityname = "T_Schedule";
+		 var lstinlineassocdispname ="Session Schedule";
+		 var lstinlineassocname = "ScheduleSession";
+        if (ViewBag.IsAddPop != null)
+		{
+			<input type="submit" value="Create" class="btn btn-primary btn-sm" onclick="QuickAdd(event,'T_Session','@busineesrule',@busineesrule.Count,'OnCreate','ErrMsgQuickAdd',false,'@lstinlineassocname','@lstinlineassocdispname','@lstinlineentityname');" />
+		}
+		else
+		{
+			<input type="submit" value="Create" class="btn btn-primary btn-sm" onclick="QuickAddFromIndex(event,true,'T_Session','@ViewData["AssociatedType"]','@busineesrule',@busineesrule.Count,'OnCreate','ErrMsgQuickAdd',false,'@lstinlineassocname','@lstinlineassocdispname','@lstinlineentityname');" />
+		}
+}
+<script src="@Url.Content("~/bundles/jqueryval")" type="text/javascript"></script>
+<script src="@Url.Content("~/bundles/common3")" type="text/javascript"></script>
+<script type="text/javascript">
+    var config = {
+        '.chosen-select': {},
+        '.chosen-select-deselect': { allow_single_deselect: true },
+        '.chosen-select-no-single': { disable_search_threshold: 10 },
+        '.chosen-select-no-results': { no_results_text: 'Oops, nothing found!' },
+        '.chosen-select-width': { width: "95%" }
+    }
+    for (var selector in config) {
+        $(selector).chosen(config[selector]);
+    }
+</script>
+
+<script type='text/javascript'>
+    $(document).ready(function () {
+        try {
+            document.getElementsByTagName("body")[0].focus();
+            $("#addPopup").removeAttr("tabindex");
+            var cltcoll = $("#dvPopup").find('input[type=text]:not([class=hidden]):not([readonly]),textarea:not([readonly])');
+            var cltid = "";
+            $(cltcoll).each(function () {
+			  if ($(this).attr("id") == undefined)
+                    return
+                var dvhidden = $("#dv" + $(this).attr("id"));
+				var dvDate = $("#datetimepicker" + $(this).attr("id")).attr("id");
+
+                if (!(dvhidden.css('display') == 'none') && dvDate == undefined) {
+                    cltid = $(this);
+                    return false;
+                }
+            });
+            if (cltid != "" && cltid != undefined)
+                setTimeout(function () { $(cltid).focus(); }, 500)
+        }
+        catch (ex) { }
+    });
+</script>
+

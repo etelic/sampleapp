@@ -1,0 +1,107 @@
+﻿@model PagedList.IPagedList<GeneratorBase.MVC.Models.T_SessionEvents>
+@using PagedList.Mvc;
+@{
+    ViewBag.Title = "Index";
+    Layout = null;
+    Response.ContentType = "application/vnd.ms-excel";
+    Response.AddHeader("Content-Disposition", "attachment; filename=Session Events.xls");
+}
+                    <table>
+                            <tr>
+@if(User.CanView("T_SessionEvents","T_Title"))
+{
+		<th>Title</th>
+}
+@if(User.CanView("T_SessionEvents","T_EventDate"))
+{
+		<th>Event Date</th>
+}
+@if(User.CanView("T_SessionEvents","T_SessionEventsLearningCenterID"))
+{
+		<th  @(Convert.ToString(ViewData["HostingEntity"]) == "T_LearningCenter"?"hidden":"")>Learning Center</th>
+}
+@if(User.CanView("T_SessionEvents","T_StartTime"))
+{
+		<th>Start Time</th>
+}
+@if(User.CanView("T_SessionEvents","T_EndTime"))
+{
+		<th>End Time</th>
+}
+@if(User.CanView("T_SessionEvents","T_IsCancelled"))
+{
+		<th>Cancel this Event</th>
+}
+@if(User.CanView("T_SessionEvents","T_Description"))
+{
+		<th>Description</th>
+}
+@if(User.CanView("T_SessionEvents","ScheduleID"))
+{
+		<th  @(Convert.ToString(ViewData["HostingEntity"]) == "T_Schedule"?"hidden":"")>Schedule</th>
+}
+@if(User.CanView("T_SessionEvents","T_SessionEventsTimeSlotsID"))
+{
+		<th  @(Convert.ToString(ViewData["HostingEntity"]) == "T_TimeSlots"?"hidden":"")>Time Slot</th>
+}
+    </tr>
+@foreach (var item in Model) {
+    <tr>
+	@if(User.CanView("T_SessionEvents","T_Title"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.T_Title)
+        </td>
+}
+@if(User.CanView("T_SessionEvents","T_EventDate"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.T_EventDate)
+        </td>
+}
+@if(User.CanView("T_SessionEvents","T_SessionEventsLearningCenterID"))
+{
+		<td @(Convert.ToString(ViewData["HostingEntity"]) == "T_LearningCenter"?"hidden":"")>
+            @Html.DisplayFor(modelItem => item.t_sessioneventslearningcenter.DisplayValue)
+        </td>
+}
+@if(User.CanView("T_SessionEvents","T_StartTime"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.T_StartTime)
+        </td>
+}
+@if(User.CanView("T_SessionEvents","T_EndTime"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.T_EndTime)
+        </td>
+}
+@if(User.CanView("T_SessionEvents","T_IsCancelled"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.T_IsCancelled)
+        </td>
+}
+@if(User.CanView("T_SessionEvents","T_Description"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.T_Description)
+        </td>
+}
+@if(User.CanView("T_SessionEvents","ScheduleID"))
+{
+		<td @(Convert.ToString(ViewData["HostingEntity"]) == "T_Schedule"?"hidden":"")>
+            @Html.DisplayFor(modelItem => item.schedule.DisplayValue)
+        </td>
+}
+@if(User.CanView("T_SessionEvents","T_SessionEventsTimeSlotsID"))
+{
+		<td @(Convert.ToString(ViewData["HostingEntity"]) == "T_TimeSlots"?"hidden":"")>
+            @Html.DisplayFor(modelItem => item.t_sessioneventstimeslots.DisplayValue)
+        </td>
+}
+                                </tr>
+                            }
+</table>
+               

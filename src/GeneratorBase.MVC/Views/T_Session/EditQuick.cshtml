@@ -1,0 +1,442 @@
+﻿@model GeneratorBase.MVC.Models.T_Session
+@using PagedList;
+@{
+    ViewBag.Title = "Edit Session";
+	var EditPermission = User.CanEditItem("T_Session", Model, User);
+	var DeletePermission = User.CanDeleteItem("T_Session", Model, User);
+	Layout = null;
+}
+@functions {
+    object getHtmlAttributes(string Property)
+    {
+        if (User.CanEdit("T_Session", Property))
+        {
+            return new { @class = "form-control" };
+        } return new { @class = "form-control", @readonly = "readonly" };
+    }
+}
+<script>
+    $(document).ready(function () {
+        try {
+            var hostingEntityName = "";
+            if ('@Convert.ToString(ViewData["AssociatedType"])' != null) {
+                hostingEntityName = '@Convert.ToString(ViewData["AssociatedType"])';
+				if( '@Convert.ToBoolean(ViewData["IsFilter"])'!="False")
+				$('#' + hostingEntityName + 'ID').attr("lock","true");
+				$('#' + hostingEntityName + 'ID').trigger("change");
+				 $("input[type='radio'][name='" + hostingEntityName + "ID']").each(function () {
+                    if (!this.checked)
+                        this.closest("li").style.display = "none";
+                });		
+						
+            }
+        }
+        catch (ex) { }
+    });
+</script>
+
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_SessionIsHiddenRule))
+    {
+        @Html.Raw(ViewBag.T_SessionIsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_SessionIsGroupsHiddenRule))
+    {
+        @Html.Raw(ViewBag.T_SessionIsGroupsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_SessionIsSetValueUIRule))
+    {
+        @Html.Raw(ViewBag.T_SessionIsSetValueUIRule);
+    }
+}
+<link href="~/Content/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+<div class="row">
+    <div class="col-lg-12">
+        @*<label id="ErrMsg" class="text-primary small pull-right" style="color:red; vertical-align:middle; font-weight:100;"></label>*@
+		<input type="hidden" id="ErrMsg" />
+		<div id="errorContainerEdit" style="display: none">
+            <div id="errorsMsgEdit"></div>
+            <div id="errorsEdit"></div>
+        </div>
+      <h2 class="text-primary">
+	  <span id="HostingEntityDisplayValue">@Html.DisplayFor(model => model.DisplayValue)</span>
+	   </h2>
+    </div>
+    <!-- /.col-lg-12 -->
+	<div id="divDisplayBRmsgBeforeSaveProp" style="display:none;">
+</div>
+<div id="divDisplayBRmsgMandatory" style="display:none;">
+</div>
+<div id="divDisplayLockRecord" style="display:none;">
+</div>
+<div id="divDisplayBRReadOnly" style="display:none;">
+</div>
+<br/>
+</div>
+	
+@using (Html.BeginForm("EditQuick","T_Session",new {UrlReferrer =Convert.ToString(ViewData["T_SessionParentUrl"])}, FormMethod.Post, new { enctype = "multipart/form-data", @id = "frmQEditT_Session" }))
+{
+     Html.ValidationSummary(true);
+                Html.EnableClientValidation();
+    @Html.HiddenFor(model => model.Id)
+	@Html.HiddenFor(model => model.ConcurrencyKey)
+	 <div class="row">
+                <div class="col-md-12 col-sm-12 col-xs-12" style="padding:0px; margin:0px;">
+                    <div class="panel panel-default AppForm">
+						<div class="panel-body">
+						    @Html.Hidden("AssociatedEntity", Convert.ToString(ViewData["AssociatedType"]))
+											<div class="row">
+								@if(User.CanView("T_Session","T_SessionLearningCenterAssociationID"))
+				{
+
+				   <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_SessionLearningCenterAssociationID">
+                        <div class='form-group'>
+                            <label  >@Html.LabelFor(model => model.T_SessionLearningCenterAssociationID) </label>
+							
+							<div class="input-group" style="width:100%;">									
+									@if (User.CanEdit("T_Session", "T_SessionLearningCenterAssociationID"))
+		{
+			@Html.DropDownList("T_SessionLearningCenterAssociationID", null, "-- Select --", new {     @onchange = Html.Raw("ClearChildDD('T_SessionTimeSlotAssociatonID',this,'false');") ,  @class = "chosen-select form-control", @HostingName = "T_LearningCenter", @dataurl = Url.Action("GetAllValue", "T_LearningCenter",new { caller = "T_SessionLearningCenterAssociationID" }) })
+		}
+		else
+		{
+			@Html.HiddenFor(model => model.T_SessionLearningCenterAssociationID, new { @class = "form-control" })
+			@Html.DropDownList("T_SessionLearningCenterAssociationID", null, "-- Select --", new {    @onchange = Html.Raw("ClearChildDD('T_SessionTimeSlotAssociatonID',this,'false');") ,  @class = "chosen-select form-control", @disabled="disabled", @HostingName = "T_LearningCenter", @dataurl = Url.Action("GetAllValue", "T_LearningCenter",new { caller = "T_SessionLearningCenterAssociationID" }) })
+		}
+                                @Html.ValidationMessageFor(model => model.T_SessionLearningCenterAssociationID)
+								 
+							</div>
+							
+                        </div>
+                    </div>
+                 
+					} else { @Html.HiddenFor(model => model.T_SessionLearningCenterAssociationID, new { @class = "form-control" })}
+@if(User.CanView("T_Session","T_Name"))
+{
+
+
+					<div class='col-sm-6 col-md-6 col-xs-12' id="dvT_Name">
+							<div class='form-group' title="Name">
+								<label  >@Html.LabelFor(model => model.T_Name)  <span class="text-danger-reg">*</span> </label>
+                                
+											
+									@Html.TextBoxFor(model => model.T_Name,  getHtmlAttributes("T_Name"))
+									@Html.ValidationMessageFor(model => model.T_Name)
+									
+								
+                             </div>
+						</div>
+
+				
+					
+
+
+} else { @Html.HiddenFor(model => model.T_Name, new { @class = "form-control" })}
+@if(User.CanView("T_Session","T_Description"))
+{
+						<div class='col-sm-6 col-md-6 col-xs-12' id="dvT_Description">
+							<div class='form-group' title="Description">
+								<label  >@Html.LabelFor(model => model.T_Description) </label>
+                                
+								@Html.TextAreaFor(model => model.T_Description, getHtmlAttributes("T_Description"))
+									@Html.ValidationMessageFor(model => model.T_Description)
+								
+                             </div>
+						</div>
+} else { @Html.HiddenFor(model => model.T_Description, new { @class = "form-control" })}
+				@if(User.CanView("T_Session","T_SessionTimeSlotAssociatonID"))
+				{
+
+				   <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_SessionTimeSlotAssociatonID">
+                        <div class='form-group'>
+                            <label  >@Html.LabelFor(model => model.T_SessionTimeSlotAssociatonID) </label>
+							
+							<div class="input-group" style="width:100%;">									
+									@if (User.CanEdit("T_Session", "T_SessionTimeSlotAssociatonID"))
+		{
+			@Html.DropDownList("T_SessionTimeSlotAssociatonID", null, "-- Select --", new {   @ParentDD = "T_SessionLearningCenterAssociationID" , @AssoNameWithParent = "T_LearningCenterTimeSlotsAssociationID" ,   @class = "chosen-select form-control", @HostingName = "T_TimeSlots", @dataurl = Url.Action("GetAllValue", "T_TimeSlots",new { caller = "T_SessionTimeSlotAssociatonID" }) })
+		}
+		else
+		{
+			@Html.HiddenFor(model => model.T_SessionTimeSlotAssociatonID, new { @class = "form-control" })
+			@Html.DropDownList("T_SessionTimeSlotAssociatonID", null, "-- Select --", new {  @ParentDD = "T_SessionLearningCenterAssociationID" , @AssoNameWithParent = "T_LearningCenterTimeSlotsAssociationID" ,   @class = "chosen-select form-control", @disabled="disabled", @HostingName = "T_TimeSlots", @dataurl = Url.Action("GetAllValue", "T_TimeSlots",new { caller = "T_SessionTimeSlotAssociatonID" }) })
+		}
+                                @Html.ValidationMessageFor(model => model.T_SessionTimeSlotAssociatonID)
+								 
+							</div>
+							
+                        </div>
+                    </div>
+                 
+					} else { @Html.HiddenFor(model => model.T_SessionTimeSlotAssociatonID, new { @class = "form-control" })}
+@if(User.CanView("T_Session","T_IsOpen"))
+{
+
+					
+
+                            <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_IsOpen">
+							  <div class="form-group" title="Is Open">
+                                <label  >
+                                    @Html.LabelFor(model => model.T_IsOpen) 
+                                </label>
+								
+									@Html.CheckBox("T_IsOpen", Model.T_IsOpen.HasValue ? Model.T_IsOpen : false)
+                                    @Html.ValidationMessageFor(model => model.T_IsOpen)
+                                
+								</div>
+                            </div>
+				} else { @Html.HiddenFor(model => model.T_IsOpen, new { @class = "form-control" })}
+@if(User.CanView("T_Schedule"))
+{
+                    <div class='col-sm-6 col-md-6 col-xs-12' style="display:none;">
+                        <div class='form-group' style="width:100%;">
+                            <label >@Html.LabelFor(model => model.ScheduleSessionID) </label>
+							
+								@Html.DropDownList("ScheduleSessionID", null, "--Select Session Schedule--", new { @onclick = Html.Raw("select('ScheduleSessionID')"), @class = "form-control", @HostingName = "T_Schedule" })
+                                @Html.ValidationMessageFor(model => model.ScheduleSessionID)								
+                                							
+							
+                        </div>
+                    </div>
+                            <div class="col-md-12 col-sm-12 col-xs-12" id="dvScheduleSessionID">
+                                <div class="panel panel-default AppForm">
+                                  <div class="panel-sub-heading clearfix">
+                                        <h3 class="panel-title">@Html.LabelFor(model => model.ScheduleSessionID)</h3>
+                                    </div>
+                                    <div class="panel-body">
+                                        <div class="row">
+                                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                                        <div class="row">
+ @if (Model.schedulesession!=null)
+{ 
+   <div class='col-sm-6' style="display:none;">
+    <div class='form-group'>
+        <label class="col-xs-5">@Html.LabelFor(model => model.schedulesession.Id)</label>
+		@Html.HiddenFor(model => model.schedulesession.ConcurrencyKey)
+        <div class="input-group col-xs-7">
+            @Html.TextBoxFor(model => model.schedulesession.Id, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.schedulesession.Id)
+        </div>
+    </div>
+</div>
+}
+@if(User.CanView("T_Schedule","T_Name"))
+{
+							<div class='col-sm-6 col-md-6 col-xs-12' id="dvScheduleSessionID_T_Name">
+                            <div class='form-group' title="Name">
+                                <label class="col-sm-5 col-md-5 col-xs-12" >@Html.LabelFor(model => model.schedulesession.T_Name) <span class="text-danger-reg">*</span></label>
+                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+								@if (User.CanEdit("T_Schedule", "T_Name"))
+									{
+									@Html.TextBoxFor(model => model.schedulesession.T_Name, new { @class = "form-control" })
+									}
+									else
+									{
+									@Html.TextBoxFor(model => model.schedulesession.T_Name, new { @class = "form-control",@readonly="readonly" })
+									}
+                                    @Html.ValidationMessageFor(model => model.schedulesession.T_Name)
+                                </div>
+                            </div>
+                        </div>
+}
+                                               
+@if(User.CanView("T_Schedule","T_Description"))
+{
+						<div class='col-sm-6 col-md-6 col-xs-12' id="dvScheduleSessionID_T_Description">
+                                <div class='form-group' title="Description">
+                                   <label class="col-sm-5 col-md-5 col-xs-12" >@Html.LabelFor(model => model.schedulesession.T_Description) <span class="text-danger-reg">*</span></label>
+									<div class="input-group col-sm-7 col-md-7 col-xs-12">
+									@if (User.CanEdit("T_Schedule", "T_Description"))
+									{
+								@Html.TextAreaFor(model => model.schedulesession.T_Description, new { @class = "form-control" })
+									}
+									else
+									{
+										@Html.TextAreaFor(model => model.schedulesession.T_Description, new { @class = "form-control", @readonly="readonly" })
+									}
+									@Html.ValidationMessageFor(model => model.schedulesession.T_Description)
+									</div>
+                                </div>
+						</div>
+}
+                                               
+@if(User.CanView("T_Schedule","T_StartDateTime"))
+{
+					<div class='col-sm-6 col-md-6 col-xs-12' id="dvScheduleSessionID_T_StartDateTime">
+					<div class="form-group" title="Start Date Time">
+                                <label class="col-sm-5 col-md-5 col-xs-12" >@Html.LabelFor(model => model.schedulesession.T_StartDateTime) </label>
+								<div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                    <div class="input-group date" id="datetimepickerschedulesessionT_StartDateTime">
+                                        @Html.TextBoxFor(model => model.schedulesession.T_StartDateTime,   (object)new { @id = "schedulesessionT_StartDateTime", @class = "form-control" })
+                                        <span class="input-group-addon btn-default calendar">
+                                           <i class="fa fa-calendar"></i>
+                                        </span>
+                                    </div>
+                                    @Html.ValidationMessageFor(model => model.schedulesession.T_StartDateTime)
+								</div>
+                                </div>
+                               @if(User.CanEdit("T_Schedule", "T_StartDateTime"))
+								{
+                                <script type="text/javascript">
+                                    $(function () {
+										$('#schedulesessionT_StartDateTime').datetimepicker();
+                                        $('#datetimepickerschedulesessionT_StartDateTime').datetimepicker();
+                                    });
+                                </script>
+								}
+                            </div>
+}
+                                               
+@if(User.CanView("T_Schedule","T_EndDate"))
+{
+					<div class='col-sm-6 col-md-6 col-xs-12' id="dvScheduleSessionID_T_EndDate">
+					<div class="form-group" title="End Date">
+                                <label class="col-sm-5 col-md-5 col-xs-12" >@Html.LabelFor(model => model.schedulesession.T_EndDate) </label>
+								<div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                    <div class="input-group date" id="datetimepickerschedulesessionT_EndDate">
+                                        @Html.TextBoxFor(model => model.schedulesession.T_EndDate,   (object)new { @id = "schedulesessionT_EndDate", @class = "form-control" })
+                                        <span class="input-group-addon btn-default calendar">
+                                           <i class="fa fa-calendar"></i>
+                                        </span>
+                                    </div>
+                                    @Html.ValidationMessageFor(model => model.schedulesession.T_EndDate)
+								</div>
+                                </div>
+                               @if(User.CanEdit("T_Schedule", "T_EndDate"))
+								{
+                                <script type="text/javascript">
+                                    $(function () {
+										$('#schedulesessionT_EndDate').datetimepicker();
+                                        $('#datetimepickerschedulesessionT_EndDate').datetimepicker();
+                                    });
+                                </script>
+								}
+                            </div>
+}
+                                               
+					
+                                                </div>
+                                            </div>
+                                        </div>
+                                        @Html.ValidationMessageFor(model => model.ScheduleSessionID)
+                                    </div>
+                                </div>
+                            </div>
+                       }
+					   else
+                       { @Html.HiddenFor(model => model.ScheduleSessionID, new { @class = "form-control" })}
+       </div>
+
+
+	            </div>
+        </div>
+	</div>
+</div>
+		 @Html.AntiForgeryToken();
+		 var businessrule1 = User.businessrules.Where(p => p.EntityName == "T_Session").ToList();
+		 var lstinlineentityname = "T_Schedule";
+		 var lstinlineassocdispname ="Session Schedule";
+		 var lstinlineassocname = "ScheduleSession";
+		 <button id="CancelQuickAdd" type="button" class="btn btn-default btn-sm" data-dismiss="modal" aria-hidden="true">Cancel</button>
+		 if (EditPermission)
+         {
+			    <input type="submit" name="command" value="Save" class="btn btn-primary btn-sm" onclick="QuickEditFromGrid(event,true,'T_Session','@ViewData["AssociatedType"]',false,'@businessrule1',@businessrule1.Count,'OnEdit','ErrMsg',false,'@lstinlineassocname','@lstinlineassocdispname','@lstinlineentityname');" />
+				<input type="hidden" name="hdncommand" value="" />
+  		 }	
+}
+<script src="@Url.Content("~/bundles/jqueryval")" type="text/javascript"></script>
+<script src="@Url.Content("~/bundles/common3")" type="text/javascript"></script>
+<script type="text/javascript">
+    var config = {
+        '.chosen-select': {},
+        '.chosen-select-deselect': { allow_single_deselect: true },
+        '.chosen-select-no-single': { disable_search_threshold: 10 },
+        '.chosen-select-no-results': { no_results_text: 'Oops, nothing found!' },
+        '.chosen-select-width': { width: "95%" }
+    }
+    for (var selector in config) {
+        $(selector).chosen(config[selector]);
+    }
+</script>
+<script>
+    $("input[type='submit']").click(function () {
+        var $this = $(this);
+        $('input:hidden[name="hdncommand"]').val($this.val());
+    });
+</script>
+@{
+var businessrule = User.businessrules.Where(p => p.EntityName == "T_Session").ToList();
+
+
+	
+		var businessurlinline = User.businessrules.Where(p => p.EntityName == "T_Schedule").ToList();
+
+
+if ((businessrule != null && businessrule.Count > 0)  || (businessurlinline != null && businessurlinline.Count > 0) )
+{
+    <script>
+    $(document).ready(function () {
+	document.getElementById("ErrMsg").innerHTML = "";
+		 var flag = true;
+                var dataurl = "";
+                var form = "";
+                var inlinecount = "0";
+
+					 form = $("#frmQEditT_Session").find(":not(#dvScheduleSessionID *)").serialize();
+					 dataurl = "@Url.Action("businessruletype", "T_Session", new { ruleType = "OnEdit"})";
+            ApplyBusinessRuleOnPageLoad(dataurl, "T_Session", false, "ErrMsg", form);
+			//business rules on inline associations
+                inlinecount = "@businessurlinline.Where(p => p.EntityName == "T_Schedule").Count()";
+                if (inlinecount != "0") {
+                    form = $('#dvScheduleSessionID :input').serialize();
+                    form = form.replaceAll("schedulesession.", "");
+                    dataurl = "@Url.Action("businessruletype", "T_Schedule", new { ruleType = "OnEdit" })";
+                    ApplyBusinessRuleOnPageLoad(dataurl, "T_Schedule", true, "ErrMsg", form, "ScheduleSession", "Session Schedule");
+                }
+    });
+</script>
+<script>
+    $("form").submit(function () {
+	document.getElementById("ErrMsg").innerHTML = "";
+            var flag = true;
+			var form = $("#frmQEditT_Session").find(":not(#dvScheduleSessionID *)").serialize();
+		    
+				 $(document).ready(function () {
+					$("input[type='submit']").on('blur', function () {
+					$("input[type='submit']").removeAttr('disabled');
+					});
+				});
+			});
+</script>
+}
+ 
+}
+
+<script type='text/javascript'>
+    $(document).ready(function () {
+        try {
+            document.getElementsByTagName("body")[0].focus();
+            $("#addPopup").removeAttr("tabindex");
+            var cltcoll = $("#dvPopup").find('input[type=text]:not([class=hidden]):not([readonly]),textarea:not([readonly])')
+            var cltid = "";
+            $(cltcoll).each(function () {
+			  if ($(this).attr("id") == undefined)
+                    return
+                var dvhidden = $("#dv" + $(this).attr("id"));
+				var dvDate = $("#datetimepicker" + $(this).attr("id")).attr("id");
+                if (!(dvhidden.css('display') == 'none') && dvDate == undefined) {
+                    cltid = $(this);
+                    return false;
+                }
+            });
+            if (cltid != "" && cltid != undefined)
+                setTimeout(function () { $(cltid).focus(); }, 500)
+        }
+        catch (ex) { }
+    });
+</script>
+

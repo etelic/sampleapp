@@ -1,0 +1,268 @@
+﻿@model GeneratorBase.MVC.Models.T_TimeSlots
+@using PagedList;
+@{
+    ViewBag.Title = "View Time Slots";
+	var EntityDisplayNameReflector = ModelReflector.Entities.FirstOrDefault(p => p.Name == "T_TimeSlots");
+    var EntityDisplayName = EntityDisplayNameReflector != null ? EntityDisplayNameReflector.DisplayName : "Time Slots";
+}
+<script>
+    $(document).ready(function () {
+			 if ($.cookie('@User.JavaScriptEncodedName@Model.Id' + 'TabCookie') != null) {
+				$('a[href="#' + $.cookie('@User.JavaScriptEncodedName@Model.Id' + 'TabCookie') + '"]').click();
+			 }
+    });
+</script>
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_TimeSlotsIsHiddenRule))
+    {
+        @Html.Raw(ViewBag.T_TimeSlotsIsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_TimeSlotsIsGroupsHiddenRule))
+    {
+        @Html.Raw(ViewBag.T_TimeSlotsIsGroupsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_TimeSlotsIsSetValueUIRule))
+    {
+        @Html.Raw(ViewBag.T_TimeSlotsIsSetValueUIRule);
+    }
+}
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-title">
+            <i class="glyphicon glyphicon-hand-down text-primary"></i> @EntityDisplayName  <i class="glyphicon glyphicon-chevron-right small"></i> <span>View</span>
+        </h1>
+        <h2 class="text-primary"><span id="HostingEntityDisplayValue">@Html.DisplayFor(model => model.DisplayValue)</span>
+			<div class="btn-group pull-right fixactionbut">
+            <button data-toggle="dropdown" class="btn btn-xs dropdown-toggle btn-default pull-right">
+                Action
+                <span class="caret">    </span>
+            </button>
+			<ul class="dropdown-menu pull-left">               
+				<li>
+                    @if (User.Identity.IsAuthenticated && User != null && User.CanEdit("T_TimeSlots"))
+                    {
+                        <a href="@Url.Action("Edit","T_TimeSlots", new { id = Model.Id,  UrlReferrer = Request.Url, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) },null)"><i class="glyphicon glyphicon-edit"></i>  Edit</a>
+                    }
+                </li>             
+				<li>
+                    @if (User.Identity.IsAuthenticated && User != null && User.CanDelete("T_TimeSlots"))
+                    {
+                        <a href="@Url.Action("Delete", "T_TimeSlots", new { id = Model.Id, UrlReferrer = Request.Url, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null)"><i class="glyphicon glyphicon-remove-sign"></i>  Delete</a>
+                    }
+                </li>
+	<li class="divider" style="clear:both"></li>
+	<li class="dropdown-submenu pull-left">
+	<a tabindex="-1" href="#" style="margin-bottom:10px;"><i class="fam-anchor small"></i> Add</a>
+    <ul class="dropdown-menu pull-left">
+				@if (User.Identity.IsAuthenticated && User != null && User.CanAdd("T_Session"))
+				{
+					<li>
+						<a onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Create", "T_Session", 
+						new { UrlReferrer = Request.Url,
+								AssociatedType ="T_SessionTimeSlotAssociaton", 
+							HostingEntityName = "T_TimeSlots",
+							HostingEntityID = @Convert.ToString(Model.Id) }, null) + "');")>
+							<i class="glyphicon glyphicon-plus"></i>  Session
+						</a>
+					</li>
+				}
+							@if (User.Identity.IsAuthenticated && User != null && User.CanAdd("T_SessionEvents"))
+				{
+					<li>
+						<a onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Create", "T_SessionEvents", 
+						new { UrlReferrer = Request.Url,
+								AssociatedType ="T_SessionEventsTimeSlots", 
+							HostingEntityName = "T_TimeSlots",
+							HostingEntityID = @Convert.ToString(Model.Id) }, null) + "');")>
+							<i class="glyphicon glyphicon-plus"></i>  Session
+						</a>
+					</li>
+				}
+			</ul>
+</li>
+ <li class="divider" style="clear:both"></li>
+ <li class="dropdown-submenu pull-left">
+	<a tabindex="-1" href="#" style="margin-bottom:10px;">Find Matching</a>
+    <ul class="dropdown-menu pull-left">
+<li>
+		<a href="@Url.Action("FindFSearch", "T_Session", new {sourceEntity="T_TimeSlots",id=Model.Id}, null)">Session</a>
+</li>
+<li>
+		<a href="@Url.Action("FindFSearch", "T_SessionEvents", new {sourceEntity="T_TimeSlots",id=Model.Id}, null)">Session Events</a>
+</li>
+</ul>
+</li>
+			</ul>
+</div>
+		</h2>
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+<div class="tabbable responsive">
+    <ul class="nav nav-tabs">
+	 <li class="active"><a href="#Details" onclick="ClearTabCookie('@User.JavaScriptEncodedName@Model.Id');" data-toggle="tab">Details</a></li>
+		 <li @(!User.CanView("T_Session")?"style=display:none;":"")><a onclick="LoadTab('T_SessionTimeSlotAssociaton','@User.JavaScriptEncodedName@Model.Id','@Html.Raw(Url.Action("Index", "T_Session", new {RenderPartial=true, HostingEntity ="T_TimeSlots", HostingEntityID = @Model.Id, AssociatedType = "T_SessionTimeSlotAssociaton",TabToken = DateTime.Now.Ticks,}))')" href="#T_SessionTimeSlotAssociaton" data-toggle="tab">
+		 Session
+		 <span class="badge bg-blue"><div id="dvcnt_T_SessionTimeSlotAssociaton">@ViewBag.T_SessionTimeSlotAssociatonCount</div></span>
+		 		 </a></li>
+		 <li @(!User.CanView("T_SessionEvents")?"style=display:none;":"")><a onclick="LoadTab('T_SessionEventsTimeSlots','@User.JavaScriptEncodedName@Model.Id','@Html.Raw(Url.Action("Index", "T_SessionEvents", new {RenderPartial=true, HostingEntity ="T_TimeSlots", HostingEntityID = @Model.Id, AssociatedType = "T_SessionEventsTimeSlots",TabToken = DateTime.Now.Ticks,}))')" href="#T_SessionEventsTimeSlots" data-toggle="tab">
+		 Session
+		 <span class="badge bg-blue"><div id="dvcnt_T_SessionEventsTimeSlots">@ViewBag.T_SessionEventsTimeSlotsCount</div></span>
+		 		 </a></li>
+    </ul>
+	    <div class="tab-content">
+		   <div class="tab-pane fade in active" id="Details">
+				 <div class="panel panel-default AppForm">
+					<div class="panel-body">
+                                  
+			<div class="row">
+				<div class="col-sm-12 col-md-12 col-xs-12">
+			<div class="row">
+@if(User.CanView("T_TimeSlots","T_SlotNo"))
+{
+<div class='col-sm-6 col-md-6 col-xs-12' id="dvT_SlotNo">
+	<div class='form-group' title="">
+		<label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.T_SlotNo) </label>
+		<div class="input-group col-sm-7 col-md-7 col-xs-12">
+		
+				
+				<p class="viewlabel">@Model.T_SlotNo</p>
+					
+					</div>
+	</div>
+</div>
+}
+@if(User.CanView("T_TimeSlots","T_LearningCenterTimeSlotsAssociationID"))
+{
+<div class='col-sm-6 col-md-6 col-xs-12' id="dvT_LearningCenterTimeSlotsAssociation">
+	<div class='form-group' >
+		<label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.T_LearningCenterTimeSlotsAssociationID)</label>
+		<div class="input-group col-sm-7 col-md-7 col-xs-12">
+		@if (@Model.T_LearningCenterTimeSlotsAssociationID == 0 || @Model.T_LearningCenterTimeSlotsAssociationID == null || @Model.t_learningcentertimeslotsassociation == null)
+		{
+	         <p class="viewlabel"></p>
+        }
+        else
+        {
+		     <p class="viewlabel">@Model.t_learningcentertimeslotsassociation.DisplayValue</p>
+        }
+		</div>
+	</div>
+</div>
+}
+@if(User.CanView("T_TimeSlots","T_StartTime"))
+{
+<div class='col-sm-6 col-md-6 col-xs-12' id="dvT_StartTime">
+	<div class='form-group' title="">
+		<label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.T_StartTime) </label>
+		<div class="input-group col-sm-7 col-md-7 col-xs-12">
+		
+				
+				<p class="viewlabel" id="timeT_StartTime">@String.Format("{0:hh:mm tt}", Model.T_StartTime)</p>
+		@Html.Raw("<script> $(function () {$('timeT_StartTime').datetimepickerIndex({divid:'timeT_StartTime',format: 'hh:mm',val:'" + @Html.DisplayFor(model => model.T_StartTime) + "'})});</script>")        
+				
+					</div>
+	</div>
+</div>
+}
+@if(User.CanView("T_TimeSlots","T_EndTime"))
+{
+<div class='col-sm-6 col-md-6 col-xs-12' id="dvT_EndTime">
+	<div class='form-group' title="">
+		<label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.T_EndTime) </label>
+		<div class="input-group col-sm-7 col-md-7 col-xs-12">
+		
+				
+				<p class="viewlabel" id="timeT_EndTime">@String.Format("{0:hh:mm tt}", Model.T_EndTime)</p>
+		@Html.Raw("<script> $(function () {$('timeT_EndTime').datetimepickerIndex({divid:'timeT_EndTime',format: 'hh:mm',val:'" + @Html.DisplayFor(model => model.T_EndTime) + "'})});</script>")        
+				
+					</div>
+	</div>
+</div>
+}
+		</div>
+				</div>
+			</div>
+		</div>
+			</div>
+			<div class="row">
+				<div class="col-md-12 col-sm-12 col-xs-12">
+					@Html.ActionLink("Back", "Cancel", new { UrlReferrer = Request.UrlReferrer }, new { @class = "btn btn-default btn-sm pull-left formbuttonfix" })
+					 @if (User.Identity.IsAuthenticated && User != null && User.CanEdit("T_TimeSlots"))
+                     {
+                          @Html.ActionLink("Edit", "Edit", new { id = Model.Id, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, new { @class = "btn btn-primary btn-sm pull-left formbuttonfix" })
+                     }
+				</div>
+			</div>    
+
+<div class="dropdown pull-left formbuttonfix" style="margin-top:-30px; margin-left:102px;">
+<button type="button" class="btn btn-primary btn-sm dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown">
+            Add Association
+            <span class="caret"></span>
+        </button>
+		 <ul class="dropdown-menu " role="menu" aria-labelledby="dropdownMenu1">
+           
+			@if (User.Identity.IsAuthenticated && User != null && User.CanAdd("T_Session"))
+            {
+				 <li>
+				 <a onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Create", "T_Session",
+						new { UrlReferrer = Request.Url,
+								AssociatedType ="T_SessionTimeSlotAssociaton", 
+						HostingEntityName = "T_TimeSlots",
+                              HostingEntityID = @Convert.ToString(Model.Id)
+                        }, null) + "');") style="margin-top:5px;">
+                   Add  Session</a>
+			</li>
+            }
+			
+
+        </ul>
+
+			</div>
+
+<div class="dropdown pull-left formbuttonfix" style="margin-top:-30px; margin-left:102px;">
+<button type="button" class="btn btn-primary btn-sm dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown">
+            Add Association
+            <span class="caret"></span>
+        </button>
+		 <ul class="dropdown-menu " role="menu" aria-labelledby="dropdownMenu1">
+           
+			@if (User.Identity.IsAuthenticated && User != null && User.CanAdd("T_SessionEvents"))
+            {
+				 <li>
+				 <a onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Create", "T_SessionEvents",
+						new { UrlReferrer = Request.Url,
+								AssociatedType ="T_SessionEventsTimeSlots", 
+						HostingEntityName = "T_TimeSlots",
+                              HostingEntityID = @Convert.ToString(Model.Id)
+                        }, null) + "');") style="margin-top:5px;">
+                   Add  Session</a>
+			</li>
+            }
+			
+
+        </ul>
+
+			</div>
+	</div>    
+<div class="tab-pane fade in" id="T_SessionTimeSlotAssociaton">
+     @if (User.Identity.IsAuthenticated && User != null && User.CanView("T_Session"))
+	{
+	  // Html.RenderAction("Index", "T_Session", new {RenderPartial=true, HostingEntity = "T_TimeSlots", HostingEntityID = @Model.Id, AssociatedType = "T_SessionTimeSlotAssociaton" }); 
+	}
+  </div>
+<div class="tab-pane fade in" id="T_SessionEventsTimeSlots">
+     @if (User.Identity.IsAuthenticated && User != null && User.CanView("T_SessionEvents"))
+	{
+	  // Html.RenderAction("Index", "T_SessionEvents", new {RenderPartial=true, HostingEntity = "T_TimeSlots", HostingEntityID = @Model.Id, AssociatedType = "T_SessionEventsTimeSlots" }); 
+	}
+  </div>
+	</div> <!-- /tab-content --><br />
+
+<br/>
+</div>
+ 

@@ -50,7 +50,7 @@ body .fc { /* extra precedence to overcome jqui */
 }
 
 .fc-unthemed .fc-today {
-	background: #fcf8e3;
+	background: #edf5fa;
 }
 
 .fc-highlight { /* when user is selecting cells */
@@ -102,7 +102,7 @@ NOTE: use percentage font sizes or else old IE chokes
 	position: relative;
 }
 .fc-sat, .fc-sun {
-    background-color: lightgray !important;
+    background-color: #f9f9f9 !important;
 }
 .fc-icon-left-single-arrow:after {
 	content: "\02039";
@@ -217,7 +217,7 @@ NOTE: use percentage font sizes or else old IE chokes
 	border-color: #e6e6e6 #e6e6e6 #bfbfbf;
 	border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
 	color: #333;
-	text-shadow: 0 1px 1px rgba(255, 255, 255, 0.75);
+	/*text-shadow: 0 1px 1px rgba(255, 255, 255, 0.75);*/
 	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
@@ -225,25 +225,25 @@ NOTE: use percentage font sizes or else old IE chokes
 .fc-state-down,
 .fc-state-active,
 .fc-state-disabled {
-	color: #333333;
-	background-color: #e6e6e6;
+	color: #fff;
+	background-color: #fff;
 }
 
 .fc-state-hover {
 	color: #333333;
-	text-decoration: none;
-	background-position: 0 -15px;
-	-webkit-transition: background-position 0.1s linear;
-	   -moz-transition: background-position 0.1s linear;
-	     -o-transition: background-position 0.1s linear;
-	        transition: background-position 0.1s linear;
+    text-decoration: none;
+    /* background-position: 0 -15px; */
+    /* -webkit-transition: background-position 0.1s linear; */
+    -moz-transition: background-position 0.1s linear;
+    -o-transition: background-position 0.1s linear;
+    /* transition: background-position 0.1s linear; */
 }
 
 .fc-state-down,
 .fc-state-active {
-	background-color: #cccccc;
-	background-image: none;
-	box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.05);
+	background-color: #62a8d1;
+    background-image: none;
+    /* box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.05); */
 }
 
 .fc-state-disabled {
@@ -373,7 +373,7 @@ hr.fc-divider {
 	table-layout: fixed;
 	border-collapse: collapse;
 	border-spacing: 0;
-	font-size: 1em; /* normalize cross-browser */
+	font-size: 12px; /* normalize cross-browser */
 }
 
 .fc th {
@@ -812,8 +812,11 @@ a.fc-more:hover {
 --------------------------------------------------------------------------------------------------*/
 
 .fc-toolbar {
-	text-align: center;
-	margin-bottom: 1em;
+    text-align: center;
+    /* margin-bottom: 1em; */
+    background: #edf5fa;
+    border: 1px solid #c3ddec;
+    padding: 8px;
 }
 
 .fc-toolbar .fc-left {
@@ -888,8 +891,12 @@ a.fc-more:hover {
 	position: relative;
 	z-index: 1;
 }
-
-
+.fc-view a,a:hover,a:focus {
+ color: #333;
+}
+.fc-event-container a {
+ color: #fff;
+}
 
 /* BasicView
 --------------------------------------------------------------------------------------------------*/

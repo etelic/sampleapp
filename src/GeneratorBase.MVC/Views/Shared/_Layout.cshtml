@@ -183,7 +183,6 @@
 					<img src="@AppIcon" style="width:@AppIconWidth; height:@AppIconHeight;" class="logoimg" />
                     @Html.ActionLink(AppName.ToString(), "Index", "Home", null, new { @class = "navbar-brand" })
                 </div>
-				<label class="label text-center FacilityLabel" > Organization : @MainEntityValue</label>   <ul class="nav navbar-top-links navbar-right">
                 <ul class="nav navbar-top-links navbar-right">
 					@if (GeneratorBase.MVC.ModelReflector.Entities.Where(p => p.Name == Request.RequestContext.RouteData.Values["controller"].ToString()).Count() > 0)
                     {
@@ -262,10 +261,13 @@
 									@Html.ActionLink("Application Feedback", "Index", "ApplicationFeedback", routeValues: null, htmlAttributes: new { title = "Application Feedback" })
 								</li>
                             }
-						<li class="divider"></li>
+							@if ((new GeneratorBase.MVC.Models.UserBasedSecurityContext()).UserBasedSecurities.Count() > 0)
+                            {
+                                <li class="divider"></li>
                                 <li>
-                                    <a href="#" style="color:black;">Security Filter is Active on Organization : @MainEntityValue</a>
+                                    <a href="#" style="color:black;"> Security Filter is Active</a>
                                 </li>
+                            }
                         </ul>
                         <!-- /.dropdown-user -->
                     </li>
@@ -321,24 +323,54 @@
 					<a class="pull-right" style="color:black !important; margin: -40px 9px 0px 0px; background:transparent;" @tooglecls data-toggle="collapse" id="menu-toggle-2" onclick="togglesidebar(event, this, '@User.JavaScriptEncodedName');"> <span class="fa fa-thumb-tack" title="Hide/Unhinde" aria-hidden="true"></span></a>
                            
                  </li>
-					@if (User.Identity.IsAuthenticated && User != null && User.CanView("T_Employee"))
+					@if (User.Identity.IsAuthenticated && User != null && User.CanView("T_Client"))
 					{
-					  var EntityReflectorObj = ModelReflector.Entities.FirstOrDefault(p => p.Name == "T_Employee");
-                      var DisplayString = EntityReflectorObj != null ? EntityReflectorObj.DisplayName : "Employee";
-					  <li id="liT_Employee" @(currentController == "T_Employee" ? "class=active" : "")>
-								<a href="@Url.Action("RedirectToEntity","Home", new { EntityName="T_Employee"})"><label class="LimitSidebar pull-left limit">@DisplayString</label>@DisplayString<span class="label label-default pull-right" style="display:none">@ViewBag.T_EmployeeCount</span></a>
+					  var EntityReflectorObj = ModelReflector.Entities.FirstOrDefault(p => p.Name == "T_Client");
+                      var DisplayString = EntityReflectorObj != null ? EntityReflectorObj.DisplayName : "Client";
+					  <li id="liT_Client" @(currentController == "T_Client" ? "class=active" : "")>
+								<a href="@Url.Action("RedirectToEntity","Home", new { EntityName="T_Client"})"><label class="LimitSidebar pull-left limit">@DisplayString</label>@DisplayString<span class="label label-default pull-right" style="display:none">@ViewBag.T_ClientCount</span></a>
 								
                       </li>
 					 }
-					@if (User.Identity.IsAuthenticated && User != null && User.CanView("T_Organization"))
+					@if (User.Identity.IsAuthenticated && User != null && User.CanView("T_TimeSlots"))
 					{
-					  var EntityReflectorObj = ModelReflector.Entities.FirstOrDefault(p => p.Name == "T_Organization");
-                      var DisplayString = EntityReflectorObj != null ? EntityReflectorObj.DisplayName : "Organization";
-					  <li id="liT_Organization" @(currentController == "T_Organization" ? "class=active" : "")>
-								<a href="@Url.Action("RedirectToEntity","Home", new { EntityName="T_Organization"})"><label class="LimitSidebar pull-left limit">@DisplayString</label>@DisplayString<span class="label label-default pull-right" style="display:none">@ViewBag.T_OrganizationCount</span></a>
+					  var EntityReflectorObj = ModelReflector.Entities.FirstOrDefault(p => p.Name == "T_TimeSlots");
+                      var DisplayString = EntityReflectorObj != null ? EntityReflectorObj.DisplayName : "Time Slots";
+					  <li id="liT_TimeSlots" @(currentController == "T_TimeSlots" ? "class=active" : "")>
+								<a href="@Url.Action("RedirectToEntity","Home", new { EntityName="T_TimeSlots"})"><label class="LimitSidebar pull-left limit">@DisplayString</label>@DisplayString<span class="label label-default pull-right" style="display:none">@ViewBag.T_TimeSlotsCount</span></a>
 								
                       </li>
 					 }
+					@if (User.Identity.IsAuthenticated && User != null && User.CanView("T_LearningCenter"))
+					{
+					  var EntityReflectorObj = ModelReflector.Entities.FirstOrDefault(p => p.Name == "T_LearningCenter");
+                      var DisplayString = EntityReflectorObj != null ? EntityReflectorObj.DisplayName : "Learning Center";
+					  <li id="liT_LearningCenter" @(currentController == "T_LearningCenter" ? "class=active" : "")>
+								<a href="@Url.Action("RedirectToEntity","Home", new { EntityName="T_LearningCenter"})"><label class="LimitSidebar pull-left limit">@DisplayString</label>@DisplayString<span class="label label-default pull-right" style="display:none">@ViewBag.T_LearningCenterCount</span></a>
+								
+                      </li>
+					 }
+					@if (User.Identity.IsAuthenticated && User != null && User.CanView("T_Session"))
+					{
+					  var EntityReflectorObj = ModelReflector.Entities.FirstOrDefault(p => p.Name == "T_Session");
+                      var DisplayString = EntityReflectorObj != null ? EntityReflectorObj.DisplayName : "Session";
+					  <li id="liT_Session" @(currentController == "T_Session" ? "class=active" : "")>
+								<a href="@Url.Action("RedirectToEntity","Home", new { EntityName="T_Session"})"><label class="LimitSidebar pull-left limit">@DisplayString</label>@DisplayString<span class="label label-default pull-right" style="display:none">@ViewBag.T_SessionCount</span></a>
+								
+                      </li>
+					 }
+			<li id="liT_Schedule" @(currentController == "T_Schedule" ? "class=active" : "")>
+                          <a href="@Url.Action("ShowFullCalendar", "T_Schedule", new { EntityName = "T_Schedule" })"><label class="LimitSidebar pull-left limit">Calendar</label>Calendar<span class="label label-default pull-right" style="display:none"></span></a>
+
+			</li>
+						 @if (User.Identity.IsAuthenticated && User != null && User.CanView("T_TimeSlots"))
+			 {
+                            var DisplayString = "Master Schedule";
+                            <li id="liT_TimeSlots" @(currentController == "T_TimeSlots" ? "class=active" : "")>
+                                <a href="@Url.Action("Index", "T_TimeSlots", new { viewtype="SlotIndexPartial" })"><label class="LimitSidebar pull-left limit">@DisplayString</label>@DisplayString<span class="label label-default pull-right" style="display:none">@ViewBag.T_TimeSlotsCount</span></a>
+                            </li>
+             }
+ 
                 </ul>
                 <!-- /#side-menu -->
             </div>
@@ -363,13 +395,13 @@
                 <div class="container-fluid">
                     <span class="text-muted pull-left">
                         @commonObj.CreatedBy() <a href="@commonObj.CreatedByLink()" target="_blank">@commonObj.CreatedByName()</a> |
-                        @commonObj.Emailto():<a href="@Html.Raw("mailto:" + commonObj.EmailtoAddress())">@commonObj.EmailtoAddress()</a>
+                        @commonObj.Emailto():<a href="@Html.Encode("mailto:" + commonObj.EmailtoAddress())">@commonObj.EmailtoAddress()</a>
                     </span>
                     <span class="text-muted pull-right">
-                        <a href="@Html.Raw(commonObj.getBaseUri() + commonObj.LegalLink())" target="_blank">@commonObj.Legal()</a>
-                        | <a href="@Html.Raw(commonObj.getBaseUri() + commonObj.TermsLink())" target="_blank">
+                        <a href="@Html.Encode(commonObj.getBaseUri() + commonObj.LegalLink())" target="_blank">@commonObj.Legal()</a>
+                        | <a href="@Html.Encode(commonObj.getBaseUri() + commonObj.TermsLink())" target="_blank">
                             @commonObj.Terms()
-                        </a> | <a href="@Html.Raw(commonObj.getBaseUri() + commonObj.PolicyLink())" target="_blank">
+                        </a> | <a href="@Html.Encode(commonObj.getBaseUri() + commonObj.PolicyLink())" target="_blank">
                             @commonObj.Policy()
                         </a>
                     </span>

@@ -1,0 +1,372 @@
+﻿@model GeneratorBase.MVC.Models.T_SessionClientAssociation
+<script>
+    var delay = (function () {
+        var timer = 0;
+        return function (callback, ms) {
+            clearTimeout(timer);
+            timer = setTimeout(callback, ms);
+        };
+    })();
+ $(document).ready(function () {
+	 $('#btnT_Client').click(function () {
+        var dataurl = '@Url.Action("GetAllValues1")';
+        SearchListNew1($('#btnT_Client'), dataurl, $('#txtSearchT_Client').val(), 'T_Session', '@ViewData["HostingEntityID"]', 'T_SessionClientAssociation_T_Session', 'T_ClientIDAvailable', '');
+        return false;
+    });
+	 $('#btnT_Session').click(function () {
+        var dataurl = '@Url.Action("GetAllValues1")';
+        SearchListNew1($('#btnT_Session'), dataurl, $('#txtSearchT_Session').val(), 'T_Client', '@ViewData["HostingEntityID"]', 'T_SessionClientAssociation_T_Client', 'T_SessionIDAvailable', 't_sessionlearningcenterassociation,t_sessiontimeslotassociaton,schedulesession,T_IsOpen');
+        return false;
+    });
+});
+</script>
+@using (Html.BeginForm("Create", "T_SessionClientAssociation",new {UrlReferrer = Convert.ToString(ViewData["T_SessionClientAssociationParentUrl"]), IsDDAdd = ViewBag.IsDDAdd }, FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+   @Html.AntiForgeryToken();
+    Html.ValidationSummary(true);
+    Html.EnableClientValidation();
+	<label id="ErrMsg" class="text-primary small pull-right" style="color:red; vertical-align:middle; font-weight:100;"></label>
+    <div class="row" style='display:none;' >
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="panel panel-default AppForm">
+                <div class="panel-body">
+               <div class="row" >         
+				@if (Convert.ToString(ViewData["AssociatedType"]).Trim() == "T_SessionClientAssociation_T_Client")
+                {
+				 <div class='col-sm-6 col-md-6 col-xs-12'>
+                        <div class='form-group'>
+                            <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.T_ClientID) </label>
+							<div class="input-group col-sm-7 col-md-7 col-xs-12">
+                            <div class="input-group" style="width:100%;">
+		@Html.DropDownList("T_ClientID", null, "-- Select --", new {    @class = "chosen-select form-control", @HostingName = "T_Client", @dataurl = Url.Action("GetAllValue", "T_Client",null) })
+                                @Html.ValidationMessageFor(model => model.T_ClientID)
+								@if (User.Identity.IsAuthenticated && User != null && User.CanAdd("T_Client"))
+                                    {
+                                <div class="input-group-btn">
+									<a class="btn btn-default btn ie8fix"  data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Client','dvPopup','" + Url.Action("CreateQuick", "T_Client", new { UrlReferrer = Request.Url, HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), IsAddPop=true }) + "')")">
+										<span class="glyphicon glyphicon-plus-sign"></span>
+                                    </a>
+                                </div>
+								}
+                            </div>
+							</div>
+                        </div>
+                    </div>
+				}
+				@if (Convert.ToString(ViewData["AssociatedType"]).Trim() == "T_SessionClientAssociation_T_Session")
+                {
+				 <div class='col-sm-6 col-md-6 col-xs-12'>
+                        <div class='form-group'>
+                            <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.T_SessionID) </label>
+							<div class="input-group col-sm-7 col-md-7 col-xs-12">
+                            <div class="input-group" style="width:100%;">
+		@Html.DropDownList("T_SessionID", null, "-- Select --", new {    @class = "chosen-select form-control", @HostingName = "T_Session", @dataurl = Url.Action("GetAllValue", "T_Session",null) })
+                                @Html.ValidationMessageFor(model => model.T_SessionID)
+								@if (User.Identity.IsAuthenticated && User != null && User.CanAdd("T_Session"))
+                                    {
+                                <div class="input-group-btn">
+									<a class="btn btn-default btn ie8fix"  data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Session','dvPopup','" + Url.Action("CreateQuick", "T_Session", new { UrlReferrer = Request.Url, HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), IsAddPop=true }) + "')")">
+										<span class="glyphicon glyphicon-plus-sign"></span>
+                                    </a>
+                                </div>
+								}
+                            </div>
+							</div>
+                        </div>
+                    </div>
+				}
+       </div>
+                        </div>
+                    </div>
+                </div>
+        </div>
+  if (Convert.ToString(ViewData["AssociatedType"]).Trim() != "T_SessionClientAssociation_T_Client")
+  { 
+	<div class="M2MList">
+		<div class="col-md-5" style="overflow:auto !important;max-height:400px;min-height:400px;">
+            <h4>
+                <span class="unselected-title">Search Client </span>
+            </h4>
+            @Html.TextBox("txtSearchT_Client", null, new { @class = "form-control", placeholder = "Search Client", @size = 10, @dataurl = Url.Action("GetAllValues") })
+ 
+					@if (ViewBag.t_sessionclientassociation!=null)
+                    {
+						<div class='form-group' title="Session" style="display:none">
+							<label class="text-primary small"> Session</label>
+                                <div class="input-group" id="dvt_client">
+		
+	 @Html.DropDownList("t_sessionclientassociation", null, new {   @multiple = "multiple", @HostingName = "T_Session", @dataurl = Url.Action("GetAllMultiSelectValue", "T_Session",null) })
+                                </div>
+                        </div>
+					}
+					@if (ViewBag.t_sessioneventsclient!=null)
+                    {
+						<div class='form-group' title="Session Events" style="display:none">
+							<label class="text-primary small"> Session Events</label>
+                                <div class="input-group" id="dvt_client">
+		
+	 @Html.DropDownList("t_sessioneventsclient", null, new {   @multiple = "multiple", @HostingName = "T_SessionEvents", @dataurl = Url.Action("GetAllMultiSelectValue", "T_SessionEvents",null) })
+                                </div>
+                        </div>
+					}
+		</div>
+		<label style="display:none;">@Html.LabelFor(model => model.T_ClientID) </label>
+		<div class="col-md-7">
+			<div class="col-md-12">
+				<h4><span class="unselected-title">Available Client </span> <span style="float:right; font-size:14px;"> Show @Html.DropDownList("PageSize", new SelectList(new Dictionary<string, string> { {"50","50"},{ "100", "100" }, { "200", "200" }, { "500", "500" }, { "All", "All" } }, "Key", "Value")
+                    ,new {@dataurl=Url.Action("GetAllValues"), onchange="ListBoxPagination(this,$('#txtSearchT_Client').val(),'T_Session', '"+ViewData["HostingEntityID"]+"', 'T_SessionClientAssociation_T_Client', 'T_ClientIDAvailable');"})
+			</span></h4>
+				
+				@Html.ListBox("T_ClientIDAvailable", null, new { @class = "optionvalue", @size = 10 })
+				
+				 </div>
+			<div class="col-md-12  btn-group" style="margin-top:10px;">
+				<a id="MoveRightT_Client" onclick="Associate(event,'T_Client');" class="btn btn-primary col-md-6"><span id="MoveRightT_Client" class="glyphicon glyphicon-chevron-down"></span></a>
+				<a id="MoveLeftT_Client" onclick="Associate(event,'T_Client');" class="btn btn-primary col-md-6" ><span id="MoveLeftT_Client" class="glyphicon glyphicon-chevron-up"></span></a>
+			</div>
+			<div class="col-md-12">
+				<h4><span class="selected-title">Selected Client</span> </h4>
+				@Html.ListBox("T_ClientIDSelected", null, new { @class = "optionvalue", @size = 10 })
+			</div>
+		</div>
+	</div>
+    }
+  if (Convert.ToString(ViewData["AssociatedType"]).Trim() != "T_SessionClientAssociation_T_Session")
+  { 
+	<div class="M2MList">
+		<div class="col-md-5" style="overflow:auto !important;max-height:400px;min-height:400px;">
+            <h4>
+                <span class="unselected-title">Search Session </span>
+            </h4>
+            @Html.TextBox("txtSearchT_Session", null, new { @class = "form-control", placeholder = "Search Session", @size = 10, @dataurl = Url.Action("GetAllValues") })
+              
+				<div class='form-group'>
+                    <label class="text-primary small">Is Open</label>
+                    <div class="input-group" id="dvT_IsOpen">
+                        <select class="form-control" id="T_IsOpen">
+                            <option value="">All</option>
+                            <option value="True">True</option>
+                            <option value="False">False</option>
+                        </select>
+                    </div>
+                </div>
+             
+				@if (ViewBag.t_sessionlearningcenterassociation!=null)
+                {
+						<div class='form-group col-sm-12' title="Learning Center" style="padding:10px 0px 0px 0px; margin:0px;">
+							<div class='form-group col-sm-4' style="padding:0px">
+								<label class="text-primary small"> Learning Center</label>
+							</div>
+							<div class="input-group col-sm-6" id="dvt_sessionlearningcenterassociation">
+		
+	 @Html.DropDownList("t_sessionlearningcenterassociation", null, new {   @multiple = "multiple", @HostingName = "T_LearningCenter", @dataurl = Url.Action("GetAllMultiSelectValue", "T_LearningCenter",null) })
+							</div>
+						</div>
+				}
+				@if (ViewBag.t_sessiontimeslotassociaton!=null)
+                {
+						<div class='form-group col-sm-12' title="Time Slot" style="padding:10px 0px 0px 0px; margin:0px;">
+							<div class='form-group col-sm-4' style="padding:0px">
+								<label class="text-primary small"> Time Slot</label>
+							</div>
+							<div class="input-group col-sm-6" id="dvt_sessiontimeslotassociaton">
+		
+	 @Html.DropDownList("t_sessiontimeslotassociaton", null, new {   @multiple = "multiple", @HostingName = "T_TimeSlots", @dataurl = Url.Action("GetAllMultiSelectValue", "T_TimeSlots",null) })
+							</div>
+						</div>
+				}
+				@if (ViewBag.schedulesession!=null)
+                {
+						<div class='form-group col-sm-12' title="Session Schedule" style="padding:10px 0px 0px 0px; margin:0px;">
+							<div class='form-group col-sm-4' style="padding:0px">
+								<label class="text-primary small"> Session Schedule</label>
+							</div>
+							<div class="input-group col-sm-6" id="dvschedulesession">
+		
+	 @Html.DropDownList("schedulesession", null, new {   @multiple = "multiple", @HostingName = "T_Schedule", @dataurl = Url.Action("GetAllMultiSelectValue", "T_Schedule",null) })
+							</div>
+						</div>
+				}
+					@if (ViewBag.t_sessionclientassociation!=null)
+                    {
+						<div class='form-group' title="Client" style="display:none">
+							<label class="text-primary small"> Client</label>
+                                <div class="input-group" id="dvt_session">
+		
+	 @Html.DropDownList("t_sessionclientassociation", null, new {   @multiple = "multiple", @HostingName = "T_Client", @dataurl = Url.Action("GetAllMultiSelectValue", "T_Client",null) })
+                                </div>
+                        </div>
+					}
+		</div>
+		<label style="display:none;">@Html.LabelFor(model => model.T_SessionID) </label>
+		<div class="col-md-7">
+			<div class="col-md-12">
+				<h4><span class="unselected-title">Available Session </span> <span style="float:right; font-size:14px;"> Show @Html.DropDownList("PageSize", new SelectList(new Dictionary<string, string> { {"50","50"},{ "100", "100" }, { "200", "200" }, { "500", "500" }, { "All", "All" } }, "Key", "Value")
+                    ,new {@dataurl=Url.Action("GetAllValues"), onchange="ListBoxPagination(this,$('#txtSearchT_Session').val(),'T_Client', '"+ViewData["HostingEntityID"]+"', 'T_SessionClientAssociation_T_Session', 'T_SessionIDAvailable');"})
+			</span></h4>
+				
+				@Html.ListBox("T_SessionIDAvailable", null, new { @class = "optionvalue", @size = 10 })
+				
+				 </div>
+			<div class="col-md-12  btn-group" style="margin-top:10px;">
+				<a id="MoveRightT_Session" onclick="Associate(event,'T_Session');" class="btn btn-primary col-md-6"><span id="MoveRightT_Session" class="glyphicon glyphicon-chevron-down"></span></a>
+				<a id="MoveLeftT_Session" onclick="Associate(event,'T_Session');" class="btn btn-primary col-md-6" ><span id="MoveLeftT_Session" class="glyphicon glyphicon-chevron-up"></span></a>
+			</div>
+			<div class="col-md-12">
+				<h4><span class="selected-title">Selected Session</span> </h4>
+				@Html.ListBox("T_SessionIDSelected", null, new { @class = "optionvalue", @size = 10 })
+			</div>
+		</div>
+	</div>
+    }
+<div class="clearfix clear"></div><br />
+    <div class="col-md-5">
+		@if (Convert.ToString(ViewData["AssociatedType"]).Trim() != "T_SessionClientAssociation_T_Client")
+        {
+             <button id="btnT_Client" class="btn btn-primary btn-sm">Search</button>
+        }
+		@if (Convert.ToString(ViewData["AssociatedType"]).Trim() != "T_SessionClientAssociation_T_Session")
+        {
+             <button id="btnT_Session" class="btn btn-primary btn-sm">Search</button>
+        }
+ 
+
+
+    </div>
+    <div class="col-md-7">
+       @Html.ActionLink("Cancel", "Cancel", new { UrlReferrer = ViewData["T_SessionClientAssociationParentUrl"] }, new { @onclick = "", @class = "btn btn-default btn-sm" })
+            <input type="submit" name="command" value="Create" class="btn btn-primary btn-sm" />
+	 <input type="hidden" name="hdncommand" value="" />
+    </div>
+    <br />
+}
+	<script>
+    $(function () {
+        var userAgent = navigator.userAgent.toLowerCase();
+        // Figure out what browser is being used
+        var browser = {
+            version: (userAgent.match(/.+(?:rv|it|ra|ie)[\/: ]([\d.]+)/) || [])[1],
+            safari: /webkit/.test(userAgent),
+            opera: /opera/.test(userAgent),
+            msie: /msie/.test(userAgent) && !/opera/.test(userAgent),
+            mozilla: /mozilla/.test(userAgent) && !/(compatible|webkit)/.test(userAgent)
+        };
+        if (!browser.msie) {
+            $('form').areYouSure();
+        }
+        else if (browser.version > 8.0) {
+            $('form').areYouSure();
+        }
+    });
+</script>
+@if(Convert.ToString(ViewData["AssociatedType"]).Trim() != "T_SessionClientAssociation_T_Client")
+{
+<script>
+function FillSelectedListBox()
+{
+	$("#T_ClientIDSelected option").prop("selected","selected");
+}
+</script>
+}
+<script>
+    $(document).ready(function () {	 
+        $('#t_sessionlearningcenterassociation').multiselect({
+            buttonWidth: '100%',
+            nonSelectedText: 'ALL',
+        });
+        $('#t_sessiontimeslotassociaton').multiselect({
+            buttonWidth: '100%',
+            nonSelectedText: 'ALL',
+        });
+        $('#schedulesession').multiselect({
+            buttonWidth: '100%',
+            nonSelectedText: 'ALL',
+        });
+        $('#T_IsOpen').multiselect({
+            buttonWidth: '100%',
+            nonSelectedText: 'ALL',
+        });
+        $('#').multiselect({
+            buttonWidth: '100%',
+            nonSelectedText: 'ALL',
+        });
+	});
+</script>
+@if(Convert.ToString(ViewData["AssociatedType"]).Trim() != "T_SessionClientAssociation_T_Session")
+{
+<script>
+function FillSelectedListBox()
+{
+	$("#T_SessionIDSelected option").prop("selected","selected");
+}
+</script>
+}
+<script>
+    $(document).ready(function () {	 
+        $('#t_sessionlearningcenterassociation').multiselect({
+            buttonWidth: '100%',
+            nonSelectedText: 'ALL',
+        });
+        $('#t_sessiontimeslotassociaton').multiselect({
+            buttonWidth: '100%',
+            nonSelectedText: 'ALL',
+        });
+        $('#schedulesession').multiselect({
+            buttonWidth: '100%',
+            nonSelectedText: 'ALL',
+        });
+        $('#T_IsOpen').multiselect({
+            buttonWidth: '100%',
+            nonSelectedText: 'ALL',
+        });
+        $('#').multiselect({
+            buttonWidth: '100%',
+            nonSelectedText: 'ALL',
+        });
+	});
+</script>
+	<script>
+            $("input[type='submit']").click(function () {
+			FillSelectedListBox();
+                var $this = $(this);
+                $('input:hidden[name="hdncommand"]').val($this.val());
+            });
+	</script>
+@{
+    var busineesrule = User.businessrules.Where(p => p.EntityName == "T_SessionClientAssociation").ToList();
+    if ((busineesrule != null && busineesrule.Count > 0))
+    {
+        <script>
+            $("form").submit(function () {
+                    var flag = true;
+                    $.ajax({
+                        async: false,
+                        type: "GET",
+                        url: "@Url.Action("GetMandatoryProperties", "T_SessionClientAssociation")",
+                        data: $(this).serialize(),
+                        success: function (data) {
+						$('[businessrule="mandatory"]').each(function () {
+                                $(this).removeAttr('required');
+                            });
+                            document.getElementById('ErrMsg').innerHTML = "";
+                            for (var key in data) {
+                                if ($.trim($('#' + key).val()).length == 0) {
+                                    $('#' + key).attr('required', 'required');
+									$('#' + key).attr('businessrule', 'mandatory');
+                                    flag = false;
+                                    document.getElementById('ErrMsg').innerHTML += data[key] + " is Mandatory.<br/>";
+                                }
+                            }
+                        },
+                        error: function (jqXHR, textStatus, errorThrown) {
+                            //alert(JSON.stringify(jqXHR));
+                            //alert(errorThrown);
+                        }
+                    });
+                    return flag;
+            });
+        </script>
+    }
+}
+
+

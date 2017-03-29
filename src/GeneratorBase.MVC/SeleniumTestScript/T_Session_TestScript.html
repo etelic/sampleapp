@@ -1,0 +1,225 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="https://apps.turanto.com/AshokCalendarUINew" />
+<title>Session</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">T_Session</td></tr>
+</thead><tbody>
+<tr>
+	<td>open</td>
+	<td>/AshokCalendarUINew/Home</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>css=#liT_Session &gt; a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>xpath=(//button[@type='button'])[5]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=T_Name</td>
+	<td>Name</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=T_Description</td>
+	<td>Description</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=T_IsOpen</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAt</td>
+	<td>//div[@id='T_SessionLearningCenterAssociationID_chosen']/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>storeElementPresent</td>
+	<td>//div[@id='T_SessionLearningCenterAssociationID_chosen']/div/ul/li[2]</td>
+	<td>T_SessionLearningCenterAssociationflag</td>
+</tr>
+<tr>
+	<td>gotoIf</td>
+	<td>storedVars.T_SessionLearningCenterAssociationflag</td>
+	<td>T_SessionLearningCenterAssociation</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//div[@id='T_SessionLearningCenterAssociationID_chosen']/following-sibling::div/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>//div[@id='dvPopup']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=T_Name</td>
+	<td>Learning Center Name</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=T_Description</td>
+	<td>Learning Center Description</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//input[@value='Create']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>label</td>
+	<td>T_SessionLearningCenterAssociation</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAt</td>
+	<td>id=T_SessionLearningCenterAssociationID_chosen</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAt</td>
+	<td>//div[@id='T_SessionLearningCenterAssociationID_chosen']/div/ul/li[2]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAt</td>
+	<td>//div[@id='T_SessionTimeSlotAssociatonID_chosen']/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>storeElementPresent</td>
+	<td>//div[@id='T_SessionTimeSlotAssociatonID_chosen']/div/ul/li[2]</td>
+	<td>T_SessionTimeSlotAssociatonflag</td>
+</tr>
+<tr>
+	<td>gotoIf</td>
+	<td>storedVars.T_SessionTimeSlotAssociatonflag</td>
+	<td>T_SessionTimeSlotAssociaton</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//div[@id='T_SessionTimeSlotAssociatonID_chosen']/following-sibling::div/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>//div[@id='dvPopup']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=T_SlotNo</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>name=T_StartTime</td>
+	<td>3/22/2017 12:19:12 PM</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>name=T_EndTime</td>
+	<td>3/22/2017 12:19:12 PM</td>
+</tr>
+	<tr>
+	<td>clickAt</td>
+	<td>//div[@id='T_LearningCenterTimeSlotsAssociationID_chosen']/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>storeElementPresent</td>
+	<td>//div[@id='T_LearningCenterTimeSlotsAssociationID_chosen']/div/ul/li[2]</td>
+	<td>T_LearningCenterTimeSlotsAssociationflag</td>
+</tr>
+<tr>
+	<td>gotoIf</td>
+	<td>storedVars.T_LearningCenterTimeSlotsAssociationflag == false</td>
+	<td>T_LearningCenterTimeSlotsAssociation</td>
+</tr>
+<tr>
+	<td>clickAt</td>
+	<td>id=T_LearningCenterTimeSlotsAssociationID_chosen</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAt</td>
+	<td>//div[@id='T_LearningCenterTimeSlotsAssociationID_chosen']/div/ul/li[2]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>label</td>
+	<td>T_LearningCenterTimeSlotsAssociation</td>
+	<td></td>
+</tr>
+		
+<tr>
+	<td>click</td>
+	<td>//input[@value='Create']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>label</td>
+	<td>T_SessionTimeSlotAssociaton</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAt</td>
+	<td>id=T_SessionTimeSlotAssociatonID_chosen</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAt</td>
+	<td>//div[@id='T_SessionTimeSlotAssociatonID_chosen']/div/ul/li[2]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=schedulesession_T_Name</td>
+	<td>Session Schedule Name</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=schedulesession_T_Description</td>
+	<td>Session Schedule Description</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=schedulesession_T_StartDateTime</td>
+	<td>3/22/2017 12:19:12 PM</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=schedulesession_T_EndDate</td>
+	<td>3/22/2017 12:19:12 PM</td>
+</tr>
+
+
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@name='command' and @Value='Create']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Home</td>
+	<td></td>
+</tr>
+</tbody></table>
+</body>
+</html>
+

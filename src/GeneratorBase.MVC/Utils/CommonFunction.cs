@@ -151,7 +151,7 @@ namespace GeneratorBase.MVC.Models
         }
         public string ReportPass()
         {
-            return reportPass;
+            return (new EncryptDecrypt()).DecryptString(reportPass);
         }
         public string ReportFolder()
         {

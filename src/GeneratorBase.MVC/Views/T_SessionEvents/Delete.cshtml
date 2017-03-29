@@ -1,0 +1,99 @@
+﻿@model GeneratorBase.MVC.Models.T_SessionEvents
+@{
+    ViewBag.Title = "Delete Session Events";
+}
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-title">
+            <i class="glyphicon glyphicon-hand-down text-primary"></i>Delete Session Events  <i class="glyphicon glyphicon-chevron-right small"></i> 
+            <span style="color:red;">  Are you sure you want to delete this?</span>
+        </h1>
+        <h2 class="text-primary">@Html.DisplayFor(model => model.DisplayValue)</h2>
+    </div>
+</div>
+<div class="row">
+<label id="ErrMsg" class="text-primary small" style="color:red; vertical-align:middle; font-weight:100;"></label>
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(model => model.ConcurrencyKey)
+    @Html.HiddenFor(model => model.Id)
+                                  
+    <dl class="dl-horizontal">
+		  <dt>		   
+            @Html.DisplayNameFor(model => model.T_Title)
+        </dt>
+		<dd class="clearfix">
+            @Html.DisplayFor(model => model.T_Title)
+			@Html.HiddenFor(model => model.T_Title)
+        </dd>
+		  <dt>		   
+            @Html.DisplayNameFor(model => model.T_EventDate)
+        </dt>
+		<dd class="clearfix">
+            @Html.DisplayFor(model => model.T_EventDate)
+			@Html.HiddenFor(model => model.T_EventDate)
+        </dd>
+		 <dt>
+            @Html.DisplayNameFor(model => model.T_SessionEventsLearningCenterID)
+        </dt>
+		<dd class="clearfix">
+            @Html.DisplayFor(model => model.t_sessioneventslearningcenter.DisplayValue)
+			 @Html.HiddenFor(model => model.T_SessionEventsLearningCenterID)
+        </dd>
+		  <dt>		   
+            @Html.DisplayNameFor(model => model.T_StartTime)
+        </dt>
+		<dd class="clearfix">
+            @Html.DisplayFor(model => model.T_StartTime)
+			@Html.HiddenFor(model => model.T_StartTime)
+        </dd>
+		  <dt>		   
+            @Html.DisplayNameFor(model => model.T_EndTime)
+        </dt>
+		<dd class="clearfix">
+            @Html.DisplayFor(model => model.T_EndTime)
+			@Html.HiddenFor(model => model.T_EndTime)
+        </dd>
+		  <dt>		   
+            @Html.DisplayNameFor(model => model.T_IsCancelled)
+        </dt>
+		<dd class="clearfix">
+            @Html.DisplayFor(model => model.T_IsCancelled)
+			@Html.HiddenFor(model => model.T_IsCancelled)
+        </dd>
+		  <dt>		   
+            @Html.DisplayNameFor(model => model.T_Description)
+        </dt>
+		<dd class="clearfix">
+            @Html.DisplayFor(model => model.T_Description)
+			@Html.HiddenFor(model => model.T_Description)
+        </dd>
+		 <dt>
+            @Html.DisplayNameFor(model => model.ScheduleID)
+        </dt>
+		<dd class="clearfix">
+            @Html.DisplayFor(model => model.schedule.DisplayValue)
+			 @Html.HiddenFor(model => model.ScheduleID)
+        </dd>
+		 <dt>
+            @Html.DisplayNameFor(model => model.T_SessionEventsTimeSlotsID)
+        </dt>
+		<dd class="clearfix">
+            @Html.DisplayFor(model => model.t_sessioneventstimeslots.DisplayValue)
+			 @Html.HiddenFor(model => model.T_SessionEventsTimeSlotsID)
+        </dd>
+    </dl>
+	<br/>
+        <div class="row deletefix">
+				<div class="col-md-12 col-sm-12 col-xs-12">
+        @Html.ActionLink("Back", "Index", null, new { @class = "btn btn-default btn-sm" })
+ 
+	@if (User.Identity.IsAuthenticated && User != null && User.CanDelete("T_SessionEvents"))
+     {
+			<input type="submit" value="Delete" class="btn btn-primary btn-sm" /> 
+	}
+        </div>
+            </div>
+    }
+</div>

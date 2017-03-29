@@ -1,0 +1,245 @@
+﻿@model GeneratorBase.MVC.Models.T_TimeSlots
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_TimeSlotsIsHiddenRule))
+    {
+        @Html.Raw(ViewBag.T_TimeSlotsIsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_TimeSlotsIsGroupsHiddenRule))
+    {
+        @Html.Raw(ViewBag.T_TimeSlotsIsGroupsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_TimeSlotsIsSetValueUIRule))
+    {
+        @Html.Raw(ViewBag.T_TimeSlotsIsSetValueUIRule);
+    }
+}
+@using (Html.BeginForm("Create", "T_TimeSlots",new {UrlReferrer = Convert.ToString(ViewData["T_TimeSlotsParentUrl"]), IsDDAdd = ViewBag.IsDDAdd }, FormMethod.Post, new { enctype = "multipart/form-data",id="frmT_TimeSlots" }))
+{
+   @Html.AntiForgeryToken();
+    Html.ValidationSummary(true);
+    Html.EnableClientValidation();
+	<input type="hidden" id="ErrMsg" />
+	@*<label id="ErrMsg" class="text-primary small pull-right" style="color:red; vertical-align:middle; font-weight:100;"></label>*@
+    <div id="errorContainer" style="display: none">
+        <div id="errorsMsg"></div>
+        <div id="errors"></div>
+    </div>
+	 <h2>
+	<div class="pull-right" style="margin-top:-10px;margin-bottom:10px">
+	 @Html.ActionLink("Cancel", "Cancel", new { UrlReferrer = ViewData["T_TimeSlotsParentUrl"] }, new { @onclick = "", @class="btn btn-default btn-xs" })
+	<input type="submit" name="command" value="Create" class="btn btn-primary btn-xs" />
+    @if (ViewBag.IsDDAdd == null && User.CanEdit("T_TimeSlots"))
+    {
+	<input type="submit" name="command" value="Create & Continue" class="btn btn-primary btn-xs" />
+	}
+	</div>
+	 </h2>
+	 <div id="divDisplayThresholdLimit" style="display:none;">
+	</div>
+	 <div id="divDisplayBRmsgMandatory" style="display:none;">
+	</div>
+	<div id="divDisplayBRmsgBeforeSaveProp" style="display:none;">
+	</div>
+	<div id="divDisplayCodeFragment" style="display:none;">
+	</div>
+
+	<div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="panel panel-default AppForm">
+                <div class="panel-body">
+               					<div class="row">
+				       
+			     <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_SlotNo">
+                                <div class='form-group' title="">
+                                   <label class="col-sm-5 col-md-5 col-xs-12" >@Html.LabelFor(model => model.T_SlotNo) </label>
+									<div class="input-group col-sm-7 col-md-7 col-xs-12">
+									
+                                    @Html.TextBoxFor(model => model.T_SlotNo, new { @class = "form-control", @readonly = "readonly" })
+                                    @Html.ValidationMessageFor(model => model.T_SlotNo)
+									</div>
+                                </div>
+					</div>
+
+					
+			      <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_LearningCenterTimeSlotsAssociationID">
+                        <div class='form-group'>
+                            <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.T_LearningCenterTimeSlotsAssociationID) </label>
+							<div class="input-group col-sm-7 col-md-7 col-xs-12">
+                            <div class="input-group" style="width:100%;">
+									@Html.DropDownList("T_LearningCenterTimeSlotsAssociationID", null, "-- Select --", new {       @class = "chosen-select form-control", @HostingName = "T_LearningCenter", @dataurl = Url.Action("GetAllValue", "T_LearningCenter",new { caller = "T_LearningCenterTimeSlotsAssociationID" }) })
+			@Html.ValidationMessageFor(model => model.T_LearningCenterTimeSlotsAssociationID)
+			@if (User.Identity.IsAuthenticated && User != null && User.CanAdd("T_LearningCenter"))
+				{
+			<div class="input-group-btn">
+				<a class="btn btn-default btn ie8fix"  data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Learning Center','dvPopup','" + Url.Action("CreateQuick", "T_LearningCenter", new { UrlReferrer = Request.Url, HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), IsAddPop=true }) + "')")">
+					<span class="glyphicon glyphicon-plus-sign"></span>
+				</a>
+			</div>
+			}
+		                                
+                            </div>
+							</div>
+                        </div>
+                    </div>
+
+				
+ 		  <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_StartTime">
+                                <label class="col-sm-5 col-md-5 col-xs-12" >@Html.LabelFor(model => model.T_StartTime) <span class="text-danger-reg">*</span></label>
+                                <div class="form-group" title="">
+								<div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                    <div class="input-group date" id="datetimepickerT_StartTime">
+                                        @Html.TextBoxFor(model => model.T_StartTime, new {@class = "form-control" ,@Value = DateTime.Now.ToString("hh:mm tt") ,@format = "hh:mm" })
+                                        
+										<span class="input-group-addon btn-default calendar">
+                                           <i class="fa fa-calendar"></i>
+                                        </span>
+                                    </div>
+                                    @Html.ValidationMessageFor(model => model.T_StartTime)
+
+								</div>
+                                </div>
+	
+                                <script type="text/javascript">
+                                    $(function () {
+										$('#T_StartTime').datetimepicker({ pickDate:false, minuteStepping: 15 ,IsRequired: true});
+                                        $('#datetimepickerT_StartTime').datetimepicker({ pickDate:false, minuteStepping: 15 ,IsRequired: true});
+                                    });
+                                </script>
+                            </div>
+		  
+                          
+ 		  <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_EndTime">
+                                <label class="col-sm-5 col-md-5 col-xs-12" >@Html.LabelFor(model => model.T_EndTime) <span class="text-danger-reg">*</span></label>
+                                <div class="form-group" title="">
+								<div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                    <div class="input-group date" id="datetimepickerT_EndTime">
+                                        @Html.TextBoxFor(model => model.T_EndTime, new {@class = "form-control" ,@Value = DateTime.Now.ToString("hh:mm tt") ,@format = "hh:mm" })
+                                        
+										<span class="input-group-addon btn-default calendar">
+                                           <i class="fa fa-calendar"></i>
+                                        </span>
+                                    </div>
+                                    @Html.ValidationMessageFor(model => model.T_EndTime)
+
+								</div>
+                                </div>
+	
+                                <script type="text/javascript">
+                                    $(function () {
+										$('#T_EndTime').datetimepicker({ pickDate:false, minuteStepping: 15 ,IsRequired: true});
+                                        $('#datetimepickerT_EndTime').datetimepicker({ pickDate:false, minuteStepping: 15 ,IsRequired: true});
+                                    });
+                                </script>
+                            </div>
+		  
+                          
+       </div>
+                        </div>
+                    </div>
+                </div>
+        </div>
+          @Html.ActionLink("Cancel", "Cancel", new { UrlReferrer = ViewData["T_TimeSlotsParentUrl"] }, new { @onclick = "", @class = "btn btn-default btn-sm" })
+	<input type="submit" name="command" value="Create" class="btn btn-primary btn-sm" />
+    if (ViewBag.IsDDAdd == null && User.CanEdit("T_TimeSlots"))
+    {
+	<input type="submit" name="command" value="Create & Continue" class="btn btn-primary btn-sm" />
+	}
+	 <input type="hidden" name="hdncommand" value="" />
+	<br/><br/>
+}
+	<script>
+	    $(function () {
+        var userAgent = navigator.userAgent.toLowerCase();
+        // Figure out what browser is being used
+        var browser = {
+            version: (userAgent.match(/.+(?:rv|it|ra|ie)[\/: ]([\d.]+)/) || [])[1],
+            safari: /webkit/.test(userAgent),
+            opera: /opera/.test(userAgent),
+            msie: /msie/.test(userAgent) && !/opera/.test(userAgent),
+            mozilla: /mozilla/.test(userAgent) && !/(compatible|webkit)/.test(userAgent)
+        };
+        if (!browser.msie) {
+            $('form').areYouSure();
+        }
+        else if (browser.version > 8.0) {
+            $('form').areYouSure();
+        }
+    });
+</script>
+	
+@{
+		var businessrule = User.businessrules.Where(p => p.EntityName == "T_TimeSlots").ToList();
+		
+if ((businessrule != null && businessrule.Count > 0) )
+    {
+        <script>
+            $("form").submit(function () {
+				document.getElementById("ErrMsg").innerHTML = "";
+                var flag = true;
+                var dataurl = "";
+                var form = "";
+                var inlinecount = "0";
+                
+              
+                //var form = $(this).serialize();
+ form = $("#frmT_TimeSlots").serialize();
+  
+                dataurl = "@Url.Action("businessruletype", "T_TimeSlots", new { ruleType = "OnCreate"})";
+                flag = ApplyBusinessRuleOnSubmit(dataurl, "T_TimeSlots", false, "ErrMsg", form);
+				//business rules on inline associations
+				if (flag) {
+						
+                    SaveServerTime(this, true);
+                    $('input:hidden[name="hdncommand"]').val($("input[type='submit']").val());
+                    $("form").find(':input').removeAttr('disabled');
+                }
+				return flag;
+			 });	
+            $(document).ready(function () {
+                $("input[type='submit']").on('blur', function () {
+                    $("input[type='submit']").removeAttr('disabled');
+                });
+            });
+        </script>
+    }
+    else
+    {
+	<script>
+            $("input[type='submit']").click(function (event) {
+                var $this = $(this);
+				 SaveServerTime(this);
+                $('input:hidden[name="hdncommand"]').val($this.val());
+            });
+	</script>
+           
+    }
+}
+
+
+<script type='text/javascript'>
+    $(document).ready(function () {
+        try {
+		 focusOnControl('frmT_TimeSlots');
+        }
+        catch (ex) { }
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        try {
+            var hostingEntityName = "";
+            if ('@Convert.ToString(ViewData["AssociatedType"])'.length > 0) {
+                hostingEntityName = '@Convert.ToString(ViewData["AssociatedType"])';
+                 $('#' + hostingEntityName + 'ID').attr("lock","true");
+				  $('#' + hostingEntityName + 'ID').trigger("change");
+            }
+			
+        }
+        catch (ex) { }
+		});
+</script>
+

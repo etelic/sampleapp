@@ -1,0 +1,23 @@
+﻿@model IEnumerable<GeneratorBase.MVC.Models.T_SessionClientAssociation>
+@{
+    ViewBag.Title = "SessionClientAssociation List";
+	Layout ="~/Views/Shared/_Layout.cshtml";
+	string templatename = ("~/Views/T_SessionClientAssociation/" + ViewBag.TemplatesName + ".cshtml").Replace("?IsAddPop=true", "");
+	 var EntityDisplayNameReflector = ModelReflector.Entities.FirstOrDefault(p => p.Name == "T_SessionClientAssociation");
+    var EntityDisplayName = EntityDisplayNameReflector != null ? EntityDisplayNameReflector.DisplayName : "SessionClientAssociation";
+}
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-title">
+            <i class="glyphicon glyphicon-thumbs-up text-primary" style="margin-bottom:-20px;"></i> @EntityDisplayName  <i class="glyphicon glyphicon-chevron-right small"></i>  <span>List</span>
+</h1>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        ClickFilterBtn();
+    });
+</script>
+<div id="dvT_SessionClientAssociationFilter"></div>
+@Html.Partial(templatename, Model)
+

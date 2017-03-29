@@ -19,6 +19,12 @@
     }
 }
 @{
+    if (!string.IsNullOrEmpty(ViewBag.FileDocumentIsGroupsHiddenRule))
+    {
+        @Html.Raw(ViewBag.FileDocumentIsGroupsHiddenRule);
+    }
+}
+@{
     if (!string.IsNullOrEmpty(ViewBag.FileDocumentIsSetValueUIRule))
     {
         @Html.Raw(ViewBag.FileDocumentIsSetValueUIRule);

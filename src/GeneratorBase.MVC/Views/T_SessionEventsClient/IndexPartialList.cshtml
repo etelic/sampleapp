@@ -1,0 +1,532 @@
+﻿@model PagedList.IPagedList<GeneratorBase.MVC.Models.T_SessionEventsClient>
+@using PagedList.Mvc;
+@{
+    var ActionNameUrl = "Index";
+    if (HttpContext.Current.Request.RequestContext.RouteData.Values["action"].ToString().ToUpper() == "FSEARCH")
+    {
+        ActionNameUrl = "FSearch";
+    }
+	var BackUrl =  Request.Url;
+	 if (ViewData["HostingEntity"] != null && (Request.QueryString["TabToken"] != null || Request.IsAjaxRequest()))
+	{
+		BackUrl =  Request.UrlReferrer;
+	}
+	var EntityReflector = ModelReflector.Entities.FirstOrDefault(p => p.Name == "T_SessionEventsClient");
+	}
+<div id="T_SessionEventsClient">
+<style>
+    .table-responsive > .fixed-column {
+        position: absolute;
+        display: block;
+        width: auto;
+        border: 0px solid transparent;
+        border-top: 1px solid #c3ddec;
+    }
+    .fixed-column th {
+        background: #fff;
+    }
+    .fixed-column td {
+        background: #fff;
+    }
+</style>
+<script type="text/javascript">
+    $(document).ready(function () {
+	 $(".pagination a").click(function (e) {
+            //PaginationClick(e,'T_SessionEventsClient')
+			PaginationClick(e, 'T_SessionEventsClient','@User.JavaScriptEncodedName')
+        })
+	    if("@HttpContext.Current.Request.RequestContext.RouteData.Values["action"].ToString().ToUpper()" == "FSEARCH")
+        {
+            $("#fsearchT_SessionEventsClient").addClass('in');
+			if('@ViewData["HostingEntity"]'.length>0)
+	        {
+                $("#" + "@ViewData["HostingEntity"]" + "_T_SessionEventsClient").hide();
+	        }
+			FSearchColumnsShowHideGalaryList('@ViewData["HideColumns"]', 'T_SessionEventsClient');
+        }
+	    $("#SearchStringT_SessionEventsClient").keypress(function (e) {
+			if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
+				 $("#T_SessionEventsClientSearch").bind("click", (function () {
+                        }));
+                $('#T_SessionEventsClientSearch').trigger("click");
+                return false;
+			}
+        })
+        $("#btnShowHideT_SessionEventsClient").mouseup(function () {
+            if (document.getElementById('ColumnShowHideT_SessionEventsClient').className == 'collapse') {
+				 $('#lblT_SessionEventsClient').css('display', 'none');
+            }
+        })
+    });
+</script>
+@functions {
+    object getSortHtmlAttributes(string sortby, bool IsPaging, int? page, bool? IsExport)
+    {
+        if (IsPaging)
+        {
+            return new
+            {
+                page,
+                sortBy = ViewBag.CurrentSort,
+                isAsc = ViewBag.IsAsc,
+                currentFilter = ViewBag.CurrentFilter,
+                HostingEntity = @Convert.ToString(ViewData["HostingEntity"]),
+                AssociatedType = @Convert.ToString(ViewData["AssociatedType"]),
+                HostingEntityID = ViewData["HostingEntityID"],
+				IsExport = IsExport,
+				FSFilter = ViewBag.FSFilter == null ? "Fsearch" : ViewBag.FSFilter,
+				IsFilter = @Convert.ToBoolean(ViewData["IsFilter"]),
+                
+ t_client = Request.QueryString["t_client"],
+ t_sessionevents = Request.QueryString["t_sessionevents"],
+				search=Request.QueryString["search"],
+		SortOrder = Request.QueryString["SortOrder"],
+		viewtype = ViewBag.TemplatesName,
+		HideColumns = ViewData["HideColumns"],
+		 GroupByColumn = ViewBag.GroupByColumn,
+		 FilterCondition = ViewBag.FilterCondition,
+            };
+        }
+        else
+        {
+            return new
+            {
+                sortBy = sortby,
+                currentFilter = Request.QueryString["currentFilter"],
+                searchString = Request.QueryString["searchString"],
+                isAsc = (ViewBag.IsAsc == "ASC" ? "DESC" : ""),
+                page = ViewBag.Pages,
+                HostingEntity = @Convert.ToString(ViewData["HostingEntity"]),
+                HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),
+                AssociatedType = @Convert.ToString(ViewData["AssociatedType"]),
+				IsExport = IsExport,
+				FSFilter = ViewBag.FSFilter == null ? "Fsearch" : ViewBag.FSFilter,
+				IsFilter = @Convert.ToBoolean(ViewData["IsFilter"]),
+ t_client = Request.QueryString["t_client"],
+ t_sessionevents = Request.QueryString["t_sessionevents"],
+		search=Request.QueryString["search"],
+		SortOrder = Request.QueryString["SortOrder"],
+		viewtype = ViewBag.TemplatesName,
+		HideColumns = ViewData["HideColumns"],
+		 GroupByColumn = ViewBag.GroupByColumn,
+		 FilterCondition = ViewBag.FilterCondition,
+            };
+        }
+    }
+}
+<div class="row">
+    <div class="col-md-12 col-sm-12 col-sx-12">
+        <div class="panel panel-default">
+            <div class="panel-heading clearfix" style="margin:0px; padding:8px;">
+                 <div class="btn-group" id='@ViewData["HostingEntity"]_T_SessionEventsClient'>
+
+				  @if (User.Identity.IsAuthenticated && User != null && User.CanAdd("T_SessionEventsClient"))
+				  {
+						
+				if (ViewData["HostingEntity"]!=null)
+				{ 
+					<button class="btn btn-default tip-top" data-placement="top" data-original-title="Quick Add" style="padding:3px 5px;" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Session EventsClient','dvPopup','" + Url.Action("CreateQuick", "T_SessionEventsClient", new { UrlReferrer = BackUrl, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), TS=DateTime.Now,viewtype = @Convert.ToString(ViewBag.TemplatesName) }) + "')")">
+						<span class="fam-add"></span>
+                    </button>
+				}
+				if (ViewData["HostingEntity"]!=null)
+				{ 
+					<button class="btn btn-default tip-top" type="button" data-original-title="Full Add" data-placement="top" style="padding:3px 5px;" onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Create", "T_SessionEventsClient", new { UrlReferrer = BackUrl, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),viewtype = @Convert.ToString(ViewBag.TemplatesName) }, null) + "');")>
+						<span class="fam-world-add"></span> Add
+					</button>
+				}
+			}
+			@if (ViewData["HostingEntity"] != null && User.CanEdit(ViewData["HostingEntity"].ToString()))
+			{
+				<button class="btn btn-default tip-top" data-placement="top" data-original-title="Associate Session EventsClient with @GeneratorBase.MVC.Models.ModelConversion.GetDisplayNameOfEntity(ViewData["HostingEntity"].ToString())" style="padding:3px 5px;" data-toggle="modal" data-target="#dvPopupBulkOperation" onclick="@Html.Raw("OpenPopUpEntity1M(this,'PopupBulkOperation','Session EventsClient','dvPopupBulkOperation','" + Url.Action("Index", "T_SessionEventsClient", new { BulkOperation = "multiple", BulkAssociate = true, UrlReferrer = BackUrl, AssociatedType = ViewData["AssociatedType"], HostingEntity = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), TS = DateTime.Now, viewtype = Convert.ToString(ViewBag.TemplatesName) }) + "')")">
+					<span class="fam-chart-organisation"></span>
+				</button>
+			}
+                </div>
+				<div class="btn-group">
+
+			@if (User.Identity.IsAuthenticated && User != null && User.CanAdd("T_SessionEventsClient"))
+			{
+				if (ViewData["HostingEntity"]==null)
+				{ 
+				 <button type="button" class="btn btn-default btn-default tip-top" data-original-title="Import Excel" data-placement="top" style="padding:3px 5px;" onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Upload", "T_SessionEventsClient") + "');")>
+                        <span class="fam-page-excel"></span>               
+                 </button>
+				}
+			}
+
+				 <div class="btn btn-default  btn-default tip-top" data-original-title="Export Excel" data-placement="top" style="padding:3px 5px;" onclick=@Html.Raw("NavigateToUrl('" + Url.Action(ActionNameUrl,"T_SessionEventsClient",getSortHtmlAttributes(null, false, null, true), null) + "');")>
+				    <span class="fam-page-white-put"></span>
+                </div>
+		 </div>
+		<div class="btn-group">
+                            <button class="btn btn-default tip-top" data-placement="top" data-original-title="Show Graph" style="padding:3px 5px;" data-toggle="modal" data-target="#ShowGraphT_SessionEventsClient" onclick=@Html.Raw("OpenDashBoard('dvShowGraphT_SessionEventsClient');")>
+                                <span class="fam-chart-bar"></span>
+                            </button>
+             <button type="button" class="btn btn-default btn-default collapse-data-btn tip-top" id="btnShowHideT_SessionEventsClient" data-original-title="Show/Hide Column" data-placement="top" style="padding:3px 5px;" onclick=@Html.Raw("showhideColumns(event,'T_SessionEventsClient');")>
+                        <span class="fam-table-row-delete"></span>
+                    </button>
+	@if (ViewData["HostingEntity"] == null || Convert.ToBoolean(ViewData["IsFilter"]) == true)
+	{
+		<div class="btn-group">
+		<a class="btn btn-default btn-default dropdown-toggle tip-top" data-original-title="Filter-Groupby" style="padding:3px 5px;" data-toggle="dropdown" href="#">
+		<span class="glyphicon glyphicon-filter"></span>
+		</a>
+		<ul class="dropdown-menu" role="menu">
+            <li>
+                <a id="fltT_Client" data-placement="top" onclick=@Html.Raw("EntityFilter('T_SessionEventsClient','" + Url.Action("GetAllValueForFilter", "T_Client") + "','" + Html.Raw(Url.Action("Index", "T_SessionEventsClient", new {FirstCall=true,FilterHostingEntityID = ViewData["HostingEntityID"], IsFilter = true, HostingEntity = "T_Client", AssociatedType = "T_Client", ClearSearchTimeStamp = DateTime.Now.Ticks.ToString(), viewtype = Convert.ToString(ViewBag.TemplatesName) })) + "','" + User.JavaScriptEncodedName + "');")>
+                    <span>Client</span>
+                </a>
+            </li>
+            <li>
+                <a id="fltT_SessionEvents" data-placement="top" onclick=@Html.Raw("EntityFilter('T_SessionEventsClient','" + Url.Action("GetAllValueForFilter", "T_SessionEvents") + "','" + Html.Raw(Url.Action("Index", "T_SessionEventsClient", new {FirstCall=true,FilterHostingEntityID = ViewData["HostingEntityID"], IsFilter = true, HostingEntity = "T_SessionEvents", AssociatedType = "T_SessionEvents", ClearSearchTimeStamp = DateTime.Now.Ticks.ToString(), viewtype = Convert.ToString(ViewBag.TemplatesName) })) + "','" + User.JavaScriptEncodedName + "');")>
+                    <span>Session Events</span>
+                </a>
+            </li>
+       <li><span class="label label-primary pull-left filterLabel" style="margin-left:20px;">@Html.ActionLink("Clear", "Index",new{ viewtype = Convert.ToString(ViewBag.TemplatesName)})</span></li>
+		</ul>
+		</div>
+	}
+                </div>
+ <div class="btn-group">
+    <a class="btn btn-default dropdown-toggle tip-top" data-original-title="Bulk Actions" style="padding:3px 5px;" data-toggle="dropdown" href="#">
+           <span class="fa fa-wrench"></span> Bulk
+        </a>
+        <ul class="dropdown-menu" role="menu">
+	<li>
+	@if (User.Identity.IsAuthenticated && User != null && User.CanEdit("T_SessionEventsClient") && User.CanUseVerb("BulkUpdate","T_SessionEventsClient",User))
+	{
+		<a data-placement="top" style="cursor:pointer;" data-toggle="modal" data-target="#dvPopup"
+			onclick="@Html.Raw("OpenPopUpBulKUpdate('addPopup','Bulk Update Session EventsClient','dvPopup','" + Url.Action("BulkUpdate", "T_SessionEventsClient", new { UrlReferrer = BackUrl, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), TS = DateTime.Now }) + "')")">Update</a>
+	}
+	</li>
+ <li>
+	 @if (User.Identity.IsAuthenticated && User != null && User.CanDelete("T_SessionEventsClient") && User.CanUseVerb("BulkDelete","T_SessionEventsClient",User))
+     {
+		<a style="cursor:pointer;" onclick="PerformBulkOperation(this,'T_SessionEventsClient','Bulk Delete','@Url.Action("DeleteBulk", "T_SessionEventsClient")');">Delete</a>
+	 } </li>
+                        </ul>
+                    </div>
+
+					  <div class="btn-group">
+                        <a class="btn btn-default dropdown-toggle tip-top" data-original-title="View Grid As" style="padding:3px 5px;" data-toggle="dropdown" >
+                            <span class="fa fa-th-list"></span>
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu" role="menu" style="min-width:110px">
+                            <li>
+                                <a data-placement="top" style="cursor:pointer;" 
+                                   onclick="@Html.Raw("LoadTabTemplate('T_SessionEventsClient','" + Url.Action("Index", "T_SessionEventsClient", new { UrlReferrer = BackUrl, AssociatedType = ViewData["AssociatedType"], HostingEntity = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), TS = DateTime.Now, viewtype = "IndexPartialGallery" }) + "')")">
+                                    <span class="fa fa-th"></span> Gallery
+                                </a>
+                            </li>
+                            <li>
+                                <a style="display:block; margin:0px;"
+                                   onclick="@Html.Raw("LoadTabTemplate('T_SessionEventsClient','" + Url.Action("Index", "T_SessionEventsClient", new { UrlReferrer = BackUrl, AssociatedType = ViewData["AssociatedType"], HostingEntity = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), TS = DateTime.Now, viewtype = "IndexPartial" }) + "')")">
+                                    <span class="fa fa-table"></span> Table
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+
+				<div class="pull-right" style="width:250px;">
+                        <div class="input-group">
+                            @Html.TextBox("SearchStringT_SessionEventsClient", ViewBag.CurrentFilter as string, null, new { @class = "form-control fixsearchbox", @value = ViewBag.Homeval, @placeholder = "Search" })
+                            <div class="input-group-btn">
+                              <a id="T_SessionEventsClientSearch" onclick="SearchClick(event, 'T_SessionEventsClient', '@Html.Raw(Url.Action("Index", "T_SessionEventsClient", new { IsFilter = ViewData["IsFilter"], IsDeepSearch = false, searchString = "_SearchString", HostingEntity = Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]),HideColumns = ViewData["HideColumns"], SearchTimeStamp = DateTime.Now.Ticks.ToString(), viewtype = Convert.ToString(ViewBag.TemplatesName) }))','@User.JavaScriptEncodedName');" data-original-title="Grid Search" class="btn btn-default btn-default tip-top" style="padding:3px 5px;"><span class="fam-zoom"></span></a>
+ @if (ViewData["HostingEntity"]==null)
+	{ 
+			 <a href="@(Url.Action("SetFSearch", "T_SessionEventsClient")+Request.Url.Query)" data-original-title="Faceted Search" class="btn btn-default btn-default tip-top" style="padding:3px 5px;"><span class="fam-page-find"></span></a>
+	}
+								<button id="T_SessionEventsClientCancel" type="button" class="btn btn-default btn-default collapse-data-btn tip-top" onclick="CancelSearch('T_SessionEventsClient','@Html.Raw(Url.Action("Index", "T_SessionEventsClient", new {IsFilter=ViewData["IsFilter"], HostingEntity = Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]),HideColumns = ViewData["HideColumns"], ClearSearchTimeStamp =DateTime.Now.Ticks.ToString(), viewtype = Convert.ToString(ViewBag.TemplatesName) }))','@User.JavaScriptEncodedName')" data-original-title="Clear Search" data-placement="top" style="padding:3px 5px;">
+                                    <span class="fam-delete"></span>
+                                </button>
+                                <button id="T_SessionEventsClientSearchCancel" type="button" class="btn btn-default btn-default collapse-data-btn tip-top" onclick="CancelSearch('T_SessionEventsClient','@Html.Raw(Url.Action("Index", "T_SessionEventsClient", new {IsFilter=ViewData["IsFilter"], HostingEntity = Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]),HideColumns = ViewData["HideColumns"], ClearSearchTimeStamp = DateTime.Now.Ticks.ToString(), viewtype = Convert.ToString(ViewBag.TemplatesName)}))','@User.JavaScriptEncodedName')" data-original-title="Refresh Grid" data-placement="top" style="padding:3px 5px;">
+                                    <span class="fam-arrow-refresh"></span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+            </div>
+            <div class="panel-body" style="margin:0px; padding:8px;">
+ @if (ViewData["HostingEntity"]==null)
+	{ 
+	if (ViewBag.SearchResult != "" )
+                            {
+			<div id="fsearchT_SessionEventsClient" class="collapse MessageFSearch">
+                        @Html.Raw(Html.Encode(ViewBag.SearchResult).Replace(Environment.NewLine, "<br/>"))
+						 <a href="@Url.Action("Index", "T_SessionEventsClient",new{ viewtype = Convert.ToString(ViewBag.TemplatesName)})" style="margin-left:5px;float:right"><span class="glyphicon glyphicon-remove-sign"></span> Clear</a>
+						  <a href="@(Url.Action("SetFSearch", "T_SessionEventsClient")+Request.Url.Query)" style="float:right" ><span class="glyphicon glyphicon-edit"></span> Modify</a>
+            </div>
+	}
+}
+					@Html.Partial("~/Views/T_SessionEventsClient/ShowHideColumns.cshtml") 
+                    @if (Model.Count > 0)
+                    {
+                        <div class="ViewMessage" style="margin-top: 0px;">
+                            <label><input type="checkbox" value="" class="tip-top" data-placement="top" data-original-title="Select All" onclick="CommonSelectAllRows(this, 'divTurantoList');"> Select All</label>
+                           
+                        </div>
+                    }
+			 <div id="divTurantoList">
+ @if (Model.Count > 0)
+        {
+		@Html.Hidden("SelectedItems")
+foreach (var item in Model) 
+{
+<div  class="col-sm-12 GenappList">
+<table>
+                <tr>
+                    <td>
+                        <input type="checkbox" id="@item.Id" onclick="CommonSelectForBulkOperation(this,'@item.Id', 'divTurantoList');" style="position:absolute; top:0px; left:4px; z-index:100; height:15px; width:15px;" />
+                    </td>
+                </tr>
+            </table>
+  
+   <div class='col-sm-12' style='margin:0px; margin-left:-10px; padding:0px; text-align:left'>
+	 <h4>@item.DisplayValue
+	 		<div class="dropdown pull-right" >
+			<button class="btn btn-default dropdown-toggle btn-xs" type="button" data-toggle="dropdown">
+                                                    Action
+                                                    <span class="caret"></span>
+                                                </button>
+                        <ul class="dropdown-menu">
+                            <li >
+                                <a href="@Url.Action("Details", "T_SessionEventsClient", new { id = item.Id, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"])  }, null)" style="display:block; margin:0px;"><i class="glyphicon glyphicon-eye-open"></i>  View</a>
+                            </li>
+							                            @if (User.CanEdit("T_SessionEventsClient"))
+                            {
+                                <li >
+
+                                    <a id='aBtnQuickEditT_SessionEventsClient_@item.Id' data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Edit Session EventsClient','dvPopup','" + Url.Action("EditQuick", "T_SessionEventsClient",
+															new {
+																				id = item.Id,
+																				UrlReferrer = Request.Url,
+																				AssociatedType = ViewData["AssociatedType"],
+																				HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]),
+																				HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),
+																				TS = DateTime.Now,viewtype = Convert.ToString(ViewBag.TemplatesName)
+																			}) + "')")"><i class="fa fa-pencil"></i> Quick Edit</a>
+
+                                </li>
+                            }
+                                                    
+				@if (User.CanEdit("T_SessionEventsClient"))
+                {
+				<li>
+                        <a href="@Url.Action("Edit","T_SessionEventsClient", new { id = item.Id,  UrlReferrer = BackUrl, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),viewtype = Convert.ToString(ViewBag.TemplatesName) },null)"><i class="glyphicon glyphicon-edit"></i>  Edit</a>
+                    
+                </li> 
+				}
+			@if (User.CanDeleteItem("T_SessionEventsClient", item, User))
+                 {
+				<li>
+                    <a href="@Url.Action("Delete", "T_SessionEventsClient", new { id = item.Id, UrlReferrer = BackUrl, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),viewtype = Convert.ToString(ViewBag.TemplatesName) }, null)"><i class="glyphicon glyphicon-remove-sign" style="color: #E7574B;"></i> Delete</a>
+                </li>
+				 }
+                        </ul>
+                    </div>
+	
+	 
+	 
+	 
+	 </h4>
+  				@if(User.CanView("T_SessionEventsClient","T_ClientID"))
+				{
+				var SortPropertyName = EntityReflector.Properties.FirstOrDefault(q => q.Name == "T_ClientID");
+				<div class="col2">
+				 <div class="col-sm-2 overflow GenappListFix" title='Client'  @(Convert.ToString(ViewData["HostingEntity"]) == "T_Client" && Convert.ToString(ViewData["AssociatedType"]) == "T_Client"?"hidden":"")>
+                                            <strong>
+                                               @Html.ActionLink(SortPropertyName.DisplayName+" :", ActionNameUrl, "T_SessionEventsClient", getSortHtmlAttributes("T_ClientID", false, null, false), new { @onclick = "SortLinkClick(event,'T_SessionEventsClient');", @Style = "text-decoration: none;color: inherit;" })
+				@if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "T_ClientID")
+				{<i class="fa fa-sort-desc"></i>}
+				@if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "T_ClientID")
+				{<i class="fa fa-sort-asc"></i>}
+                                            </strong>
+                                        </div>
+									
+                                       
+
+										@if (item.t_client != null  && !string.IsNullOrEmpty(item.t_client.DisplayValue))
+				{
+				 <div class="col-sm-2 overflow GenappListFix" title='@Html.DisplayFor(modelItem => item.t_client.DisplayValue).ToString()'>
+                  @Html.ActionLink(HttpUtility.HtmlDecode(Html.DisplayFor(modelItem => item.t_client.DisplayValue).ToString()), "Details", "T_Client", new { Id = Html.DisplayFor(modelItem => item.t_client.Id).ToString() },null)
+                </div>
+				}
+		 	</div>
+}
+				@if(User.CanView("T_SessionEventsClient","T_SessionEventsID"))
+				{
+				var SortPropertyName = EntityReflector.Properties.FirstOrDefault(q => q.Name == "T_SessionEventsID");
+				<div class="col3">
+				 <div class="col-sm-2 overflow GenappListFix" title='Session Events'  @(Convert.ToString(ViewData["HostingEntity"]) == "T_SessionEvents" && Convert.ToString(ViewData["AssociatedType"]) == "T_SessionEvents"?"hidden":"")>
+                                            <strong>
+                                               @Html.ActionLink(SortPropertyName.DisplayName+" :", ActionNameUrl, "T_SessionEventsClient", getSortHtmlAttributes("T_SessionEventsID", false, null, false), new { @onclick = "SortLinkClick(event,'T_SessionEventsClient');", @Style = "text-decoration: none;color: inherit;" })
+				@if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "T_SessionEventsID")
+				{<i class="fa fa-sort-desc"></i>}
+				@if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "T_SessionEventsID")
+				{<i class="fa fa-sort-asc"></i>}
+                                            </strong>
+                                        </div>
+									
+                                       
+
+										@if (item.t_sessionevents != null  && !string.IsNullOrEmpty(item.t_sessionevents.DisplayValue))
+				{
+				 <div class="col-sm-2 overflow GenappListFix" title='@Html.DisplayFor(modelItem => item.t_sessionevents.DisplayValue).ToString()'>
+                  @Html.ActionLink(HttpUtility.HtmlDecode(Html.DisplayFor(modelItem => item.t_sessionevents.DisplayValue).ToString()), "Details", "T_SessionEvents", new { Id = Html.DisplayFor(modelItem => item.t_sessionevents.Id).ToString() },null)
+                </div>
+				}
+		 	</div>
+}
+ </div>
+
+    <div class="col-sm-1 GenappListFix" style="display:none">
+      <div class="btn-group-vertical" style="left:-15px" >
+
+			
+                        <a title="View" href="@Url.Action("Details", "T_SessionEventsClient",
+                        new { id = item.Id, AssociatedType = ViewData["AssociatedType"],
+                            HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]),
+                            HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),viewtype = Convert.ToString(ViewBag.TemplatesName)  },
+                            null)"  class="btn btn-default" style="text-align: left">
+                            <span class="glyphicon glyphicon-eye-open icon-listbut"></span> View
+                           
+                        </a>
+@if (User.CanEdit("T_SessionEventsClient"))
+                                                        {
+                        <a title="Quick Edit"  class="btn btn-default" style="text-align: left" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Edit Session EventsClient','dvPopup','" + Url.Action("EditQuick", "T_SessionEventsClient", new
+																			{
+																				id = item.Id,
+																				UrlReferrer = Request.Url,
+																				AssociatedType = ViewData["AssociatedType"],
+																				HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]),
+																				HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),
+																				TS = DateTime.Now,viewtype = Convert.ToString(ViewBag.TemplatesName)
+																			}) + "')")" >
+                            <span class="fa fa-pencil icon-listbut"></span> Quick Edit
+                        </a>
+}
+@if (User.CanEdit("T_SessionEventsClient"))
+                                                        {
+                        <a title="Full Edit" href="@Url.Action("Edit","T_SessionEventsClient",
+                        new { id = item.Id,  UrlReferrer = BackUrl,
+                            AssociatedType=ViewData["AssociatedType"],
+                            HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]),
+                            HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),viewtype = Convert.ToString(ViewBag.TemplatesName) },
+                            null)"  class="btn btn-default" style="text-align: left">
+                            <span class="glyphicon glyphicon-edit icon-listbut"></span> Edit
+                            
+                        </a>
+}
+ <a href="" class="btn btn-default" style="text-align:left;" ><span class="fa fa-chevron-circle-down"></span> more</a>
+					</div>
+</div>
+
+
+  </div>
+							  <div style="clear:both"></div>
+						   //model loop end    
+                            }
+					}
+					else
+								{
+								  <div class="ViewMessage"> <i class="fa fa-info-circle"></i> No Record Available!</div>
+					}
+               </div>       
+               
+  			   @if (Model.Count > 0)
+                {
+                    <div id="pagination">
+                        @Html.PagedListPager(Model, page => Url.Action(ActionNameUrl, "T_SessionEventsClient", getSortHtmlAttributes(null, true, page, false)))
+                        <div class="fixPageSize">
+                            Page Size :
+                            @Html.DropDownList("PageSize", new SelectList(new Dictionary<string, int> { { "10", 10 }, { "20", 20 }, { "50", 50 }, { "100", 100 } }, "Key", "Value")
+							, new { @id = "pagesizelistT_SessionEventsClient",
+							 @onchange = @Html.Raw("pagesizelistChange(event,'T_SessionEventsClient','"
+							  + @User.JavaScriptEncodedName + "')"),
+							 @Url = Html.Raw(@Url.Action(ActionNameUrl, "T_SessionEventsClient",
+							 getSortHtmlAttributes(ViewBag.CurrentSort, ViewBag.Pages == 1 ? false : true,
+							 null, false), null)) })
+							<span style="text-align:right;"> Total Count: @(Model.TotalItemCount)</span>
+                        </div>
+                    </div>
+                }
+				</div>
+            </div>
+        </div>
+    
+    <div class="modal fade" id="ShowGraphT_SessionEventsClient" tabindex="-1" role="dialog" aria-labelledby="ShowGraphT_SessionEventsClientLabel" aria-hidden="true">
+        <div class="modal-dialog" style="width:80%">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="ShowGraphT_SessionEventsClientLabel">Dashboard Session EventsClient</h4>
+                </div>
+				 <div  class="modal-body" >
+						<div id="dvShowGraphT_SessionEventsClient" data-url="@Url.Action("ShowGraph", "T_SessionEventsClient" , new { type = "all" })">
+						</div>
+						<div style="clear:both"></div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+
+    $(document).ready(function () {
+
+        loadGallery(true, 'a.thumbnail');
+
+        //This function disables buttons when needed
+        function disableButtons(counter_max, counter_current) {
+            $('#show-previous-image, #show-next-image').show();
+            if (counter_max == counter_current) {
+                $('#show-next-image').hide();
+            } else if (counter_current == 1) {
+                $('#show-previous-image').hide();
+            }
+        }
+
+
+
+        function loadGallery(setIDs, setClickAttr) {
+            var current_image,
+                selector,
+                counter = 0;
+
+            $('#show-next-image, #show-previous-image').click(function () {
+                if ($(this).attr('id') == 'show-previous-image') {
+                    current_image--;
+                } else {
+                    current_image++;
+                }
+
+                selector = $('[data-image-id="' + current_image + '"]');
+                updateGallery(selector);
+            });
+
+            function updateGallery(selector) {
+                var $sel = selector;
+                current_image = $sel.data('image-id');
+                $('#image-gallery-caption').text($sel.data('caption'));
+                $('#image-gallery-title').text($sel.data('title'));
+                $('#image-gallery-image').attr('src', $sel.data('image'));
+                disableButtons(counter, $sel.data('image-id'));
+            }
+
+            if (setIDs == true) {
+                $('[data-image-id]').each(function () {
+                    counter++;
+                    $(this).attr('data-image-id', counter);
+                });
+            }
+            $(setClickAttr).on('click', function () {
+                updateGallery($(this));
+            });
+        }
+    });
+
+</script>
+

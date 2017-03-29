@@ -1,22 +1,14 @@
 ﻿@model GeneratorBase.MVC.Models.FileDocument
-<script>
-    $(document).ready(function () {
-        try {
-            var hostingEntityName = "";
-            if ('@Convert.ToString(ViewData["AssociatedType"])' != null) {
-                hostingEntityName = '@Convert.ToString(ViewData["AssociatedType"])';
-                 $('#' + hostingEntityName + 'ID').attr("lock","true");
-				  $('#' + hostingEntityName + 'ID').trigger("change");
-            }
-			
-        }
-        catch (ex) { }
-		});
-</script>
 @{
     if (!string.IsNullOrEmpty(ViewBag.FileDocumentIsHiddenRule))
     {
         @Html.Raw(ViewBag.FileDocumentIsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.FileDocumentIsGroupsHiddenRule))
+    {
+        @Html.Raw(ViewBag.FileDocumentIsGroupsHiddenRule);
     }
 }
 @{
@@ -245,5 +237,19 @@ if ((businessrule != null && businessrule.Count > 0) )
         }
         catch (ex) { }
     });
+</script>
+<script>
+    $(document).ready(function () {
+        try {
+            var hostingEntityName = "";
+            if ('@Convert.ToString(ViewData["AssociatedType"])'.length > 0) {
+                hostingEntityName = '@Convert.ToString(ViewData["AssociatedType"])';
+                 $('#' + hostingEntityName + 'ID').attr("lock","true");
+				  $('#' + hostingEntityName + 'ID').trigger("change");
+            }
+			
+        }
+        catch (ex) { }
+		});
 </script>
 

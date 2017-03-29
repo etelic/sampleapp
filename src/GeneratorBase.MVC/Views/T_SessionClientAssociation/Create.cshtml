@@ -1,0 +1,19 @@
+﻿@model GeneratorBase.MVC.Models.T_SessionClientAssociation
+@{
+    ViewBag.Title = "Create SessionClientAssociation";
+}
+<div class="row">
+    <div class="col-lg-12">
+		<h1 class="page-title">
+            <i class="glyphicon glyphicon-save text-primary"></i> SessionClientAssociation  <i class="glyphicon glyphicon-chevron-right small"></i> <span> Full Associate <i class="glyphicon glyphicon-chevron-right small"></i>
+			 @if (ViewBag.DisplayVal != null)
+                {
+                    @ViewBag.DisplayVal;
+                }
+			</span>
+        </h1>
+        <h2 class="text-primary">@Html.DisplayFor(model => model.DisplayValue)</h2>
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+@Html.Partial("~/Views/T_SessionClientAssociation/CreatePartial.cshtml", Model)

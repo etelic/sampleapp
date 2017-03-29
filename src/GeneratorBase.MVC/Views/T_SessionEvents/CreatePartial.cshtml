@@ -1,0 +1,338 @@
+﻿@model GeneratorBase.MVC.Models.T_SessionEvents
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_SessionEventsIsHiddenRule))
+    {
+        @Html.Raw(ViewBag.T_SessionEventsIsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_SessionEventsIsGroupsHiddenRule))
+    {
+        @Html.Raw(ViewBag.T_SessionEventsIsGroupsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_SessionEventsIsSetValueUIRule))
+    {
+        @Html.Raw(ViewBag.T_SessionEventsIsSetValueUIRule);
+    }
+}
+@using (Html.BeginForm("Create", "T_SessionEvents",new {UrlReferrer = Convert.ToString(ViewData["T_SessionEventsParentUrl"]), IsDDAdd = ViewBag.IsDDAdd }, FormMethod.Post, new { enctype = "multipart/form-data",id="frmT_SessionEvents" }))
+{
+   @Html.AntiForgeryToken();
+    Html.ValidationSummary(true);
+    Html.EnableClientValidation();
+	<input type="hidden" id="ErrMsg" />
+	@*<label id="ErrMsg" class="text-primary small pull-right" style="color:red; vertical-align:middle; font-weight:100;"></label>*@
+    <div id="errorContainer" style="display: none">
+        <div id="errorsMsg"></div>
+        <div id="errors"></div>
+    </div>
+	 <h2>
+	<div class="pull-right" style="margin-top:-10px;margin-bottom:10px">
+	 @Html.ActionLink("Cancel", "Cancel", new { UrlReferrer = ViewData["T_SessionEventsParentUrl"] }, new { @onclick = "", @class="btn btn-default btn-xs" })
+	<input type="submit" name="command" value="Create" class="btn btn-primary btn-xs" />
+    @if (ViewBag.IsDDAdd == null && User.CanEdit("T_SessionEvents"))
+    {
+	<input type="submit" name="command" value="Create & Continue" class="btn btn-primary btn-xs" />
+	}
+	</div>
+	 </h2>
+	 <div id="divDisplayThresholdLimit" style="display:none;">
+	</div>
+	 <div id="divDisplayBRmsgMandatory" style="display:none;">
+	</div>
+	<div id="divDisplayBRmsgBeforeSaveProp" style="display:none;">
+	</div>
+	<div id="divDisplayCodeFragment" style="display:none;">
+	</div>
+
+	<div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="panel panel-default AppForm">
+                <div class="panel-body">
+               					<div class="row">
+				       
+			     <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_Title">
+                                <div class='form-group' title="">
+                                   <label class="col-sm-5 col-md-5 col-xs-12" >@Html.LabelFor(model => model.T_Title) <span class="text-danger-reg">*</span></label>
+									<div class="input-group col-sm-7 col-md-7 col-xs-12">
+									
+                                    @Html.TextBoxFor(model => model.T_Title, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.T_Title)
+									</div>
+                                </div>
+					</div>
+
+					
+ 		  <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_EventDate">
+                                <label class="col-sm-5 col-md-5 col-xs-12" >@Html.LabelFor(model => model.T_EventDate) </label>
+                                <div class="form-group" title="">
+								<div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                    <div class="input-group date" id="datetimepickerT_EventDate">
+                                        @Html.TextBoxFor(model => model.T_EventDate, new {@class = "form-control"   })
+                                        
+										<span class="input-group-addon btn-default calendar">
+                                           <i class="fa fa-calendar"></i>
+                                        </span>
+                                    </div>
+                                    @Html.ValidationMessageFor(model => model.T_EventDate)
+
+								</div>
+                                </div>
+	
+                                <script type="text/javascript">
+                                    $(function () {
+										$('#T_EventDate').datetimepicker({ pickTime:false });
+                                        $('#datetimepickerT_EventDate').datetimepicker({ pickTime:false });
+                                    });
+                                </script>
+                            </div>
+		  
+                          
+			      <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_SessionEventsLearningCenterID">
+                        <div class='form-group'>
+                            <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.T_SessionEventsLearningCenterID) </label>
+							<div class="input-group col-sm-7 col-md-7 col-xs-12">
+                            <div class="input-group" style="width:100%;">
+									@Html.DropDownList("T_SessionEventsLearningCenterID", null, "-- Select --", new {       @class = "chosen-select form-control", @HostingName = "T_LearningCenter", @dataurl = Url.Action("GetAllValue", "T_LearningCenter",new { caller = "T_SessionEventsLearningCenterID" }) })
+			@Html.ValidationMessageFor(model => model.T_SessionEventsLearningCenterID)
+			@if (User.Identity.IsAuthenticated && User != null && User.CanAdd("T_LearningCenter"))
+				{
+			<div class="input-group-btn">
+				<a class="btn btn-default btn ie8fix"  data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Learning Center','dvPopup','" + Url.Action("CreateQuick", "T_LearningCenter", new { UrlReferrer = Request.Url, HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), IsAddPop=true }) + "')")">
+					<span class="glyphicon glyphicon-plus-sign"></span>
+				</a>
+			</div>
+			}
+		                                
+                            </div>
+							</div>
+                        </div>
+                    </div>
+
+				
+ 		  <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_StartTime">
+                                <label class="col-sm-5 col-md-5 col-xs-12" >@Html.LabelFor(model => model.T_StartTime) </label>
+                                <div class="form-group" title="">
+								<div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                    <div class="input-group date" id="datetimepickerT_StartTime">
+                                        @Html.TextBoxFor(model => model.T_StartTime, new {@class = "form-control"  ,@format = "hh:mm" })
+                                        
+										<span class="input-group-addon btn-default calendar">
+                                           <i class="fa fa-calendar"></i>
+                                        </span>
+                                    </div>
+                                    @Html.ValidationMessageFor(model => model.T_StartTime)
+
+								</div>
+                                </div>
+	
+                                <script type="text/javascript">
+                                    $(function () {
+										$('#T_StartTime').datetimepicker({ pickDate:false, minuteStepping: 15 });
+                                        $('#datetimepickerT_StartTime').datetimepicker({ pickDate:false, minuteStepping: 15 });
+                                    });
+                                </script>
+                            </div>
+		  
+                          
+ 		  <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_EndTime">
+                                <label class="col-sm-5 col-md-5 col-xs-12" >@Html.LabelFor(model => model.T_EndTime) </label>
+                                <div class="form-group" title="">
+								<div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                    <div class="input-group date" id="datetimepickerT_EndTime">
+                                        @Html.TextBoxFor(model => model.T_EndTime, new {@class = "form-control"  ,@format = "hh:mm" })
+                                        
+										<span class="input-group-addon btn-default calendar">
+                                           <i class="fa fa-calendar"></i>
+                                        </span>
+                                    </div>
+                                    @Html.ValidationMessageFor(model => model.T_EndTime)
+
+								</div>
+                                </div>
+	
+                                <script type="text/javascript">
+                                    $(function () {
+										$('#T_EndTime').datetimepicker({ pickDate:false, minuteStepping: 15 });
+                                        $('#datetimepickerT_EndTime').datetimepicker({ pickDate:false, minuteStepping: 15 });
+                                    });
+                                </script>
+                            </div>
+		  
+                          
+         <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_IsCancelled">
+							<div class="form-group" title="">
+                                <label class="col-sm-5 col-md-5 col-xs-12" >
+                                    @Html.LabelFor(model => model.T_IsCancelled) 
+                                </label>
+								<div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                    
+									@Html.CheckBox("T_IsCancelled", false)
+                                    @Html.ValidationMessageFor(model => model.T_IsCancelled)		
+								</div>
+                                </div>
+                            </div>                            
+
+
+						<div class='col-sm-6 col-md-6 col-xs-12' id="dvT_Description">
+                                <div class='form-group' title="">
+                                   <label class="col-sm-5 col-md-5 col-xs-12" >@Html.LabelFor(model => model.T_Description) </label>
+									<div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                    @Html.TextAreaFor(model => model.T_Description, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.T_Description)
+									</div>
+                                </div>
+								
+						</div>
+			      <div class='col-sm-6 col-md-6 col-xs-12' id="dvScheduleID">
+                        <div class='form-group'>
+                            <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.ScheduleID) </label>
+							<div class="input-group col-sm-7 col-md-7 col-xs-12">
+                            <div class="input-group" style="width:100%;">
+									@Html.DropDownList("ScheduleID", null, "-- Select --", new {       @class = "chosen-select form-control", @HostingName = "T_Schedule", @dataurl = Url.Action("GetAllValue", "T_Schedule",new { caller = "ScheduleID" }) })
+			@Html.ValidationMessageFor(model => model.ScheduleID)
+			@if (User.Identity.IsAuthenticated && User != null && User.CanAdd("T_Schedule"))
+				{
+			<div class="input-group-btn">
+				<a class="btn btn-default btn ie8fix"  data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Schedule','dvPopup','" + Url.Action("CreateQuick", "T_Schedule", new { UrlReferrer = Request.Url, HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), IsAddPop=true }) + "')")">
+					<span class="glyphicon glyphicon-plus-sign"></span>
+				</a>
+			</div>
+			}
+		                                
+                            </div>
+							</div>
+                        </div>
+                    </div>
+
+				
+			      <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_SessionEventsTimeSlotsID">
+                        <div class='form-group'>
+                            <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.T_SessionEventsTimeSlotsID) </label>
+							<div class="input-group col-sm-7 col-md-7 col-xs-12">
+                            <div class="input-group" style="width:100%;">
+									@Html.DropDownList("T_SessionEventsTimeSlotsID", null, "-- Select --", new {      @onchange="FillFromTimeSlot(this);", @class = "chosen-select form-control", @HostingName = "T_TimeSlots", @dataurl = Url.Action("GetAllValue", "T_TimeSlots",new { caller = "T_SessionEventsTimeSlotsID" }) })
+			@Html.ValidationMessageFor(model => model.T_SessionEventsTimeSlotsID)
+			@if (User.Identity.IsAuthenticated && User != null && User.CanAdd("T_TimeSlots"))
+				{
+			<div class="input-group-btn">
+				<a class="btn btn-default btn ie8fix"  data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Time Slot','dvPopup','" + Url.Action("CreateQuick", "T_TimeSlots", new { UrlReferrer = Request.Url, HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), IsAddPop=true }) + "')")">
+					<span class="glyphicon glyphicon-plus-sign"></span>
+				</a>
+			</div>
+			}
+		                                
+                            </div>
+							</div>
+                        </div>
+                    </div>
+
+				
+       </div>
+                        </div>
+                    </div>
+                </div>
+        </div>
+          @Html.ActionLink("Cancel", "Cancel", new { UrlReferrer = ViewData["T_SessionEventsParentUrl"] }, new { @onclick = "", @class = "btn btn-default btn-sm" })
+	<input type="submit" name="command" value="Create" class="btn btn-primary btn-sm" />
+    if (ViewBag.IsDDAdd == null && User.CanEdit("T_SessionEvents"))
+    {
+	<input type="submit" name="command" value="Create & Continue" class="btn btn-primary btn-sm" />
+	}
+	 <input type="hidden" name="hdncommand" value="" />
+	<br/><br/>
+}
+	<script>
+	    $(function () {
+        var userAgent = navigator.userAgent.toLowerCase();
+        // Figure out what browser is being used
+        var browser = {
+            version: (userAgent.match(/.+(?:rv|it|ra|ie)[\/: ]([\d.]+)/) || [])[1],
+            safari: /webkit/.test(userAgent),
+            opera: /opera/.test(userAgent),
+            msie: /msie/.test(userAgent) && !/opera/.test(userAgent),
+            mozilla: /mozilla/.test(userAgent) && !/(compatible|webkit)/.test(userAgent)
+        };
+        if (!browser.msie) {
+            $('form').areYouSure();
+        }
+        else if (browser.version > 8.0) {
+            $('form').areYouSure();
+        }
+    });
+</script>
+	
+@{
+		var businessrule = User.businessrules.Where(p => p.EntityName == "T_SessionEvents").ToList();
+		
+if ((businessrule != null && businessrule.Count > 0) )
+    {
+        <script>
+            $("form").submit(function () {
+				document.getElementById("ErrMsg").innerHTML = "";
+                var flag = true;
+                var dataurl = "";
+                var form = "";
+                var inlinecount = "0";
+                
+              
+                //var form = $(this).serialize();
+ form = $("#frmT_SessionEvents").serialize();
+  
+                dataurl = "@Url.Action("businessruletype", "T_SessionEvents", new { ruleType = "OnCreate"})";
+                flag = ApplyBusinessRuleOnSubmit(dataurl, "T_SessionEvents", false, "ErrMsg", form);
+				//business rules on inline associations
+				if (flag) {
+						
+                    SaveServerTime(this, true);
+                    $('input:hidden[name="hdncommand"]').val($("input[type='submit']").val());
+                    $("form").find(':input').removeAttr('disabled');
+                }
+				return flag;
+			 });	
+            $(document).ready(function () {
+                $("input[type='submit']").on('blur', function () {
+                    $("input[type='submit']").removeAttr('disabled');
+                });
+            });
+        </script>
+    }
+    else
+    {
+	<script>
+            $("input[type='submit']").click(function (event) {
+                var $this = $(this);
+				 SaveServerTime(this);
+                $('input:hidden[name="hdncommand"]').val($this.val());
+            });
+	</script>
+           
+    }
+}
+
+
+<script type='text/javascript'>
+    $(document).ready(function () {
+        try {
+		 focusOnControl('frmT_SessionEvents');
+        }
+        catch (ex) { }
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        try {
+            var hostingEntityName = "";
+            if ('@Convert.ToString(ViewData["AssociatedType"])'.length > 0) {
+                hostingEntityName = '@Convert.ToString(ViewData["AssociatedType"])';
+                 $('#' + hostingEntityName + 'ID').attr("lock","true");
+				  $('#' + hostingEntityName + 'ID').trigger("change");
+            }
+			
+        }
+        catch (ex) { }
+		});
+</script>
+

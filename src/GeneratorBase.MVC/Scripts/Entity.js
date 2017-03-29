@@ -8,6 +8,23 @@ function OpenNotes(url, fieldName, ctrl, ev) {
         OpenPopUpEntity('addPopup', 'Feedback', 'dvPopup', Url);
     }
 }
+function FillFromTimeSlot(obj,e)
+{
+        var object = $(obj);
+        var value = object.find('option:selected').text();
+        var vals = value.split("-")
+        $("[valuetype='T_StartTime']").val(vals[0]);
+        $("[valuetype='T_EndTime']").val(vals[1]);
+
+        $("[valuetype='T_StartTime']").data("DateTimePicker").date(vals[0]);
+        $("[valuetype='T_EndTime']").data("DateTimePicker").date(vals[1]);
+
+        $("[valuetype='T_StartTime']").attr("readonly", "readonly");
+        $("[valuetype='T_EndTime']").attr("readonly", "readonly");
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+    }
 function pagesizelistChange(e, EntityName, UserName,IsReports,fromview,rptId) {
     //remove pagination cookies 
     if ($.cookie("pagination" + UserName + EntityName) != null)
@@ -979,7 +996,8 @@ function focusOnControl(formId) {
         if ($(this).attr("id") == undefined)
             return
         var dvhidden = $("#dv" + $(this).attr("id"));
-        if (!(dvhidden.css('display') == 'none')) {
+        var dvDate = $("#datetimepicker" + $(this).attr("id")).attr("id");
+        if (!(dvhidden.css('display') == 'none') && dvDate == undefined) {
             cltId = $(this);
             return false;
         }

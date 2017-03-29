@@ -1,0 +1,23 @@
+﻿@model IEnumerable<GeneratorBase.MVC.Models.T_Client>
+@{
+    ViewBag.Title = "Client List";
+	Layout ="~/Views/Shared/_Layout.cshtml";
+	string templatename = ("~/Views/T_Client/" + ViewBag.TemplatesName + ".cshtml").Replace("?IsAddPop=true", "");
+	 var EntityDisplayNameReflector = ModelReflector.Entities.FirstOrDefault(p => p.Name == "T_Client");
+    var EntityDisplayName = EntityDisplayNameReflector != null ? EntityDisplayNameReflector.DisplayName : "Client";
+}
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-title">
+            <i class="glyphicon glyphicon-thumbs-up text-primary" style="margin-bottom:-20px;"></i> @EntityDisplayName  <i class="glyphicon glyphicon-chevron-right small"></i>  <span>List</span>
+</h1>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        ClickFilterBtn();
+    });
+</script>
+<div id="dvT_ClientFilter"></div>
+@Html.Partial(templatename, Model)
+
