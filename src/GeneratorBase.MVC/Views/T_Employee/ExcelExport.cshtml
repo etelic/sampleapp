@@ -1,0 +1,127 @@
+﻿@model PagedList.IPagedList<GeneratorBase.MVC.Models.T_Employee>
+@using PagedList.Mvc;
+@{
+    ViewBag.Title = "Index";
+    Layout = null;
+    Response.ContentType = "application/vnd.ms-excel";
+    Response.AddHeader("Content-Disposition", "attachment; filename=Employee.xls");
+}
+                    <table>
+                            <tr>
+@if(User.CanView("T_Employee","T_Title"))
+{
+		<th>Title</th>
+}
+@if(User.CanView("T_Employee","T_FirstName"))
+{
+		<th>First Name</th>
+}
+@if(User.CanView("T_Employee","T_MiddleName"))
+{
+		<th>Middle Name</th>
+}
+@if(User.CanView("T_Employee","T_LastName"))
+{
+		<th>Last Name</th>
+}
+@if(User.CanView("T_Employee","T_Email"))
+{
+		<th>Email</th>
+}
+@if(User.CanView("T_Employee","T_PhoneNo"))
+{
+		<th>Phone No</th>
+}
+@if(User.CanView("T_Employee","T_IdentificationNo"))
+{
+		<th>Identification No</th>
+}
+@if(User.CanView("T_Employee","T_AssociatedEmployeeTypeID"))
+{
+		<th  @(Convert.ToString(ViewData["HostingEntity"]) == "T_Employeetype"?"hidden":"")>Employee Type</th>
+}
+@if(User.CanView("T_Employee","T_AssociatedEmployeeStatusID"))
+{
+		<th  @(Convert.ToString(ViewData["HostingEntity"]) == "T_Employeestatus"?"hidden":"")>Employee Status</th>
+}
+@if(User.CanView("T_Employee","T_EmployeeUserLoginID"))
+{
+		<th  @(Convert.ToString(ViewData["HostingEntity"]) == "User"?"hidden":"")>Employee User Login</th>
+}
+@if(User.CanView("T_Employee","T_EmployeeAddressID"))
+{
+		<th  @(Convert.ToString(ViewData["HostingEntity"]) == "T_Address"?"hidden":"")>Employee Address</th>
+}
+    </tr>
+@foreach (var item in Model) {
+    <tr>
+	@if(User.CanView("T_Employee","T_Title"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.T_Title)
+        </td>
+}
+@if(User.CanView("T_Employee","T_FirstName"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.T_FirstName)
+        </td>
+}
+@if(User.CanView("T_Employee","T_MiddleName"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.T_MiddleName)
+        </td>
+}
+@if(User.CanView("T_Employee","T_LastName"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.T_LastName)
+        </td>
+}
+@if(User.CanView("T_Employee","T_Email"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.T_Email)
+        </td>
+}
+@if(User.CanView("T_Employee","T_PhoneNo"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.T_PhoneNo)
+        </td>
+}
+@if(User.CanView("T_Employee","T_IdentificationNo"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.T_IdentificationNo)
+        </td>
+}
+@if(User.CanView("T_Employee","T_AssociatedEmployeeTypeID"))
+{
+		<td @(Convert.ToString(ViewData["HostingEntity"]) == "T_Employeetype"?"hidden":"")>
+            @Html.DisplayFor(modelItem => item.t_associatedemployeetype.DisplayValue)
+        </td>
+}
+@if(User.CanView("T_Employee","T_AssociatedEmployeeStatusID"))
+{
+		<td @(Convert.ToString(ViewData["HostingEntity"]) == "T_Employeestatus"?"hidden":"")>
+            @Html.DisplayFor(modelItem => item.t_associatedemployeestatus.DisplayValue)
+        </td>
+}
+@if(User.CanView("T_Employee","T_EmployeeUserLoginID"))
+{
+		<td @(Convert.ToString(ViewData["HostingEntity"]) == "User"?"hidden":"")>
+            @Html.DisplayFor(modelItem => item.t_employeeuserlogin.UserName)
+        </td>
+}
+@if(User.CanView("T_Employee","T_EmployeeAddressID"))
+{
+		<td @(Convert.ToString(ViewData["HostingEntity"]) == "T_Address"?"hidden":"")>
+            @Html.DisplayFor(modelItem => item.t_employeeaddress.DisplayValue)
+        </td>
+}
+                                </tr>
+                            }
+</table>
+               

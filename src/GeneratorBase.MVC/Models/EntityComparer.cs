@@ -147,14 +147,13 @@ namespace GeneratorBase.MVC.Models
             foreach (PropertyInfo pi in properties)
             {
                 // if (pi.GetCustomAttributes(typeof(System.ComponentModel.DataAnnotations.Schema.NotMappedAttribute), true).Count() > 0) continue;
-                if (pi.Name == "Id" || pi.Name == "ConcurrencyKey" || pi.Name == "DisplayValue" || pi.Name == "m_OffSet" || (obj1.GetType()).GetProperty(pi.Name).PropertyType.Name == "ICollection`1") continue;
+                if (pi.Name == "Id" || pi.Name == "ConcurrencyKey" || pi.Name == "DisplayValue" || (obj1.GetType()).GetProperty(pi.Name).PropertyType.Name == "ICollection`1") continue;
                 if (pi.Name == "WFeMailNotification" || pi.Name.EndsWith("WorkFlowInstanceId")) continue;
                 if (excludeProps != null && excludeProps.Contains(pi.Name)) continue;
                 var DisplayName = pi.Name;
                 var prefix = "";
                 object value1 = (obj1.GetType()).GetProperty(pi.Name).GetValue(obj1, null);
-                var entity = ModelReflector.Entities.Where(p => p.Name == EntityName).ToList()[0];
-                var assolist = entity.Associations.Where(p => p.AssociationProperty == pi.Name).ToList();
+                var assolist = ModelReflector.Entities.Where(p => p.Name == EntityName).ToList()[0].Associations.Where(p => p.AssociationProperty == pi.Name).ToList();
                 if (assolist.Count() > 0)
                 {
                     if (assolist[0].Target == "IdentityUser")
@@ -177,15 +176,12 @@ namespace GeneratorBase.MVC.Models
                 }
                 else
                 {
-                    var proplist = entity.Properties;
-                    var prop = proplist.FirstOrDefault(p => p.Name == DisplayName);
-                    if (prop != null)
-                    {
-                        if (prop.DataTypeAttribute == "Currency")
-                            prefix = "$";
-                        if (prop.DataTypeAttribute == "Date")
-                            value1 = value1 != null ? ((DateTime)value1).ToShortDateString() : value1;
-                    }
+                    var prop = ModelReflector.Entities.Where(p => p.Name == EntityName).ToList()[0].Properties.FirstOrDefault(p => p.Name == DisplayName);
+                    if (prop.DataTypeAttribute == "Currency")
+                        prefix = "$";
+                    if (prop.DataTypeAttribute == "Date")
+                        value1 = value1 != null ? ((DateTime)value1).ToShortDateString() : value1;
+
                     DisplayName = (prop == null ? DisplayName : prop.DisplayName);
                 }
 

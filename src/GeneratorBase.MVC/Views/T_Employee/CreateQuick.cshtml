@@ -1,0 +1,346 @@
+﻿@model GeneratorBase.MVC.Models.T_Employee
+@{
+    ViewBag.Title = "Create Employee";
+    Layout = null;
+}
+<script>
+    $(document).ready(function () {
+        try {
+            var hostingEntityName = "";
+            if ('@Convert.ToString(ViewData["AssociatedType"])' != null) {
+                hostingEntityName = '@Convert.ToString(ViewData["AssociatedType"])';
+                 $('#' + hostingEntityName + 'ID').attr("lock","true");
+				  $('#' + hostingEntityName + 'ID').trigger("change");
+            }
+			
+        }
+        catch (ex) { }
+		
+		 
+    });
+</script>
+
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_EmployeeIsHiddenRule))
+    {
+        @Html.Raw(ViewBag.T_EmployeeIsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_EmployeeIsSetValueUIRule))
+    {
+        @Html.Raw(ViewBag.T_EmployeeIsSetValueUIRule);
+    }
+}
+<link href="~/Content/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+<link href="@Url.Content("~/Content/chosen.css")" rel="stylesheet" type="text/css" />
+@using (Html.BeginForm("CreateQuick", "T_Employee",FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken();
+    Html.ValidationSummary(true);
+    Html.EnableClientValidation();
+	<input type="hidden" id="ErrMsgQuickAdd" />
+	@*<label id="ErrMsgQuickAdd" class="text-primary small pull-right" style="color:red; vertical-align:middle; font-weight:100;"></label>*@
+    <div id="errorContainerQuickAdd" style="display: none">
+        <div id="errorsMsgQuickAdd"></div>
+        <div id="errorsQuickAdd"></div>
+    </div>
+	<div id="divDisplayThresholdLimit" style="display:none;">
+	</div>
+	 <div id="divDisplayBRmsgMandatory" style="display:none;">
+	</div>
+	<div id="divDisplayBRmsgBeforeSaveProp" style="display:none;">
+	</div>
+		    <div class="row">
+	@Html.Hidden("AssociatedEntity", Convert.ToString(ViewData["AssociatedType"]))
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="panel panel-default AppForm">
+                <div class="panel-body">
+               					<div class="row">
+				        
+							<div class='col-sm-6' id="dvT_Title">
+                                <div class='form-group' title="Title">
+                                    <label>@Html.LabelFor(model => model.T_Title) </label>
+									 
+                                    @Html.TextBoxFor(model => model.T_Title, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.T_Title)
+									
+                                </div>
+					</div>
+     
+				
+							<div class='col-sm-6' id="dvT_FirstName">
+                                <div class='form-group' title="First Name">
+                                    <label>@Html.LabelFor(model => model.T_FirstName) <span class="text-danger-reg">*</span></label>
+									 
+                                    @Html.TextBoxFor(model => model.T_FirstName, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.T_FirstName)
+									
+                                </div>
+					</div>
+     
+				
+							<div class='col-sm-6' id="dvT_MiddleName">
+                                <div class='form-group' title="Middle Name">
+                                    <label>@Html.LabelFor(model => model.T_MiddleName) </label>
+									 
+                                    @Html.TextBoxFor(model => model.T_MiddleName, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.T_MiddleName)
+									
+                                </div>
+					</div>
+     
+				
+							<div class='col-sm-6' id="dvT_LastName">
+                                <div class='form-group' title="Last Name">
+                                    <label>@Html.LabelFor(model => model.T_LastName) </label>
+									 
+                                    @Html.TextBoxFor(model => model.T_LastName, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.T_LastName)
+									
+                                </div>
+					</div>
+     
+				
+							<div class='col-sm-6' id="dvT_Email">
+                                <div class='form-group' title="Email">
+                                    <label>@Html.LabelFor(model => model.T_Email) </label>
+									 
+                                    @Html.TextBoxFor(model => model.T_Email, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.T_Email)
+									
+                                </div>
+					</div>
+     
+				
+							<div class='col-sm-6' id="dvT_PhoneNo">
+                                <div class='form-group' title="Phone No">
+                                    <label>@Html.LabelFor(model => model.T_PhoneNo) </label>
+									 
+                                    @Html.TextBoxFor(model => model.T_PhoneNo, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.T_PhoneNo)
+									
+                                </div>
+					</div>
+     
+				
+							<div class='col-sm-6' id="dvT_IdentificationNo">
+                                <div class='form-group' title="Identification No">
+                                    <label>@Html.LabelFor(model => model.T_IdentificationNo) </label>
+									 
+                                    @Html.TextBoxFor(model => model.T_IdentificationNo, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.T_IdentificationNo)
+									
+                                </div>
+					</div>
+     
+				
+				@if(User.CanAdd("Document"))
+                { 
+
+							     <div class='col-sm-6' id="dvT_Picture">
+                            <div class='form-group' title="Picture">
+                                   <label>@Html.LabelFor(model => model.T_Picture) </label>
+                                     <div style="position:relative;">
+										 <a class='btn btn-primary btnupload' href='javascript:;'>
+											 Upload File
+										 <input id="T_Picture"  type="file" style='position:absolute;z-index:2;top:0;left:0;filter: alpha(opacity=0);-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";opacity:0;background-color:transparent;color:transparent;width:105px;' name="T_Picture" onchange='$("#upload-file-infoT_Picture").html($(this).val());'>
+										</a>
+										&nbsp;
+										<span class='label uploadlblFix' id="upload-file-infoT_Picture"></span>
+									</div> 
+                            </div>
+                   </div>
+
+				   
+				}
+							<div class='col-sm-6'  id="dvT_AssociatedEmployeeTypeID">
+                        <div class='form-group'>
+                            <label>@Html.LabelFor(model => model.T_AssociatedEmployeeTypeID) </label>
+                            <div class="input-group" style="width: 100%;">
+									@Html.DropDownList("T_AssociatedEmployeeTypeID", null, "-- Select --", new {       @class = "chosen-select form-control", @HostingName = "T_Employeetype", @dataurl = Url.Action("GetAllValue", "T_Employeetype",new { caller = "T_AssociatedEmployeeTypeID" }) })
+ @*<script>
+    $(function () {
+        LoadUserDropdown('ID');
+    });
+</script>*@
+                                @Html.ValidationMessageFor(model => model.T_AssociatedEmployeeTypeID)
+                            </div>
+                        </div>
+                    </div>
+     
+				 
+							<div class='col-sm-6'  id="dvT_AssociatedEmployeeStatusID">
+                        <div class='form-group'>
+                            <label>@Html.LabelFor(model => model.T_AssociatedEmployeeStatusID) </label>
+                            <div class="input-group" style="width: 100%;">
+									@Html.DropDownList("T_AssociatedEmployeeStatusID", null, "-- Select --", new {       @class = "chosen-select form-control", @HostingName = "T_Employeestatus", @dataurl = Url.Action("GetAllValue", "T_Employeestatus",new { caller = "T_AssociatedEmployeeStatusID" }) })
+ @*<script>
+    $(function () {
+        LoadUserDropdown('ID');
+    });
+</script>*@
+                                @Html.ValidationMessageFor(model => model.T_AssociatedEmployeeStatusID)
+                            </div>
+                        </div>
+                    </div>
+     
+				 
+							<div class='col-sm-6'  id="dvT_EmployeeUserLoginID">
+                        <div class='form-group'>
+                            <label>@Html.LabelFor(model => model.T_EmployeeUserLoginID) </label>
+                            <div class="input-group" style="width: 100%;">
+															@Html.DropDownList("T_EmployeeUserLoginID", null, "--Select Employee User Login--", new { @class = "chosen-select form-control", @HostingName = "UserDropDown", @dataurl = Url.Action("GetAllValueUserLogin", "T_Employee", null) })
+								                                @Html.ValidationMessageFor(model => model.T_EmployeeUserLoginID)
+                            </div>
+                        </div>
+                    </div>
+     
+				 
+			@if(User.CanView("T_Address"))
+			{	
+                            <div class="col-md-12 col-sm-12 col-xs-12" id="dvT_EmployeeAddressID">
+                                <div class="panel panel-default">
+                                     <div class="panel-sub-heading clearfix">
+                                        <h3 class="panel-title">@Html.LabelFor(model => model.T_EmployeeAddressID)</h3>
+                                    </div>
+                                    <div class="panel-body">
+                                        <div class="row">
+                                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                                        <div class="row">
+							<div class='col-sm-6 col-md-6 col-xs-12' id="dvT_EmployeeAddressID_T_AddressLine1">
+                            <div class='form-group' title="AddressLine1">
+                                <label class="col-sm-5 col-md-5 col-xs-12" >@Html.LabelFor(model => model.t_employeeaddress.T_AddressLine1) </label>
+                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+								                                    @Html.TextBoxFor(model => model.t_employeeaddress.T_AddressLine1, new { @class = "form-control"  })
+  
+                                    @Html.ValidationMessageFor(model => model.t_employeeaddress.T_AddressLine1)
+                                </div>
+                            </div>
+							</div>
+                                               
+							<div class='col-sm-6 col-md-6 col-xs-12' id="dvT_EmployeeAddressID_T_AddressLine2">
+                            <div class='form-group' title="AddressLine2">
+                                <label class="col-sm-5 col-md-5 col-xs-12" >@Html.LabelFor(model => model.t_employeeaddress.T_AddressLine2) </label>
+                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+								                                    @Html.TextBoxFor(model => model.t_employeeaddress.T_AddressLine2, new { @class = "form-control"  })
+  
+                                    @Html.ValidationMessageFor(model => model.t_employeeaddress.T_AddressLine2)
+                                </div>
+                            </div>
+							</div>
+                                               
+							<div class='col-sm-6 col-md-6 col-xs-12' id="dvT_EmployeeAddressID_T_ZipCode">
+                            <div class='form-group' title="ZipCode">
+                                <label class="col-sm-5 col-md-5 col-xs-12" >@Html.LabelFor(model => model.t_employeeaddress.T_ZipCode) </label>
+                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+								                                    @Html.TextBoxFor(model => model.t_employeeaddress.T_ZipCode, new { @class = "form-control"  })
+  
+                                    @Html.ValidationMessageFor(model => model.t_employeeaddress.T_ZipCode)
+                                </div>
+                            </div>
+							</div>
+                                               
+				<div class='col-sm-6 col-md-6 col-xs-12'  id="dvT_EmployeeAddressID_T_AddressCountryID">
+                        <div class='form-group'>
+                            <label class="col-sm-5 col-md-5 col-xs-12" >
+							@Html.LabelFor(model => model.t_employeeaddress.T_AddressCountryID) </label>
+                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+								<div class="input-group" style="width: 100%;">
+											@Html.DropDownListFor(model => model.t_employeeaddress.T_AddressCountryID, (SelectList)ViewBag.T_AddressCountryID, "--Select--", new {      @onchange = Html.Raw("ClearChildDD('t_employeeaddress_T_AddressStateID',this,'false');ClearChildDD('t_employeeaddress_T_AddressCityID',this,'false');") ,  @class = "chosen-select form-control", @HostingName = "T_Country", @dataurl = Url.Action("GetAllValue", "T_Country",new { caller = "T_AddressCountryID" }) })
+                                    @Html.ValidationMessageFor(model => model.t_employeeaddress.T_AddressCountryID)
+                                </div>
+								</div>
+                            </div>
+                    </div>
+				<div class='col-sm-6 col-md-6 col-xs-12'  id="dvT_EmployeeAddressID_T_AddressStateID">
+                        <div class='form-group'>
+                            <label class="col-sm-5 col-md-5 col-xs-12" >
+							@Html.LabelFor(model => model.t_employeeaddress.T_AddressStateID) </label>
+                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+								<div class="input-group" style="width: 100%;">
+											@Html.DropDownListFor(model => model.t_employeeaddress.T_AddressStateID, (SelectList)ViewBag.T_AddressStateID, "--Select--", new {    @ParentDD = "t_employeeaddress_T_AddressCountryID" , @AssoNameWithParent = "T_StateCountryID" ,  @onchange = Html.Raw("ClearChildDD('t_employeeaddress_T_AddressCityID',this,'false');") ,  @class = "chosen-select form-control", @HostingName = "T_State", @dataurl = Url.Action("GetAllValue", "T_State",new { caller = "T_AddressStateID" }) })
+                                    @Html.ValidationMessageFor(model => model.t_employeeaddress.T_AddressStateID)
+                                </div>
+								</div>
+                            </div>
+                    </div>
+				<div class='col-sm-6 col-md-6 col-xs-12'  id="dvT_EmployeeAddressID_T_AddressCityID">
+                        <div class='form-group'>
+                            <label class="col-sm-5 col-md-5 col-xs-12" >
+							@Html.LabelFor(model => model.t_employeeaddress.T_AddressCityID) </label>
+                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+								<div class="input-group" style="width: 100%;">
+											@Html.DropDownListFor(model => model.t_employeeaddress.T_AddressCityID, (SelectList)ViewBag.T_AddressCityID, "--Select--", new {    @ParentDD = "t_employeeaddress_T_AddressCountryID,t_employeeaddress_T_AddressStateID" , @AssoNameWithParent = "T_CityCountryID,T_CityStateID" ,   @class = "chosen-select form-control", @HostingName = "T_City", @dataurl = Url.Action("GetAllValue", "T_City",new { caller = "T_AddressCityID" }) })
+                                    @Html.ValidationMessageFor(model => model.t_employeeaddress.T_AddressCityID)
+                                </div>
+								</div>
+                            </div>
+                    </div>
+					
+                                                </div>
+                                            </div>
+                                        </div>
+                                        @Html.ValidationMessageFor(model => model.T_EmployeeAddressID)
+                                    </div>
+                                </div>
+                            </div>
+                       }
+       </div>
+                        </div>
+                    </div>
+                </div>
+        </div>
+		<button id="CancelQuickAdd" type="button" class="btn btn-default btn-sm" data-dismiss="modal" aria-hidden="true">Cancel</button>
+
+		var busineesrule = User.businessrules.Where(p => p.EntityName == "T_Employee").ToList();
+		 var lstinlineentityname = "T_Address";
+		 var lstinlineassocdispname ="Employee Address";
+		 var lstinlineassocname = "T_EmployeeAddress";
+        if (ViewBag.IsAddPop != null)
+		{
+			<input type="submit" value="Create" class="btn btn-primary btn-sm" onclick="QuickAdd(event,'T_Employee','@busineesrule',@busineesrule.Count,'OnCreate','ErrMsgQuickAdd',false,'@lstinlineassocname','@lstinlineassocdispname','@lstinlineentityname');" />
+		}
+		else
+		{
+			<input type="submit" value="Create" class="btn btn-primary btn-sm" onclick="QuickAddFromIndex(event,true,'T_Employee','@ViewData["AssociatedType"]','@busineesrule',@busineesrule.Count,'OnCreate','ErrMsgQuickAdd',false,'@lstinlineassocname','@lstinlineassocdispname','@lstinlineentityname');" />
+		}
+}
+<script src="@Url.Content("~/bundles/jqueryval")" type="text/javascript"></script>
+<script src="@Url.Content("~/bundles/common3")" type="text/javascript"></script>
+<script type="text/javascript">
+    var config = {
+        '.chosen-select': {},
+        '.chosen-select-deselect': { allow_single_deselect: true },
+        '.chosen-select-no-single': { disable_search_threshold: 10 },
+        '.chosen-select-no-results': { no_results_text: 'Oops, nothing found!' },
+        '.chosen-select-width': { width: "95%" }
+    }
+    for (var selector in config) {
+        $(selector).chosen(config[selector]);
+    }
+</script>
+ <script type='text/javascript'>$(document).ready(function () {   $('#T_PhoneNo').mask('999-999-9999');  });</script>
+<script type='text/javascript'>
+    $(document).ready(function () {
+        try {
+            document.getElementsByTagName("body")[0].focus();
+            $("#addPopup").removeAttr("tabindex");
+            var cltcoll = $("#dvPopup").find('input[type=text]:not([class=hidden]):not([readonly]),textarea:not([readonly])');
+            var cltid = "";
+            $(cltcoll).each(function () {
+			  if ($(this).attr("id") == undefined)
+                    return
+                var dvhidden = $("#dv" + $(this).attr("id"));
+                if (!(dvhidden.css('display') == 'none')) {
+                    cltid = $(this);
+                    return false;
+                }
+            });
+            if (cltid != "" && cltid != undefined)
+                setTimeout(function () { $(cltid).focus(); }, 500)
+        }
+        catch (ex) { }
+    });
+</script>
+

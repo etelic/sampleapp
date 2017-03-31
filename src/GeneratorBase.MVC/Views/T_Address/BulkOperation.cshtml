@@ -1,0 +1,274 @@
+﻿@model PagedList.IPagedList<GeneratorBase.MVC.Models.T_Address>
+@using PagedList.Mvc;
+@{
+    var ActionNameUrl = "Index";
+    if (HttpContext.Current.Request.RequestContext.RouteData.Values["action"].ToString().ToUpper() == "FSEARCH")
+    {
+        ActionNameUrl = "FSearch";
+    }
+}
+@Scripts.Render("~/bundles/select2js")
+@Styles.Render("~/Content/select2css")
+<script>
+	$(".js-example-basic-multiple").select2({ placeholder: "Select/Search", allowClear: true });
+    function SetSingle(source, id, DisplayValue) {
+        var dropdown = ($('#PopupBulkOperationLabel').attr('class'));
+        if ($('#' + dropdown + ' option[value="' + id + '"]').length == 0) {
+            $('#' + dropdown).append($('<option selected=\'selected\'></option>').val(id).html(DisplayValue));
+            $("#" + dropdown).trigger('chosen:updated');
+        }
+        $("#" + dropdown).val(id);
+        $("#" + dropdown).trigger('chosen:updated');
+		 $("#" + dropdown).change();
+        $("#closePopupBulkOperation").click();
+    }
+	function Update(source, id, DisplayValue) {
+        val1 = $("#idvalues").val();
+        if (source.checked) {
+            $("#idvalues").val(val1 + "," + id);
+        }
+        else {
+            $("#idvalues").val(val1.replace("," + id, ""));
+        }
+    }
+    function UpdateRecords() {
+        var selectedvalues = $("#idvalues").val().substr(1).split(",");
+        var url1 = '@Url.Action("BulkAssociate")';
+		 var entity = 'T_Address';
+        var host = '@ViewData["AssociatedType"]';
+        $.ajax({
+            type: "POST",
+            data: { ids: selectedvalues, AssociatedType: '@ViewData["AssociatedType"]', HostingEntity: '@ViewData["HostingEntity"]', HostingEntityID: '@ViewData["HostingEntityID"]' },
+            url: url1,
+			complete : function (msg) {
+                $("#closePopupBulkOperation").click();
+            },
+            success: function (msg) {
+				 if (host != undefined && host.length > 0 && $('#' + host).length > 0) {
+                    $('#' + entity + 'SearchCancel', $('#' + host)).click();
+                    $('#dvcnt_' + host).load(location.href + " #dvcnt_" + host);
+                }
+            }
+        });
+    }
+</script>
+@if (ViewData["BulkAssociate"] != null)
+{
+    @Html.Hidden("idvalues")
+}
+<div id="T_Address" class="T_Address">
+    @if (ViewBag.ColumnMapping == null && ViewBag.ImportError == null && ViewBag.ConfirmImportData == null)
+    {
+		<style>
+            .table-responsive > .fixed-column {
+                position: absolute;
+                display: block;
+                width: auto;
+                border: 0px solid transparent;
+                border-top: 1px solid #c3ddec;
+            }
+            .fixed-column th {
+                background: #fff;
+            }
+            .fixed-column td {
+                background: #fff;
+            }
+        </style>
+
+
+		 <script type="text/javascript">
+            $(document).ready(function () {
+                $(".pagination a").click(function (e) {
+                    PaginationClick(e, 'T_Address');
+                })
+
+                $("#dvPopupBulkOperation input[name=SearchStringT_Address]").keypress(function (e) {
+                    if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
+
+                        $('#dvPopupBulkOperation').find("a.bulk").bind("click", (function () {
+                        }));
+                        $('#dvPopupBulkOperation').find("a.bulk").trigger("click");
+                        return false;
+                    }
+                })
+            });
+        </script>
+        
+        @functions {
+            object getSortHtmlAttributes(string sortby, bool IsPaging, int? page, bool? IsExport)
+            {
+                if (IsPaging)
+                {
+                    return new
+                    {
+                        page,
+                        sortBy = ViewBag.CurrentSort,
+                        isAsc = ViewBag.IsAsc,
+                        currentFilter = ViewBag.CurrentFilter,
+                        HostingEntity = @Convert.ToString(ViewData["HostingEntity"]),
+                        AssociatedType = @Convert.ToString(ViewData["AssociatedType"]),
+                        HostingEntityID = ViewData["HostingEntityID"],
+                        IsExport = IsExport,
+                        FSFilter = ViewBag.FSFilter == null ? "Fsearch" : ViewBag.FSFilter,
+                        IsFilter = @Convert.ToBoolean(ViewData["IsFilter"]),
+                        BulkOperation = ViewData["BulkOperation"],
+                        search = Request.QueryString["search"],
+						caller = ViewData["caller"],
+						BulkAssociate = ViewData["BulkAssociate"],
+                    };
+                }
+                else
+                {
+                    return new
+                    {
+                        sortBy = sortby,
+                        currentFilter = Request.QueryString["currentFilter"],
+                        searchString = Request.QueryString["searchString"],
+                        isAsc = (ViewBag.IsAsc == "ASC" ? "DESC" : ""),
+                        page = ViewBag.Pages,
+                        HostingEntity = @Convert.ToString(ViewData["HostingEntity"]),
+                        HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),
+                        AssociatedType = @Convert.ToString(ViewData["AssociatedType"]),
+                        IsExport = IsExport,
+                        FSFilter = ViewBag.FSFilter == null ? "Fsearch" : ViewBag.FSFilter,
+                        IsFilter = @Convert.ToBoolean(ViewData["IsFilter"]),
+                        BulkOperation = ViewData["BulkOperation"],
+                        search = Request.QueryString["search"],
+						caller = ViewData["caller"],
+   					    BulkAssociate = ViewData["BulkAssociate"],
+                    };
+                }
+            }
+        }
+        <div class="row">
+            <div class="col-md-12 col-sm-12 col-sx-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading clearfix" style="margin:0px; padding:8px;">
+                        <div class="pull-right" style="width:200px;">
+                            <div class="input-group">
+                                @Html.TextBox("SearchStringT_Address", ViewBag.CurrentFilter as string, null, new { @class = "form-control fixsearchbox", @placeholder = "Search" })
+                                <div class="input-group-btn">
+                                    <a id="T_AddressSearch" onclick="SearchClick(event, 'T_Address', '@Html.Raw(Url.Action("Index", "T_Address", new { BulkAssociate = ViewData["BulkAssociate"], caller = ViewData["caller"],IsFilter = ViewData["IsFilter"], IsDeepSearch = false, searchString = "_SearchString", HostingEntity = Convert.ToString(ViewData["HostingEntity"]), BulkOperation = ViewData["BulkOperation"], HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]), SearchTimeStamp = DateTime.Now }))');" data-original-title="Grid Search" class="btn btn-default btn-default tip-top bulk" style="padding:3px 5px;"><span class="fam-zoom"></span></a>
+                                    <button id="T_AddressCancel" type="button" class="btn btn-default btn-default collapse-data-btn tip-top" onclick="CancelSearchBulk('T_Address','@Html.Raw(Url.Action("Index", "T_Address", new {caller = ViewData["caller"], BulkOperation = ViewData["BulkOperation"], IsFilter=ViewData["IsFilter"], HostingEntity = Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]), ClearSearchTimeStamp = DateTime.Now }))')" data-original-title="Clear Search" data-placement="top" style="padding:3px 5px;">
+                                        <span class="fam-delete"></span>
+                                    </button>
+                                    <button id="T_AddressSearchCancel" type="button" class="btn btn-default btn-default collapse-data-btn tip-top" onclick="CancelSearchBulk('T_Address','@Html.Raw(Url.Action("Index", "T_Address", new { BulkAssociate = ViewData["BulkAssociate"], caller = ViewData["caller"],IsFilter = ViewData["IsFilter"],HostingEntity = Convert.ToString(ViewData["HostingEntity"]), BulkOperation = ViewData["BulkOperation"], HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]), ClearSearchTimeStamp = DateTime.Now }))')" data-original-title="Refresh Grid" data-placement="top" style="padding:3px 5px;">
+                                        <span class="fam-arrow-refresh"></span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel-body" style="margin:0px; padding:8px;">
+                        <div id="Des_Table" class="table-responsive" style="overflow-x:auto;">
+                            <table class="table table-striped table-bordered table-hover table-condensed">
+                                <thead>
+                                    <tr>
+                                        <th class="col2">
+                                            Select
+                                        </th>
+                                        @if (User.CanView("T_Address"))
+                                        {
+                                            <th class="col2">
+                                                @Html.ActionLink("Display Value", ActionNameUrl, "T_Address", getSortHtmlAttributes("DisplayValue", false, null, false), new { @onclick = "SortLinkClick(event,'T_Address');" })
+                                                @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "DisplayValue")
+                                                {<i class="fa fa-sort-desc"></i>}
+                                                @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "DisplayValue")
+                                                {<i class="fa fa-sort-asc"></i>}
+                                            </th>
+                                        }
+                                    </tr>
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr>
+                                            @if(Convert.ToString(ViewData["BulkOperation"]) == "multiple")
+                                            {
+												if (ViewData["BulkAssociate"] != null)
+                                                {
+                                                    <td>
+                                                        <input type="checkbox" onclick="Update(this,'@item.Id','@item.DisplayValue');" />
+                                                    </td>
+                                                }
+                                                else
+                                                {
+                                                    <td>
+                                                        <input type="checkbox" onclick="Set(this,'@item.Id','@item.DisplayValue');" />
+                                                    </td>
+                                                }
+                                            }
+                                            else
+                                            {
+												<td>
+													<input type="button" value="Select" class="btn btn-primary btn-xs" onclick="SetSingle(this,'@item.Id','@item.DisplayValue');" />
+												</td> 
+                                            }
+                                            @if (User.CanView("T_Address"))
+                                            {
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => item.DisplayValue)
+                                                </td>
+                                            }
+                                        </tr>
+                                    }
+                            </table>
+                        </div>
+                        <ul id="Mob_List" class="list-group">
+                            @foreach (var item in Model)
+                            {
+                                <li class="list-group-item">
+                                    @if (User.CanView("T_Address"))
+                                    {
+										<p>
+                                            <span class="text-primary"> Select </span> : <span>
+                                            @if(Convert.ToString(ViewData["BulkOperation"]) == "multiple")
+                                            {
+												if (ViewData["BulkAssociate"] != null)
+                                                {
+                                                        <input type="checkbox" onclick="Update(this,'@item.Id','@item.DisplayValue');" />
+                                                }
+                                                else
+                                                {
+                                                        <input type="checkbox" onclick="Set(this,'@item.Id','@item.DisplayValue');" />
+                                                }
+                                            }
+                                            else
+                                            {
+												<input type="button" value="Select" class="btn btn-primary btn-xs" onclick="SetSingle(this,'@item.Id','@item.DisplayValue');" />
+                                            }
+                                            </span>
+                                        </p>
+                                        <p>
+                                            <span class="text-primary"> Display Value </span> : <span>
+                                                @Html.DisplayFor(modelItem => item.DisplayValue)
+                                            </span>
+                                        </p>
+                                    }
+                                </li>
+                            }
+                        </ul>
+                        @if (Model.Count > 0)
+                        {
+                            <div id="pagination">
+                                @Html.PagedListPager(Model, page => Url.Action(ActionNameUrl, "T_Address", getSortHtmlAttributes(null, true, page, false)))
+                                <div class="fixPageSize">
+                                    Page Size :
+                                    @Html.DropDownList("PageSize", new SelectList(new Dictionary<string, int> { { "10", 10 }, { "20", 20 }, { "50", 50 }, { "100", 100 } }, "Key", "Value"), new { @id = "pagesizelistT_Address", 
+									@onchange = "pagesizelistChange(event,'T_Address')", 
+									@Url = Html.Raw(@Url.Action(ActionNameUrl, "T_Address", 
+									getSortHtmlAttributes(ViewBag.CurrentSort, ViewBag.Pages == 1 ? false : true,
+									null, false), null)) })
+                                    <span style="text-align:right;"> Total Count: @(Model.TotalItemCount)</span>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+		if (ViewData["BulkAssociate"] != null)
+        {
+            <input type="button" class="btn btn-primary btn-sm fixbulkbutton" value="Associate with @GeneratorBase.MVC.Models.ModelConversion.GetDisplayNameOfEntity(ViewData["HostingEntity"].ToString())" onclick="UpdateRecords();" />
+        }
+    }
+</div>
+  

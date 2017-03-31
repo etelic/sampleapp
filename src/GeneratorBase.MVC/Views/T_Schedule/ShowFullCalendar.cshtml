@@ -1,115 +1,14 @@
 ﻿@model List<GeneratorBase.MVC.Models.T_Schedule>
 @{
-    ViewBag.Title = "Session";
-    var appcontext = new ApplicationContext(User);
-    List<long> eventlist = new List<long>();
-    foreach (var obj in Model)
-    {
-        if (obj.T_EntityName == "T_Session")
-        {
-            eventlist.AddRange(appcontext.T_SessionEventss.Where(p => p.ScheduleID == obj.Id).Select(p => p.Id));
-        }
-    }
+    ViewBag.Title = "Show All Events";
 }
-
-<script type="text/javascript">
-    $('button[tempclass="selectmulti"]').addClass("btn-xs");
-
-
-</script>
 <div class="row">
     <div class="col-lg-12">
         <h1 class="page-title">
-            Calendar (Session)
+			Show All Events 
         </h1>
         <h2 class="text-primary"> </h2>
     </div>
-    
-        <div class="col-md-12 col-sm-12 col-xs-12">
-            <div class="panel panel-default">
-                <div class="panel-heading clearfix">
-                    <i class="icon-calendar"></i>
-                    <h3 class="panel-title">
-                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo"><i class="glyphicon glyphicon-chevron-down pull-left" style="padding-top:5px; padding-right:5px;"></i> Session </a>
-                    </h3>
-                </div>
-                <div id="collapseTwo" class="panel-collapse in">
-                    <div class="panel-body">
-                        @if (ViewBag.t_sessionlearningcenterassociation != null)
-                        {
-                            <div class='col-sm-6 col-md-6 col-xs-12'>
-                                <div class='form-group' title="Learning Center">
-                                    <label class="col-sm-5 col-md-5 col-xs-12"> Learning Center</label>
-                                    <div class="input-group col-sm-7 col-md-7 col-xs-12" id="dvt_sessionlearningcenterassociation">
-
-                                        @Html.DropDownList("t_sessionlearningcenterassociation", null, new { @onchange = Html.Raw("ClearMultiSelectChild('t_sessiontimeslotassociaton');"), @multiple = "multiple", @HostingName = "T_LearningCenter", @dataurl = Url.Action("GetAllMultiSelectValue", "T_LearningCenter", null) })
-                                    </div>
-                                </div>
-                            </div>
-                        }
-                        @if (ViewBag.t_sessiontimeslotassociaton != null)
-                        {
-                            <div class='col-sm-6 col-md-6 col-xs-12'>
-                                <div class='form-group' title="Time Slot">
-                                    <label class="col-sm-5 col-md-5 col-xs-12"> Time Slot</label>
-                                    <div class="input-group col-sm-7 col-md-7 col-xs-12" id="dvt_sessiontimeslotassociaton">
-
-                                        @Html.DropDownList("t_sessiontimeslotassociaton", null, new { @ParentDD = "t_sessionlearningcenterassociation", @AssoNameWithParent = "T_LearningCenterTimeSlotsAssociationID", @multiple = "multiple", @HostingName = "T_TimeSlots", @dataurl = Url.Action("GetAllMultiSelectValue", "T_TimeSlots", null) })
-                                    </div>
-                                </div>
-                            </div>
-                        }
-                        @if (ViewBag.schedulesession != null)
-                        {
-                            <div class='col-sm-6 col-md-6 col-xs-12'>
-                                <div class='form-group' title="Session Schedule">
-                                    <label class="col-sm-5 col-md-5 col-xs-12"> Session Schedule</label>
-                                    <div class="input-group col-sm-7 col-md-7 col-xs-12" id="dvschedulesession">
-
-                                        @Html.DropDownList("schedulesession", null, new { @multiple = "multiple", @HostingName = "T_Schedule", @dataurl = Url.Action("GetAllMultiSelectValue", "T_Schedule", null) })
-                                    </div>
-                                </div>
-                            </div>
-                        }
-                        @if (ViewBag.t_sessionclientassociation != null)
-                        {
-                            <div class='col-sm-6 col-md-6 col-xs-12'>
-                                <div class='form-group' title="t_sessionclientassociation">
-                                    <label class="col-sm-5 col-md-5 col-xs-12"> Client</label>
-                                    <div class="input-group col-sm-7 col-md-7 col-xs-12" id="dvt_session">
-
-                                        @Html.DropDownList("t_sessionclientassociation", null, new { @multiple = "multiple", @HostingName = "T_Client", @dataurl = Url.Action("GetAllMultiSelectValue", "T_Client", null) })
-
-
-                                    </div>
-                                </div>
-                            </div>
-                        }
-
-                    </div>
-                </div>
-            </div>
-            <button id="fSearchCalendar" class="btn btn-primary btn-sm" type="button" dataurl="@(Url.Action("ShowFullCalendar", "T_Schedule", null) )"
-                    onclick="SearchCalendar(this);">
-                Search
-            </button>
-        </div>
-    
-    
     <!-- /.col-lg-12 -->
 </div>
-@Html.Partial("~/Views/T_Schedule/CalendarView.cshtml", eventlist, new ViewDataDictionary { { "TimeSlots", ViewData["TimeSlots"] } })
-<script>
-    function SearchCalendar(obj) {
-        var dataurl = $(obj).attr("dataurl");
-        dataurl = addParameterToURL(dataurl, 't_sessionlearningcenterassociation', $('#t_sessionlearningcenterassociation').val()); dataurl = addParameterToURL(dataurl, 't_sessiontimeslotassociaton', $('#t_sessiontimeslotassociaton').val()); dataurl = addParameterToURL(dataurl, 'schedulesession', $('#schedulesession').val()); dataurl = addParameterToURL(dataurl, 't_sessionclientassociation', $('#t_sessionclientassociation').val());
-        location.href = dataurl;
-    }
-    $(document).ready(function () {
-        $('select[multiple="multiple"]').each(function () {
-            $(this).multiselect({ buttonWidth: '100%', nonSelectedText: 'ALL' });
-        });
-    });
-
-</script>
-
+@Html.Partial("~/Views/T_Schedule/CalendarView.cshtml", Model.Select(p=>p.Id).ToList())

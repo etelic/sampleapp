@@ -30,7 +30,6 @@ namespace GeneratorBase.MVC
                     //code for verb action security
                     Verbs = GetVerbsForEntity(t).OrderBy(verb => verb.DisplayName).ToList(),
                     //
-                    Groups = GetGroupsForEntity(t).OrderBy(g => g.Name).ToList(),
                     IsAdminEntity = (Enum.IsDefined(typeof(AdminEntities), t.Name))
                 }
             ).OrderBy(p => p.IsDefault).ThenBy(p => p.DisplayName).ToList();
@@ -88,7 +87,7 @@ namespace GeneratorBase.MVC
                             property.PropertyType.GetGenericTypeDefinition() == typeof(Nullable<>)) ? property.PropertyType.GetGenericArguments()[0].Name : property.PropertyType.Name,
                         IsRequired = property.IsDefined(typeof(System.ComponentModel.DataAnnotations.RequiredAttribute), false),
                         IsEmailValidation = property.IsDefined(typeof(System.ComponentModel.DataAnnotations.EmailAddressAttribute), false),
-                        DataTypeAttribute = datatypeattr != null ? ((System.ComponentModel.DataAnnotations.DataTypeAttribute)datatypeattr).DataType.ToString() : ""
+                        DataTypeAttribute = datatypeattr!=null?((System.ComponentModel.DataAnnotations.DataTypeAttribute)datatypeattr).DataType.ToString() :""
                     };
                 }
             }
@@ -116,6 +115,7 @@ namespace GeneratorBase.MVC
         //code for verb action security
         private static IEnumerable<Verb> GetVerbsForEntity(Type type)
         {
+
             string controllerName = "GeneratorBase.MVC.Controllers." + type.Name + "Controller";
             Type VerbTypeCls = Type.GetType(controllerName);
 
@@ -136,40 +136,7 @@ namespace GeneratorBase.MVC
                         };
                     }
                 }
-            }
-        }
-        //
-        //code for getting groups of entity
-        private static IEnumerable<Group> GetGroupsForEntity(Type type)
-        {
-            string controllerName = "GeneratorBase.MVC.Controllers." + type.Name + "Controller";
-            Type GroupType = Type.GetType(controllerName);
-            if (GroupType != null)
-            {
-                MethodInfo GroupTypeMethod = GroupType.GetMethod("getGroupsName");
-                if (GroupTypeMethod != null)
-                {
-                    string[][] result = null;
-                    object clsInstance = Activator.CreateInstance(GroupType);
-                    try
-                    {
-                        result = (string[][])GroupTypeMethod.Invoke(clsInstance, null);
-                    }
-                    catch (Exception e) { }
-                    if (result != null)
-                    {
-                        foreach (string[] groupName in result)
-                        {
-                            var name = groupName[1];
-                            var id = groupName[0];
-                            yield return new Group()
-                            {
-                                Name = name,
-                                Id = id
-                            };
-                        }
-                    }
-                }
+
             }
         }
         //
@@ -182,7 +149,6 @@ namespace GeneratorBase.MVC
             public List<Association> Associations { get; set; }
             //code for verb action security
             public List<Verb> Verbs { get; set; }
-            public List<Group> Groups { get; set; }
             //
             public bool IsAdminEntity { get; set; }
             public bool IsDefault { get; set; }
@@ -197,7 +163,7 @@ namespace GeneratorBase.MVC
             public bool IsRequired { get; set; }
             public bool IsEmailValidation { get; set; }
             public string DataTypeAttribute { get; set; }
-
+            
         }
         public class Association
         {
@@ -213,11 +179,6 @@ namespace GeneratorBase.MVC
             public string Name { get; set; }
             public string DisplayName { get; set; }
 
-        }
-        public class Group
-        {
-            public string Name { get; set; }
-            public string Id { get; set; }
         }
         //
         public enum AdminEntities
@@ -244,7 +205,7 @@ namespace GeneratorBase.MVC
             Document,
             EntityDataSource,
             T_MonthlyRepeatType,
-            ApiToken,
+ 	    ApiToken,
             MultiTenantExtraAccess,
             MultiTenantLoginSelected,
         }

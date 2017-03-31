@@ -594,7 +594,7 @@
     <div class="row" style="margin-top:10px;">
         <div class="col-md-12 col-sm-12 col-xs-12">
             @Html.ActionLink("Back to List", "Index", null, new { @class = "btn btn-default btn-sm" })
-            @if (User.Identity.IsAuthenticated && User != null && User.CanEditAdminFeature("BusinessRule") && !Model.Freeze)
+            @if (User.Identity.IsAuthenticated && User != null && User.CanEdit("BusinessRule") && !Model.Freeze)
             {
                 @Html.ActionLink("Edit", "Edit", new { id = Model.Id }, new { @class = "btn btn-primary btn-sm" })
             }

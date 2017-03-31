@@ -141,14 +141,7 @@ namespace GeneratorBase.MVC.Models
             }
 
             if (task.T_RecurringTaskEndTypeID == 3)
-            {
-             //   ScheduledDateTimeEnd = task.T_EndDate.Value;
-                try
-                {
-                    ScheduledDateTimeEnd = AbsoluteEnd(task.T_EndDate.Value);
-                }
-                catch { ScheduledDateTimeEnd = task.T_EndDate.Value; }
-            }
+                ScheduledDateTimeEnd = task.T_EndDate.Value;
 
             if (task.T_AssociatedRecurringScheduleDetailsTypeID == 1)
             {
@@ -244,14 +237,6 @@ namespace GeneratorBase.MVC.Models
             }
             //return Json(result, "application/json", System.Text.Encoding.UTF8, JsonRequestBehavior.AllowGet);
             return result;
-        }
-        public DateTime AbsoluteEnd(DateTime dateTime)
-        {
-            return AbsoluteStart(dateTime).AddDays(1).AddTicks(-1);
-        }
-        public DateTime AbsoluteStart(DateTime dateTime)
-        {
-            return dateTime.Date;
         }
     }
    

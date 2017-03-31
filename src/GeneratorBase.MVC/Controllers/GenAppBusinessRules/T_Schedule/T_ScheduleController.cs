@@ -2419,7 +2419,11 @@ namespace GeneratorBase.MVC.Controllers
             return Json(derivedlist, "application/json", System.Text.Encoding.UTF8, JsonRequestBehavior.AllowGet);
         }
      
-       
+        public ActionResult ShowFullCalendar()
+        {
+            var obj = db.T_Schedules.ToList();
+            return View(obj);
+        }
 
     }
 }

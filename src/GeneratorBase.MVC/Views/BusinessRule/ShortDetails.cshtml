@@ -31,7 +31,7 @@
                 if (act.associatedactiontype != null)
                 {
                     <b><span>Action : </span>@act.associatedactiontype.DisplayValue </b>
-                    <br />
+                    <br/>
                     <b><span>Is Else Action : </span>@act.IsElseAction</b>
                 }
                 if (act.actionarguments != null && act.actionarguments.Count() > 0)
@@ -46,14 +46,9 @@
                             </thead>
                             @foreach (var args in act.actionarguments)
                             {
-                                var paramName = args.ParameterName;
-                                if (args.ParameterValue == "GroupsHidden")
-                                {
-                                    paramName = args.ParameterName.Remove(0, args.ParameterName.IndexOf('|') + 1);
-                                }
                                 <tr>
                                     <td>
-                                        @paramName
+                                        @args.ParameterName
                                     </td>
                                     <td>
                                         @if (args.ParameterName == "NotifyToRole")

@@ -162,45 +162,6 @@ namespace GeneratorBase.MVC.Models
             }
         }
 
-        public string GetAdminRoles()
-        {
-            return System.Configuration.ConfigurationManager.AppSettings["AdministratorRoles"];
-        }
-        public bool IsAdminUser(string username)
-        {
-            //FOR WINDOWS AUTHENTICATION....
-            var UseActiveDirectory = System.Configuration.ConfigurationManager.AppSettings["UseActiveDirectory"]; //CommonFunction.Instance.UseActiveDirectory();
-            if (Convert.ToBoolean(UseActiveDirectory))
-            {
-                //var adl = new ActiveDirectoryLookup(this.Identity);
-                //var adminString = System.Configuration.ConfigurationManager.AppSettings["AdministratorRoles"]; //CommonFunction.Instance.AdministratorRoles();
-                //var admins = adminString.Split(',', ';');
-                //return adl.GetRoles().Any(r => admins.Contains(r));
-                var UseActiveDirectoryRole = ConfigurationManager.AppSettings["UseActiveDirectoryRole"];
-                if (Convert.ToBoolean(UseActiveDirectoryRole))
-                {
-                    var adl = new ActiveDirectoryLookup(this.Identity);
-                    var adminString = System.Configuration.ConfigurationManager.AppSettings["AdministratorRoles"];
-                    var admins = adminString.Split(',', ';');
-                    return adl.GetRoles().Any(r => admins.Contains(r));
-                }
-                else
-                {
-                    var DomainName = System.Configuration.ConfigurationManager.AppSettings["DomainName"];
-                    var adminString = System.Configuration.ConfigurationManager.AppSettings["AdministratorRoles"];
-                    CustomRoleProvider RoleProvider = new CustomRoleProvider();
-                    return RoleProvider.IsUserInRole(username, adminString);
-                }
-            }
-            else
-            {
-                var adminString = System.Configuration.ConfigurationManager.AppSettings["AdministratorRoles"]; //CommonFunction.Instance.AdministratorRoles();
-
-                CustomRoleProvider RoleProvider = new CustomRoleProvider();
-                return RoleProvider.IsUserInRole(username, adminString);
-            }
-        }
-
         public bool CanAdd(string resource)
         {
             if (Enum.IsDefined(typeof(PermissionFreeContext), resource))

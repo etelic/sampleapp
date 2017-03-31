@@ -13,36 +13,6 @@ namespace GeneratorBase.MVC
 {
     public partial class ApplicationContext : DbContext
     {
-        public static bool CheckIfModified(DbEntityEntry dbEntityEntry)
-        {
-            bool changed = false;
-            if (dbEntityEntry.State == EntityState.Modified)
-            {
-
-                var OriginalObj = dbEntityEntry.GetDatabaseValues();
-                var CurrentObj = dbEntityEntry.CurrentValues;
-                string id = Convert.ToString(CurrentObj.GetValue<object>("Id"));
-                string dispValue = Convert.ToString(CurrentObj.GetValue<object>("DisplayValue"));
-                foreach (var property in dbEntityEntry.OriginalValues.PropertyNames)
-                {
-                    if (property == "DisplayValue" || property == "ConcurrencyKey") continue;
-                    var original = OriginalObj.GetValue<object>(property);
-                    var current = CurrentObj.GetValue<object>(property);
-                    if (original != current && (original == null || !original.Equals(current)))
-                    {
-                        changed = true;
-                        break;
-                    }
-                }
-                if (!changed)
-                {
-                    dbEntityEntry.State = EntityState.Unchanged;
-                }
-
-            }
-            else changed= true;
-            return changed;
-        }
         private static void CancelChanges(DbEntityEntry entry)
         {
             if (entry.State == EntityState.Added)
@@ -63,22 +33,6 @@ namespace GeneratorBase.MVC
 			 //var EntityName = dbEntityEntry.Entity.GetType().Name;
 			 var entityType = ObjectContext.GetObjectType(dbEntityEntry.Entity.GetType());
              var EntityName = entityType.Name;
-		
-		if (EntityName == "T_TimeSlots")
-		{	
-					var T_SlotNo_CurrentObj = dbEntityEntry.CurrentValues;
-                    long T_SlotNo_CurrentValue = Convert.ToInt64((T_SlotNo_CurrentObj.GetValue<object>("T_SlotNo")));
-                    long T_SlotNo_CorrectValue = Convert.ToInt64((T_SlotNo_CurrentObj.GetValue<object>("Id"))) + 0;
-                    if (T_SlotNo_CurrentValue != T_SlotNo_CorrectValue)
-                    {
-                        var propertyInfo = dbEntityEntry.Entity.GetType().GetProperty("T_SlotNo");
-                        Type targetType = propertyInfo.PropertyType;
-                        if (propertyInfo.PropertyType.IsGenericType)
-                            targetType = propertyInfo.PropertyType.GetGenericTypeDefinition() == typeof(Nullable<>) ? Nullable.GetUnderlyingType(propertyInfo.PropertyType) : propertyInfo.PropertyType;
-                        object safeValue = Convert.ChangeType(T_SlotNo_CorrectValue, targetType);
-                        propertyInfo.SetValue(dbEntityEntry.Entity, safeValue, null);
-                    }
-		}
 	
 				if (EntityName == "ApplicationFeedback")
                 {
@@ -118,16 +72,6 @@ namespace GeneratorBase.MVC
             foreach (var kvp in originals.Where(e => e.Value.HasFlag(EntityState.Added)))
             {
                 var entry = kvp.Key;
-                if (entry.Entity is T_TimeSlots)
-                {
-                    var entity = ((GeneratorBase.MVC.Models.T_TimeSlots)(entry.Entity));
-                    if (entity.T_SlotNo !=  entity.Id)
-                    {
-                        entity.T_SlotNo =  entity.Id;
-						entity.DisplayValue = entity.getDisplayValue();
-						flag= true;
-                    }
-                }
     
 				if (entry.Entity is ApplicationFeedback)
                 {
@@ -810,7 +754,7 @@ namespace GeneratorBase.MVC
                                 // callbackTime = DateTimeOffset.Now.AddMinutes(1);
                                 else
                                     callbackTime = DateTimeOffset.Now.AddDays(Convert.ToDouble(days));
-                                Uri callbackUrl = new Uri(string.Format("http://localhost//AshokCalendarUINew//TimeBasedAlert//NotifyOneTime?EntityName=" + EntityName + "&ID=" + entry.OriginalValues["Id"] + "&actionid=" + actionid + "&userName=" + user.Name));
+                                Uri callbackUrl = new Uri(string.Format("http://localhost//KKMTS//TimeBasedAlert//NotifyOneTime?EntityName=" + EntityName + "&ID=" + entry.OriginalValues["Id"] + "&actionid=" + actionid + "&userName=" + user.Name));
                                 Revalee.Client.RevaleeRegistrar.ScheduleCallback(callbackTime, callbackUrl);
 
                             }
@@ -904,7 +848,7 @@ namespace GeneratorBase.MVC
                             else
                                 callbackTime = DateTimeOffset.Now.AddDays(Convert.ToDouble(days));
 
-                            Uri callbackUrl = new Uri(string.Format("http://localhost//AshokCalendarUINew//TimeBasedAlert//NotifyOneTime?EntityName=" + EntityName + "&ID=" + id + "&actionid=" + actionid + "&userName=" + user.Name));
+                            Uri callbackUrl = new Uri(string.Format("http://localhost//KKMTS//TimeBasedAlert//NotifyOneTime?EntityName=" + EntityName + "&ID=" + id + "&actionid=" + actionid + "&userName=" + user.Name));
                             Revalee.Client.RevaleeRegistrar.ScheduleCallback(callbackTime, callbackUrl);
                         }
                     }//
@@ -1028,13 +972,18 @@ namespace GeneratorBase.MVC
                 .ToTable("AspNetRoles");
             role.Property(r => r.Name).IsRequired();
             role.HasMany(r => r.Users).WithRequired().HasForeignKey(ur => ur.RoleId);
-			   modelBuilder.Entity<T_Session>().HasOptional<T_LearningCenter>(p => p.t_sessionlearningcenterassociation).WithMany(s => s.t_sessionlearningcenterassociation).HasForeignKey(f => f.T_SessionLearningCenterAssociationID).WillCascadeOnDelete(false);
-   modelBuilder.Entity<T_Session>().HasOptional<T_TimeSlots>(p => p.t_sessiontimeslotassociaton).WithMany(s => s.t_sessiontimeslotassociaton).HasForeignKey(f => f.T_SessionTimeSlotAssociatonID).WillCascadeOnDelete(false);
-   modelBuilder.Entity<T_TimeSlots>().HasOptional<T_LearningCenter>(p => p.t_learningcentertimeslotsassociation).WithMany(s => s.t_learningcentertimeslotsassociation).HasForeignKey(f => f.T_LearningCenterTimeSlotsAssociationID).WillCascadeOnDelete(false); 
-   modelBuilder.Entity<T_TimeSlots>().HasOptional<T_LearningCenter>(p => p.t_learningcentertimeslotsassociation).WithMany(s => s.t_learningcentertimeslotsassociation).HasForeignKey(f => f.T_LearningCenterTimeSlotsAssociationID).WillCascadeOnDelete(false);
-   modelBuilder.Entity<T_SessionEvents>().HasOptional<T_LearningCenter>(p => p.t_sessioneventslearningcenter).WithMany(s => s.t_sessioneventslearningcenter).HasForeignKey(f => f.T_SessionEventsLearningCenterID).WillCascadeOnDelete(false);
-   modelBuilder.Entity<T_SessionEvents>().HasOptional<T_TimeSlots>(p => p.t_sessioneventstimeslots).WithMany(s => s.t_sessioneventstimeslots).HasForeignKey(f => f.T_SessionEventsTimeSlotsID).WillCascadeOnDelete(false);
-   modelBuilder.Entity<T_TimeSlots>().HasOptional<T_LearningCenter>(p => p.t_learningcentertimeslotsassociation).WithMany(s => s.t_learningcentertimeslotsassociation).HasForeignKey(f => f.T_LearningCenterTimeSlotsAssociationID).WillCascadeOnDelete(false); 
+			   modelBuilder.Entity<T_Employee>().HasOptional<T_Employeetype>(p => p.t_associatedemployeetype).WithMany(s => s.t_associatedemployeetype).HasForeignKey(f => f.T_AssociatedEmployeeTypeID).WillCascadeOnDelete(false); 
+   modelBuilder.Entity<T_Employee>().HasOptional<T_Employeestatus>(p => p.t_associatedemployeestatus).WithMany(s => s.t_associatedemployeestatus).HasForeignKey(f => f.T_AssociatedEmployeeStatusID).WillCascadeOnDelete(false); 
+   modelBuilder.Entity<T_State>().HasOptional<T_Country>(p => p.t_statecountry).WithMany(s => s.t_statecountry).HasForeignKey(f => f.T_StateCountryID).WillCascadeOnDelete(false); 
+   modelBuilder.Entity<T_City>().HasOptional<T_Country>(p => p.t_citycountry).WithMany(s => s.t_citycountry).HasForeignKey(f => f.T_CityCountryID).WillCascadeOnDelete(false); 
+   modelBuilder.Entity<T_City>().HasOptional<T_State>(p => p.t_citystate).WithMany(s => s.t_citystate).HasForeignKey(f => f.T_CityStateID).WillCascadeOnDelete(false); 
+   modelBuilder.Entity<T_State>().HasOptional<T_Country>(p => p.t_statecountry).WithMany(s => s.t_statecountry).HasForeignKey(f => f.T_StateCountryID).WillCascadeOnDelete(false); 
+   modelBuilder.Entity<T_Address>().HasOptional<T_Country>(p => p.t_addresscountry).WithMany(s => s.t_addresscountry).HasForeignKey(f => f.T_AddressCountryID).WillCascadeOnDelete(false); 
+   modelBuilder.Entity<T_Address>().HasOptional<T_State>(p => p.t_addressstate).WithMany(s => s.t_addressstate).HasForeignKey(f => f.T_AddressStateID).WillCascadeOnDelete(false); 
+   modelBuilder.Entity<T_State>().HasOptional<T_Country>(p => p.t_statecountry).WithMany(s => s.t_statecountry).HasForeignKey(f => f.T_StateCountryID).WillCascadeOnDelete(false); 
+   modelBuilder.Entity<T_Address>().HasOptional<T_City>(p => p.t_addresscity).WithMany(s => s.t_addresscity).HasForeignKey(f => f.T_AddressCityID).WillCascadeOnDelete(false); 
+   modelBuilder.Entity<T_City>().HasOptional<T_Country>(p => p.t_citycountry).WithMany(s => s.t_citycountry).HasForeignKey(f => f.T_CityCountryID).WillCascadeOnDelete(false); 
+   modelBuilder.Entity<T_City>().HasOptional<T_State>(p => p.t_citystate).WithMany(s => s.t_citystate).HasForeignKey(f => f.T_CityStateID).WillCascadeOnDelete(false); 
   base.OnModelCreating(modelBuilder);
         }
     }
@@ -1156,7 +1105,7 @@ public class RegisterScheduledTask
         var nextDate = getNextRunTimeOfTask(MainBiz);
         if (nextDate > DateTime.MinValue)
         {
-            Uri callbackUrl = new Uri(string.Format("http://localhost//AshokCalendarUINew//TimeBasedAlert//ScheduledTask?EntityName=" + EntityName + "&BizId=" + BizId));
+            Uri callbackUrl = new Uri(string.Format("http://localhost//KKMTS//TimeBasedAlert//ScheduledTask?EntityName=" + EntityName + "&BizId=" + BizId));
             var callbackid = Revalee.Client.RevaleeRegistrar.ScheduleCallback(nextDate, callbackUrl);
             ScheduledTaskHistoryContext historycontext = new ScheduledTaskHistoryContext();
             ScheduledTaskHistory historyItem = new ScheduledTaskHistory();

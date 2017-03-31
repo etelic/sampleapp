@@ -3,15 +3,13 @@
     Layout = null;
     var ListItems = new List<SelectListItem>()
     {
-        new SelectListItem() {Text="Edit Event", Value="1"},
-        new SelectListItem() {Text="Edit Meeting", Value="2"},
+        new SelectListItem() {Text="This Event", Value="1"},
+        new SelectListItem() {Text="All Events of the Meeting", Value="2"},
     };
-
-
 }
 <div class="panel panel-default AppForm">
     <div class="panel-body">
-        <br />
+        <br/>
         <div class="row">
             <div class="col-md-12 col-sm-12 col-xs-12">
                 <div class="col-sm-10 col-md-10 col-xs-12">
@@ -19,43 +17,38 @@
                         <div id="ActionList" class="input-group newradiocontainer">
                             <div class="radio" style="margin-top:-4px;">
                                 @Html.RadioButtonList("EventSelection", ListItems, new { @onchange = "Selection();" })
-                                @if (ViewBag.buttons != null)
-                                {
-                                    foreach (var btn in (List<GeneratorBase.MVC.Controllers.UpdateButton>)ViewBag.buttons)
-                                    {
-                                        if(btn.Type == "Meeting")
-                                        { 
-                                        <input type="radio" title="@btn.ButtonText" data-placement="top" data-original-title="Quick Add" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','"+btn.ButtonText+"','dvPopup','" + Url.Action("CreateQuick", btn.Target , new { UrlReferrer = Request.UrlReferrer, AssociatedType = btn.AssociatedType, HostingEntityName = btn.HostingEntityName, HostingEntityID = Model.MainMeetingID, TS = DateTime.Now, viewtype = Convert.ToString(ViewBag.TemplatesName) }) + "')")">
-                                        <span>@btn.ButtonText</span>
-                                        <br />
-                                        }
-                                        else
-                                        {
-                                            <input type="radio" title="@btn.ButtonText" data-placement="top" data-original-title="Quick Add" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','"+btn.ButtonText+"','dvPopup','" + Url.Action("CreateQuick", btn.Target , new { UrlReferrer = Request.UrlReferrer, AssociatedType = btn.AssociatedType, HostingEntityName = btn.HostingEntityName, HostingEntityID = Model.Id, TS = DateTime.Now, viewtype = Convert.ToString(ViewBag.TemplatesName) }) + "')")">
-                                            <span>@btn.ButtonText</span>
-                                            <br />
-                                        }
-                                    }
-                                }
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+            
         </div>
         <button id="CancelQuickAdd" type="button" class="btn btn-default btn-sm pull-right" data-dismiss="modal" aria-hidden="true">Cancel</button>
     </div>
 </div>
-<script>
+    <script>
     function Selection() {
         var $obj = $('input:radio[name="EventSelection"]:checked');
         var value = $obj.val();
         var text = $obj.next('span:first').html();
         if (value == "1") {
-            location.href = '@Url.Action("Edit", Model.EntityName + "Events", new { UrlReferrer = Request.UrlReferrer, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), id = Model.Id})';
+            OpenPopUpEntity('addPopup', 'Edit Event', 'dvPopup', '@Url.Action("EditQuick", Model.EntityName+"Events", new
+            {
+                UrlReferrer = Request.Url,
+                AssociatedType = ViewData["AssociatedType"],
+                HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]),
+                HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),
+                              id = "_id",
+        })'.replace("_id", '@Model.Id'));
         }
         if (value == "2") {
-            location.href = '@Url.Action("Edit", Model.EntityName, new { UrlReferrer = Request.UrlReferrer, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), id = Model.MainMeetingID})';
+            OpenPopUpEntity('addPopup', 'Edit Meeting', 'dvPopup', '@Url.Action("EditQuick", "T_Schedule", new
+            {
+                              id = "_id",
+        })'.replace("_id", '@Model.ScheduleID'));
         }
     }
-</script>
+    </script>
+@Scripts.Render("~/bundles/jqueryval")
+@Scripts.Render("~/bundles/common3")

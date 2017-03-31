@@ -3,15 +3,11 @@
     Layout = null;
 
 }
-@if (Model.Count() == 1)
-{
-    <script>
-        $(document).ready(function () {
-            $('a', "#dvCreateEvent").click();
-        });
-    </script>
-}
-<div class="panel panel-default AppForm" id="dvCreateEvent">
+<script src="@Url.Content("~/Scripts/jquery-1.10.2.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/Entity.js")" type="text/javascript"></script>
+@Scripts.Render("~/bundles/common1")
+@Scripts.Render("~/bundles/common2")
+<div class="panel panel-default AppForm">
     <div class="panel-body">
         <br />
         <div class="row">
@@ -21,7 +17,7 @@
                         @foreach (var item in Model)
                         {
 
-                            <a data-original-title='@item.Value' data-placement="top" style="padding:3px 5px;" onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Create", item.Key, new { UrlReferrer = Request.UrlReferrer, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), viewtype = Convert.ToString(ViewBag.TemplatesName), startDate = ViewData["startDate"], slotID = ViewData["slotID"] }, null) + "');")>
+                            <a data-original-title='@item.Value' data-placement="top" style="padding:3px 5px;" onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Create", item.Key, new { UrlReferrer = Request.UrlReferrer, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),viewtype = Convert.ToString(ViewBag.TemplatesName) }, null) + "');")>
                                 <input type="radio" name="opinions" id="radio-1" /> Add @item.Value
                             </a>
                             <br />
@@ -35,3 +31,7 @@
     </div>
 </div>
 
+@Scripts.Render("~/bundles/bootstrap")
+@Scripts.Render("~/bundles/jqueryval")
+@Scripts.Render("~/bundles/common2")
+@Scripts.Render("~/bundles/common3")

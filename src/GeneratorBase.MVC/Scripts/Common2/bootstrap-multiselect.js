@@ -241,7 +241,7 @@
             nSelectedText: 'selected',
             numberDisplayed: 3,
             templates: {
-                button: '<button type="button" tempclass="selectmulti" class="multiselect dropdown-toggle multiselectFix" data-toggle="dropdown"></button>',
+                button: '<button type="button" class="multiselect dropdown-toggle multiselectFix" data-toggle="dropdown"></button>',
                 ul: '<ul class="multiselect-container dropdown-menu"></ul>',
                 filter: '<div class="input-group"><input class="form-control multiselect-search" type="text"></div>',
                 li: '<li><a href="javascript:void(0);"><label></label></a></li>',

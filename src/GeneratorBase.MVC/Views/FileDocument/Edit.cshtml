@@ -44,13 +44,6 @@
     }
 }
 @{
-    if (!string.IsNullOrEmpty(ViewBag.FileDocumentIsGroupsHiddenRule))
-    {
-        @Html.Raw(ViewBag.FileDocumentIsGroupsHiddenRule);
-    }
-}
-
-@{
     if (!string.IsNullOrEmpty(ViewBag.FileDocumentIsSetValueUIRule))
     {
         @Html.Raw(ViewBag.FileDocumentIsSetValueUIRule);
@@ -256,7 +249,6 @@
 
 			</div><div class="clearfix" style="clear:both"></div>
 </div>
-
 </div> <!-- /tab-content --><br />
 
 <br/>

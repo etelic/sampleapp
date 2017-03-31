@@ -281,10 +281,6 @@ namespace GeneratorBase.MVC.Controllers
                 ViewBag.HiddenRule = true;
             }
             //
-            if (ActionTypeId != null && ActionTypeId.Trim() == "12")
-            {
-                ViewBag.GroupsHiddenRule = true;
-            }
             if (BusinessRuleId != null)
             {
                 BusinessRuleContext dbRuleConditions = new BusinessRuleContext();
@@ -511,7 +507,7 @@ namespace GeneratorBase.MVC.Controllers
                         }
 
 
-                        if (item.ParameterName == "NotifyToRole")
+                        if (item.ParameterName == "NotifyToRole" )
                         {
                             ActionArgs ActionArgNotifyToRole = db.ActionArgss.Where(p => p.Id == item.Id).FirstOrDefault(p => p.ParameterName == "NotifyToRole");
                             if (ActionArgNotifyToRole != null)
@@ -1237,3 +1233,4 @@ namespace GeneratorBase.MVC.Controllers
 
     }
 }
+

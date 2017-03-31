@@ -23,10 +23,6 @@
             $('#ParameterValue').val("Set as Hidden");
             $('#ParameterValue').attr('readonly', 'readonly');
         }
-        if ("@ViewBag.GroupsHiddenRule".toUpperCase() == "TRUE") {
-            $('#ParameterValue').val("Set as Hidden Groups");
-            $('#ParameterValue').attr('readonly', 'readonly');
-        }
         //
     });
     if ("@ViewBag.Parameters" != null) {
@@ -51,58 +47,58 @@
 @using (Html.BeginForm("CreateQuick", "ActionArgs", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
     @Html.AntiForgeryToken();
-                            Html.ValidationSummary(true);
-                            Html.EnableClientValidation();
-                            <div class="row">
-                                <div class="col-md-12 col-sm-12 col-xs-12">
-                                    <div class="panel panel-default AppForm">
-                                        <div class="panel-body">
-                                            <div class="row">
-                                                <div class='col-sm-6'>
-                                                    <div class='form-group'>
-                                                        <label>@Html.LabelFor(model => model.ParameterName) <span class="text-danger-reg">*</span></label>
-                                                        <div class="input-group" id="dvPropList" name="PropList">
-                                                            @Html.DropDownList("PropertyListActionArg", null, new { @multiple = "multiple" })
-                                                            @Html.TextBoxFor(model => model.ParameterName, new { style = "border:none !important;Width:0px !important;" })
-                                                            @Html.ValidationMessageFor(model => model.ParameterName)
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class='col-sm-6'>
-                                                    <div class='form-group'>
-                                                        <label>@Html.LabelFor(model => model.ParameterValue) <span class="text-danger-reg">*</span></label>
-                                                        @Html.TextBoxFor(model => model.ParameterValue, new { @class = "form-control" })
-                                                        @Html.ValidationMessageFor(model => model.ParameterValue)
-                                                    </div>
-                                                </div>
-                                                <div class='col-sm-6' style="visibility:hidden;">
-                                                    <div class='form-group'>
-                                                        <label>@Html.LabelFor(model => model.ActionArgumentsID) </label>
-                                                        <div class="input-group">
-                                                            @Html.DropDownList("ActionArgumentsID", null, "--Select Action--",
+    Html.ValidationSummary(true);
+    Html.EnableClientValidation();
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="panel panel-default AppForm">
+                <div class="panel-body">
+                    <div class="row">
+                        <div class='col-sm-6'>
+                            <div class='form-group'>
+                                <label>@Html.LabelFor(model => model.ParameterName) <span class="text-danger-reg">*</span></label>
+                                <div class="input-group" id="dvPropList" name="PropList">
+                                    @Html.DropDownList("PropertyListActionArg", null, new { @multiple = "multiple" })
+                                    @Html.TextBoxFor(model => model.ParameterName, new { style = "border:none !important;Width:0px !important;" })
+                                    @Html.ValidationMessageFor(model => model.ParameterName)
+                                </div>
+                            </div>
+                        </div>
+                        <div class='col-sm-6'>
+                            <div class='form-group'>
+                                <label>@Html.LabelFor(model => model.ParameterValue) <span class="text-danger-reg">*</span></label>
+                                @Html.TextBoxFor(model => model.ParameterValue, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.ParameterValue)
+                            </div>
+                        </div>
+                        <div class='col-sm-6' style="visibility:hidden;">
+                            <div class='form-group'>
+                                <label>@Html.LabelFor(model => model.ActionArgumentsID) </label>
+                                <div class="input-group">
+                                    @Html.DropDownList("ActionArgumentsID", null, "--Select Action--",
                                         new
                                         {
                                             @class = "chosen-select form-control",
                                             @HostingName = "RuleAction",
                                             @dataurl = Url.Action("GetAllValue", "RuleAction", null),
                                         })
-                                                            @Html.ValidationMessageFor(model => model.ActionArgumentsID)
-                                                            <div class="input-group-btn">
-                                                                <a class="btn btn-default btn ie8fix" href="#">
-                                                                    <span class="glyphicon glyphicon-plus-sign"></span>
-                                                                </a>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
+                                    @Html.ValidationMessageFor(model => model.ActionArgumentsID)
+                                    <div class="input-group-btn">
+                                        <a class="btn btn-default btn ie8fix" href="#">
+                                            <span class="glyphicon glyphicon-plus-sign"></span>
+                                        </a>
                                     </div>
                                 </div>
                             </div>
-                            <button type="button" class="btn btn-default btn-sm" data-dismiss="modal" aria-hidden="true">Cancel</button>
-                            @*@Html.ActionLink("Cancel", "Cancel", new { UrlReferrer = ViewData["ActionArgsParentUrl"] }, new { @onclick = "", @class = "btn btn-default btn-sm" })*@
-                            <input type="submit" value="Create" class="btn btn-primary btn-sm" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <button type="button" class="btn btn-default btn-sm" data-dismiss="modal" aria-hidden="true">Cancel</button>
+    @*@Html.ActionLink("Cancel", "Cancel", new { UrlReferrer = ViewData["ActionArgsParentUrl"] }, new { @onclick = "", @class = "btn btn-default btn-sm" })*@
+    <input type="submit" value="Create" class="btn btn-primary btn-sm" />
 }
 @Scripts.Render("~/bundles/jqueryval")
 <script src="@Url.Content("~/Scripts/Common2/bootstrap-multiselect.js")" type="text/javascript"></script>

@@ -3,11 +3,6 @@
     var checkboxHtmlAttributes = new Dictionary<string, object>
     {{"attibute1", "value1"},
     {"attribute2", "value2"}};
-    var isadmin = ((GeneratorBase.MVC.Models.CustomPrincipal)User).IsAdminUser(Model.UserName);
-    if (isadmin || ((GeneratorBase.MVC.Models.CustomPrincipal)User).Name == Model.UserName)
-    {
-        checkboxHtmlAttributes.Add("disabled", "disabled");
-    }
 }
 <tr>
     @Html.HiddenFor(model => model.UserName)

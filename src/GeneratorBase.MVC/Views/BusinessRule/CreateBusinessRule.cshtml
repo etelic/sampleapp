@@ -12,11 +12,9 @@
         new SelectListItem() {Text="Email Notification", Value="4"},
         new SelectListItem() {Text="Filter Dropdown", Value="5"},
         new SelectListItem() {Text="Make Fields Hidden", Value="6"},
-         new SelectListItem() {Text="Make Groups Hidden", Value="12"},
         new SelectListItem() {Text="Set Value", Value="7"},
         new SelectListItem() {Text="Invoke Action", Value="8"},
         new SelectListItem() {Text="Validate Before Save", Value="10"},
-
     };
 }
 
@@ -335,9 +333,9 @@
                                 cache: false,
                                 async: false,
                                 success: function (data) {
-                                    result = data.Name;
-                                    assocProp = "DisplayValue";
-                                    propType = "Association";
+                                        result = data.Name;
+                                        assocProp = "DisplayValue";
+                                        propType = "Association";
                                 }
                             });
                         }
@@ -361,7 +359,7 @@
                                         countItems++;
                                     }
                                     $("#SuggestedPropertyValue").html(optionDOM);
-                                    $("#SuggestedPropertyValue").multiselect('rebuild');
+                                    $("#SuggestedPropertyValue").multiselect('rebuild');                                    
                                 },
                                 error: function (jqXHR, textStatus, errorThrown) {
                                     alert("error");
@@ -574,7 +572,7 @@
                     return $(this).val();
                 else
                     return $(this).text();
-                // return $(this).val();
+               // return $(this).val();
             }).get().join();
             if (option_all != "")
                 $("#ConditionValue").val(option_all);
@@ -723,14 +721,6 @@
                 $('#alertbody').html("<li>Select atleast one property !</li>");
                 return false;
             }
-        if (action == "ruletype12")
-            if ($("#GroupList").val() == undefined) {
-                $('#dvalert').attr("class", "modal fade in");
-                $('#dvalert').attr("aria-hidden", "false");
-                $('#dvalert').attr("style", "display:block;");
-                $('#alertbody').html("<li>Select atleast one group !</li>");
-                return false;
-            }
         if (action == "ruletype5")
             if ($("#Dropdown").val() == undefined) {
                 $('#dvalert').attr("class", "modal fade in");
@@ -777,7 +767,6 @@
                 $('#alertbody').html("<li>Select atleast one verb !</li>");
                 return false;
             }
-
         var str = "<tr>";
         var type = "";
 
@@ -829,24 +818,7 @@
                 $("#PropertyList1 option:selected").removeAttr("selected");
                 $("#PropertyList1").multiselect('rebuild');
             } else {
-                if (action == "ruletype12") {
-                    str += "<td>Hidden Groups</td>";
-                    type = '12';
-
-                    var option_all = $("#GroupList option:selected").map(function () {
-                        return $(this).text();
-                    }).get().join();
-                    var val = $("#GroupList").val();
-                    str += "<td>" + option_all + "</td>";
-
-                    if (!iselse)
-                        $("#lblruletype" + type).val(val + "|" + option_all);
-                    else
-                        $("#lblruletype" + type + "else").val(val + "|" + option_all);
-                    $("#GroupList option:selected").removeAttr("selected");
-                    $("#GroupList").multiselect('rebuild');
-                }
-                else if (action == "ruletype4") {
+                if (action == "ruletype4") {
                     var valNotify = "";
                     for (var o = 0; o < $('#NotifyRoleList option:selected').length; o++) {
                         valNotify += $('#NotifyRoleList option:selected')[o].text + ",";
@@ -955,7 +927,7 @@
         str += "<td><i name=\"lblruletype" + type + "\" onclick=\"deleteRow(this);\" class=\"fam-delete\"></i></td>";
         $('#tblActionList').show();
         $('#tblActionList').append(str);
-
+        
     }
     @*function getInlineAssociations(entityName) {
         var strAssociationList = "";
@@ -1001,9 +973,6 @@
             });
             if (SelectedText.length == 1 && (SelectedText == 2 || SelectedText == 3 || SelectedText == 6)) {
                 $('#ruletype23').attr("class", "in");
-            }
-            else if (SelectedText == 12) {
-                $('#ruletype12').attr("class", "in");
             }
             else {
                 if (SelectedText == 4 || SelectedText == 7 || SelectedText == 8) {
@@ -1149,24 +1118,7 @@
                 error: function (jqXHR, textStatus, errorThrown) {
                 }
             });
-            //Entity Groups
-            $.ajax({
-                url: '@Url.Action("GetGroupsofEntity", "BusinessRule")' + '?Entity=' + SelectedText,
-                type: "GET",
-                cache: false,
-                async: false,
-                success: function (result) {
-                    var optionDOM = '<option value="SelectGroup">--Select Group--</option>';
-                    for (i = 0; i < result.length; i++) {
-                        optionDOM += '<option value="' + result[i].Key + '">' + result[i].Value + '</option>';
-                    }
-                    $("#" + "GroupList").html(optionDOM);
-                    $("#" + "GroupList").multiselect('rebuild');
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    alert("error");
-                }
-            })
+            //
         });
         $('#ConditionOperator').val($('#OperatorList :selected').val());
         $('#OperatorList').change(function () {
@@ -1876,22 +1828,6 @@
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <div id="ruletype12" class="collapse" name="ruletype">
-                                                        <div class="panel panel-default AppForm">
-                                                            <div class="panel-body">
-                                                                <div class='form-group'>
-                                                                    <div class='col-sm-4'>
-                                                                        <label>Select Groups<span class="text-danger-reg">*</span></label>
-                                                                    </div>
-                                                                    <div class='col-sm-6'>
-                                                                        @Html.DropDownList("GroupList", null, new { @multiple = "multiple" })
-                                                                        @Html.TextBox("GroupListValue", null, new { @class = "form-control hidden" })
-                                                                    </div>
-                                                                </div>
-                                                                <button type="button" id="btnAddAction12" onclick="AddActionInGrid('ruletype12')" class="btn btn-primary btn-sm">Add Action</button>
-                                                            </div>
-                                                        </div>
-                                                    </div>
                                                     <div id="ruletype5" class="collapse" name="ruletype">
                                                         <div class="panel panel-default AppForm">
                                                             <div class="panel-body">
@@ -1976,7 +1912,6 @@
                                                             </div>
                                                         </div>
                                                     </div>
-
                                                     <div id="Des_Table" style="padding-top:5px;" class="table-responsive" style="overflow-x:auto;">
                                                         <table id="tblActionList" style="display:none;table-layout: fixed;" class="table table-striped table-bordered table-hover table-condensed">
                                                             <thead>
@@ -2037,7 +1972,6 @@
                             @Html.TextBox("lblrulecondition", null, new { @class = "hidden" })
                             @Html.TextBox("lblruletype10", null, new { @class = "hidden" })
                             @Html.TextBox("lblruletype11", null, new { @class = "hidden" })
-                            @Html.TextBox("lblruletype12", null, new { @class = "hidden" })
 
                             @Html.TextBox("lblruletype1else", null, new { @class = "hidden" })
                             @Html.TextBox("lblruletype2else", null, new { @class = "hidden" })
@@ -2049,8 +1983,7 @@
                             @Html.TextBox("lblruletype8else", null, new { @class = "hidden" })
                             @Html.TextBox("lblruletype10else", null, new { @class = "hidden" })
                             @Html.TextBox("lblruletype11else", null, new { @class = "hidden" })
-                            @Html.TextBox("lblruletype12else", null, new { @class = "hidden" })
-
+    
                             <br />
                             <div class="modal fade" aria-hidden="true" id="dvalert">
                                 <div class="modal-dialog">

@@ -2,7 +2,6 @@
 
 @{
     ViewBag.Title = "Role List";
-    var userrolelist = (new GeneratorBase.MVC.Models.CustomRoleProvider()).GetRolesForUser(User.Name);
 }
 <div class="row">
     <div class="col-lg-12">
@@ -55,19 +54,19 @@
                                                             @Html.ActionLink("Edit", "EditRole", new { id = item.id })
                                                         </li>
                                                     }
-                                                    @if (User.CanViewAdminFeature("RoleEntityPermission") && !userrolelist.Contains(item.Name))
+                                                    @if (User.CanViewAdminFeature("RoleEntityPermission"))
                                                     {
                                                         <li>
                                                             @Html.ActionLink("Permission", "Index", "Permission", new { RoleName = item.Name }, null)
                                                         </li>
                                                     }
-                                                    @if (User.CanViewAdminFeature("FieldLevelSecurity") && !userrolelist.Contains(item.Name))
+                                                    @if (User.CanViewAdminFeature("FieldLevelSecurity"))
                                                     {
                                                         <li>
                                                             @Html.ActionLink("Field Level Security", "Fls", "Permission", new { RoleName = item.Name }, null)
                                                         </li>
                                                     }
-                                                    @if (User.CanDeleteAdminFeature("Role") && !userrolelist.Contains(item.Name))
+                                                    @if (User.CanDeleteAdminFeature("Role"))
                                                     {
                                                         <li>
                                                             @Html.ActionLink("Delete", "DeleteRole", new { id = item.id })
@@ -79,7 +78,7 @@
                                                             @Html.ActionLink("Assign Users", "UsersInRole", new { id = item.id })
                                                         </li>
                                                     }
-                                                    @if (User.IsAdmin)
+                                                    @if (User.CanEditAdminFeature("AssignUserRole"))
                                                     {
                                                     <li>
                                                         @Html.ActionLink("Set this as Default Role for New User", "SetDefaultRole", "Admin", new { RoleName = item.Name }, null)

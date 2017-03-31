@@ -49,7 +49,7 @@
                                         @Html.Hidden("AssociatedActionTypeIDhdn", item.AssociatedActionTypeID)
                                     </td>
                                 }
-                                @if (item.associatedactiontype != null && (item.associatedactiontype.TypeNo == 2 || item.associatedactiontype.TypeNo == 4 || item.associatedactiontype.TypeNo == 6 || item.associatedactiontype.TypeNo == 7 || item.associatedactiontype.TypeNo == 8 || item.associatedactiontype.TypeNo == 5 || item.associatedactiontype.TypeNo == 12))
+                                @if (item.associatedactiontype != null && (item.associatedactiontype.TypeNo == 2 || item.associatedactiontype.TypeNo == 4 || item.associatedactiontype.TypeNo == 6 || item.associatedactiontype.TypeNo == 7 || item.associatedactiontype.TypeNo == 8 || item.associatedactiontype.TypeNo == 5))
                                 {
                                     foreach (var item1 in item.actionarguments)
                                     {
@@ -57,21 +57,16 @@
                                         {
                                             propertyValue += item1.ParameterName + "=" + item1.ParameterValue + "<br/>";
                                         }
-                                        else if (item.associatedactiontype.TypeNo == 12)
-                                        {
-                                            propertyValue += item1.ParameterName.Remove(0, item1.ParameterName.IndexOf('|') + 1) + ",";
-                                        }
                                         else
                                         {
                                             propertyValue += item1.ParameterName + ",";
                                         }
                                     }
                                     <td style="word-wrap:break-word">
-                                        @if (item.associatedactiontype.TypeNo == 7 || item.associatedactiontype.TypeNo == 8 || item.associatedactiontype.TypeNo == 5 || item.associatedactiontype.TypeNo == 12)
+                                        @if (item.associatedactiontype.TypeNo == 7 || item.associatedactiontype.TypeNo == 8 || item.associatedactiontype.TypeNo == 5)
                                         {
                                             @Html.Raw(propertyValue.TrimEnd(','))
                                         }
-
                                         else
                                         {
                                             <a style="cursor:pointer;" data-target="#quickaddActionArgs" data-toggle="modal" onclick=@Html.Raw("OpenQuickActionArgs('dvQAddquickaddActionArgs','"+item.Id+"','"+item.AssociatedActionTypeID+"');")><i class="glyphicon glyphicon-add-sign"></i>@Html.Raw(propertyValue.TrimEnd(','))</a>

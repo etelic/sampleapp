@@ -50,6 +50,10 @@
             {
                 <li><a href="@Url.Action("Index", "DynamicRoleMapping")"><i class="fa fa-cube"></i> Dynamic Roles</a></li>
             }
+			@if (User.CanViewAdminFeature("MultiTenantExtraPrivileges"))
+            {
+				<li><a href="@Url.Action("ApplicationExtraSecurity", "Account")"><i class="fa fa-star"></i> Multi-Tenant  Security</a></li>
+			}
 			@if (User.CanView("JournalEntry"))
 			{
 				 <li><a href="@Url.Action("Index", "JournalEntry")"><i class="fa fa-video-camera"></i> Journal Entry (Audit log)</a></li>
@@ -66,7 +70,7 @@
     </li>
     <li class="col-sm-4">
         <ul>
-		@if (User.CanViewAdminFeature("BusinessRule"))
+		 @if (User.CanViewAdminFeature("BusinessRule"))
             {
             <li class="dropdown-header">Business Rules</li>
             <li><a href="@Url.Action("Index", "BusinessRule")"><i class="fa fa-cog"></i> Define Business Rules</a></li>

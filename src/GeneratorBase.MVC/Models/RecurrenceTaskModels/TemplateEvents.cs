@@ -21,7 +21,6 @@ namespace GeneratorBase.MVC.Models
         public string EmailTo { get; set; }
         public string Notes { get; set; }
         public string EntityName { get; set; }
-        public Nullable<long> MainMeetingID { get; set; }
         public Nullable<DateTime> EventDate { get; set; }
 
         [DisplayName("Schedule"), Column("ScheduleID")]

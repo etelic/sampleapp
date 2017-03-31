@@ -180,7 +180,7 @@
             <div class="panel panel-default">
                 <div class="panel-heading clearfix" style="margin:0px; padding:8px;">
                     <div class="btn-group">
-                        @if (User.Identity.IsAuthenticated && User != null && User.CanAddAdminFeature("BusinessRule"))
+                        @if (User.Identity.IsAuthenticated && User != null && User.CanAdd("BusinessRule"))
                         {
 
                             <button class="btn btn-xs  btn-default tip-top" type="button"
@@ -443,32 +443,29 @@
                                                                     <a href="@Url.Action("Edit","BusinessRule", new { id = item.Id },null)"><i class="glyphicon glyphicon-edit"></i>  Edit</a>
                                                                 }
                                                             </li>*@
-                                                        @if (User.Identity.IsAuthenticated && User != null && (User.CanEditAdminFeature("BusinessRule")))
-                                                        {
-                                                            <li>
-                                                                @if (item.Disable)
-                                                                {
-                                                                    <a href="@Url.Action("EnableDisableRule", "BusinessRule", new { id = item.Id }, null)"><i class="glyphicon glyphicon-circle-arrow-up"></i>  Enable</a>
-                                                                }
-                                                                else
-                                                                {
-                                                                    <a href="@Url.Action("EnableDisableRule", "BusinessRule", new { id = item.Id }, null)"><i class="glyphicon glyphicon-circle-arrow-down"></i>  Disable</a>
-                                                                }
-                                                            </li>
-                                                            <li>
-                                                                @if (item.Freeze)
-                                                                {
-                                                                    <a href="@Url.Action("FreezeRule", "BusinessRule", new { id = item.Id }, null)"><i class="glyphicon glyphicon-circle-arrow-up"></i>  UnFreeze</a>
-                                                                }
-                                                                else
-                                                                {
-                                                                    <a href="@Url.Action("FreezeRule", "BusinessRule", new { id = item.Id }, null)"><i class="glyphicon glyphicon-circle-arrow-down"></i>  Freeze</a>
-                                                                }
-                                                            </li>
-                                                        }
+                                                        <li>
+                                                            @if (item.Disable)
+                                                            {
+                                                                <a href="@Url.Action("EnableDisableRule", "BusinessRule", new { id = item.Id }, null)"><i class="glyphicon glyphicon-circle-arrow-up"></i>  Enable</a>
+                                                            }
+                                                            else
+                                                            {
+                                                                <a href="@Url.Action("EnableDisableRule", "BusinessRule", new { id = item.Id }, null)"><i class="glyphicon glyphicon-circle-arrow-down"></i>  Disable</a>
+                                                            }
+                                                        </li>
+                                                        <li>
+                                                            @if (item.Freeze)
+                                                            {
+                                                                <a href="@Url.Action("FreezeRule", "BusinessRule", new { id = item.Id }, null)"><i class="glyphicon glyphicon-circle-arrow-up"></i>  UnFreeze</a>
+                                                            }
+                                                            else
+                                                            {
+                                                                <a href="@Url.Action("FreezeRule", "BusinessRule", new { id = item.Id }, null)"><i class="glyphicon glyphicon-circle-arrow-down"></i>  Freeze</a>
+                                                            }
+                                                        </li>
                                                         <li class="divider"></li>
                                                         <li>
-                                                            @if (User.Identity.IsAuthenticated && User != null && User.CanDeleteAdminFeature("BusinessRule"))
+                                                            @if (User.Identity.IsAuthenticated && User != null && User.CanDelete("BusinessRule"))
                                                             {
                                                                 <a href="@Url.Action("Delete", "BusinessRule", new { id = item.Id }, null)"><i class="glyphicon glyphicon-remove-sign"></i>  Delete</a>
                                                             }

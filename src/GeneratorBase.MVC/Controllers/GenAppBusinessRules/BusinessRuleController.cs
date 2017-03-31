@@ -415,7 +415,7 @@ namespace GeneratorBase.MVC.Controllers
             Dictionary<string, string> PropertyList = new Dictionary<string, string>();
             PropertyList.Add("0", "--Select Property--");
             ViewBag.PropertyList = new SelectList(PropertyList, "key", "value");
-            ViewBag.PropertyList7 = ViewBag.GroupList = ViewBag.PropertyList1 = new SelectList(PropertyList, "key", "value");
+            ViewBag.PropertyList7 = ViewBag.PropertyList1 = new SelectList(PropertyList, "key", "value");
 
             ViewBag.IsContainsCondition = businessrule.ruleconditions.Count() > 0 ? true : false;
 
@@ -462,7 +462,10 @@ namespace GeneratorBase.MVC.Controllers
             Dictionary<string, string> PropertyList = new Dictionary<string, string>();
             PropertyList.Add("0", "--Select Property--");
             ViewBag.PropertyList = new SelectList(PropertyList, "key", "value");
-            ViewBag.PropertyList7 = ViewBag.PropertyList1 = ViewBag.GroupList = new SelectList(PropertyList, "key", "value");
+            ViewBag.PropertyList7 = ViewBag.PropertyList1 = new SelectList(PropertyList, "key", "value");
+
+
+
 
             var RoleList = (new GeneratorBase.MVC.Models.CustomRoleProvider()).GetAllRoles().ToList();
             RoleList.Add("All");
@@ -501,9 +504,8 @@ namespace GeneratorBase.MVC.Controllers
         [HttpPost]
         [ValidateInput(false)]
         public ActionResult CreateBusinessRuleNew([Bind(Include = "Id,RuleName,EntityName,Roles,DateCreated1,AssociatedBusinessRuleTypeID,Description,Disable,Freeze,InformationMessage,FailureMessage,T_SchedulerTaskID,t_schedulertask")] BusinessRule businessrule, string UrlReferrer, string TimeValue, string NotifyTo, string NotifyToExtra, string AlertMessage, string PropertyName, string ConditionOperator, string ConditionValue, string PropertyRuleValue, string PropertyList, string RoleListValue, string PropertyList1Value, string PropertyList7Value, string Emailids, string TimeRuleApplyOnValue, string Dropdown, string lblrulecondition, string NotifyToRole, string ScheduledDateTimeEnd, string ScheduledDateTimeStart, string ScheduledDailyTime,
-            string lblruletype1, string lblruletype2, string lblruletype3, string lblruletype4, string lblruletype5, string lblruletype6, string lblruletype7, string lblruletype8, string lblruletype10, string lblruletype11, string lblruletype12,
-            string lblruletype1else, string lblruletype2else, string lblruletype3else, string lblruletype4else, string lblruletype5else, string lblruletype6else, string lblruletype7else, string lblruletype8else,
-            string lblruletype10else, string lblruletype11else, string lblruletype12else)
+            string lblruletype1, string lblruletype2, string lblruletype3, string lblruletype4, string lblruletype5, string lblruletype6, string lblruletype7, string lblruletype8, string lblruletype10, string lblruletype11,
+            string lblruletype1else, string lblruletype2else, string lblruletype3else, string lblruletype4else, string lblruletype5else, string lblruletype6else, string lblruletype7else, string lblruletype8else, string lblruletype10else, string lblruletype11else)
         {
             if (businessrule.AssociatedBusinessRuleTypeID != 5)
             {
@@ -640,35 +642,6 @@ namespace GeneratorBase.MVC.Controllers
                     }
                     businessrule.ruleaction.Add(newrule);
                 }
-                if (!string.IsNullOrEmpty(lblruletype12) || !string.IsNullOrEmpty(lblruletype12else))
-                {
-                    RuleAction newrule = new RuleAction();
-                    newrule.ActionName = "PropertiesRule";
-                    newrule.AssociatedActionTypeID = 12;
-                    string lblrule = lblruletype12;
-                    if (!string.IsNullOrEmpty(lblruletype12else))
-                    {
-                        newrule.IsElseAction = true;
-                        lblrule = lblruletype12else;
-                    }
-                    else
-                        newrule.IsElseAction = false;
-
-                    var lblrule1 = lblrule.Split("|".ToArray());
-                    var lblruleId = lblrule1[0].Split(",".ToCharArray());
-                    var lblruleName = lblrule1[1].Split(",".ToCharArray());
-
-                    //foreach (string str in lblrule1[0].Split(",".ToCharArray()))
-                    for (int cnt = 0; cnt < lblruleId.Length; cnt++)
-                    {
-                        if (string.IsNullOrEmpty(lblruleId[cnt])) continue;
-                        ActionArgs newactionargs = new ActionArgs();
-                        newactionargs.ParameterName = lblruleId[cnt] + "|" + lblruleName[cnt];
-                        newactionargs.ParameterValue = "GroupsHidden";
-                        newrule.actionarguments.Add(newactionargs);
-                    }
-                    businessrule.ruleaction.Add(newrule);
-                }
                 // 
                 if (!string.IsNullOrEmpty(lblruletype3) || !string.IsNullOrEmpty(lblruletype3else))
                 {
@@ -763,12 +736,12 @@ namespace GeneratorBase.MVC.Controllers
                     newActionArgs1.ParameterName = "NotifyTo";
                     newActionArgs1.ParameterValue = lblrule;
                     newrule.actionarguments.Add(newActionArgs1);
-
+                    
                     ActionArgs newActionArgs = new ActionArgs();
                     newActionArgs.ParameterName = "TimeValue";
                     newActionArgs.ParameterValue = TimeValue;
                     newrule.actionarguments.Add(newActionArgs);
-
+                   
 
                     if (!string.IsNullOrEmpty(NotifyToExtra))
                     {
@@ -1234,16 +1207,6 @@ namespace GeneratorBase.MVC.Controllers
             }
             return Json("Failure", JsonRequestBehavior.AllowGet);
         }
-        public JsonResult GetGroupsofEntity(string Entity)
-        {
-            var Ent = ModelReflector.Entities.First(p => p.Name == Entity);
-            Dictionary<string, string> grouplist = new Dictionary<string, string>();
-            foreach (var item in Ent.Groups)
-            {
-                grouplist.Add(item.Id, item.Name);
-            }
-            return Json(grouplist.ToList(), JsonRequestBehavior.AllowGet);
-        }
         public ActionResult GetBRDetailsById(string Id)
         {
             long LongId = Convert.ToInt64(Id);
@@ -1419,7 +1382,7 @@ namespace GeneratorBase.MVC.Controllers
             Dictionary<string, string> PropertyList = new Dictionary<string, string>();
             PropertyList.Add("0", "--Select Property--");
             ViewBag.PropertyList = new SelectList(PropertyList, "key", "value");
-            ViewBag.PropertyList7 = ViewBag.GroupList = ViewBag.PropertyList1 = new SelectList(PropertyList, "key", "value");
+            ViewBag.PropertyList7 = ViewBag.PropertyList1 = new SelectList(PropertyList, "key", "value");
 
             Dictionary<string, string> IsElseActionList = new Dictionary<string, string>();
             IsElseActionList.Add("0", "True");
@@ -1447,8 +1410,8 @@ namespace GeneratorBase.MVC.Controllers
         [ValidateAntiForgeryToken]
         [ValidateInput(false)]
         public ActionResult Edit([Bind(Include = "Id,RuleName,EntityName,Roles,DateCreated1,AssociatedBusinessRuleTypeID,EntitySubscribe,Disable,Description,Freeze,InformationMessage,FailureMessage,T_SchedulerTaskID,t_schedulertask")] BusinessRule businessrule, string UrlReferrer, string TimeValue, string NotifyTo, string NotifyToExtra, string AlertMessage, string PropertyName, string ConditionOperator, string ConditionValue, string PropertyRuleValue, string PropertyList, string RoleListValue, string PropertyList1Value, string PropertyList7Value, string Emailids, string TimeRuleApplyOnValue,
-            string lblruletype1, string lblruletype2, string lblruletype3, string lblruletype4, string lblruletype5, string lblruletype6, string lblruletype7, string lblruletype8, string lblruletype10, string lblruletype11, string lblruletype12, string Dropdown, string lblrulecondition, string NotifyToRole, string ScheduledDateTimeEnd, string ScheduledDateTimeStart, string ScheduledDailyTime,
-            string lblruletype1else, string lblruletype2else, string lblruletype3else, string lblruletype4else, string lblruletype5else, string lblruletype6else, string lblruletype7else, string lblruletype8else, string lblruletype10else, string lblruletype11else, string lblruletype12else)
+            string lblruletype1, string lblruletype2, string lblruletype3, string lblruletype4, string lblruletype5, string lblruletype6, string lblruletype7, string lblruletype8, string lblruletype10, string lblruletype11, string Dropdown, string lblrulecondition, string NotifyToRole, string ScheduledDateTimeEnd, string ScheduledDateTimeStart, string ScheduledDailyTime,
+            string lblruletype1else, string lblruletype2else, string lblruletype3else, string lblruletype4else, string lblruletype5else, string lblruletype6else, string lblruletype7else, string lblruletype8else, string lblruletype10else, string lblruletype11else)
         {
             if (businessrule.AssociatedBusinessRuleTypeID != 5)
             {
@@ -1617,38 +1580,6 @@ namespace GeneratorBase.MVC.Controllers
                     dbRuleAction.RuleActions.Add(newrule);
                     dbRuleAction.SaveChanges();
                     // businessrule.ruleaction.Add(newrule);
-                }
-                if (!string.IsNullOrEmpty(lblruletype12) || !string.IsNullOrEmpty(lblruletype12else))
-                {
-                    RuleAction newrule = new RuleAction();
-                    newrule.ActionName = "PropertiesRule";
-                    newrule.AssociatedActionTypeID = 12;
-                    newrule.RuleActionID = businessrule.Id;
-
-                    string lblrule = lblruletype12;
-                    if (!string.IsNullOrEmpty(lblruletype12else))
-                    {
-                        newrule.IsElseAction = true;
-                        lblrule = lblruletype12else;
-                    }
-                    else
-                        newrule.IsElseAction = false;
-
-                    var lblrule1 = lblrule.Split("|".ToArray());
-                    var lblruleId = lblrule1[0].Split(",".ToCharArray());
-                    var lblruleName = lblrule1[1].Split(",".ToCharArray());
-
-                    //foreach (string str in lblrule1[0].Split(",".ToCharArray()))
-                    for (int cnt = 0; cnt < lblruleId.Length; cnt++)
-                    {
-                        if (string.IsNullOrEmpty(lblruleId[cnt])) continue;
-                        ActionArgs newactionargs = new ActionArgs();
-                        newactionargs.ParameterName = lblruleId[cnt] + "|" + lblruleName[cnt];
-                        newactionargs.ParameterValue = "GroupsHidden";
-                        newrule.actionarguments.Add(newactionargs);
-                    }
-                    dbRuleAction.RuleActions.Add(newrule);
-                    dbRuleAction.SaveChanges(); ;
                 }
                 // 
                 if (!string.IsNullOrEmpty(lblruletype3) || !string.IsNullOrEmpty(lblruletype3else))

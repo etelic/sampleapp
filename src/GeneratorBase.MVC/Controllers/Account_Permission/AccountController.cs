@@ -25,7 +25,6 @@ using Microsoft.AspNet.Identity.Owin;
 namespace GeneratorBase.MVC.Controllers
 {
     [Authorize]
-	[NoCache]
     public class AccountController : IdentityBaseController
     {
 		/// <summary>
@@ -188,8 +187,7 @@ namespace GeneratorBase.MVC.Controllers
                                     {
                                         int accessFailedCount = await UserManager.GetAccessFailedCountAsync(user1.Id);
                                         int attemptsLeft = Convert.ToInt32(db.AppSettings.Where(p => p.Key == "MaxFailedAccessAttemptsBeforeLockout").FirstOrDefault().Value) - accessFailedCount;
-                                        //message = string.Format("Invalid credentials. You have {0} more attempt(s) before your account gets locked out.", attemptsLeft);
-										message = "Invalid credentials.";
+                                        message = string.Format("Invalid credentials. You have {0} more attempt(s) before your account gets locked out.", attemptsLeft);
                                     }
                                     ModelState.AddModelError("", message);
                                 }
@@ -227,8 +225,7 @@ namespace GeneratorBase.MVC.Controllers
             if (((CustomPrincipal)User).CanAddAdminFeature("User"))
             {
                 var role = Identitydb.Roles;
-				var adminRoles = (new GeneratorBase.MVC.Models.CustomPrincipal(User)).GetAdminRoles().Split(",".ToCharArray());
-                ViewBag.RoleList = role.Where(p => !adminRoles.Contains(p.Name)).ToList().OrderBy(p => p.Name);
+                ViewBag.RoleList = role.ToList().OrderBy(p => p.Name);
                 return View();
             }
             else
@@ -497,7 +494,7 @@ namespace GeneratorBase.MVC.Controllers
                             {
                             }
                         }
-                        mailsubject = string.IsNullOrEmpty(EmailTemplate.EmailSubject) ? CommonFunction.Instance.AppName() + " :Reset your password !" : EmailTemplate.EmailSubject; ;
+                        mailsubject = string.IsNullOrEmpty(EmailTemplate.EmailSubject) ? CommonFunction.Instance.AppName() + " :Your password changed successfully!" : EmailTemplate.EmailSubject; ;
                         sendEmail.Notify(User.Email, mailbody, mailsubject);
                     }
                     return Json("Ok", "application/json", System.Text.Encoding.UTF8, JsonRequestBehavior.AllowGet);
@@ -725,12 +722,14 @@ namespace GeneratorBase.MVC.Controllers
 		public ActionResult LogOff(string UrlReferrer)
         {
 			return RedirectToAction("Index", "Home");
+			RemoveMultitenant(((CustomPrincipal)User).Name);
 		}
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult LogOff()
         {
             AuthenticationManager.SignOut();
+			RemoveMultitenant(((CustomPrincipal)User).Name);
 			string AppUrl = System.Configuration.ConfigurationManager.AppSettings["AppUrl"];
 			 HttpCookie userrole = new HttpCookie(AppUrl+"CurrentRole");
             HttpCookie userpage = new HttpCookie("PageId");
@@ -756,6 +755,7 @@ namespace GeneratorBase.MVC.Controllers
         public ActionResult BrowserClose()
         {
             AuthenticationManager.SignOut();
+			RemoveMultitenant(((CustomPrincipal)User).Name);
 			string AppUrl = System.Configuration.ConfigurationManager.AppSettings["AppUrl"];
             HttpCookie userrole = new HttpCookie(AppUrl+"CurrentRole");
             HttpCookie userpage = new HttpCookie("PageId");
@@ -1107,8 +1107,6 @@ namespace GeneratorBase.MVC.Controllers
                 return RedirectToAction("Index", "Home");
             var user = Identitydb.Users.First(u => u.Id == id);
             var model = new SelectUserRolesViewModel(user);
-			var adminRoles = (new GeneratorBase.MVC.Models.CustomPrincipal(User)).GetAdminRoles().Split(",".ToCharArray());
-            model.Roles.RemoveAll(p =>adminRoles.Contains(p.RoleName));
             return View(model);
         }
         [HttpPost]
@@ -1162,7 +1160,6 @@ namespace GeneratorBase.MVC.Controllers
 
             var model1 = from s in model.Users.ToList()
                          select s;
-			model1 = model1.Where(p=>!((GeneratorBase.MVC.Models.CustomPrincipal)LogggedInUser).IsAdminUser(p.UserName) && ((GeneratorBase.MVC.Models.CustomPrincipal)LogggedInUser).Name != p.UserName);
             //model1 = model1.OrderBy(c => c.UserName);
             int pageSize = 10;
             int pageNumber = (page ?? 1);
@@ -1272,6 +1269,151 @@ namespace GeneratorBase.MVC.Controllers
         public ActionResult ReturnToUsersInRole(string urlReferrer)
         {
             return RedirectToAction("RoleList", "Account");
+        }
+		private void RemoveMultitenant(string username)
+        {
+            ApplicationDbContext ac = new ApplicationDbContext();
+            var oldAccess = ac.MultiTenantLoginSelected.FirstOrDefault(p => p.T_User == username);
+            if (oldAccess != null)
+            {
+                ac.MultiTenantLoginSelected.Remove(oldAccess);
+                ac.SaveChanges();
+            }
+        }
+		 [AllowAnonymous]
+        public ActionResult ApplicationExtraSecurity()
+        {
+            if (!((CustomPrincipal)User).CanViewAdminFeature("MultiTenantExtraPrivileges"))
+                return RedirectToAction("Index", "Home");
+            ApplicationDbContext user = new ApplicationDbContext();
+            ApplicationContext db = new ApplicationContext(new SystemUser());
+            var userlist = user.Users.OrderBy(p => p.UserName);
+            ViewBag.mainentitylist = new MultiSelectList(db.T_Organizations.OrderBy(p => p.DisplayValue).ToList(), "ID", "DisplayValue");
+            List<MultiTenantExtraAccess> model = new List<MultiTenantExtraAccess>();
+            ApplicationDbContext adb = new ApplicationDbContext();
+            foreach (var item in userlist)
+            {
+                MultiTenantExtraAccess obj = new MultiTenantExtraAccess();
+                obj.T_User = item.UserName;
+                var security = adb.MultiTenantExtraAccess.Where(p => p.T_User == item.UserName);
+                obj.T_MainEntity = security != null ? string.Join(",", security.Select(p => p.T_MainEntityID)) : "";// ViewBag.mainentitylist;
+                model.Add(obj);
+            }
+
+            return View(model);
+        }
+        public ActionResult ApplicationExtraSecurityByMainEntity()
+        {
+            if (!((CustomPrincipal)User).CanViewAdminFeature("MultiTenantExtraPrivileges"))
+                return RedirectToAction("Index", "Home");
+            ApplicationDbContext user = new ApplicationDbContext();
+            ApplicationContext db = new ApplicationContext(new SystemUser());
+            var userlist = user.Users.OrderBy(p => p.UserName);
+            var mainentitylist = db.T_Organizations.OrderBy(p => p.DisplayValue).ToList();
+            ViewBag.mainentitylist = new MultiSelectList(userlist, "UserName", "UserName");
+            List<MultiTenantExtraAccess> model = new List<MultiTenantExtraAccess>();
+            ApplicationDbContext adb = new ApplicationDbContext();
+            foreach (var item in mainentitylist)
+            {
+                MultiTenantExtraAccess obj = new MultiTenantExtraAccess();
+                obj.T_MainEntityID = item.Id;
+                obj.DisplayValue = item.DisplayValue;
+                var security = adb.MultiTenantExtraAccess.Where(p => p.T_MainEntityID == item.Id);
+                obj.T_MainEntity = security != null ? string.Join(",", security.Select(p => p.T_User)) : "";// ViewBag.mainentitylist;
+                model.Add(obj);
+            }
+
+            return View(model);
+        }
+        [HttpPost]
+        [AllowAnonymous]
+        public ActionResult ApplicationExtraSecurity(List<MultiTenantExtraAccess> model, string GroupBy)
+        {
+             if (!((CustomPrincipal)User).CanAddAdminFeature("MultiTenantExtraPrivileges"))
+                return RedirectToAction("Index", "Home");
+            if (ModelState.IsValid)
+            {
+                ApplicationDbContext adb = new ApplicationDbContext();
+                foreach (var item in adb.MultiTenantExtraAccess.ToList())
+                {
+                    adb.MultiTenantExtraAccess.Remove(item);
+                }
+                adb.SaveChanges();
+                
+                foreach (var item in model)
+                {
+                    if (!string.IsNullOrEmpty(item.T_MainEntity))
+                    {
+                        foreach (var mainid in item.T_MainEntity.Split(",".ToCharArray()))
+                        {
+                            if (!string.IsNullOrEmpty(mainid))
+                            {
+                                MultiTenantExtraAccess obj = new MultiTenantExtraAccess();
+                                if (GroupBy == "MainEntity")
+                                {
+                                    obj.T_MainEntityID = item.T_MainEntityID;
+                                    obj.T_User = mainid;
+                                }
+                                else
+                                {
+                                    obj.T_User = item.T_User;
+                                    obj.T_MainEntityID = Convert.ToInt64(mainid);
+                                }
+                                adb.MultiTenantExtraAccess.Add(obj);
+                            }
+                        }
+                    }
+                }
+                adb.SaveChanges();
+                if (GroupBy == "MainEntity")
+                    return RedirectToAction("ApplicationExtraSecurityByMainEntity");
+                else
+                    return RedirectToAction("ApplicationExtraSecurity");
+            }
+            ApplicationDbContext user = new ApplicationDbContext();
+            ApplicationContext db = new ApplicationContext(new SystemUser());
+            var userlist = user.Users;
+            ViewBag.mainentitylist = new MultiSelectList(db.T_Organizations.OrderBy(p => p.DisplayValue), "ID", "DisplayValue");
+            List<MultiTenantExtraAccess> modela = new List<MultiTenantExtraAccess>();
+            ApplicationDbContext adbc = new ApplicationDbContext();
+            foreach (var item in userlist)
+            {
+                MultiTenantExtraAccess obj = new MultiTenantExtraAccess();
+                obj.T_User = item.UserName;
+                var security = adbc.MultiTenantExtraAccess.FirstOrDefault(p => p.T_User == item.UserName);
+                obj.T_MainEntity = security != null ? security.T_MainEntity : "";// ViewBag.mainentitylist;
+                model.Add(obj);
+            }
+            return View(modela);
+        }
+		[AcceptVerbs(HttpVerbs.Get)]
+        [AllowAnonymous]
+        public JsonResult GetAllValue(string caller, string key, string AssoNameWithParent, string AssociationID, string ExtraVal)
+        {
+            ApplicationContext db = new ApplicationContext(new SystemUser());
+            IQueryable<T_Organization> list = db.T_Organizations;
+            if (key != null && key.Length > 0)
+            {
+                if (ExtraVal != null && ExtraVal.Length > 0)
+                {
+                    long? val = Convert.ToInt64(ExtraVal);
+                    var data = from x in list.Where(p => p.DisplayValue.Contains(key) && p.Id != val).Take(9).Union(list.Where(p => p.Id == val)).OrderBy(q => q.DisplayValue).ToList()
+                               select new { Id = x.Id, Name = x.DisplayValue };
+                    return Json(data, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                    var data = from x in list.Where(p => p.DisplayValue.Contains(key)).OrderBy(q => q.DisplayValue).Take(10).ToList()
+                               select new { Id = x.Id, Name = x.DisplayValue };
+                    return Json(data, JsonRequestBehavior.AllowGet);
+                }
+            }
+            else
+            {
+                    var data = from x in list.OrderBy(q => q.DisplayValue).Take(10).ToList()
+                               select new { Id = x.Id, Name = x.DisplayValue };
+                    return Json(data, JsonRequestBehavior.AllowGet);
+            }
         }
 #region Helpers
         private IAuthenticationManager AuthenticationManager

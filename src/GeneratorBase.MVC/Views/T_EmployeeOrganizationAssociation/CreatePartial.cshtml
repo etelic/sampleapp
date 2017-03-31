@@ -1,0 +1,331 @@
+﻿@model GeneratorBase.MVC.Models.T_EmployeeOrganizationAssociation
+<script>
+    var delay = (function () {
+        var timer = 0;
+        return function (callback, ms) {
+            clearTimeout(timer);
+            timer = setTimeout(callback, ms);
+        };
+    })();
+ $(document).ready(function () {
+	 $('#btnT_Employee').click(function () {
+        var dataurl = '@Url.Action("GetAllValues1")';
+        SearchListNew1($('#btnT_Employee'), dataurl, $('#txtSearchT_Employee').val(), 'T_Organization', '@ViewData["HostingEntityID"]', 'T_EmployeeOrganizationAssociation_T_Organization', 'T_EmployeeIDAvailable', 't_associatedemployeetype,t_associatedemployeestatus,t_employeeaddress');
+        return false;
+    });
+	 $('#btnT_Organization').click(function () {
+        var dataurl = '@Url.Action("GetAllValues1")';
+        SearchListNew1($('#btnT_Organization'), dataurl, $('#txtSearchT_Organization').val(), 'T_Employee', '@ViewData["HostingEntityID"]', 'T_EmployeeOrganizationAssociation_T_Employee', 'T_OrganizationIDAvailable', '');
+        return false;
+    });
+});
+</script>
+@using (Html.BeginForm("Create", "T_EmployeeOrganizationAssociation",new {UrlReferrer = Convert.ToString(ViewData["T_EmployeeOrganizationAssociationParentUrl"]), IsDDAdd = ViewBag.IsDDAdd }, FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+   @Html.AntiForgeryToken();
+    Html.ValidationSummary(true);
+    Html.EnableClientValidation();
+	<label id="ErrMsg" class="text-primary small pull-right" style="color:red; vertical-align:middle; font-weight:100;"></label>
+    <div class="row" style='display:none;' >
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="panel panel-default AppForm">
+                <div class="panel-body">
+               <div class="row" >         
+				@if (Convert.ToString(ViewData["AssociatedType"]).Trim() == "T_EmployeeOrganizationAssociation_T_Employee")
+                {
+				 <div class='col-sm-6 col-md-6 col-xs-12'>
+                        <div class='form-group'>
+                            <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.T_EmployeeID) </label>
+							<div class="input-group col-sm-7 col-md-7 col-xs-12">
+                            <div class="input-group" style="width:100%;">
+		@Html.DropDownList("T_EmployeeID", null, "-- Select --", new {    @class = "chosen-select form-control", @HostingName = "T_Employee", @dataurl = Url.Action("GetAllValue", "T_Employee",null) })
+                                @Html.ValidationMessageFor(model => model.T_EmployeeID)
+								@if (User.Identity.IsAuthenticated && User != null && User.CanAdd("T_Employee"))
+                                    {
+                                <div class="input-group-btn">
+									<a class="btn btn-default btn ie8fix"  data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Employee','dvPopup','" + Url.Action("CreateQuick", "T_Employee", new { UrlReferrer = Request.Url, HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), IsAddPop=true }) + "')")">
+										<span class="glyphicon glyphicon-plus-sign"></span>
+                                    </a>
+                                </div>
+								}
+                            </div>
+							</div>
+                        </div>
+                    </div>
+				}
+				@if (Convert.ToString(ViewData["AssociatedType"]).Trim() == "T_EmployeeOrganizationAssociation_T_Organization")
+                {
+				 <div class='col-sm-6 col-md-6 col-xs-12'>
+                        <div class='form-group'>
+                            <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.T_OrganizationID) </label>
+							<div class="input-group col-sm-7 col-md-7 col-xs-12">
+                            <div class="input-group" style="width:100%;">
+		@Html.DropDownList("T_OrganizationID", null, "-- Select --", new {    @class = "chosen-select form-control", @HostingName = "T_Organization", @dataurl = Url.Action("GetAllValue", "T_Organization",null) })
+                                @Html.ValidationMessageFor(model => model.T_OrganizationID)
+								@if (User.Identity.IsAuthenticated && User != null && User.CanAdd("T_Organization"))
+                                    {
+                                <div class="input-group-btn">
+									<a class="btn btn-default btn ie8fix"  data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Organization','dvPopup','" + Url.Action("CreateQuick", "T_Organization", new { UrlReferrer = Request.Url, HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), IsAddPop=true }) + "')")">
+										<span class="glyphicon glyphicon-plus-sign"></span>
+                                    </a>
+                                </div>
+								}
+                            </div>
+							</div>
+                        </div>
+                    </div>
+				}
+       </div>
+                        </div>
+                    </div>
+                </div>
+        </div>
+  if (Convert.ToString(ViewData["AssociatedType"]).Trim() != "T_EmployeeOrganizationAssociation_T_Employee")
+  { 
+	<div class="M2MList">
+		<div class="col-md-5">
+            <h4>
+                <span class="unselected-title">Search Employee </span>
+            </h4>
+            @Html.TextBox("txtSearchT_Employee", null, new { @class = "form-control", placeholder = "Search Employee", @size = 10, @dataurl = Url.Action("GetAllValues") })
+            
+				@if (ViewBag.t_associatedemployeetype!=null)
+                {
+						<div class='form-group col-sm-12' title="Employee Type" style="padding:10px 0px 0px 0px; margin:0px;">
+							<div class='form-group col-sm-4' style="padding:0px">
+								<label class="text-primary small"> Employee Type</label>
+							</div>
+							<div class="input-group col-sm-6" id="dvt_associatedemployeetype">
+		
+	 @Html.DropDownList("t_associatedemployeetype", null, new {   @multiple = "multiple", @HostingName = "T_Employeetype", @dataurl = Url.Action("GetAllMultiSelectValue", "T_Employeetype",null) })
+							</div>
+						</div>
+				}
+				@if (ViewBag.t_associatedemployeestatus!=null)
+                {
+						<div class='form-group col-sm-12' title="Employee Status" style="padding:10px 0px 0px 0px; margin:0px;">
+							<div class='form-group col-sm-4' style="padding:0px">
+								<label class="text-primary small"> Employee Status</label>
+							</div>
+							<div class="input-group col-sm-6" id="dvt_associatedemployeestatus">
+		
+	 @Html.DropDownList("t_associatedemployeestatus", null, new {   @multiple = "multiple", @HostingName = "T_Employeestatus", @dataurl = Url.Action("GetAllMultiSelectValue", "T_Employeestatus",null) })
+							</div>
+						</div>
+				}
+				@if (ViewBag.t_employeeaddress!=null)
+                {
+						<div class='form-group col-sm-12' title="Employee Address" style="padding:10px 0px 0px 0px; margin:0px;">
+							<div class='form-group col-sm-4' style="padding:0px">
+								<label class="text-primary small"> Employee Address</label>
+							</div>
+							<div class="input-group col-sm-6" id="dvt_employeeaddress">
+		
+	 @Html.DropDownList("t_employeeaddress", null, new {   @multiple = "multiple", @HostingName = "T_Address", @dataurl = Url.Action("GetAllMultiSelectValue", "T_Address",null) })
+							</div>
+						</div>
+				}
+					@if (ViewBag.t_employeeorganizationassociation!=null)
+                    {
+						<div class='form-group' title="Organization" style="display:none">
+							<label > Organization</label>
+                                <div class="input-group" id="dvt_employee">
+		
+	 @Html.DropDownList("t_employeeorganizationassociation", null, new {   @multiple = "multiple", @HostingName = "T_Organization", @dataurl = Url.Action("GetAllMultiSelectValue", "T_Organization",null) })
+                                </div>
+                        </div>
+					}
+				<br />
+                <button id="btnT_Employee" class="btn btn-primary btn-sm">Search</button>
+		</div>
+		<label style="display:none;">@Html.LabelFor(model => model.T_EmployeeID) </label>
+		<div class="col-md-7">
+			<div class="col-md-12">
+				<h4><span class="unselected-title">Available Employee </span> <span style="float:right; font-size:14px;"> Show @Html.DropDownList("PageSize", new SelectList(new Dictionary<string, string> { {"50","50"},{ "100", "100" }, { "200", "200" }, { "500", "500" }, { "All", "All" } }, "Key", "Value")
+                    ,new {@dataurl=Url.Action("GetAllValues"), onchange="ListBoxPagination(this,$('#txtSearchT_Employee').val(),'T_Employee', '"+ViewData["HostingEntityID"]+"', 'T_EmployeeOrganizationAssociation_T_Employee', 'T_EmployeeIDAvailable');"})
+			</span></h4>
+				
+				@Html.ListBox("T_EmployeeIDAvailable", null, new { @class = "optionvalue", @size = 10 })
+				
+				 </div>
+			<div class="col-md-12  btn-group" style="margin-top:10px;">
+				<a id="MoveRightT_Employee" onclick="Associate(event,'T_Employee');" class="btn btn-primary col-md-6"><span id="MoveRightT_Employee" class="glyphicon glyphicon-chevron-down"></span></a>
+				<a id="MoveLeftT_Employee" onclick="Associate(event,'T_Employee');" class="btn btn-primary col-md-6" ><span id="MoveLeftT_Employee" class="glyphicon glyphicon-chevron-up"></span></a>
+			</div>
+			<div class="col-md-12">
+				<h4><span class="selected-title">Selected Employee</span> </h4>
+				@Html.ListBox("T_EmployeeIDSelected", null, new { @class = "optionvalue", @size = 10 })
+			</div>
+		</div>
+	</div>
+    }
+  if (Convert.ToString(ViewData["AssociatedType"]).Trim() != "T_EmployeeOrganizationAssociation_T_Organization")
+  { 
+	<div class="M2MList">
+		<div class="col-md-5">
+            <h4>
+                <span class="unselected-title">Search Organization </span>
+            </h4>
+            @Html.TextBox("txtSearchT_Organization", null, new { @class = "form-control", placeholder = "Search Organization", @size = 10, @dataurl = Url.Action("GetAllValues") })
+            
+					@if (ViewBag.t_employeeorganizationassociation!=null)
+                    {
+						<div class='form-group' title="Employee" style="display:none">
+							<label > Employee</label>
+                                <div class="input-group" id="dvt_organization">
+		
+	 @Html.DropDownList("t_employeeorganizationassociation", null, new {   @multiple = "multiple", @HostingName = "T_Employee", @dataurl = Url.Action("GetAllMultiSelectValue", "T_Employee",null) })
+                                </div>
+                        </div>
+					}
+				<br />
+                <button id="btnT_Organization" class="btn btn-primary btn-sm">Search</button>
+		</div>
+		<label style="display:none;">@Html.LabelFor(model => model.T_OrganizationID) </label>
+		<div class="col-md-7">
+			<div class="col-md-12">
+				<h4><span class="unselected-title">Available Organization </span> <span style="float:right; font-size:14px;"> Show @Html.DropDownList("PageSize", new SelectList(new Dictionary<string, string> { {"50","50"},{ "100", "100" }, { "200", "200" }, { "500", "500" }, { "All", "All" } }, "Key", "Value")
+                    ,new {@dataurl=Url.Action("GetAllValues"), onchange="ListBoxPagination(this,$('#txtSearchT_Organization').val(),'T_Organization', '"+ViewData["HostingEntityID"]+"', 'T_EmployeeOrganizationAssociation_T_Organization', 'T_OrganizationIDAvailable');"})
+			</span></h4>
+				
+				@Html.ListBox("T_OrganizationIDAvailable", null, new { @class = "optionvalue", @size = 10 })
+				
+				 </div>
+			<div class="col-md-12  btn-group" style="margin-top:10px;">
+				<a id="MoveRightT_Organization" onclick="Associate(event,'T_Organization');" class="btn btn-primary col-md-6"><span id="MoveRightT_Organization" class="glyphicon glyphicon-chevron-down"></span></a>
+				<a id="MoveLeftT_Organization" onclick="Associate(event,'T_Organization');" class="btn btn-primary col-md-6" ><span id="MoveLeftT_Organization" class="glyphicon glyphicon-chevron-up"></span></a>
+			</div>
+			<div class="col-md-12">
+				<h4><span class="selected-title">Selected Organization</span> </h4>
+				@Html.ListBox("T_OrganizationIDSelected", null, new { @class = "optionvalue", @size = 10 })
+			</div>
+		</div>
+	</div>
+    }
+          @Html.ActionLink("Cancel", "Cancel", new { UrlReferrer = ViewData["T_EmployeeOrganizationAssociationParentUrl"] }, new { @onclick = "", @class = "btn btn-default btn-sm" })
+            <input type="submit" name="command" value="Create" class="btn btn-primary btn-sm" />
+	 <input type="hidden" name="hdncommand" value="" />
+	<br/><br/>
+}
+	<script>
+    $(function () {
+        var userAgent = navigator.userAgent.toLowerCase();
+        // Figure out what browser is being used
+        var browser = {
+            version: (userAgent.match(/.+(?:rv|it|ra|ie)[\/: ]([\d.]+)/) || [])[1],
+            safari: /webkit/.test(userAgent),
+            opera: /opera/.test(userAgent),
+            msie: /msie/.test(userAgent) && !/opera/.test(userAgent),
+            mozilla: /mozilla/.test(userAgent) && !/(compatible|webkit)/.test(userAgent)
+        };
+        if (!browser.msie) {
+            $('form').areYouSure();
+        }
+        else if (browser.version > 8.0) {
+            $('form').areYouSure();
+        }
+    });
+</script>
+@if(Convert.ToString(ViewData["AssociatedType"]).Trim() != "T_EmployeeOrganizationAssociation_T_Employee")
+{
+<script>
+function FillSelectedListBox()
+{
+	$("#T_EmployeeIDSelected option").prop("selected","selected");
+}
+</script>
+}
+<script>
+    $(document).ready(function () {
+        $('#').multiselect({
+            buttonWidth: '100%',
+            nonSelectedText: 'ALL',
+        });
+        $('#t_associatedemployeetype').multiselect({
+            buttonWidth: '100%',
+            nonSelectedText: 'ALL',
+        });
+        $('#t_associatedemployeestatus').multiselect({
+            buttonWidth: '100%',
+            nonSelectedText: 'ALL',
+        });
+        $('#t_employeeaddress').multiselect({
+            buttonWidth: '100%',
+            nonSelectedText: 'ALL',
+        });
+	});
+</script>
+@if(Convert.ToString(ViewData["AssociatedType"]).Trim() != "T_EmployeeOrganizationAssociation_T_Organization")
+{
+<script>
+function FillSelectedListBox()
+{
+	$("#T_OrganizationIDSelected option").prop("selected","selected");
+}
+</script>
+}
+<script>
+    $(document).ready(function () {
+        $('#').multiselect({
+            buttonWidth: '100%',
+            nonSelectedText: 'ALL',
+        });
+        $('#t_associatedemployeetype').multiselect({
+            buttonWidth: '100%',
+            nonSelectedText: 'ALL',
+        });
+        $('#t_associatedemployeestatus').multiselect({
+            buttonWidth: '100%',
+            nonSelectedText: 'ALL',
+        });
+        $('#t_employeeaddress').multiselect({
+            buttonWidth: '100%',
+            nonSelectedText: 'ALL',
+        });
+	});
+</script>
+	<script>
+            $("input[type='submit']").click(function () {
+			FillSelectedListBox();
+                var $this = $(this);
+                $('input:hidden[name="hdncommand"]').val($this.val());
+            });
+	</script>
+@{
+    var busineesrule = User.businessrules.Where(p => p.EntityName == "T_EmployeeOrganizationAssociation").ToList();
+    if ((busineesrule != null && busineesrule.Count > 0))
+    {
+        <script>
+            $("form").submit(function () {
+                    var flag = true;
+                    $.ajax({
+                        async: false,
+                        type: "GET",
+                        url: "@Url.Action("GetMandatoryProperties", "T_EmployeeOrganizationAssociation")",
+                        data: $(this).serialize(),
+                        success: function (data) {
+						$('[businessrule="mandatory"]').each(function () {
+                                $(this).removeAttr('required');
+                            });
+                            document.getElementById('ErrMsg').innerHTML = "";
+                            for (var key in data) {
+                                if ($.trim($('#' + key).val()).length == 0) {
+                                    $('#' + key).attr('required', 'required');
+									$('#' + key).attr('businessrule', 'mandatory');
+                                    flag = false;
+                                    document.getElementById('ErrMsg').innerHTML += data[key] + " is Mandatory.<br/>";
+                                }
+                            }
+                        },
+                        error: function (jqXHR, textStatus, errorThrown) {
+                            //alert(JSON.stringify(jqXHR));
+                            //alert(errorThrown);
+                        }
+                    });
+                    return flag;
+            });
+        </script>
+    }
+}
+
+

@@ -16,6 +16,47 @@
         }
     }
 </script>
+@if (ViewBag.SelectedMainEntityValue != null && ViewBag.SelectedMainEntityValue.Count > 1 && !User.IsAdmin)
+{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#SelectedMainEntityValue").val("All");
+            $("#SelectedMainEntity").on("change", function () {
+                $("#SelectedMainEntityValue").val($("#SelectedMainEntity option:selected").text());
+            });
+        });
+        function getSelectedMainEntityValue() {
+            var data = { "key": $("#SelectedMainEntity").val() };
+            var urlSet = '@Url.Action("setSelectedMainentityValue", "Home")' + "?SelectedMainEntity=" + $("#SelectedMainEntity").val() + "&SelectedMainEntityValue=" + $("#SelectedMainEntityValue").val();
+            var url = '@Url.Action("Index", "Home")';
+            $.getJSON(urlSet, data, function (data) {
+                if (data == true) {
+                    window.location.href = url;
+                }
+            });
+        }
+    </script>
+
+    <div class="modal fade" id="myModalSelectMainEntity" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-keyboard="false" data-backdrop="static">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div class="panel panel-default">
+                        <div class="panel-heading clearfix" style="margin:0px; padding:8px;">
+                            Select Organization
+                        </div>
+                        <div class="form-group">
+                            @Html.DropDownList("SelectedMainEntity", null, new { @data_live_search = "true", @class = "selectpicker form-control" })
+                            @Html.Hidden("SelectedMainEntityValue")
+                        </div>
+                    </div>
+                    <a onclick="getSelectedMainEntityValue();" id="mtsbtn" class="btn btn-primary btn-sm">Submit</a>
+                    <a href="javascript:document.getElementById('logoutForm').submit()" class="btn btn-default btn-sm"> Logout</a>
+                </div>
+            </div>
+        </div>
+    </div>
+}
 @if (ViewBag.PageRoles != null && ViewBag.PageContent == null)
 {
       <script type="text/javascript">
@@ -37,7 +78,16 @@
                 var url = '@Url.Action("Index", "Home")';
                 $.getJSON(urlSet, data, function (data) {
                     if (data == true) {
-                        window.location.href = url;
+						$('#myModal').modal('hide');
+                        $.getJSON('@Url.Action("isAdmin", "Home")', function (data1) {
+                            if (data1 == 'false') {
+                                $('#myModalSelectMainEntity').modal('show');
+                            }
+                            else {
+                                $('#myModalSelectMainEntity').modal('hide');
+                                window.location.href = url;
+                            }
+                        });
                     }
                 });
             }
@@ -71,6 +121,21 @@
             </div>
         </div>
     </div>
+}
+else
+{
+    <script>
+        $(document).ready(function () {
+          var len = $('select#SelectedMainEntity option').length;
+            if (len == 2 && len != undefined) {
+                var text = $('select#SelectedMainEntity option')[1].text
+                $("#SelectedMainEntityValue").val(text);
+                $("#mtsbtn").click();
+            }
+            else
+                $('#myModalSelectMainEntity').modal('show');
+        });
+    </script>
 }
 @if (ViewBag.RegistrationEntity != null)
 {
@@ -144,19 +209,11 @@ $("a:first",$("#graph")).click();
 	<div class="tab-pane fade in" id="graph">
         <div class="panel panel-default " style="border-radius:0px 0px 4px 4px;">
             <div class="panel-body" style="min-height:240px;">
- @if (User.Identity.IsAuthenticated && User != null && User.CanView("T_Session"))
+ @if (User.Identity.IsAuthenticated && User != null && User.CanView("T_Employee"))
  {
-  var EntityReflectorObj = ModelReflector.Entities.FirstOrDefault(p => p.Name == "T_Session");
-                      var DisplayString = EntityReflectorObj != null ? EntityReflectorObj.DisplayName : "Session";
-				<a class="label label-primary" style="margin-right:5px;" dataurl="@Url.Action("ShowGraph", "T_Session" , new { type = "all" })" onclick="OpenDashBoardFromHome(this,'EntityGraph','Session');">
-                                       @DisplayString
-				</a> 
-}
- @if (User.Identity.IsAuthenticated && User != null && User.CanView("T_TimeSlots"))
- {
-  var EntityReflectorObj = ModelReflector.Entities.FirstOrDefault(p => p.Name == "T_TimeSlots");
-                      var DisplayString = EntityReflectorObj != null ? EntityReflectorObj.DisplayName : "Time Slots";
-				<a class="label label-primary" style="margin-right:5px;" dataurl="@Url.Action("ShowGraph", "T_TimeSlots" , new { type = "all" })" onclick="OpenDashBoardFromHome(this,'EntityGraph','Time Slots');">
+  var EntityReflectorObj = ModelReflector.Entities.FirstOrDefault(p => p.Name == "T_Employee");
+                      var DisplayString = EntityReflectorObj != null ? EntityReflectorObj.DisplayName : "Employee";
+				<a class="label label-primary" style="margin-right:5px;" dataurl="@Url.Action("ShowGraph", "T_Employee" , new { type = "all" })" onclick="OpenDashBoardFromHome(this,'EntityGraph','Employee');">
                                        @DisplayString
 				</a> 
 }
@@ -210,110 +267,56 @@ $("a:first",$("#graph")).click();
 									}
                                         
  </div><!--/row-->
-										          @if (User.Identity.IsAuthenticated && User != null && User.CanView("T_Client"))
+										          @if (User.Identity.IsAuthenticated && User != null && User.CanView("T_Employee"))
 			{  
-			 var EntityReflectorObj = ModelReflector.Entities.FirstOrDefault(p => p.Name == "T_Client");
-                      var DisplayString = EntityReflectorObj != null ? EntityReflectorObj.DisplayName : "Client";
+			 var EntityReflectorObj = ModelReflector.Entities.FirstOrDefault(p => p.Name == "T_Employee");
+                      var DisplayString = EntityReflectorObj != null ? EntityReflectorObj.DisplayName : "Employee";
 			 <div class="well index-box">
-                <a href="@Url.Action("RedirectToEntity","Home", new { EntityName="T_Client"})">
-                    <h4 class="text-info"><span class="label label-info pull-right">@ViewBag.T_ClientCount</span> <span class="index-boxTitle pull-left">@DisplayString</span> </h4>
+                <a href="@Url.Action("RedirectToEntity","Home", new { EntityName="T_Employee"})">
+                    <h4 class="text-info"><span class="label label-info pull-right">@ViewBag.T_EmployeeCount</span> <span class="index-boxTitle pull-left">@DisplayString</span> </h4>
                 </a>
 				<div style="clear:both"></div>
                 <div class="input-group" style="margin-top:10px;">
-                    @Html.TextBox("SearchStringT_ClientC", ViewBag.CurrentFilter as string, null, new { @class = "form-control fixsearchbox", @onkeypress = "SearchKeyPress(event,'T_ClientC');", @placeholder = "Search" })
+                    @Html.TextBox("SearchStringT_EmployeeC", ViewBag.CurrentFilter as string, null, new { @class = "form-control fixsearchbox", @onkeypress = "SearchKeyPress(event,'T_EmployeeC');", @placeholder = "Search" })
                     <div class="input-group-btn">
-                        <a id="T_ClientCSearch" onclick="HomeSearchClick(event,'T_ClientC','@Html.Raw(Url.Action("Index", "T_Client"))');"
+                        <a id="T_EmployeeCSearch" onclick="HomeSearchClick(event,'T_EmployeeC','@Html.Raw(Url.Action("Index", "T_Employee"))');"
                             data-original-title="List Search"
                             class="btn btn-default btn-default tip-top"
                             style="padding:3px 5px;"><span class="glyphicon glyphicon-search"></span></a>
                     </div>
                 </div>
                 <div class="col-lg-12 col-sm-12" style="padding:0px; margin:5px 0px 0px 0px;">
-                    <a href="@Url.Action("RedirectToEntity","Home", new { EntityName="T_Client"})" class="btn btn-default btn-xs" style="width:48%">View</a>
-                    @if (User.Identity.IsAuthenticated && User != null && User.CanAdd("T_Client"))
+                    <a href="@Url.Action("RedirectToEntity","Home", new { EntityName="T_Employee"})" class="btn btn-default btn-xs" style="width:48%">View</a>
+                    @if (User.Identity.IsAuthenticated && User != null && User.CanAdd("T_Employee"))
                     {
-                        <a onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Create", "T_Client", new { UrlReferrer = Request.Url, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null) + "');") style="width:48%" class="btn btn-default btn-xs"> Add </a>
+                        <a onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Create", "T_Employee", new { UrlReferrer = Request.Url, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null) + "');") style="width:48%" class="btn btn-default btn-xs"> Add </a>
                     }
                 </div>
             </div>
 		}
-          @if (User.Identity.IsAuthenticated && User != null && User.CanView("T_TimeSlots"))
+          @if (User.Identity.IsAuthenticated && User != null && User.CanView("T_Organization"))
 			{  
-			 var EntityReflectorObj = ModelReflector.Entities.FirstOrDefault(p => p.Name == "T_TimeSlots");
-                      var DisplayString = EntityReflectorObj != null ? EntityReflectorObj.DisplayName : "Time Slots";
+			 var EntityReflectorObj = ModelReflector.Entities.FirstOrDefault(p => p.Name == "T_Organization");
+                      var DisplayString = EntityReflectorObj != null ? EntityReflectorObj.DisplayName : "Organization";
 			 <div class="well index-box">
-                <a href="@Url.Action("RedirectToEntity","Home", new { EntityName="T_TimeSlots"})">
-                    <h4 class="text-success"><span class="label label-success pull-right">@ViewBag.T_TimeSlotsCount</span> <span class="index-boxTitle pull-left">@DisplayString</span> </h4>
+                <a href="@Url.Action("RedirectToEntity","Home", new { EntityName="T_Organization"})">
+                    <h4 class="text-success"><span class="label label-success pull-right">@ViewBag.T_OrganizationCount</span> <span class="index-boxTitle pull-left">@DisplayString</span> </h4>
                 </a>
 				<div style="clear:both"></div>
                 <div class="input-group" style="margin-top:10px;">
-                    @Html.TextBox("SearchStringT_TimeSlotsC", ViewBag.CurrentFilter as string, null, new { @class = "form-control fixsearchbox", @onkeypress = "SearchKeyPress(event,'T_TimeSlotsC');", @placeholder = "Search" })
+                    @Html.TextBox("SearchStringT_OrganizationC", ViewBag.CurrentFilter as string, null, new { @class = "form-control fixsearchbox", @onkeypress = "SearchKeyPress(event,'T_OrganizationC');", @placeholder = "Search" })
                     <div class="input-group-btn">
-                        <a id="T_TimeSlotsCSearch" onclick="HomeSearchClick(event,'T_TimeSlotsC','@Html.Raw(Url.Action("Index", "T_TimeSlots"))');"
+                        <a id="T_OrganizationCSearch" onclick="HomeSearchClick(event,'T_OrganizationC','@Html.Raw(Url.Action("Index", "T_Organization"))');"
                             data-original-title="List Search"
                             class="btn btn-default btn-default tip-top"
                             style="padding:3px 5px;"><span class="glyphicon glyphicon-search"></span></a>
                     </div>
                 </div>
                 <div class="col-lg-12 col-sm-12" style="padding:0px; margin:5px 0px 0px 0px;">
-                    <a href="@Url.Action("RedirectToEntity","Home", new { EntityName="T_TimeSlots"})" class="btn btn-default btn-xs" style="width:48%">View</a>
-                    @if (User.Identity.IsAuthenticated && User != null && User.CanAdd("T_TimeSlots"))
+                    <a href="@Url.Action("RedirectToEntity","Home", new { EntityName="T_Organization"})" class="btn btn-default btn-xs" style="width:48%">View</a>
+                    @if (User.Identity.IsAuthenticated && User != null && User.CanAdd("T_Organization"))
                     {
-                        <a onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Create", "T_TimeSlots", new { UrlReferrer = Request.Url, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null) + "');") style="width:48%" class="btn btn-default btn-xs"> Add </a>
-                    }
-                </div>
-            </div>
-		}
-          @if (User.Identity.IsAuthenticated && User != null && User.CanView("T_LearningCenter"))
-			{  
-			 var EntityReflectorObj = ModelReflector.Entities.FirstOrDefault(p => p.Name == "T_LearningCenter");
-                      var DisplayString = EntityReflectorObj != null ? EntityReflectorObj.DisplayName : "Learning Center";
-			 <div class="well index-box">
-                <a href="@Url.Action("RedirectToEntity","Home", new { EntityName="T_LearningCenter"})">
-                    <h4 class="text-warning"><span class="label label-warning pull-right">@ViewBag.T_LearningCenterCount</span> <span class="index-boxTitle pull-left">@DisplayString</span> </h4>
-                </a>
-				<div style="clear:both"></div>
-                <div class="input-group" style="margin-top:10px;">
-                    @Html.TextBox("SearchStringT_LearningCenterC", ViewBag.CurrentFilter as string, null, new { @class = "form-control fixsearchbox", @onkeypress = "SearchKeyPress(event,'T_LearningCenterC');", @placeholder = "Search" })
-                    <div class="input-group-btn">
-                        <a id="T_LearningCenterCSearch" onclick="HomeSearchClick(event,'T_LearningCenterC','@Html.Raw(Url.Action("Index", "T_LearningCenter"))');"
-                            data-original-title="List Search"
-                            class="btn btn-default btn-default tip-top"
-                            style="padding:3px 5px;"><span class="glyphicon glyphicon-search"></span></a>
-                    </div>
-                </div>
-                <div class="col-lg-12 col-sm-12" style="padding:0px; margin:5px 0px 0px 0px;">
-                    <a href="@Url.Action("RedirectToEntity","Home", new { EntityName="T_LearningCenter"})" class="btn btn-default btn-xs" style="width:48%">View</a>
-                    @if (User.Identity.IsAuthenticated && User != null && User.CanAdd("T_LearningCenter"))
-                    {
-                        <a onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Create", "T_LearningCenter", new { UrlReferrer = Request.Url, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null) + "');") style="width:48%" class="btn btn-default btn-xs"> Add </a>
-                    }
-                </div>
-            </div>
-		}
-          @if (User.Identity.IsAuthenticated && User != null && User.CanView("T_Session"))
-			{  
-			 var EntityReflectorObj = ModelReflector.Entities.FirstOrDefault(p => p.Name == "T_Session");
-                      var DisplayString = EntityReflectorObj != null ? EntityReflectorObj.DisplayName : "Session";
-			 <div class="well index-box">
-                <a href="@Url.Action("RedirectToEntity","Home", new { EntityName="T_Session"})">
-                    <h4 class="text-danger"><span class="label label-danger pull-right">@ViewBag.T_SessionCount</span> <span class="index-boxTitle pull-left">@DisplayString</span> </h4>
-                </a>
-				<div style="clear:both"></div>
-                <div class="input-group" style="margin-top:10px;">
-                    @Html.TextBox("SearchStringT_SessionC", ViewBag.CurrentFilter as string, null, new { @class = "form-control fixsearchbox", @onkeypress = "SearchKeyPress(event,'T_SessionC');", @placeholder = "Search" })
-                    <div class="input-group-btn">
-                        <a id="T_SessionCSearch" onclick="HomeSearchClick(event,'T_SessionC','@Html.Raw(Url.Action("Index", "T_Session"))');"
-                            data-original-title="List Search"
-                            class="btn btn-default btn-default tip-top"
-                            style="padding:3px 5px;"><span class="glyphicon glyphicon-search"></span></a>
-                    </div>
-                </div>
-                <div class="col-lg-12 col-sm-12" style="padding:0px; margin:5px 0px 0px 0px;">
-                    <a href="@Url.Action("RedirectToEntity","Home", new { EntityName="T_Session"})" class="btn btn-default btn-xs" style="width:48%">View</a>
-                    @if (User.Identity.IsAuthenticated && User != null && User.CanAdd("T_Session"))
-                    {
-                        <a onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Create", "T_Session", new { UrlReferrer = Request.Url, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null) + "');") style="width:48%" class="btn btn-default btn-xs"> Add </a>
+                        <a onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Create", "T_Organization", new { UrlReferrer = Request.Url, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null) + "');") style="width:48%" class="btn btn-default btn-xs"> Add </a>
                     }
                 </div>
             </div>
@@ -345,31 +348,31 @@ $("a:first",$("#graph")).click();
                                             <th>Search</th>
                                         </tr>
                                     </thead>
-				@if (User.CanView("T_Client"))
+				@if (User.CanView("T_Address"))
 				{
-				 var EntityReflectorObj = ModelReflector.Entities.FirstOrDefault(p => p.Name == "T_Client");
-                      var DisplayString = EntityReflectorObj != null ? EntityReflectorObj.DisplayName : "Client";
+				 var EntityReflectorObj = ModelReflector.Entities.FirstOrDefault(p => p.Name == "T_Address");
+                      var DisplayString = EntityReflectorObj != null ? EntityReflectorObj.DisplayName : "Address";
 					<tr>
 						<td>
 							  <div style="width:60px; margin-top:-2px;">
                                                     <center>
                                                         <div class="btn-group">
-											<a class="btn btn-default btn-xs" href="@Url.Action("RedirectToEntity", "Home", new { EntityName = "T_Client" })"><i class="glyphicon glyphicon-eye-open"></i></a>
-                                        @if (User.Identity.IsAuthenticated && User != null && User.CanAdd("T_Client"))
+											<a class="btn btn-default btn-xs" href="@Url.Action("RedirectToEntity", "Home", new { EntityName = "T_Address" })"><i class="glyphicon glyphicon-eye-open"></i></a>
+                                        @if (User.Identity.IsAuthenticated && User != null && User.CanAdd("T_Address"))
                                         {
-											<a class="btn btn-default btn-xs" onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Create", "T_Client", new { UrlReferrer = Request.Url, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null) + "');")><i class="glyphicon glyphicon-plus"></i></a>
+											<a class="btn btn-default btn-xs" onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Create", "T_Address", new { UrlReferrer = Request.Url, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null) + "');")><i class="glyphicon glyphicon-plus"></i></a>
                                         }                        
                                       </div>
                                                     </center>
                                                 </div>
                                             </td>
-                                            <td><a href="@Url.Action("RedirectToEntity", "Home", new { EntityName = "T_Client" })">@DisplayString</a></td>
-                                            <td>Client</td>
+                                            <td><a href="@Url.Action("RedirectToEntity", "Home", new { EntityName = "T_Address" })">@DisplayString</a></td>
+                                            <td>Address</td>
                                             <td>
                                                 <div class="input-group">
-                                                     @Html.TextBox("SearchStringT_ClientA", ViewBag.CurrentFilter as string, null, new { @class = "form-control fixsearchbox", @onkeypress = "SearchKeyPress(event,'T_ClientA');", @placeholder = "Search" })
+                                                     @Html.TextBox("SearchStringT_AddressA", ViewBag.CurrentFilter as string, null, new { @class = "form-control fixsearchbox", @onkeypress = "SearchKeyPress(event,'T_AddressA');", @placeholder = "Search" })
                                 <div class="input-group-btn">
-                                    <a id="T_ClientASearch" onclick="HomeSearchClick(event,'T_ClientA','@Html.Raw(Url.Action("Index", "T_Client"))');"
+                                    <a id="T_AddressASearch" onclick="HomeSearchClick(event,'T_AddressA','@Html.Raw(Url.Action("Index", "T_Address"))');"
                                        data-original-title="List Search"
                                        class="btn btn-default btn-default tip-top"
                                        style="padding:3px 5px;"><span class="glyphicon glyphicon-search"></span></a>
@@ -378,31 +381,31 @@ $("a:first",$("#graph")).click();
                                             </td>
                                         </tr>
 				}
-				@if (User.CanView("T_LearningCenter"))
+				@if (User.CanView("T_City"))
 				{
-				 var EntityReflectorObj = ModelReflector.Entities.FirstOrDefault(p => p.Name == "T_LearningCenter");
-                      var DisplayString = EntityReflectorObj != null ? EntityReflectorObj.DisplayName : "Learning Center";
+				 var EntityReflectorObj = ModelReflector.Entities.FirstOrDefault(p => p.Name == "T_City");
+                      var DisplayString = EntityReflectorObj != null ? EntityReflectorObj.DisplayName : "City";
 					<tr>
 						<td>
 							  <div style="width:60px; margin-top:-2px;">
                                                     <center>
                                                         <div class="btn-group">
-											<a class="btn btn-default btn-xs" href="@Url.Action("RedirectToEntity", "Home", new { EntityName = "T_LearningCenter" })"><i class="glyphicon glyphicon-eye-open"></i></a>
-                                        @if (User.Identity.IsAuthenticated && User != null && User.CanAdd("T_LearningCenter"))
+											<a class="btn btn-default btn-xs" href="@Url.Action("RedirectToEntity", "Home", new { EntityName = "T_City" })"><i class="glyphicon glyphicon-eye-open"></i></a>
+                                        @if (User.Identity.IsAuthenticated && User != null && User.CanAdd("T_City"))
                                         {
-											<a class="btn btn-default btn-xs" onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Create", "T_LearningCenter", new { UrlReferrer = Request.Url, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null) + "');")><i class="glyphicon glyphicon-plus"></i></a>
+											<a class="btn btn-default btn-xs" onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Create", "T_City", new { UrlReferrer = Request.Url, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null) + "');")><i class="glyphicon glyphicon-plus"></i></a>
                                         }                        
                                       </div>
                                                     </center>
                                                 </div>
                                             </td>
-                                            <td><a href="@Url.Action("RedirectToEntity", "Home", new { EntityName = "T_LearningCenter" })">@DisplayString</a></td>
-                                            <td>Learning Center</td>
+                                            <td><a href="@Url.Action("RedirectToEntity", "Home", new { EntityName = "T_City" })">@DisplayString</a></td>
+                                            <td>City</td>
                                             <td>
                                                 <div class="input-group">
-                                                     @Html.TextBox("SearchStringT_LearningCenterA", ViewBag.CurrentFilter as string, null, new { @class = "form-control fixsearchbox", @onkeypress = "SearchKeyPress(event,'T_LearningCenterA');", @placeholder = "Search" })
+                                                     @Html.TextBox("SearchStringT_CityA", ViewBag.CurrentFilter as string, null, new { @class = "form-control fixsearchbox", @onkeypress = "SearchKeyPress(event,'T_CityA');", @placeholder = "Search" })
                                 <div class="input-group-btn">
-                                    <a id="T_LearningCenterASearch" onclick="HomeSearchClick(event,'T_LearningCenterA','@Html.Raw(Url.Action("Index", "T_LearningCenter"))');"
+                                    <a id="T_CityASearch" onclick="HomeSearchClick(event,'T_CityA','@Html.Raw(Url.Action("Index", "T_City"))');"
                                        data-original-title="List Search"
                                        class="btn btn-default btn-default tip-top"
                                        style="padding:3px 5px;"><span class="glyphicon glyphicon-search"></span></a>
@@ -411,31 +414,31 @@ $("a:first",$("#graph")).click();
                                             </td>
                                         </tr>
 				}
-				@if (User.CanView("T_Session"))
+				@if (User.CanView("T_Country"))
 				{
-				 var EntityReflectorObj = ModelReflector.Entities.FirstOrDefault(p => p.Name == "T_Session");
-                      var DisplayString = EntityReflectorObj != null ? EntityReflectorObj.DisplayName : "Session";
+				 var EntityReflectorObj = ModelReflector.Entities.FirstOrDefault(p => p.Name == "T_Country");
+                      var DisplayString = EntityReflectorObj != null ? EntityReflectorObj.DisplayName : "Country";
 					<tr>
 						<td>
 							  <div style="width:60px; margin-top:-2px;">
                                                     <center>
                                                         <div class="btn-group">
-											<a class="btn btn-default btn-xs" href="@Url.Action("RedirectToEntity", "Home", new { EntityName = "T_Session" })"><i class="glyphicon glyphicon-eye-open"></i></a>
-                                        @if (User.Identity.IsAuthenticated && User != null && User.CanAdd("T_Session"))
+											<a class="btn btn-default btn-xs" href="@Url.Action("RedirectToEntity", "Home", new { EntityName = "T_Country" })"><i class="glyphicon glyphicon-eye-open"></i></a>
+                                        @if (User.Identity.IsAuthenticated && User != null && User.CanAdd("T_Country"))
                                         {
-											<a class="btn btn-default btn-xs" onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Create", "T_Session", new { UrlReferrer = Request.Url, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null) + "');")><i class="glyphicon glyphicon-plus"></i></a>
+											<a class="btn btn-default btn-xs" onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Create", "T_Country", new { UrlReferrer = Request.Url, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null) + "');")><i class="glyphicon glyphicon-plus"></i></a>
                                         }                        
                                       </div>
                                                     </center>
                                                 </div>
                                             </td>
-                                            <td><a href="@Url.Action("RedirectToEntity", "Home", new { EntityName = "T_Session" })">@DisplayString</a></td>
-                                            <td>Session</td>
+                                            <td><a href="@Url.Action("RedirectToEntity", "Home", new { EntityName = "T_Country" })">@DisplayString</a></td>
+                                            <td>Country</td>
                                             <td>
                                                 <div class="input-group">
-                                                     @Html.TextBox("SearchStringT_SessionA", ViewBag.CurrentFilter as string, null, new { @class = "form-control fixsearchbox", @onkeypress = "SearchKeyPress(event,'T_SessionA');", @placeholder = "Search" })
+                                                     @Html.TextBox("SearchStringT_CountryA", ViewBag.CurrentFilter as string, null, new { @class = "form-control fixsearchbox", @onkeypress = "SearchKeyPress(event,'T_CountryA');", @placeholder = "Search" })
                                 <div class="input-group-btn">
-                                    <a id="T_SessionASearch" onclick="HomeSearchClick(event,'T_SessionA','@Html.Raw(Url.Action("Index", "T_Session"))');"
+                                    <a id="T_CountryASearch" onclick="HomeSearchClick(event,'T_CountryA','@Html.Raw(Url.Action("Index", "T_Country"))');"
                                        data-original-title="List Search"
                                        class="btn btn-default btn-default tip-top"
                                        style="padding:3px 5px;"><span class="glyphicon glyphicon-search"></span></a>
@@ -444,31 +447,31 @@ $("a:first",$("#graph")).click();
                                             </td>
                                         </tr>
 				}
-				@if (User.CanView("T_SessionEvents"))
+				@if (User.CanView("T_Employee"))
 				{
-				 var EntityReflectorObj = ModelReflector.Entities.FirstOrDefault(p => p.Name == "T_SessionEvents");
-                      var DisplayString = EntityReflectorObj != null ? EntityReflectorObj.DisplayName : "Session Events";
+				 var EntityReflectorObj = ModelReflector.Entities.FirstOrDefault(p => p.Name == "T_Employee");
+                      var DisplayString = EntityReflectorObj != null ? EntityReflectorObj.DisplayName : "Employee";
 					<tr>
 						<td>
 							  <div style="width:60px; margin-top:-2px;">
                                                     <center>
                                                         <div class="btn-group">
-											<a class="btn btn-default btn-xs" href="@Url.Action("RedirectToEntity", "Home", new { EntityName = "T_SessionEvents" })"><i class="glyphicon glyphicon-eye-open"></i></a>
-                                        @if (User.Identity.IsAuthenticated && User != null && User.CanAdd("T_SessionEvents"))
+											<a class="btn btn-default btn-xs" href="@Url.Action("RedirectToEntity", "Home", new { EntityName = "T_Employee" })"><i class="glyphicon glyphicon-eye-open"></i></a>
+                                        @if (User.Identity.IsAuthenticated && User != null && User.CanAdd("T_Employee"))
                                         {
-											<a class="btn btn-default btn-xs" onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Create", "T_SessionEvents", new { UrlReferrer = Request.Url, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null) + "');")><i class="glyphicon glyphicon-plus"></i></a>
+											<a class="btn btn-default btn-xs" onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Create", "T_Employee", new { UrlReferrer = Request.Url, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null) + "');")><i class="glyphicon glyphicon-plus"></i></a>
                                         }                        
                                       </div>
                                                     </center>
                                                 </div>
                                             </td>
-                                            <td><a href="@Url.Action("RedirectToEntity", "Home", new { EntityName = "T_SessionEvents" })">@DisplayString</a></td>
-                                            <td>Events of Session</td>
+                                            <td><a href="@Url.Action("RedirectToEntity", "Home", new { EntityName = "T_Employee" })">@DisplayString</a></td>
+                                            <td>Employee</td>
                                             <td>
                                                 <div class="input-group">
-                                                     @Html.TextBox("SearchStringT_SessionEventsA", ViewBag.CurrentFilter as string, null, new { @class = "form-control fixsearchbox", @onkeypress = "SearchKeyPress(event,'T_SessionEventsA');", @placeholder = "Search" })
+                                                     @Html.TextBox("SearchStringT_EmployeeA", ViewBag.CurrentFilter as string, null, new { @class = "form-control fixsearchbox", @onkeypress = "SearchKeyPress(event,'T_EmployeeA');", @placeholder = "Search" })
                                 <div class="input-group-btn">
-                                    <a id="T_SessionEventsASearch" onclick="HomeSearchClick(event,'T_SessionEventsA','@Html.Raw(Url.Action("Index", "T_SessionEvents"))');"
+                                    <a id="T_EmployeeASearch" onclick="HomeSearchClick(event,'T_EmployeeA','@Html.Raw(Url.Action("Index", "T_Employee"))');"
                                        data-original-title="List Search"
                                        class="btn btn-default btn-default tip-top"
                                        style="padding:3px 5px;"><span class="glyphicon glyphicon-search"></span></a>
@@ -477,31 +480,31 @@ $("a:first",$("#graph")).click();
                                             </td>
                                         </tr>
 				}
-				@if (User.CanView("T_SessionEventsClient"))
+				@if (User.CanView("T_Employeestatus"))
 				{
-				 var EntityReflectorObj = ModelReflector.Entities.FirstOrDefault(p => p.Name == "T_SessionEventsClient");
-                      var DisplayString = EntityReflectorObj != null ? EntityReflectorObj.DisplayName : "Session EventsClient";
+				 var EntityReflectorObj = ModelReflector.Entities.FirstOrDefault(p => p.Name == "T_Employeestatus");
+                      var DisplayString = EntityReflectorObj != null ? EntityReflectorObj.DisplayName : "Employee Status";
 					<tr>
 						<td>
 							  <div style="width:60px; margin-top:-2px;">
                                                     <center>
                                                         <div class="btn-group">
-											<a class="btn btn-default btn-xs" href="@Url.Action("RedirectToEntity", "Home", new { EntityName = "T_SessionEventsClient" })"><i class="glyphicon glyphicon-eye-open"></i></a>
-                                        @if (User.Identity.IsAuthenticated && User != null && User.CanAdd("T_SessionEventsClient"))
+											<a class="btn btn-default btn-xs" href="@Url.Action("RedirectToEntity", "Home", new { EntityName = "T_Employeestatus" })"><i class="glyphicon glyphicon-eye-open"></i></a>
+                                        @if (User.Identity.IsAuthenticated && User != null && User.CanAdd("T_Employeestatus"))
                                         {
-											<a class="btn btn-default btn-xs" onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Create", "T_SessionEventsClient", new { UrlReferrer = Request.Url, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null) + "');")><i class="glyphicon glyphicon-plus"></i></a>
+											<a class="btn btn-default btn-xs" onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Create", "T_Employeestatus", new { UrlReferrer = Request.Url, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null) + "');")><i class="glyphicon glyphicon-plus"></i></a>
                                         }                        
                                       </div>
                                                     </center>
                                                 </div>
                                             </td>
-                                            <td><a href="@Url.Action("RedirectToEntity", "Home", new { EntityName = "T_SessionEventsClient" })">@DisplayString</a></td>
-                                            <td>Bridge Entity for M:M association between SessionEvents and Client.</td>
+                                            <td><a href="@Url.Action("RedirectToEntity", "Home", new { EntityName = "T_Employeestatus" })">@DisplayString</a></td>
+                                            <td>Employee Status</td>
                                             <td>
                                                 <div class="input-group">
-                                                     @Html.TextBox("SearchStringT_SessionEventsClientA", ViewBag.CurrentFilter as string, null, new { @class = "form-control fixsearchbox", @onkeypress = "SearchKeyPress(event,'T_SessionEventsClientA');", @placeholder = "Search" })
+                                                     @Html.TextBox("SearchStringT_EmployeestatusA", ViewBag.CurrentFilter as string, null, new { @class = "form-control fixsearchbox", @onkeypress = "SearchKeyPress(event,'T_EmployeestatusA');", @placeholder = "Search" })
                                 <div class="input-group-btn">
-                                    <a id="T_SessionEventsClientASearch" onclick="HomeSearchClick(event,'T_SessionEventsClientA','@Html.Raw(Url.Action("Index", "T_SessionEventsClient"))');"
+                                    <a id="T_EmployeestatusASearch" onclick="HomeSearchClick(event,'T_EmployeestatusA','@Html.Raw(Url.Action("Index", "T_Employeestatus"))');"
                                        data-original-title="List Search"
                                        class="btn btn-default btn-default tip-top"
                                        style="padding:3px 5px;"><span class="glyphicon glyphicon-search"></span></a>
@@ -510,31 +513,31 @@ $("a:first",$("#graph")).click();
                                             </td>
                                         </tr>
 				}
-				@if (User.CanView("T_SessionClientAssociation"))
+				@if (User.CanView("T_Employeetype"))
 				{
-				 var EntityReflectorObj = ModelReflector.Entities.FirstOrDefault(p => p.Name == "T_SessionClientAssociation");
-                      var DisplayString = EntityReflectorObj != null ? EntityReflectorObj.DisplayName : "SessionClientAssociation";
+				 var EntityReflectorObj = ModelReflector.Entities.FirstOrDefault(p => p.Name == "T_Employeetype");
+                      var DisplayString = EntityReflectorObj != null ? EntityReflectorObj.DisplayName : "Employee Type";
 					<tr>
 						<td>
 							  <div style="width:60px; margin-top:-2px;">
                                                     <center>
                                                         <div class="btn-group">
-											<a class="btn btn-default btn-xs" href="@Url.Action("RedirectToEntity", "Home", new { EntityName = "T_SessionClientAssociation" })"><i class="glyphicon glyphicon-eye-open"></i></a>
-                                        @if (User.Identity.IsAuthenticated && User != null && User.CanAdd("T_SessionClientAssociation"))
+											<a class="btn btn-default btn-xs" href="@Url.Action("RedirectToEntity", "Home", new { EntityName = "T_Employeetype" })"><i class="glyphicon glyphicon-eye-open"></i></a>
+                                        @if (User.Identity.IsAuthenticated && User != null && User.CanAdd("T_Employeetype"))
                                         {
-											<a class="btn btn-default btn-xs" onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Create", "T_SessionClientAssociation", new { UrlReferrer = Request.Url, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null) + "');")><i class="glyphicon glyphicon-plus"></i></a>
+											<a class="btn btn-default btn-xs" onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Create", "T_Employeetype", new { UrlReferrer = Request.Url, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null) + "');")><i class="glyphicon glyphicon-plus"></i></a>
                                         }                        
                                       </div>
                                                     </center>
                                                 </div>
                                             </td>
-                                            <td><a href="@Url.Action("RedirectToEntity", "Home", new { EntityName = "T_SessionClientAssociation" })">@DisplayString</a></td>
-                                            <td>Bridge Entity for M:M association between Session and Client.</td>
+                                            <td><a href="@Url.Action("RedirectToEntity", "Home", new { EntityName = "T_Employeetype" })">@DisplayString</a></td>
+                                            <td>Employee Type</td>
                                             <td>
                                                 <div class="input-group">
-                                                     @Html.TextBox("SearchStringT_SessionClientAssociationA", ViewBag.CurrentFilter as string, null, new { @class = "form-control fixsearchbox", @onkeypress = "SearchKeyPress(event,'T_SessionClientAssociationA');", @placeholder = "Search" })
+                                                     @Html.TextBox("SearchStringT_EmployeetypeA", ViewBag.CurrentFilter as string, null, new { @class = "form-control fixsearchbox", @onkeypress = "SearchKeyPress(event,'T_EmployeetypeA');", @placeholder = "Search" })
                                 <div class="input-group-btn">
-                                    <a id="T_SessionClientAssociationASearch" onclick="HomeSearchClick(event,'T_SessionClientAssociationA','@Html.Raw(Url.Action("Index", "T_SessionClientAssociation"))');"
+                                    <a id="T_EmployeetypeASearch" onclick="HomeSearchClick(event,'T_EmployeetypeA','@Html.Raw(Url.Action("Index", "T_Employeetype"))');"
                                        data-original-title="List Search"
                                        class="btn btn-default btn-default tip-top"
                                        style="padding:3px 5px;"><span class="glyphicon glyphicon-search"></span></a>
@@ -543,31 +546,97 @@ $("a:first",$("#graph")).click();
                                             </td>
                                         </tr>
 				}
-				@if (User.CanView("T_TimeSlots"))
+				@if (User.CanView("T_EmployeeOrganizationAssociation"))
 				{
-				 var EntityReflectorObj = ModelReflector.Entities.FirstOrDefault(p => p.Name == "T_TimeSlots");
-                      var DisplayString = EntityReflectorObj != null ? EntityReflectorObj.DisplayName : "Time Slots";
+				 var EntityReflectorObj = ModelReflector.Entities.FirstOrDefault(p => p.Name == "T_EmployeeOrganizationAssociation");
+                      var DisplayString = EntityReflectorObj != null ? EntityReflectorObj.DisplayName : "EmployeeOrganizationAssociation";
 					<tr>
 						<td>
 							  <div style="width:60px; margin-top:-2px;">
                                                     <center>
                                                         <div class="btn-group">
-											<a class="btn btn-default btn-xs" href="@Url.Action("RedirectToEntity", "Home", new { EntityName = "T_TimeSlots" })"><i class="glyphicon glyphicon-eye-open"></i></a>
-                                        @if (User.Identity.IsAuthenticated && User != null && User.CanAdd("T_TimeSlots"))
+											<a class="btn btn-default btn-xs" href="@Url.Action("RedirectToEntity", "Home", new { EntityName = "T_EmployeeOrganizationAssociation" })"><i class="glyphicon glyphicon-eye-open"></i></a>
+                                        @if (User.Identity.IsAuthenticated && User != null && User.CanAdd("T_EmployeeOrganizationAssociation"))
                                         {
-											<a class="btn btn-default btn-xs" onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Create", "T_TimeSlots", new { UrlReferrer = Request.Url, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null) + "');")><i class="glyphicon glyphicon-plus"></i></a>
+											<a class="btn btn-default btn-xs" onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Create", "T_EmployeeOrganizationAssociation", new { UrlReferrer = Request.Url, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null) + "');")><i class="glyphicon glyphicon-plus"></i></a>
                                         }                        
                                       </div>
                                                     </center>
                                                 </div>
                                             </td>
-                                            <td><a href="@Url.Action("RedirectToEntity", "Home", new { EntityName = "T_TimeSlots" })">@DisplayString</a></td>
-                                            <td>Time slots for Meeting</td>
+                                            <td><a href="@Url.Action("RedirectToEntity", "Home", new { EntityName = "T_EmployeeOrganizationAssociation" })">@DisplayString</a></td>
+                                            <td>Bridge Entity for M:M association between Employee and Organization.</td>
                                             <td>
                                                 <div class="input-group">
-                                                     @Html.TextBox("SearchStringT_TimeSlotsA", ViewBag.CurrentFilter as string, null, new { @class = "form-control fixsearchbox", @onkeypress = "SearchKeyPress(event,'T_TimeSlotsA');", @placeholder = "Search" })
+                                                     @Html.TextBox("SearchStringT_EmployeeOrganizationAssociationA", ViewBag.CurrentFilter as string, null, new { @class = "form-control fixsearchbox", @onkeypress = "SearchKeyPress(event,'T_EmployeeOrganizationAssociationA');", @placeholder = "Search" })
                                 <div class="input-group-btn">
-                                    <a id="T_TimeSlotsASearch" onclick="HomeSearchClick(event,'T_TimeSlotsA','@Html.Raw(Url.Action("Index", "T_TimeSlots"))');"
+                                    <a id="T_EmployeeOrganizationAssociationASearch" onclick="HomeSearchClick(event,'T_EmployeeOrganizationAssociationA','@Html.Raw(Url.Action("Index", "T_EmployeeOrganizationAssociation"))');"
+                                       data-original-title="List Search"
+                                       class="btn btn-default btn-default tip-top"
+                                       style="padding:3px 5px;"><span class="glyphicon glyphicon-search"></span></a>
+                                </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+				}
+				@if (User.CanView("T_Organization"))
+				{
+				 var EntityReflectorObj = ModelReflector.Entities.FirstOrDefault(p => p.Name == "T_Organization");
+                      var DisplayString = EntityReflectorObj != null ? EntityReflectorObj.DisplayName : "Organization";
+					<tr>
+						<td>
+							  <div style="width:60px; margin-top:-2px;">
+                                                    <center>
+                                                        <div class="btn-group">
+											<a class="btn btn-default btn-xs" href="@Url.Action("RedirectToEntity", "Home", new { EntityName = "T_Organization" })"><i class="glyphicon glyphicon-eye-open"></i></a>
+                                        @if (User.Identity.IsAuthenticated && User != null && User.CanAdd("T_Organization"))
+                                        {
+											<a class="btn btn-default btn-xs" onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Create", "T_Organization", new { UrlReferrer = Request.Url, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null) + "');")><i class="glyphicon glyphicon-plus"></i></a>
+                                        }                        
+                                      </div>
+                                                    </center>
+                                                </div>
+                                            </td>
+                                            <td><a href="@Url.Action("RedirectToEntity", "Home", new { EntityName = "T_Organization" })">@DisplayString</a></td>
+                                            <td>Organization</td>
+                                            <td>
+                                                <div class="input-group">
+                                                     @Html.TextBox("SearchStringT_OrganizationA", ViewBag.CurrentFilter as string, null, new { @class = "form-control fixsearchbox", @onkeypress = "SearchKeyPress(event,'T_OrganizationA');", @placeholder = "Search" })
+                                <div class="input-group-btn">
+                                    <a id="T_OrganizationASearch" onclick="HomeSearchClick(event,'T_OrganizationA','@Html.Raw(Url.Action("Index", "T_Organization"))');"
+                                       data-original-title="List Search"
+                                       class="btn btn-default btn-default tip-top"
+                                       style="padding:3px 5px;"><span class="glyphicon glyphicon-search"></span></a>
+                                </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+				}
+				@if (User.CanView("T_State"))
+				{
+				 var EntityReflectorObj = ModelReflector.Entities.FirstOrDefault(p => p.Name == "T_State");
+                      var DisplayString = EntityReflectorObj != null ? EntityReflectorObj.DisplayName : "State";
+					<tr>
+						<td>
+							  <div style="width:60px; margin-top:-2px;">
+                                                    <center>
+                                                        <div class="btn-group">
+											<a class="btn btn-default btn-xs" href="@Url.Action("RedirectToEntity", "Home", new { EntityName = "T_State" })"><i class="glyphicon glyphicon-eye-open"></i></a>
+                                        @if (User.Identity.IsAuthenticated && User != null && User.CanAdd("T_State"))
+                                        {
+											<a class="btn btn-default btn-xs" onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Create", "T_State", new { UrlReferrer = Request.Url, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null) + "');")><i class="glyphicon glyphicon-plus"></i></a>
+                                        }                        
+                                      </div>
+                                                    </center>
+                                                </div>
+                                            </td>
+                                            <td><a href="@Url.Action("RedirectToEntity", "Home", new { EntityName = "T_State" })">@DisplayString</a></td>
+                                            <td>State</td>
+                                            <td>
+                                                <div class="input-group">
+                                                     @Html.TextBox("SearchStringT_StateA", ViewBag.CurrentFilter as string, null, new { @class = "form-control fixsearchbox", @onkeypress = "SearchKeyPress(event,'T_StateA');", @placeholder = "Search" })
+                                <div class="input-group-btn">
+                                    <a id="T_StateASearch" onclick="HomeSearchClick(event,'T_StateA','@Html.Raw(Url.Action("Index", "T_State"))');"
                                        data-original-title="List Search"
                                        class="btn btn-default btn-default tip-top"
                                        style="padding:3px 5px;"><span class="glyphicon glyphicon-search"></span></a>

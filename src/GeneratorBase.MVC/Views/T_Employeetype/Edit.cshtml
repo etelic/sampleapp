@@ -1,0 +1,316 @@
+﻿@model GeneratorBase.MVC.Models.T_Employeetype
+@using PagedList;
+@{
+    ViewBag.Title = "Edit Employee Type";
+	var EditPermission = User.CanEditItem("T_Employeetype", Model, User);
+	var DeletePermission = User.CanDeleteItem("T_Employeetype", Model, User);
+	var EntityDisplayNameReflector = ModelReflector.Entities.FirstOrDefault(p => p.Name == "T_Employeetype");
+    var EntityDisplayName = EntityDisplayNameReflector != null ? EntityDisplayNameReflector.DisplayName : "Employee Type";
+}
+@functions {
+    object getHtmlAttributes(string Property)
+    {
+        if (User.CanEdit("T_Employeetype", Property))
+        {
+            return new { @class = "form-control" };
+        } return new { @class = "form-control", @readonly = "readonly" };
+    }
+}
+<script>
+    $(document).ready(function () {
+        try {
+            var hostingEntityName = "";
+             if ('@Convert.ToString(ViewData["AssociatedType"])'.length > 0) {
+                hostingEntityName = '@Convert.ToString(ViewData["AssociatedType"])';
+				$('#' + hostingEntityName + 'ID').attr("lock","true");
+				 $('#' + hostingEntityName + 'ID').trigger("change");
+				  $("input[type='radio'][name='" + hostingEntityName + "ID']").each(function () {
+                    if (!this.checked)
+                        this.closest("li").style.display = "none";
+                });
+            }
+			if ($.cookie('@User.JavaScriptEncodedName@Model.Id' + 'TabCookie') != null) {
+				$('a[href="#' + $.cookie('@User.JavaScriptEncodedName@Model.Id' + 'TabCookie') + '"]').click();
+			}
+			 
+        }
+        catch (ex) { }
+    });
+</script>
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_EmployeetypeIsHiddenRule))
+    {
+        @Html.Raw(ViewBag.T_EmployeetypeIsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_EmployeetypeIsSetValueUIRule))
+    {
+        @Html.Raw(ViewBag.T_EmployeetypeIsSetValueUIRule);
+    }
+}
+	<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-title">
+            <i class="glyphicon glyphicon-edit text-primary"></i> @EntityDisplayName  <i class="glyphicon glyphicon-chevron-right small"></i> <span>Edit</span>
+
+			  <div class="btn-group pull-right" style="margin-top:3px;">
+            <button data-toggle="dropdown" class="btn btn-xs dropdown-toggle btn-default">
+                Action
+                <span class="caret">    </span>
+            </button>
+			<ul class="dropdown-menu pull-left">
+				<li>
+                    <a href="@Url.Action("Details", "T_Employeetype", new { id = Model.Id, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"])  }, null)"><i class="glyphicon glyphicon-eye-open"></i>  View</a>
+                </li>
+				<li>
+                    @if (User.Identity.IsAuthenticated && User != null && User.CanEdit("T_Employeetype"))
+                    {
+                        <a href="@Url.Action("Edit","T_Employeetype", new { id = Model.Id,  UrlReferrer = Request.Url, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) },null)"><i class="glyphicon glyphicon-edit"></i>  Edit</a>
+                    }
+                </li>             
+				<li>
+                    @if (User.Identity.IsAuthenticated && User != null && User.CanDelete("T_Employeetype"))
+                    {
+                        <a href="@Url.Action("Delete", "T_Employeetype", new { id = Model.Id, UrlReferrer = Request.Url, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null)"><i class="glyphicon glyphicon-remove-sign"></i>  Delete</a>
+                    }
+                </li>
+	<li class="divider" style="clear:both"></li>
+	<li class="dropdown-submenu pull-left">
+	<a tabindex="-1" href="#" style="margin-bottom:10px;"><i class="fam-anchor small"></i> Add</a>
+    <ul class="dropdown-menu pull-left">
+				@if (User.Identity.IsAuthenticated && User != null && User.CanAdd("T_Employee"))
+				{
+					<li>
+						<a onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Create", "T_Employee", 
+						new { UrlReferrer = Request.Url,
+								AssociatedType ="T_AssociatedEmployeeType", 
+							HostingEntityName = "T_Employeetype",
+							HostingEntityID = @Convert.ToString(Model.Id) }, null) + "');")>
+							<i class="glyphicon glyphicon-plus"></i>  Employee
+						</a>
+					</li>
+				}
+			</ul>
+</li>
+			</ul>
+		</div>
+
+        </h1>
+
+      <h2 class="text-primary">
+	  <span id="HostingEntityDisplayValue" class="EntityDisplayName" title="@Html.DisplayFor(model => model.DisplayValue)">@Html.DisplayFor(model => model.DisplayValue)</span>
+			<div class="pull-right EntityDisplayBut">
+				@Html.ActionLink("Cancel", "Cancel", new { UrlReferrer = ViewData["T_EmployeetypeParentUrl"] }, new { @onclick = "",  @class="btn btn-default btn-xs pull-right formbuttonfix" })
+
+				
+            </div>
+	 </h2>
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+<input type="hidden" id="ErrMsg" />
+<div id="errorContainerEdit" style="display: none">
+            <div id="errorsMsgEdit"></div>
+            <div id="errorsEdit"></div>
+        </div>
+
+<div id="divDisplayBRmsgBeforeSaveProp" style="display:none;">
+</div>
+<div id="divDisplayBRmsgMandatory" style="display:none;">
+</div>
+<div id="divDisplayLockRecord" style="display:none;">
+</div>
+<div id="divDisplayBRReadOnly" style="display:none;">
+</div>
+<div id="divDisplayCodeFragment" style="display:none;">
+</div>
+ <div class="tabbable responsive">
+    <ul class="nav nav-tabs">
+	 <li class="active"><a href="#Details" onclick="ClearTabCookie('@User.JavaScriptEncodedName@Model.Id');" data-toggle="tab">Details</a></li>
+		 <li @(!User.CanView("T_Employee")?"style=display:none;":"")><a onclick="LoadTab('T_AssociatedEmployeeType','@User.JavaScriptEncodedName@Model.Id','@Html.Raw(Url.Action("Index", "T_Employee", new {RenderPartial=true, HostingEntity ="T_Employeetype", HostingEntityID = @Model.Id, AssociatedType = "T_AssociatedEmployeeType",TabToken = DateTime.Now.Ticks,}))')" href="#T_AssociatedEmployeeType" data-toggle="tab">Employee
+		 <span class="badge bg-blue"><div id="dvcnt_T_AssociatedEmployeeType">@ViewBag.T_AssociatedEmployeeTypeCount</div></span>
+		 </a></li>
+
+    </ul>
+		<div class="tab-content">
+        <div class="tab-pane fade in active" id="Details">
+@using (Html.BeginForm("Edit","T_Employeetype",new {UrlReferrer =Convert.ToString(ViewData["T_EmployeetypeParentUrl"])}, FormMethod.Post, new { enctype = "multipart/form-data",@id="frmT_Employeetype" }))
+{
+     Html.ValidationSummary(true);
+                Html.EnableClientValidation();
+    @Html.HiddenFor(model => model.Id)
+	@Html.HiddenFor(model => model.ConcurrencyKey)
+                <div class="col-md-12 col-sm-12 col-xs-12" style="padding:0px; margin:0px;">
+                    <div class="panel panel-default AppForm">
+						<div class="panel-body">
+											<div class="row">
+				@if(User.CanView("T_Employeetype","T_Name"))
+{
+				<div class='col-sm-6 col-md-6 col-xs-12' id="dvT_Name">
+							<div class='form-group' title="">
+								<label class="col-sm-5 col-md-5 col-xs-12" >@Html.LabelFor(model => model.T_Name)  <span class="text-danger-reg">*</span> </label>
+                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+											
+									@Html.TextBoxFor(model => model.T_Name,  getHtmlAttributes("T_Name"))
+									@Html.ValidationMessageFor(model => model.T_Name)
+								</div>
+                             </div>
+						</div>
+										
+} else { @Html.HiddenFor(model => model.T_Name, new { @class = "form-control" })}
+@if(User.CanView("T_Employeetype","T_Description"))
+{
+					<div class='col-sm-6 col-md-6 col-xs-12' id="dvT_Description">
+							<div class='form-group' title="">
+								<label class="col-sm-5 col-md-5 col-xs-12" >@Html.LabelFor(model => model.T_Description) </label>
+                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+								@Html.TextAreaFor(model => model.T_Description, getHtmlAttributes("T_Description"))
+									@Html.ValidationMessageFor(model => model.T_Description)
+								</div>
+                             </div>
+						</div>
+} else { @Html.HiddenFor(model => model.T_Description, new { @class = "form-control" })}
+       </div>
+	            </div>
+        </div>
+		</div>
+		 @Html.AntiForgeryToken();
+		 @Html.ActionLink("Cancel", "Cancel", new { UrlReferrer = ViewData["T_EmployeetypeParentUrl"] }, new { @onclick = "", @class = "btn btn-default btn-sm pull-left formbuttonfix" })
+		 if (EditPermission)
+         {
+ 				<input type="submit" name="command" value="Save" class="btn btn-primary btn-sm pull-left formbuttonfix" />
+				<input type="submit" name="command" value="Save & Continue" class="btn btn-primary btn-sm pull-left formbuttonfix" />
+		}	
+				<input type="hidden" name="hdncommand" value="" />
+}
+<div class="dropdown pull-left formbuttonfix">
+<button type="button" class="btn btn-primary btn-sm dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown">
+            Add Association
+            <span class="caret"></span>
+        </button>
+		 <ul class="dropdown-menu " role="menu" aria-labelledby="dropdownMenu1">
+
+			@if (User.Identity.IsAuthenticated && User != null && User.CanAdd("T_Employee"))
+            {
+                <li><a onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Create", "T_Employee",
+						new { UrlReferrer = Request.Url,
+								AssociatedType ="T_AssociatedEmployeeType", 
+						HostingEntityName = "T_Employeetype",
+                              HostingEntityID = @Convert.ToString(Model.Id)
+                        }, null) + "');")>
+                   Add  Employee
+                </a>
+				</li>
+            }
+
+			
+</ul>
+
+			</div><div class="clearfix" style="clear:both"></div>
+</div>
+ <div class="tab-pane fade in" id="T_AssociatedEmployeeType">
+ 	@if (User.Identity.IsAuthenticated && User != null && User.CanView("T_Employee"))
+	{
+	  // Html.RenderAction("Index", "T_Employee", new {RenderPartial=true, HostingEntity = "T_Employeetype", HostingEntityID = @Model.Id, AssociatedType = "T_AssociatedEmployeeType" }); 
+	}
+  </div>
+</div> <!-- /tab-content --><br />
+
+<br/>
+</div>
+	<script>
+	   
+    $(function () {
+        var userAgent = navigator.userAgent.toLowerCase();
+        // Figure out what browser is being used
+        var browser = {
+            version: (userAgent.match(/.+(?:rv|it|ra|ie)[\/: ]([\d.]+)/) || [])[1],
+            safari: /webkit/.test(userAgent),
+            opera: /opera/.test(userAgent),
+            msie: /msie/.test(userAgent) && !/opera/.test(userAgent),
+            mozilla: /mozilla/.test(userAgent) && !/(compatible|webkit)/.test(userAgent)
+        };
+        if (!browser.msie) {
+            $('form').areYouSure();
+        }
+        else if (browser.version > 8.0) {
+            $('form').areYouSure();
+        }
+    });
+</script>
+	
+
+@{
+var businessrule = User.businessrules.Where(p => p.EntityName == "T_Employeetype").ToList();
+
+if ((businessrule != null && businessrule.Count > 0) )
+{
+    <script>
+		$(document).ready(function () {
+				document.getElementById("ErrMsg").innerHTML = "";
+				var flag = true;
+                var dataurl = "";
+                var form = "";
+                var inlinecount = "0";
+
+				 form = $("#frmT_Employeetype").serialize();
+				dataurl = "@Url.Action("businessruletype", "T_Employeetype", new { ruleType = "OnEdit"})";
+                ApplyBusinessRuleOnPageLoad(dataurl, "T_Employeetype", false, "ErrMsg", form);
+				//business rules on inline associations
+
+    });
+</script>
+<script>
+    $("form").submit(function () {
+			document.getElementById("ErrMsg").innerHTML = "";
+            var flag = true;
+            var dataurl = "";
+            var form = "";
+            var inlinecount = "0";
+ form = $("#frmT_Employeetype").serialize();
+    
+				 dataurl = "@Url.Action("businessruletype", "T_Employeetype", new { ruleType = "OnEdit"})";
+                 flag = ApplyBusinessRuleOnSubmit(dataurl, "T_Employeetype", false, "ErrMsg", form);
+
+  				 //business rules on inline associations
+               
+			 if (flag)
+				{
+				                    SaveServerTime(this, true);
+                    $('input:hidden[name="hdncommand"]').val($(this.id).context.activeElement.value);
+                    $("form").find(':input').removeAttr('disabled');
+					}
+            return flag;
+		});
+		 $(document).ready(function () {
+                $("input[type='submit']").on('blur', function () {
+                    $("input[type='submit']").removeAttr('disabled');
+                });
+               
+            });
+</script>
+}
+ else
+    {
+       <script>
+    $("input[type='submit']").click(function (event) {
+        var $this = $(this);
+		SaveServerTime(this);
+        $('input:hidden[name="hdncommand"]').val($this.val());
+    });
+	</script>
+    }
+ 
+}
+
+<script type='text/javascript'>
+    $(document).ready(function () {
+        try {
+		focusOnControl('frmT_Employeetype');
+        }
+        catch (ex) { }
+    });
+</script>
+
+

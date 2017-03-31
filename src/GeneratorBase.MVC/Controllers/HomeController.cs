@@ -31,6 +31,14 @@ namespace GeneratorBase.MVC.Controllers
             var MultipleRoleSelection = CommonFunction.Instance.MultipleRoleSelection();
             string AppUrl = System.Configuration.ConfigurationManager.AppSettings["AppUrl"];
 			ApplicationContext db = new ApplicationContext(User);
+			if (User.MultiTenantLoginSelected.Count == 0)
+            {
+                
+                var MainEntityList = db.T_Organizations.OrderBy(p => p.DisplayValue).ToList();
+                MainEntityList.Insert(0,new T_Organization { Id = -1, DisplayValue = "All", m_DisplayValue = "All" });
+                ViewBag.SelectedMainEntityValue = MainEntityList;
+                ViewBag.SelectedMainEntity = new SelectList(MainEntityList, "ID", "DisplayValue");
+            }
             if (roles.Count() > 1 && Request.Cookies[AppUrl+"CurrentRole"]==null && Convert.ToBoolean(MultipleRoleSelection))
             {
                 ViewBag.PageRoles = roles.ToList();
@@ -61,10 +69,8 @@ namespace GeneratorBase.MVC.Controllers
             }
             if (isItemZero || (ViewBag.PageRoles == null && ViewBag.PageContent == null))
             {
-		            ViewBag.T_ClientCount = db.T_Clients.Count();
-            ViewBag.T_LearningCenterCount = db.T_LearningCenters.Count();
-            ViewBag.T_SessionCount = db.T_Sessions.Count();
-            ViewBag.T_TimeSlotsCount = db.T_TimeSlotss.Count();
+		            ViewBag.T_EmployeeCount = db.T_Employees.Count();
+            ViewBag.T_OrganizationCount = db.T_Organizations.Count();
 				CompanyProfileRepository _cp = new CompanyProfileRepository();
                 CompanyProfile cp = _cp.GetCompanyProfile();
                 if (cp != null)
@@ -195,6 +201,44 @@ namespace GeneratorBase.MVC.Controllers
 		public JsonResult isAdmin()
         {
             return this.Json(User.IsAdmin, JsonRequestBehavior.AllowGet);
+        }
+		public JsonResult setSelectedMainentityValue(string key, string SelectedMainEntity, string SelectedMainEntityValue)
+        {
+            string AppUrl = System.Configuration.ConfigurationManager.AppSettings["AppUrl"];
+            AppSecurityParameter(User.Name, SelectedMainEntity, SelectedMainEntityValue);
+            bool result = true;
+            return this.Json(result, JsonRequestBehavior.AllowGet);
+        }
+		private void AppSecurityParameter(string username, string SelectedMainEntity, string SelectedMainEntityValue)
+        {
+
+            ApplicationDbContext ac = new ApplicationDbContext();
+            var oldAccess = ac.MultiTenantLoginSelected.FirstOrDefault(p => p.T_User == username);
+            if (oldAccess != null)
+            {
+                if (string.IsNullOrEmpty(SelectedMainEntity))
+                {
+                    ac.MultiTenantLoginSelected.Remove(oldAccess);
+                }
+                else
+                {
+                    var obj = ac.MultiTenantLoginSelected.Find(oldAccess.Id);
+                    obj.T_MainEntity = Convert.ToInt64(SelectedMainEntity);
+					obj.T_MainEntityValue = SelectedMainEntityValue;
+                    obj.T_AccessDateTime = DateTime.UtcNow;
+                    ac.Entry(obj).State = System.Data.Entity.EntityState.Modified;
+                }
+            }
+            else if (!string.IsNullOrEmpty(SelectedMainEntity))
+            {
+                MultiTenantLoginSelected obj = new MultiTenantLoginSelected();
+                obj.T_User = username;
+                obj.T_MainEntity = Convert.ToInt64(SelectedMainEntity);
+				obj.T_MainEntityValue = SelectedMainEntityValue;
+                obj.T_AccessDateTime = DateTime.UtcNow;
+                ac.MultiTenantLoginSelected.Add(obj);
+            }
+            ac.SaveChanges();
         }
     }
 }

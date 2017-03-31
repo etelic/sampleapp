@@ -19,19 +19,23 @@ namespace GeneratorBase.MVC
             //);
            // ODataConventionModelBuilder builder = new ODataConventionModelBuilder();
             
-			//builder.EntitySet<T_Client>("T_ClientOData");
+			//builder.EntitySet<T_Address>("T_AddressOData");
             
-			//builder.EntitySet<T_SessionEvents>("T_SessionEventsOData");
+			//builder.EntitySet<T_City>("T_CityOData");
             
-			//builder.EntitySet<T_SessionEventsClient>("T_SessionEventsClientOData");
+			//builder.EntitySet<T_Country>("T_CountryOData");
             
-			//builder.EntitySet<T_SessionClientAssociation>("T_SessionClientAssociationOData");
+			//builder.EntitySet<T_Employee>("T_EmployeeOData");
             
-			//builder.EntitySet<T_TimeSlots>("T_TimeSlotsOData");
+			//builder.EntitySet<T_Employeestatus>("T_EmployeestatusOData");
             
-			//builder.EntitySet<T_LearningCenter>("T_LearningCenterOData");
+			//builder.EntitySet<T_Employeetype>("T_EmployeetypeOData");
             
-			//builder.EntitySet<T_Session>("T_SessionOData");
+			//builder.EntitySet<T_EmployeeOrganizationAssociation>("T_EmployeeOrganizationAssociationOData");
+            
+			//builder.EntitySet<T_State>("T_StateOData");
+            
+			//builder.EntitySet<T_Organization>("T_OrganizationOData");
          // builder.EntitySet<Document>("DocumentOData");      
 			//config.Routes.MapODataServiceRoute("odata", "odata", builder.GetEdmModel());
         }
